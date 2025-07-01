@@ -1,27 +1,66 @@
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
-body { color: white; background-color: #000; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  color: white;
+  background-color: #000;
+}
 
 header {
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 20px 40px;
-  background-color: rgba(0,0,0,0.7);
-  position: fixed; top: 0; width: 100%; z-index: 10;
+  background-color: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
 }
 
-header .logo { font-size: 24px; font-weight: bold; color: #00bcd4; }
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #00bcd4;
+  text-decoration: none;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+}
+
+nav li {
+  margin: 0 15px;
+}
+
 nav a {
-  margin: 0 15px; text-decoration: none; color: white;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
   transition: color 0.3s;
 }
-nav a:hover { color: #00bcd4; }
 
-.lang { font-size: 14px; }
+nav a:hover {
+  color: #00bcd4;
+}
+
+.lang {
+  font-size: 14px;
+}
 
 .hero {
   height: 100vh;
   background: url('background.jpg') no-repeat center center/cover;
-  display: flex; justify-content: center; align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
+  padding-top: 100px;
 }
 
 .hero .overlay {
@@ -32,20 +71,31 @@ nav a:hover { color: #00bcd4; }
   max-width: 600px;
 }
 
-.hero h1 { font-size: 32px; margin-bottom: 20px; }
-.hero p { font-size: 18px; margin-bottom: 30px; }
+.hero h1 {
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  font-size: 18px;
+  margin-bottom: 30px;
+}
 
 .btn {
-  background-color: #00bcd4; color: black;
+  background-color: #00bcd4;
+  color: black;
   padding: 10px 20px;
   border-radius: 8px;
   text-decoration: none;
   font-weight: bold;
 }
-.btn:hover { background-color: #0097a7; }
+
+.btn:hover {
+  background-color: #0097a7;
+}
 
 footer {
-  background-color: #111; padding: 20px; text-align: center;
-  position: relative;
-  bottom: 0;
+  background-color: #111;
+  padding: 20px;
+  text-align: center;
 }
