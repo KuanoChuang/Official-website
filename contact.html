@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>聯絡我們 | THERIA OO科技</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", sans-serif;
+      background: #0d1117;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-image: url('background.jpg'); /* 可替換為電路背景 */
+      background-size: cover;
+      background-position: center;
+    }
+
+    .container {
+      display: flex;
+      width: 90%;
+      max-width: 1200px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .left, .right {
+      padding: 40px;
+      flex: 1;
+    }
+
+    .left h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .left p {
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .feature {
+      margin-bottom: 20px;
+    }
+
+    .feature::before {
+      content: "▶";
+      color: #00c8ff;
+      margin-right: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background: #1e222a;
+      color: white;
+      font-size: 16px;
+    }
+
+    textarea {
+      height: 100px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      color: white;
+      font-size: 16px;
+      border: 2px solid white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #00c8ff;
+      color: #000;
+      border-color: #00c8ff;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left">
+      <h2>與 THERIA 專家預約演示</h2>
+      <p>了解我們的 AI 平台如何協助您在行銷、營運或決策上做出更智慧的跨領域選擇。</p>
+
+      <div class="feature">免費諮詢和審計</div>
+      <div class="feature">開啟你的 AI 之旅</div>
+      <div class="feature">客製化建模支持</div>
+      <div class="feature">衡量影響</div>
+    </div>
+
+    <div class="right">
+      <form>
+        <div class="form-group">
+          <input type="text" name="name" placeholder="姓名 *" required>
+        </div>
+        <div class="form-group">
+          <input type="email" name="email" placeholder="電子郵件 *" required>
+        </div>
+        <div class="form-group">
+          <input type="text" name="phone" placeholder="電話">
+        </div>
+        <div class="form-group">
+          <input type="text" name="subject" placeholder="主題 *" required>
+        </div>
+        <div class="form-group">
+          <textarea name="message" placeholder="信息 *" required></textarea>
+        </div>
+        <button type="submit">發送</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
