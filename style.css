@@ -10,6 +10,7 @@ body {
   background-color: #000;
 }
 
+/* Header/Navbar */
 header {
   display: flex;
   justify-content: space-between;
@@ -29,30 +30,71 @@ header {
   text-decoration: none;
 }
 
-nav ul {
+nav ul.navbar {
   list-style: none;
   display: flex;
+  position: relative;
 }
 
-nav li {
+nav ul.navbar > li {
+  position: relative;
   margin: 0 15px;
 }
 
-nav a {
+nav ul.navbar > li > a {
   text-decoration: none;
   color: white;
   font-weight: bold;
   transition: color 0.3s;
+  padding: 10px 0;
+  display: block;
 }
 
-nav a:hover {
+nav ul.navbar > li > a:hover {
   color: #00bcd4;
+}
+
+/* 下拉選單 */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background-color: #111;
+  min-width: 160px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+  z-index: 99;
+  border-radius: 6px;
+}
+
+.dropdown-content li {
+  margin: 0;
+}
+
+.dropdown-content li a {
+  color: white;
+  padding: 12px 16px;
+  display: block;
+  text-decoration: none;
+  font-weight: normal;
+}
+
+.dropdown-content li a:hover {
+  background-color: #222;
+  color: #00bcd4;
+}
+
+/* 滑鼠懸停時展開下拉 */
+.dropdown:hover .dropdown-content {
+  display: block;
 }
 
 .lang {
   font-size: 14px;
+  color: #ccc;
 }
 
+/* Hero Section */
 .hero {
   height: 100vh;
   background: url('background.jpg') no-repeat center center/cover;
@@ -94,8 +136,14 @@ nav a:hover {
   background-color: #0097a7;
 }
 
+/* Footer */
 footer {
   background-color: #111;
   padding: 20px;
   text-align: center;
+}
+
+/* 平滑滾動 */
+html {
+  scroll-behavior: smooth;
 }
