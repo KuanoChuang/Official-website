@@ -11,19 +11,50 @@
     }
 
     .hero {
-      height: 100vh;
-      background: url('background.jpg') no-repeat center center/cover;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding-top: 100px;
+    position: relative;
+    background: url('your-background.jpg') center/cover no-repeat;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: left;
+    padding: 0 5%;
     }
 
-    .hero .overlay {
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 40px;
-      border-radius: 12px;
-      text-align: center;
+    .overlay {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 40px;
+    border-radius: 20px;
+    max-width: 700px;
+    }
+
+    .overlay h1 {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+    font-weight: bold;
+    }
+
+    .overlay p {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    color: #ccc;
+    }
+
+    .btn {
+    display: inline-block;
+    margin-top: 2rem;
+    padding: 0.8rem 2rem;
+    background-color: #00b7c3;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+    }
+
+    .btn:hover {
+    background-color: #0099a6;
     }
 
     section {
@@ -77,8 +108,9 @@
 
   <section class="hero">
     <div class="overlay">
-      <h1>slogan</h1>
-      <p>slogan</p>
+      <h1>洞察數據背後的可驗證因果關係</h1>
+      <p>將複雜結果轉化為直觀可視化</p>
+      <p>引領精準決策，開拓未知的全新可能</p>
       <a class="btn" href="index.html">深入了解</a>
     </div>
   </section>
