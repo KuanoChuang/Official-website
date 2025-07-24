@@ -6,12 +6,98 @@
   <title>官網首頁 - THERIA </title>
   <style>
     body {
-      background-color: black;
-      color: white;
+    margin: 0;
+    font-family: 'Noto Sans TC', sans-serif;
+    background: url('hero_bk.jpg') center/cover no-repeat;
+    color: #fff;
     }
-    section {
-      padding: 60px 40px;
+
+    .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 80px 10%;
+    gap: 5%;
     }
+
+    .left {
+    flex: 1;
+    }
+
+    .left h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    }
+
+    .left p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    }
+
+    .feature {
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    }
+
+    .feature::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    width: 20px;
+    height: 20px;
+    background: url('arrow-icon.svg') center/contain no-repeat;
+    }
+
+    .right {
+    flex: 1;
+    max-width: 450px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 40px;
+    border-radius: 10px;
+    }
+
+    .form-group {
+    margin-bottom: 20px;
+    }
+
+    input, textarea {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1rem;
+    }
+
+    input::placeholder, textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    }
+
+    textarea {
+    min-height: 120px;
+    resize: vertical;
+    }
+
+    button {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid #fff;
+    color: #fff;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    }
+
+    button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    }    
 
     html {
       scroll-behavior: smooth;
