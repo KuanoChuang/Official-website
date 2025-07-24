@@ -124,6 +124,51 @@
     box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
     font-weight: bold;
     }
+    
+    #features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+    padding: 60px 20px;
+    background-color: black;
+    }
+
+    .feature-item {
+    text-align: center;
+    color: white;
+    max-width: 150px;
+    }
+
+    .feature-item img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+    }
+
+    .feature-item h3 {
+    color: #00b7c3;
+    margin: 10px 0 5px 0;
+    font-size: 1rem;
+    }
+
+    .feature-item p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: bold;
+    }
+
+    .feature-item span {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9rem;
+    color: #ccc;
+    }
+
+
+
+
+
     section {
       padding: 60px 40px;
     }
@@ -193,6 +238,36 @@
     <section id="vision">
       <h2>團隊願景</h2>
       <p>提供可驗證性的數據模擬結果,協助客戶做出關鍵性決策。</p>
+      <div class="feature-item">
+    <img src="feature1.png" alt="驗證性">
+    <h3>驗證性</h3>
+    <p>文獻支持</p>
+    <span>OO</span>
+  </div>
+  <div class="feature-item">
+    <img src="feature2.png" alt="可視化">
+    <h3>可視化</h3>
+    <p>視覺化數據</p>
+    <span>OO</span>
+  </div>
+  <div class="feature-item">
+    <img src="feature3.png" alt="精準力">
+    <h3>精準力</h3>
+    <p>精準策略</p>
+    <span>OO</span>
+  </div>
+  <div class="feature-item">
+    <img src="feature4.png" alt="因果律">
+    <h3>因果律</h3>
+    <p>因果邏輯</p>
+    <span>OO</span>
+  </div>
+  <div class="feature-item">
+    <img src="feature5.png" alt="客製化">
+    <h3>客製化</h3>
+    <p>客製模型</p>
+    <span>OO</span>
+  </div>
     </section>
 
     <section id="organization">
@@ -203,7 +278,7 @@
             <span class="position">CEO / 創辦人</span>
         <ul>
           <li>
-            <span class="position">技術長（CTO）</span>
+            <span class="position">技術部</span>
             <ul>
               <li><span class="position">前端工程師</span></li>
               <li><span class="position">後端工程師</span></li>
@@ -212,7 +287,7 @@
             </ul>
           </li>
           <li>
-            <span class="position">產品長（CPO）</span>
+            <span class="position">產品部</span>
             <ul>
               <li><span class="position">產品經理（PM）</span></li>
               <li><span class="position">UX / UI 設計師</span></li>
@@ -220,7 +295,7 @@
             </ul>
           </li>
           <li>
-            <span class="position">營運長（COO）</span>
+            <span class="position">營運部</span>
             <ul>
               <li><span class="position">客服 / 客戶成功經理</span></li>
               <li><span class="position">人資 / 行政</span></li>
