@@ -56,7 +56,73 @@
     .btn:hover {
     background-color: #0099a6;
     }
+    .org-chart {
+     text-align: center;
+    }
 
+    .org-chart ul {
+    padding-top: 20px;
+    position: relative;
+    display: table;
+    margin: 0 auto;
+    }
+
+    .org-chart li {
+  display: table-cell;
+  vertical-align: top;
+  text-align: center;
+  position: relative;
+  padding: 20px 10px 0 10px;
+}
+
+.org-chart li::before, .org-chart li::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 50%;
+  border-top: 2px solid #ccc;
+  width: 50%;
+  height: 20px;
+}
+
+.org-chart li::after {
+  right: auto;
+  left: 50%;
+  border-left: 2px solid #ccc;
+}
+
+.org-chart li:only-child::before,
+.org-chart li:only-child::after {
+  display: none;
+}
+
+.org-chart li:only-child {
+  padding-top: 0;
+}
+
+.org-chart li:first-child::before,
+.org-chart li:last-child::after {
+  border: 0 none;
+}
+
+.org-chart li:last-child::before {
+  border-right: 2px solid #ccc;
+  border-radius: 0 5px 0 0;
+}
+
+.org-chart li:first-child::after {
+  border-radius: 5px 0 0 0;
+}
+
+.org-chart .position {
+  display: inline-block;
+  border: 2px solid #777;
+  background-color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+  font-weight: bold;
+}
     section {
       padding: 60px 40px;
     }
@@ -118,8 +184,7 @@
   <main>
     <section id="about">
       <h1>關於我們</h1>
-      <p>Theria 取名源自 Thēríon，與therapy近似。</p>
-      <p>這個名字象徵我們對生物智慧、精準醫療與因果邏輯的核心價值認同。</p>
+      <p>Theria 取名源自 Thēríon，象徵對生物智慧、精準醫療與因果邏輯的核心價值認同。</p>
       <p>我們專注於分子模擬技術與可視化數據模型，致力協助客戶快速理解複雜關係、洞察關鍵因果，進而推動真正可執行的精準行動。</p>
       <p>我們致力於運用分子對接, 分子動力學等模擬技術解決生物結構學,材料化學等應用上的問題。</p>
     </section>
@@ -131,7 +196,7 @@
 
     <section id="organization">
       <h2>團隊架構</h2>
-      <p>資料分析師, AI工程師, 市場開發</p>
+      
     </section>
 
     <section id="pipeline">
@@ -144,6 +209,44 @@
         <li>報告回饋與技術支援</li>
       </ol>
     </section>
+     <body>
+       <div class="org-chart">
+        <ul>
+          <li>
+            <span class="position">CEO / 創辦人</span>
+        <ul>
+          <li>
+            <span class="position">技術長（CTO）</span>
+            <ul>
+              <li><span class="position">前端工程師</span></li>
+              <li><span class="position">後端工程師</span></li>
+              <li><span class="position">AI工程師</span></li>
+              <li><span class="position">DevOps / SRE</span></li>
+            </ul>
+          </li>
+          <li>
+            <span class="position">產品長（CPO）</span>
+            <ul>
+              <li><span class="position">產品經理（PM）</span></li>
+              <li><span class="position">UX / UI 設計師</span></li>
+              <li><span class="position">技術文件編寫</span></li>
+            </ul>
+          </li>
+          <li>
+            <span class="position">營運長（COO）</span>
+            <ul>
+              <li><span class="position">客服 / 客戶成功經理</span></li>
+              <li><span class="position">人資 / 行政</span></li>
+              <li><span class="position">業務 / BD</span></li>
+            </ul>
+          </li>
+          <li>
+            <span class="position">財務 / 法務部門</span>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
 
     <section id="news">
       <h2>最新消息</h2>
