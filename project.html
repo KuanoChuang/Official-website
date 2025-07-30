@@ -7,20 +7,19 @@
   <title>專案介紹</title>
   <style>
     body {
+      margin: 0;
       background-color: black;
       color: white;
-    }
-    section {
-      padding: 60px 40px;
-    }
-
-    html {
-      scroll-behavior: smooth;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 0;
     }
     #viewer {
       width: 500px;
       height: 500px;
-      margin: 20px auto;
+      border: 1px solid white;
     }
   </style>
   <link rel="stylesheet" href="style.css" />
@@ -64,30 +63,35 @@
    <div class="lang">🌐 中文</div>
   </header>
 
-  <main>
-    <h1>專案介紹</h1>
-    <p>Nanoparticles, AuNPs, PLGA, Carbon dots</p>
-  </main>
-  
-  
-  <section id="cancer">
-    <h2>3ZFF</h2>
-    <div id="viewer"></div>
+  <h2>3ZFF PDB 分子結構展示</h1>
+  <div id="viewer"></div>
 
-    <script>
+  <script>
     window.onload = function() {
-      let element = document.getElementById("viewer");
-      let config = { backgroundColor: "white" };
-      let viewer = $3Dmol.createViewer(element, config);
-      let pdbURL = "https://files.rcsb.org/download/1BNA.pdb";
+      const viewer = $3Dmol.createViewer("viewer", { backgroundColor: "black" });
+      const pdbURL = "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb";
 
-      $3Dmol.download(pdbURL, viewer, {}, function () {
-        viewer.setStyle({}, { cartoon: { color: 'spectrum' } });
-        viewer.zoomTo();
-        viewer.render();
-      });
+      fetch(pdbURL)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(pdbText => {
+          console.log("PDB 檔案長度:", pdbText.length);
+          console.log("前 300 字:\n", pdbText.slice(0, 300));
+          
+          viewer.addModel(pdbText, "pdb");
+          viewer.setStyle({}, { cartoon: { color: "spectrum" } });
+          viewer.zoomTo();
+          viewer.render();
+        })
+        .catch(error => {
+          console.error("載入 PDB 檔案錯誤:", error);
+          alert("載入 PDB 檔案失敗，請查看 Console 訊息");
+        });
     };
-    </script>
-  </section>
+  </script>
 </body>
 </html>
