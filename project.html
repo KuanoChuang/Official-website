@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
   <title>專案介紹</title>
   <style>
     body {
@@ -15,6 +16,11 @@
 
     html {
       scroll-behavior: smooth;
+    }
+    #viewer {
+      width: 500px;
+      height: 500px;
+      margin: 20px auto;
     }
   </style>
   <link rel="stylesheet" href="style.css" />
@@ -70,7 +76,7 @@
   let element = document.getElementById("viewer");
   let config = { backgroundColor: "white" };
   let viewer = $3Dmol.createViewer(element, config);
-  let pdbURL = "https://github.com/KuanoChuang/Official-website/blob/834f17238bd2f6af8d50d541d4eae6d5c3adbced/3zff.pdb";
+  let pdbURL = "https://raw.githubusercontent.com/KuanoChuang/Official-website/834f17238bd2f6af8d50d541d4eae6d5c3adbced/3zff.pdb";
   
   $3Dmol.download(pdbURL, viewer, {}, function () {
     viewer.setStyle({}, { cartoon: { color: 'spectrum' } });
