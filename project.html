@@ -79,7 +79,7 @@
       let element = document.getElementById("viewer");
       let config = { backgroundColor: "white" };
       let viewer = $3Dmol.createViewer(element, config);
-      let pdbURL = "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb";
+      let pdbURL = "https://files.rcsb.org/download/1BNA.pdb";
 
       $3Dmol.download(pdbURL, viewer, {}, function () {
         viewer.setStyle({}, { cartoon: { color: 'spectrum' } });
