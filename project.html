@@ -62,5 +62,21 @@
     <h1>專案介紹</h1>
     <p>Nanoparticles, AuNPs, PLGA, Carbon dots</p>
   </main>
+  
+<h2>3ZFF</h2>
+<div id="viewer"></div>
+
+<script>
+  let element = document.getElementById("viewer");
+  let config = { backgroundColor: "white" };
+  let viewer = $3Dmol.createViewer(element, config);
+  let pdbURL = "https://github.com/KuanoChuang/Official-website/3zff.pdb";
+  
+  $3Dmol.download(pdbURL, viewer, {}, function () {
+    viewer.setStyle({}, { cartoon: { color: 'spectrum' } });
+    viewer.zoomTo();
+    viewer.render();
+  });
+</script>
 </body>
 </html>
