@@ -20,6 +20,16 @@
       width: 500px;
       height: 500px;
       border: 1px solid white;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    #viewer canvas {
+      display: block;
+      margin: auto;
     }
   </style>
   <link rel="stylesheet" href="style.css" />
@@ -72,25 +82,14 @@
       const pdbURL = "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb";
 
       fetch(pdbURL)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.text();
-        })
+        .then(response => response.ok ? response.text() : Promise.reject())
         .then(pdbText => {
-          console.log("PDB 檔案長度:", pdbText.length);
-          console.log("前 300 字:\n", pdbText.slice(0, 300));
-          
           viewer.addModel(pdbText, "pdb");
           viewer.setStyle({}, { cartoon: { color: "spectrum" } });
           viewer.zoomTo();
           viewer.render();
         })
-        .catch(error => {
-          console.error("載入 PDB 檔案錯誤:", error);
-          alert("載入 PDB 檔案失敗，請查看 Console 訊息");
-        });
+
     };
   </script>
 </body>
