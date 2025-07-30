@@ -11,23 +11,29 @@
       background-color: black;
       color: white;
       font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 0;
     }
-    #viewer {
-      width: 500px;
-      height: 500px;
-      border: 1px solid white;
-      margin: 20px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
+    main {
+      padding: 40px;
+      text-align: center;
     }
 
-    #viewer canvas {
+    .viewers-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .viewer-box {
+      width: 300px;
+      height: 300px;
+      border: 1px solid white;
+      position: relative;
+      background-color: black;
+    }
+
+    .viewer-box canvas {
       display: block;
       margin: auto;
     }
@@ -35,61 +41,82 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
- <header>
-   <a href="index.html" class="logo">Theria</a>
-   <nav>
-     <ul class="navbar">
-       <li class="dropdown">
-         <a href="index.html" class="dropbtn">關於Theria ▾</a>
-         <ul class="dropdown-content">
-           <li><a href="#about">關於我們</a></li>
-           <li><a href="#vision">團隊願景</a></li>
-           <li><a href="#organization">團隊架構</a></li>
-           <li><a href="#pipeline">專案流程</a></li>
-           <li><a href="#news">最新消息</a></li>          
-         </ul>
-       </li>
-       <li class="dropdown">
-         <a href="platform.html" class="dropbtn">技術平台 ▾</a>
-         <ul class="dropdown-content">
-           <li><a href="#modeling">分子建模</a></li> 
-         </ul>
-       </li>
-       <li class="dropdown">
-         <a href="project.html" class="dropbtn">專案介紹 ▾</a>
-         <ul class="dropdown-content">
-           <li><a href="#cancer">癌症</a></li> 
-         </ul>
-       </li>
-       <li class="dropdown">
-         <a href="contact.html" class="dropbtn">聯絡我們 ▾</a>
-         <ul class="dropdown-content">
-           <li><a href="#info">聯絡資訊</a></li>
-           <li><a href="#joinus">加入我們</a></li> 
-         </ul>
-       </li>
-     </ul>
-   </nav>
-   <div class="lang">🌐 中文</div>
+  <header>
+    <a href="index.html" class="logo">Theria</a>
+    <nav>
+      <ul class="navbar">
+        <li class="dropdown">
+          <a href="index.html" class="dropbtn">關於Theria ▾</a>
+          <ul class="dropdown-content">
+            <li><a href="#about">關於我們</a></li>
+            <li><a href="#vision">團隊願景</a></li>
+            <li><a href="#organization">團隊架構</a></li>
+            <li><a href="#pipeline">專案流程</a></li>
+            <li><a href="#news">最新消息</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="platform.html" class="dropbtn">技術平台 ▾</a>
+          <ul class="dropdown-content">
+            <li><a href="#modeling">分子建模</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="project.html" class="dropbtn">專案介紹 ▾</a>
+          <ul class="dropdown-content">
+            <li><a href="#cancer">癌症</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="contact.html" class="dropbtn">聯絡我們 ▾</a>
+          <ul class="dropdown-content">
+            <li><a href="#info">聯絡資訊</a></li>
+            <li><a href="#joinus">加入我們</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+    <div class="lang">🌐 中文</div>
   </header>
 
-  <h2>3ZFF PDB 分子結構展示</h1>
-  <div id="viewer"></div>
+  <main>
+    <h2>3ZFF PDB 分子結構展示</h2>
+    <p>以下展示3ZFF蛋白質的三個不同視角與樣式，幫助理解其立體構型與功能區域。</p>
+
+    <div class="viewers-container">
+      <div class="viewer-box" id="viewer1"></div>
+      <div class="viewer-box" id="viewer2"></div>
+      <div class="viewer-box" id="viewer3"></div>
+    </div>
+  </main>
 
   <script>
-    window.onload = function() {
-      const viewer = $3Dmol.createViewer("viewer", { backgroundColor: "black" });
+    function loadViewer(id, styleType) {
+      const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
       const pdbURL = "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb";
 
       fetch(pdbURL)
         .then(response => response.ok ? response.text() : Promise.reject())
         .then(pdbText => {
           viewer.addModel(pdbText, "pdb");
-          viewer.setStyle({}, { cartoon: { color: "spectrum" } });
+          let style = {};
+          if (styleType === "spectrum") {
+            style = { cartoon: { color: "spectrum" } };
+          } else if (styleType === "chain") {
+            style = { cartoon: { color: "chain" } };
+          } else {
+            style = { cartoon: { color: "white" } };
+          }
+          viewer.setStyle({}, style);
           viewer.zoomTo();
           viewer.render();
-        })
+        });
+    }
 
+    window.onload = function() {
+      loadViewer("viewer1", "spectrum");
+      loadViewer("viewer2", "chain");
+      loadViewer("viewer3", "white");
     };
   </script>
 </body>
