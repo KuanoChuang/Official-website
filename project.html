@@ -75,16 +75,18 @@
     <div id="viewer"></div>
 
     <script>
-    let element = document.getElementById("viewer");
-    let config = { backgroundColor: "white" };
-    let viewer = $3Dmol.createViewer(element, config);
-    let pdbURL = "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb";
-  
-    $3Dmol.download(pdbURL, viewer, {}, function () {
-    viewer.setStyle({}, { cartoon: { color: 'spectrum' } });
-    viewer.zoomTo();
-    viewer.render();
-    });
+    window.onload = function() {
+      let element = document.getElementById("viewer");
+      let config = { backgroundColor: "black" };
+      let viewer = $3Dmol.createViewer(element, config);
+      let pdbURL = "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb";
+
+      $3Dmol.download(pdbURL, viewer, {}, function () {
+        viewer.setStyle({}, { cartoon: { color: 'spectrum' } });
+        viewer.zoomTo();
+        viewer.render();
+      });
+    };
     </script>
   </section>
 </body>
