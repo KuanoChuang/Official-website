@@ -1,175 +1,178 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>THERIA</title>
-  <style>    
+  <style>
     body {
       background-color: black;
       color: white;
     }
 
     .hero {
-    position: relative;
-    background: url('hero_bk.jpg') center/cover no-repeat;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    text-align: left;
-    padding: 0 5%;
+      position: relative;
+      background: url('hero_bk.jpg') center/cover no-repeat;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: left;
+      padding: 0 5%;
     }
 
     .overlay {
-    background: rgba(0, 0, 0, 0.6);
-    padding: 40px;
-    border-radius: 20px;
-    max-width: 700px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 40px;
+      border-radius: 20px;
+      max-width: 700px;
     }
 
     .overlay h1 {
-    font-size: 2rem;
-    margin: 0.5rem 0;
-    font-weight: bold;
+      font-size: 2rem;
+      margin: 0.5rem 0;
+      font-weight: bold;
     }
 
     .overlay p {
-    font-size: 1.2rem;
-    margin-top: 1rem;
-    color: #ccc;
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      color: #ccc;
     }
 
     .btn {
-    display: inline-block;
-    margin-top: 2rem;
-    padding: 0.8rem 2rem;
-    background-color: #00b7c3;
-    color: #fff;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background 0.3s;
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.8rem 2rem;
+      background-color: #00b7c3;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
     }
 
     .btn:hover {
-    background-color: #0099a6;
+      background-color: #0099a6;
     }
+
     .org-chart {
-     text-align: center;
+      text-align: center;
     }
 
     .org-chart ul {
-    padding-top: 20px;
-    position: relative;
-    display: table;
-    margin: 0 auto;
+      padding-top: 20px;
+      position: relative;
+      display: table;
+      margin: 0 auto;
     }
 
     .org-chart li {
-    display: table-cell;
-    vertical-align: top;
-    text-align: center;
-    position: relative;
-    padding: 20px 10px 0 10px;
+      display: table-cell;
+      vertical-align: top;
+      text-align: center;
+      position: relative;
+      padding: 20px 10px 0 10px;
     }
 
-    .org-chart li::before, .org-chart li::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 50%;
-    border-top: 2px solid #ccc;
-    width: 50%;
-    height: 20px;
+    .org-chart li::before,
+    .org-chart li::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 50%;
+      border-top: 2px solid #ccc;
+      width: 50%;
+      height: 20px;
     }
 
     .org-chart li::after {
-    right: auto;
-    left: 50%;
-    border-left: 2px solid #ccc;
+      right: auto;
+      left: 50%;
+      border-left: 2px solid #ccc;
     }
 
     .org-chart li:only-child::before,
     .org-chart li:only-child::after {
-    display: none;
+      display: none;
     }
 
     .org-chart li:only-child {
-    padding-top: 0;
+      padding-top: 0;
     }
 
     .org-chart li:first-child::before,
     .org-chart li:last-child::after {
-    border: 0 none;
+      border: 0 none;
     }
 
     .org-chart li:last-child::before {
-    border-right: 2px solid #ccc;
-    border-radius: 0 5px 0 0;
+      border-right: 2px solid #ccc;
+      border-radius: 0 5px 0 0;
     }
 
     .org-chart li:first-child::after {
-    border-radius: 5px 0 0 0;
+      border-radius: 5px 0 0 0;
     }
 
     .org-chart .position {
-    display: inline-block;
-    border: 2px solid #777;
-    background-color: #fff;
-    color: #000000;
-    padding: 10px 20px;
-    border-radius: 8px;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-    font-weight: bold;
+      display: inline-block;
+      border: 2px solid #777;
+      background-color: #fff;
+      color: #000000;
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+      font-weight: bold;
     }
-    
-.features-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  align-items: center;
-  padding: 60px 20px;
-  background-color: black;
-}
 
-.features-row {
-  display: flex;
-  gap: 40px;
-  justify-content: center;
-}
+    .features-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      align-items: center;
+      padding: 60px 20px;
+      background-color: black;
+    }
 
-.feature-item {
-  text-align: center;
-  color: white;
-  max-width: 150px;
-}
+    .features-row {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+    }
 
-.feature-item img {
-  width: 50px;
-  height: 50px;
-  margin-bottom: 10px;
-}
+    .feature-item {
+      text-align: center;
+      color: white;
+      max-width: 150px;
+    }
 
-.feature-item h3 {
-  color: #00b7c3;
-  margin: 10px 0 5px 0;
-  font-size: 1rem;
-}
+    .feature-item img {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 10px;
+    }
 
-.feature-item p {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: bold;
-}
+    .feature-item h3 {
+      color: #00b7c3;
+      margin: 10px 0 5px 0;
+      font-size: 1rem;
+    }
 
-.feature-item span {
-  display: block;
-  margin-top: 5px;
-  font-size: 0.9rem;
-  color: #ccc;
-}
+    .feature-item p {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .feature-item span {
+      display: block;
+      margin-top: 5px;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
 
 
 
@@ -187,43 +190,44 @@
   </style>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
- <header>
-   <a href="index.html" class="logo">Theria</a>
-   <nav>
-     <ul class="navbar">
-       <li class="dropdown">
-         <a href="index.html" class="dropbtn">關於Theria ▾</a>
-         <ul class="dropdown-content">
-           <li><a href="#about">關於我們</a></li>
-           <li><a href="#vision">團隊願景</a></li>
-           <li><a href="#organization">團隊架構</a></li>
-           <li><a href="#pipeline">專案流程</a></li>
-           <li><a href="#news">最新消息</a></li>          
-         </ul>
-       </li>
-       <li class="dropdown">
-         <a href="platform.html" class="dropbtn">技術平台 ▾</a>
-         <ul class="dropdown-content">
-           <li><a href="#modeling">分子建模</a></li> 
-         </ul>
-       </li>
-       <li class="dropdown">
-         <a href="project.html" class="dropbtn">專案介紹 ▾</a>
-         <ul class="dropdown-content">
-           <li><a href="#cancer">癌症</a></li> 
-         </ul>
-       </li>
-       <li class="dropdown">
-         <a href="contact.html" class="dropbtn">聯絡我們 ▾</a>
-         <ul class="dropdown-content">
-           <li><a href="#info">聯絡資訊</a></li>
-           <li><a href="#joinus">加入我們</a></li> 
-         </ul>
-       </li>
-     </ul>
-   </nav>
-   <div class="lang">🌐 中文</div>
+  <header>
+    <a href="index.html" class="logo">Theria</a>
+    <nav>
+      <ul class="navbar">
+        <li class="dropdown">
+          <a href="index.html" class="dropbtn">關於Theria ▾</a>
+          <ul class="dropdown-content">
+            <li><a href="#about">關於我們</a></li>
+            <li><a href="#vision">團隊願景</a></li>
+            <li><a href="#organization">團隊架構</a></li>
+            <li><a href="#pipeline">專案流程</a></li>
+            <li><a href="#news">最新消息</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="platform.html" class="dropbtn">技術平台 ▾</a>
+          <ul class="dropdown-content">
+            <li><a href="#modeling">分子建模</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="project.html" class="dropbtn">專案介紹 ▾</a>
+          <ul class="dropdown-content">
+            <li><a href="#cancer">癌症</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="contact.html" class="dropbtn">聯絡我們 ▾</a>
+          <ul class="dropdown-content">
+            <li><a href="#info">聯絡資訊</a></li>
+            <li><a href="#joinus">加入我們</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+    <div class="lang">🌐 中文</div>
   </header>
 
   <section class="hero">
@@ -238,55 +242,71 @@
   <main>
     <section id="about">
       <h1>關於我們</h1>
-      <p>Theria 取名源自 Thēríon，象徵對智能科技、精準醫療與因果邏輯的核心價值認同。</p>
-      <p>我們專注於分子模擬技術與可視化數據模型，致力協助客戶快速理解複雜關係、洞察關鍵因果，進而推動真正可執行的精準行動。</p>
-      <p>我們致力於運用分子對接, 分子動力學等模擬技術解決生物結構學,材料化學等應用上的問題。</p>
+      <p>Theria 取名源自 <em>Thēríon</em>，象徵對「智能科技」、「精準醫療」與「因果邏輯」的核心價值認同。</p>
+      <p>我們專注於分子模擬技術與可視化數據模型，致力協助客戶洞察複雜關係中的關鍵因果，轉化為真正可執行的精準行動。</p>
+      <p>
+        核心技術包括：
+      <ul>
+        <li>分子建模（小分子藥物、奈米粒子、表面結構、嫁接分子）</li>
+        <li>分子對接技術</li>
+        <li>分子動力學模擬</li>
+      </ul>
+      </p>
+      <p>
+        應用範圍涵蓋：
+      <ul>
+        <li>藥物篩選</li>
+        <li>生物結構學與機制驗證</li>
+        <li>超分子結構設計</li>
+        <li>材料表面化學分析</li>
+      </ul>
+      </p>
     </section>
 
-<section id="vision">
-  <h2>團隊願景</h2>
-  <p>提供可驗證性的數據模擬結果,協助客戶做出關鍵性決策。</p>
+    <section id="vision">
+      <h2>團隊願景</h2>
+      <p>提供可驗證性的數據模擬結果,協助客戶做出關鍵性決策。</p>
 
-  <div class="features-wrapper">
-    <!-- 上排2個 -->
-    <div class="features-row">
-      <div class="feature-item">
-        <img src="feature.png" alt="驗證性">
-        <h3>驗證性</h3>
-        <p>文獻支持, 數據可溯源</p>
-        <span>Verification</span>
-      </div>
-      <div class="feature-item">
-        <img src="feature.png" alt="可視化">
-        <h3>可視化</h3>
-        <p>結果更直覺, 數據不再複雜</p>
-        <span>Visualization</span>
-      </div>
-    </div>
+      <div class="features-wrapper">
+        <!-- 上排2個 -->
+        <div class="features-row">
+          <div class="feature-item">
+            <img src="feature.png" alt="驗證性">
+            <h3>驗證性</h3>
+            <p>文獻支持, 數據可溯源</p>
+            <span>Verification</span>
+          </div>
+          <div class="feature-item">
+            <img src="feature.png" alt="可視化">
+            <h3>可視化</h3>
+            <p>結果更直覺, 數據不再複雜</p>
+            <span>Visualization</span>
+          </div>
+        </div>
 
-    <!-- 下排3個 -->
-    <div class="features-row">
-      <div class="feature-item">
-        <img src="feature.png" alt="精準力">
-        <h3>精準力</h3>
-        <p>問題導向的解決策略</p>
-        <span>Precision</span>
+        <!-- 下排3個 -->
+        <div class="features-row">
+          <div class="feature-item">
+            <img src="feature.png" alt="精準力">
+            <h3>精準力</h3>
+            <p>問題導向的解決策略</p>
+            <span>Precision</span>
+          </div>
+          <div class="feature-item">
+            <img src="feature.png" alt="因果律">
+            <h3>因果律</h3>
+            <p>洞察資料背後的因果邏輯</p>
+            <span>Logical</span>
+          </div>
+          <div class="feature-item">
+            <img src="feature.png" alt="客製化">
+            <h3>客製化</h3>
+            <p>從專屬建模到回饋迭代,彈性滿足需求的實用導向</p>
+            <span>Customization</span>
+          </div>
+        </div>
       </div>
-      <div class="feature-item">
-        <img src="feature.png" alt="因果律">
-        <h3>因果律</h3>
-        <p>洞察資料背後的因果邏輯</p>
-        <span>Logical</span>
-      </div>
-      <div class="feature-item">
-        <img src="feature.png" alt="客製化">
-        <h3>客製化</h3>
-        <p>從專屬建模到回饋迭代,彈性滿足需求的實用導向</p>
-        <span>Customization</span>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
 
     <section id="organization">
@@ -295,36 +315,36 @@
         <ul>
           <li>
             <span class="position">Theria</span>
-        <ul>
-          <li>
-            <span class="position">技術部</span>
             <ul>
-              <li><span class="position">生物資料工程師</span></li>
-              <li><span class="position">資料庫工程師</span></li>
-              <li><span class="position">AI工程師</span></li>
-              <li><span class="position">演算法工程師</span></li>
-            </ul>
-          </li>
-          <li>
-            <span class="position">運營部</span>
-            <ul>
-              <li><span class="position">專案經理</span></li>
-              <li><span class="position">市場開發</span></li>
-              <li><span class="position">技術支援</span></li>
-            </ul>
-          </li>
-          <li>
-            <span class="position">行政部</span>
-            <ul>
-              <li><span class="position">人資 / 行政</span></li>
-              <li><span class="position">財務</span></li>
-              <li><span class="position">法務</span></li>
+              <li>
+                <span class="position">技術部</span>
+                <ul>
+                  <li><span class="position">生物資料工程師</span></li>
+                  <li><span class="position">資料庫工程師</span></li>
+                  <li><span class="position">AI工程師</span></li>
+                  <li><span class="position">演算法工程師</span></li>
+                </ul>
+              </li>
+              <li>
+                <span class="position">運營部</span>
+                <ul>
+                  <li><span class="position">專案經理</span></li>
+                  <li><span class="position">市場開發</span></li>
+                  <li><span class="position">技術支援</span></li>
+                </ul>
+              </li>
+              <li>
+                <span class="position">行政部</span>
+                <ul>
+                  <li><span class="position">人資 / 行政</span></li>
+                  <li><span class="position">財務</span></li>
+                  <li><span class="position">法務</span></li>
+                </ul>
+              </li>
             </ul>
           </li>
         </ul>
-      </li>
-    </ul>
-    </div>
+      </div>
     </section>
 
     <section id="pipeline">
@@ -337,7 +357,7 @@
         <li>報告回饋與技術支援</li>
       </ol>
     </section>
-       
+
 
     <section id="news">
       <h2>最新消息</h2>
@@ -345,7 +365,7 @@
         <li>2025/07/01 發布官網</li>
         <li>2025/xx/xx </li>
         <li>2025/xx/xx </li>
-        <li>2025/xx/xx </li>        
+        <li>2025/xx/xx </li>
       </ul>
     </section>
   </main>
@@ -354,4 +374,5 @@
     <p>© 2025 THERIA. All rights reserved.</p>
   </footer>
 </body>
+
 </html>
