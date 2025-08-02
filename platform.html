@@ -10,10 +10,12 @@
       background-color: black;
       color: white;
     }
+
     main {
       padding: 120px;
       text-align: left;
     }
+
     section {
       padding: 60px 40px;
     }
@@ -63,82 +65,77 @@
     </nav>
     <div class="lang">🌐 中文</div>
   </header>
-<main>
-  <section>
-    <h2>服務項目</h2>
-    <ul>
-      <li>分子建模 Molecular modeling</li>
-      <li>奈米粒子拓樸 Nanoparticles Topology</li>
-      <li>表面化學</li>
-      <li>主客體化學</li>
-      <li>配體-蛋白對接 Ligand–Protein Docking</li>
-      <li>蛋白-蛋白對接Protein–Protein Docking</li>
-      <li>分子動力學 Molecular dynamics</li>
-      <li>力場設定（AMBER, CHARMM, MMFF94 ）</li>
-      <li>深度學習 Deep learning</li>
-    </ul>
-  </section>
+  <main>
+    <section>
+      <h2>分子建模 Molecular modeling</h2>
+      <p>
+        精準構建分子結構
+      <ul>
+        <li>最低能量構象搜尋（Minimum-energy conformation generation）</li>
+        <li>異構體確認與篩選（Isomer identification & validation）</li>
+        <li>化學鍵價態修正（Valence state modification）</li>
+        <li>電荷標準化處理（Charge standardization）</li>
+      </ul>
+      </p>
+    </section>
 
-  <section>
-    <h2>方法</h2>
-    <ul>
-      <li>MMFF94 (Merck Molecular Force Field 1994)</li>
-      <li>RMSD (Root Mean Square Deviation, 均方根偏差): 結構收斂 Overlay/Superimpose</li>
-      <li>RMSF (Root Mean Square Fluctuation, 均方根波動): predict the structural flexibility</li>
-      <li>The stability of the complexes was assessed based on
-        their deformability, B-factor, eigenvalues, variance, covariance map, and elastic network.</li>
-    </ul>
-  </section>
+    <section>
+      <h2>奈米粒子拓樸 Nanoparticles Topology</h2>
+      <p>描述與分析奈米粒子（或奈米結構體）內部與外部的結構連結方式、空腔形狀、孔洞數量、表面連續性與結構變形方式。</p>
+    </section>
 
-  <section>
-    <h2>分子對接流程</h2>
-    <p>流程：輸入結構 → 隨機化初始位置與構象 → 對接 → 評分 → 輸出。</p>
-    <img src="Docking figure.jpg" alt="Docking figure" width="600" />
-  </section>
+    <section>
+      <h2>蛋白質結構準備</h2>
+      <p>
+        針對蛋白質進行結構優化與預處理
+      <ul>
+        <li>結構缺陷修補（Repair deficient structures），與NCBI數據庫比對，修補缺失片段與異常區域。</li>
+        <li>複合型蛋白建立（Complex assembly）：如多重軸, 酵素複合體。</li>
+        <li>活性位點辨識（Binding site identification）：分析表面積、親疏水性、突變位點、空腔大小與殘跡距離，精準定位功能性區域。</li>
+        <li>質子化狀態調整（Protonation state modification）：根據環境酸鹼度（pH）動態調整質子化狀態，模擬生理條件下的結構行為。</li>
+      </ul>
+      </p>
+    </section>
 
+    <section>
+      <h2>分子對接</h2>
+      <p>
+        分子對接技術介紹
+      <ul>
+        <li>力場設定: MMFF94 (Merck Molecular Force Field 1994)、AMBER, CHARMM </li>
+        <li>評分機制: CNN score</li>
+        <li>方法介紹: 相似物篩選, 子結構篩選, RSMD結構收斂分析</li>
+        <li>RMSD (Root Mean Square Deviation, 均方根偏差): 結構收斂 Overlay/Superimpose</li>
+        <li>項目:</li>
+        <li>配體-蛋白對接 Ligand–Protein Docking</li>
+        <li>蛋白-蛋白對接 Protein–Protein Docking</li>
+        <li>表面化學</li>
+        <li>主客體化學</li>
+      </ul>
+      </p>
+    </section>
 
+    <section>
+      <h2>分子對接流程</h2>
+      <p>流程：輸入結構 → 隨機化初始位置與構象 → 對接 → 評分 → 輸出。</p>
+      <img src="Docking figure.jpg" alt="Docking figure" width="200" />
+    </section>
 
-  <section>
-    <h2>分子建模</h2>
-    <p>
-      精準構建分子結構
-    <ul>
-      <li>最低能量構象搜尋（Minimum-energy conformation generation）</li>
-      <li>異構體確認與篩選（Isomer identification & validation）</li>
-      <li>化學鍵價態修正（Valence state modification）</li>
-      <li>電荷標準化處理（Charge standardization）</li>
-    </ul>
-    </p>
-  </section>
-
-  <section>
-    <h2>奈米粒子拓樸</h2>
-    <p>描述與分析奈米粒子（或奈米結構體）內部與外部的結構連結方式、空腔形狀、孔洞數量、表面連續性與結構變形方式。</p>
-  </section>
-
-  <section>
-    <h2>蛋白質結構準備</h2>
-    <p>
-      針對蛋白質進行結構優化與預處理
-    <ul>
-      <li>結構缺陷修補（Repair deficient structures），與NCBI數據庫比對，修補缺失片段與異常區域。</li>
-      <li>複合型蛋白建立（Complex assembly）：如多重軸, 酵素複合體。</li>
-      <li>活性位點辨識（Binding site identification）：分析表面積、親疏水性、突變位點、空腔大小與殘跡距離，精準定位功能性區域。</li>
-      <li>質子化狀態調整（Protonation state modification）：根據環境酸鹼度（pH）動態調整質子化狀態，模擬生理條件下的結構行為。</li>
-    </ul>
-    </p>
-  </section>
-  <section>
-    <h2>分子對接</h2>
-    <p>
-      分子對接技術介紹
-    <ul>
-      <li>力場設定: MMFF94 (Merck Molecular Force Field 1994)、AMBER, CHARMM </li>
-      <li>評分機制: CNN score</li>
-      <li>方法介紹: 相似物篩選, 子結構篩選, RSMD結構收斂分析</li>
-    </ul>
-    </p>
-  </section>
+    <section>
+      <h2>分子動力學</h2>
+      <p>
+        分子動力學技術介紹
+      <ul>
+        <li>力場設定: </li>
+        <li>機制: 進行溶劑化</li>
+        <li>方法介紹: 穩定性分析, 競爭分析, 路徑分析</li>
+        <li>RMSF (Root Mean Square Fluctuation, 均方根波動): predict the structural flexibility</li>
+        <li>The stability of the complexes was assessed based on
+          their deformability, B-factor, eigenvalues, variance, covariance map, and elastic network.</li>
+        <li>項目:</li>
+      </ul>
+      </p>
+    </section>
   </main>
 </body>
 
