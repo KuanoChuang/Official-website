@@ -13,7 +13,7 @@
       font-family: Arial, sans-serif;
     }
     main {
-      padding: 400px;
+      padding: 120px;
       text-align: center;
     }
 
@@ -103,7 +103,7 @@
           if (styleType === "spectrum") {
             style = { cartoon: { color: "spectrum" } };
           } else if (styleType === "chain") {
-            style = { cartoon: { color: "chain" } };
+            style = { cartoon: { color: "red" } };
           } else {
             style = { cartoon: { color: "white" } };
           }
@@ -115,7 +115,7 @@
 
     window.onload = function() {
       loadViewer("viewer1", "spectrum");
-      loadViewer("viewer2", "chain");
+      loadViewer("viewer2", "red");
       loadViewer("viewer3", "white");
     };
   </script>
