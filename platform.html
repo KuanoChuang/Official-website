@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,6 +9,10 @@
     body {
       background-color: black;
       color: white;
+    }
+    main {
+      padding: 120px;
+      text-align: left;
     }
     section {
       padding: 60px 40px;
@@ -19,77 +24,91 @@
   </style>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
- <header>
-   <a href="index.html" class="logo">Theria</a>
-   <nav>
-     <ul class="navbar">
-       <li class="dropdown">
-         <a href="index.html" class="dropbtn">關於Theria ▾</a>
-         <ul class="dropdown-content">
-           <li><a href="#about">關於我們</a></li>
-           <li><a href="#vision">團隊願景</a></li>
-           <li><a href="#organization">團隊架構</a></li>
-           <li><a href="#pipeline">專案流程</a></li>
-           <li><a href="#news">最新消息</a></li>          
-         </ul>
-       </li>
-       <li class="dropdown">
-         <a href="platform.html" class="dropbtn">技術平台 ▾</a>
-         <ul class="dropdown-content">
-           <li><a href="#modeling">分子建模</a></li> 
-         </ul>
-       </li>
-       <li class="dropdown">
-         <a href="project.html" class="dropbtn">專案介紹 ▾</a>
-         <ul class="dropdown-content">
-           <li><a href="#cancer">癌症</a></li> 
-         </ul>
-       </li>
-       <li class="dropdown">
-         <a href="contact.html" class="dropbtn">聯絡我們 ▾</a>
-         <ul class="dropdown-content">
-           <li><a href="#info">聯絡資訊</a></li>
-           <li><a href="#joinus">加入我們</a></li> 
-         </ul>
-       </li>
-     </ul>
-   </nav>
-   <div class="lang">🌐 中文</div>
-  </header>
 
+<body>
+  <header>
+    <a href="index.html" class="logo">Theria</a>
+    <nav>
+      <ul class="navbar">
+        <li class="dropdown">
+          <a href="index.html" class="dropbtn">關於Theria ▾</a>
+          <ul class="dropdown-content">
+            <li><a href="#about">關於我們</a></li>
+            <li><a href="#vision">團隊願景</a></li>
+            <li><a href="#organization">團隊架構</a></li>
+            <li><a href="#pipeline">專案流程</a></li>
+            <li><a href="#news">最新消息</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="platform.html" class="dropbtn">技術平台 ▾</a>
+          <ul class="dropdown-content">
+            <li><a href="#modeling">分子建模</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="project.html" class="dropbtn">專案介紹 ▾</a>
+          <ul class="dropdown-content">
+            <li><a href="#cancer">癌症</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="contact.html" class="dropbtn">聯絡我們 ▾</a>
+          <ul class="dropdown-content">
+            <li><a href="#info">聯絡資訊</a></li>
+            <li><a href="#joinus">加入我們</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+    <div class="lang">🌐 中文</div>
+  </header>
+<main>
   <section>
     <h2>服務項目</h2>
     <ul>
       <li>分子建模 Molecular modeling</li>
       <li>奈米粒子拓樸 Nanoparticles Topology</li>
       <li>表面化學</li>
-      <li>主客體化學</li>            
+      <li>主客體化學</li>
       <li>配體-蛋白對接 Ligand–Protein Docking</li>
       <li>蛋白-蛋白對接Protein–Protein Docking</li>
       <li>分子動力學 Molecular dynamics</li>
       <li>力場設定（AMBER, CHARMM, MMFF94 ）</li>
-      <li>深度學習 Deep learning</li>      
+      <li>深度學習 Deep learning</li>
     </ul>
   </section>
 
   <section>
     <h2>方法</h2>
     <ul>
-      <li>子結構分析</li>
-      <li>相似物</li>
       <li>MMFF94 (Merck Molecular Force Field 1994)</li>
       <li>RMSD (Root Mean Square Deviation, 均方根偏差): 結構收斂 Overlay/Superimpose</li>
       <li>RMSF (Root Mean Square Fluctuation, 均方根波動): predict the structural flexibility</li>
-      <li>The stability of the complexes was assessed based on 
+      <li>The stability of the complexes was assessed based on
         their deformability, B-factor, eigenvalues, variance, covariance map, and elastic network.</li>
     </ul>
   </section>
 
   <section>
-    <h2>Docking 流程</h2>
-    <p>流程：input → 隨機化初始位置與構象 → preprocess → docking → scoring → output。</p>
+    <h2>分子對接流程</h2>
+    <p>流程：輸入結構 → 隨機化初始位置與構象 → 對接 → 評分 → 輸出。</p>
     <img src="Docking figure.jpg" alt="Docking figure" width="600" />
+  </section>
+
+
+
+  <section>
+    <h2>分子建模</h2>
+    <p>
+      精準構建分子結構
+    <ul>
+      <li>最低能量構象搜尋（Minimum-energy conformation generation）</li>
+      <li>異構體確認與篩選（Isomer identification & validation）</li>
+      <li>化學鍵價態修正（Valence state modification）</li>
+      <li>電荷標準化處理（Charge standardization）</li>
+    </ul>
+    </p>
   </section>
 
   <section>
@@ -97,29 +116,30 @@
     <p>描述與分析奈米粒子（或奈米結構體）內部與外部的結構連結方式、空腔形狀、孔洞數量、表面連續性與結構變形方式。</p>
   </section>
 
-<section>
-  <h2>分子建模</h2>
-  <p>
-    精準構建分子結構
-    <ul>
-      <li>最低能量構象搜尋（Minimum-energy conformation generation）</li>
-      <li>異構體確認與篩選（Isomer identification & validation）</li>
-      <li>化學鍵價態修正（Valence state modification）</li>
-      <li>電荷標準化處理（Charge standardization）</li>
-    </ul>
-  </p>
-</section>
-<section>
-  <h2>蛋白質結構準備</h2>
-  <p>
-    針對蛋白質進行結構優化與預處理
+  <section>
+    <h2>蛋白質結構準備</h2>
+    <p>
+      針對蛋白質進行結構優化與預處理
     <ul>
       <li>結構缺陷修補（Repair deficient structures），與NCBI數據庫比對，修補缺失片段與異常區域。</li>
       <li>複合型蛋白建立（Complex assembly）：如多重軸, 酵素複合體。</li>
       <li>活性位點辨識（Binding site identification）：分析表面積、親疏水性、突變位點、空腔大小與殘跡距離，精準定位功能性區域。</li>
       <li>質子化狀態調整（Protonation state modification）：根據環境酸鹼度（pH）動態調整質子化狀態，模擬生理條件下的結構行為。</li>
     </ul>
-  </p>
-</section>
+    </p>
+  </section>
+  <section>
+    <h2>分子對接</h2>
+    <p>
+      分子對接技術介紹
+    <ul>
+      <li>力場設定: MMFF94 (Merck Molecular Force Field 1994)、AMBER, CHARMM </li>
+      <li>評分機制: CNN score</li>
+      <li>方法介紹: 相似物篩選, 子結構篩選, RSMD結構收斂分析</li>
+    </ul>
+    </p>
+  </section>
+  </main>
 </body>
+
 </html>
