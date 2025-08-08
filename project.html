@@ -98,28 +98,26 @@
       const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
       const pdbURL = "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb";
 
+      const styleMap = {
+        spectrum: { cartoon: { color: "spectrum" } },
+        stick: { stick: { color: "red" } },
+        default: { cartoon: { color: "white" } }
+      };
+
       fetch(pdbURL)
-        .then(response => response.ok ? response.text() : Promise.reject())
-        .then(pdbText => {
-          viewer.addModel(pdbText, "pdb");
-          let style = {};
-          if (styleType === "spectrum") {
-            style = { cartoon: { color: "spectrum" } };
-          } else if (styleType === "chain") {
-            style = { cartoon: { color: "red" } };
-          } else {
-            style = { cartoon: { color: "white" } };
-          }
-          viewer.setStyle({}, style);
+        .then(res => res.text())
+        .then(pdb => {
+          viewer.addModel(pdb, "pdb");
+          viewer.setStyle({}, styleMap[styleType] || styleMap.default);
           viewer.zoomTo();
           viewer.render();
         });
     }
 
-    window.onload = function () {
+    window.onload = () => {
       loadViewer("viewer1", "spectrum");
-      loadViewer("viewer2", "red");
-      loadViewer("viewer3", "white");
+      loadViewer("viewer2", "stick");
+      loadViewer("viewer3", "default");
     };
   </script>
 </body>
