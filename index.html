@@ -63,14 +63,54 @@
     /* about */
     #about {
       max-width: 1000px;
-      margin: 0 auto;
+      margin: 40px auto 20px;
       text-align: center;
       padding: 20px;
-      font-family: "Noto Sans TC", sans-serif;
     }
+
     #about p {
       font-size: 1.2rem;
       color: #ccc;
+    }
+
+    #about>.section-group {
+      display: inline-block;
+      vertical-align: top;
+      width: 48%;
+      box-sizing: border-box;
+      margin: 0 1%;
+      text-align: center;
+    }
+
+    .items-grid {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 15px;
+    }
+
+    .item {
+      width: 120px;
+      text-align: center;
+      color: #ccc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .item p {
+      order: -1;
+      margin-bottom: 8px;
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .item img {
+      width: 100px;
+      height: auto;
+      object-fit: contain;
+      margin-bottom: 0;
     }
 
     /* 願景 */
