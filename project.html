@@ -114,56 +114,64 @@
       </div>
 
     </div>
-    
-    <h2>分子建模</h2>
     <p>奈米粒子建模</p>
     <div class="viewers-container">
 
       <div class="viewer-item">
         <p>結構1</p>
-        <div class="viewer-box" id="viewer1"></div>
+        <div class="viewer-box" id="viewer4"></div>
       </div>
 
       <div class="viewer-item">
         <p>結構2</p>
-        <div class="viewer-box" id="viewer2"></div>
+        <div class="viewer-box" id="viewer5"></div>
       </div>
 
       <div class="viewer-item">
         <p>結構3</p>
-        <div class="viewer-box" id="viewer3"></div>
+        <div class="viewer-box" id="viewer6"></div>
       </div>
 
     </div>
   </main>
 
-  <script>
-    function loadViewer(id, styleType) {
-      const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
-      const pdbURL = "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb";
+<script>
+  function loadViewer(id, pdbURL, styleType) {
+    const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
 
-      const styleMap = {
-        spectrum: { cartoon: { color: "spectrum" } },
-        stick: { stick: { color: "red" } },
-        default: { cartoon: { color: "white" } }
-      };
-
-      fetch(pdbURL)
-        .then(res => res.text())
-        .then(pdb => {
-          viewer.addModel(pdb, "pdb");
-          viewer.setStyle({}, styleMap[styleType] || styleMap.default);
-          viewer.zoomTo();
-          viewer.render();
-        });
-    }
-
-    window.onload = () => {
-      loadViewer("viewer1", "spectrum");
-      loadViewer("viewer2", "stick");
-      loadViewer("viewer3", "default");
+    const styleMap = {
+      spectrum: { cartoon: { color: "spectrum" } },
+      stick: { stick: { color: "red" } },
+      default: { cartoon: { color: "white" } }
     };
-  </script>
+
+    fetch(pdbURL)
+      .then(res => res.text())
+      .then(pdb => {
+        viewer.addModel(pdb, "pdb");
+        viewer.setStyle({}, styleMap[styleType] || styleMap.default);
+        viewer.zoomTo();
+        viewer.render();
+      });
+  }
+
+  window.onload = () => {
+    const pdbFiles = [
+      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb", // viewer1
+      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/1a4w.pdb", // viewer2
+      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb", // viewer3
+      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/1crn.pdb", // viewer4
+      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/4hhb.pdb", // viewer5
+      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/1ubq.pdb"  // viewer6
+    ];
+
+    const styles = ["spectrum", "stick", "default", "spectrum", "stick", "default"];
+
+    for (let i = 0; i < 6; i++) {
+      loadViewer(`viewer${i + 1}`, pdbFiles[i], styles[i]);
+    }
+  };
+</script>
 </body>
 
 </html>
