@@ -157,7 +157,7 @@
 
   window.onload = () => {
     const pdbFiles = [
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/caffeine.pdb", // viewer1
+      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.pdb", // viewer1
       "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb", // viewer2
       "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb", // viewer3
       "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb", // viewer4
@@ -165,7 +165,7 @@
       "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb"  // viewer6
     ];
 
-    const styles = ["stick", "stick", "stick", "stick", "stick", "default"];
+    const styles = ["stick", "stick", "stick", "default", "default", "default"];
 
     for (let i = 0; i < 6; i++) {
       loadViewer(`viewer${i + 1}`, pdbFiles[i], styles[i]);
