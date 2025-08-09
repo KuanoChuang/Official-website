@@ -141,7 +141,7 @@
 
     const styleMap = {
       spectrum: { cartoon: { color: "spectrum" } },
-      stick: { stick: { color: "red" } },
+      stick: { stick: { color: "element" } },
       default: { cartoon: { color: "white" } }
     };
 
@@ -165,7 +165,7 @@
       "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb"  // viewer6
     ];
 
-    const styles = ["stick", "stick", "stick", "default", "default", "default"];
+    const styles = ["stick", "stick", "stick", "spectrum", "spectrum", "default"];
 
     for (let i = 0; i < 6; i++) {
       loadViewer(`viewer${i + 1}`, pdbFiles[i], styles[i]);
