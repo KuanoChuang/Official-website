@@ -135,43 +135,43 @@
     </div>
   </main>
 
-<script>
-  function loadViewer(id, pdbURL, styleType) {
-    const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
+  <script>
+    function loadViewer(id, pdbURL, styleType) {
+      const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
 
-    const styleMap = {
-      spectrum: { cartoon: { color: "spectrum" } },
-      stick: { stick: { colorscheme: "element" } },
-      default: { cartoon: { color: "white" } }
-    };
+      const styleMap = {
+        spectrum: { cartoon: { color: "spectrum" } },
+        stick: { stick: { colorscheme: "element" } },
+        default: { cartoon: { colors: "white" } }
+      };
 
-    fetch(pdbURL)
-      .then(res => res.text())
-      .then(pdb => {
-        viewer.addModel(pdb, "pdb");
-        viewer.setStyle({}, styleMap[styleType] || styleMap.default);
-        viewer.zoomTo();
-        viewer.render();
-      });
-  }
-
-  window.onload = () => {
-    const pdbFiles = [
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.pdb", // viewer1
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Cucumin.pdb", // viewer2
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb", // viewer3
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb", // viewer4
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb", // viewer5
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb"  // viewer6
-    ];
-
-    const styles = ["stick", "stick", "stick", "spectrum", "spectrum", "default"];
-
-    for (let i = 0; i < 6; i++) {
-      loadViewer(`viewer${i + 1}`, pdbFiles[i], styles[i]);
+      fetch(pdbURL)
+        .then(res => res.text())
+        .then(pdb => {
+          viewer.addModel(pdb, "pdb");
+          viewer.setStyle({}, styleMap[styleType] || styleMap.default);
+          viewer.zoomTo();
+          viewer.render();
+        });
     }
-  };
-</script>
+
+    window.onload = () => {
+      const pdbFiles = [
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.pdb", // viewer1
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Cucumin.pdb", // viewer2
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb", // viewer3
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb", // viewer4
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb", // viewer5
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb"  // viewer6
+      ];
+
+      const styles = ["stick", "stick", "stick", "spectrum", "spectrum", "default"];
+
+      for (let i = 0; i < 6; i++) {
+        loadViewer(`viewer${i + 1}`, pdbFiles[i], styles[i]);
+      }
+    };
+  </script>
 </body>
 
 </html>
