@@ -177,24 +177,31 @@
       }, 800);
     }
 
-  function startCycle(viewerId, files, styles, intervalMs, indexObj) {
-    let intervalId = setInterval(() => {
-      indexObj.current = (indexObj.current + 1) % files.length;
-      cycleViewer(viewerId, files, styles, indexObj);
-    }, intervalMs);
+    function startCycle(viewerId, files, styles, intervalMs, indexObj) {
+      viewersState[viewerId] = {files,styles,indexObj,paused: false,};
 
-    const viewerElem = document.getElementById(viewerId);
-    viewerElem.addEventListener("mouseenter", () => {
-      clearInterval(intervalId);  // 滑鼠進入暫停輪播
-    });
-    viewerElem.addEventListener("mouseleave", () => {
-      // 滑鼠離開恢復輪播
-      intervalId = setInterval(() => {
-        indexObj.current = (indexObj.current + 1) % files.length;
-        cycleViewer(viewerId, files, styles, indexObj);
-      }, intervalMs);
-    });
-  }
+      const viewerElem = document.getElementById(viewerId);
+
+      viewerElem.addEventListener("mouseenter", () => {
+        viewersState[viewerId].paused = true;  // 暫停輪播
+      });
+      viewerElem.addEventListener("mouseleave", () => {
+        viewersState[viewerId].paused = false; // 恢復輪播
+      });
+
+      // 只啟動一次全局計時器
+      if (!startCycle.globalIntervalId) {
+        startCycle.globalIntervalId = setInterval(() => {
+          for (const id in viewersState) {
+            const v = viewersState[id];
+            if (!v.paused) {
+              v.indexObj.current = (v.indexObj.current + 1) % v.files.length;
+              cycleViewer(id, v.files, v.styles, v.indexObj);
+            }
+          }
+        }, intervalMs);
+      }
+    }
 
 
     window.onload = () => {
