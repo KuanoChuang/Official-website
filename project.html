@@ -136,6 +136,7 @@
   </main>
 
   <script>
+    const viewersState = {};
     function loadViewer(id, fileURL, styleType) {
       const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
 
@@ -178,7 +179,7 @@
     }
 
     function startCycle(viewerId, files, styles, intervalMs, indexObj) {
-      viewersState[viewerId] = {files,styles,indexObj,paused: false,};
+      viewersState[viewerId] = { files, styles, indexObj, paused: false, };
 
       const viewerElem = document.getElementById(viewerId);
 
