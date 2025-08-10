@@ -136,17 +136,22 @@
   </main>
 
   <script>
+    // 載入3Dmol viewer並顯示指定檔案與樣式
     function loadViewer(id, fileURL, styleType) {
       const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
 
+      // 定義不同樣式設定
       const styleMap = {
         spectrum: { cartoon: { color: "spectrum" } },
         stick: { stick: { colorscheme: "element", radius: 0.2, bondOrder: true } },
         default: { cartoon: { colorscheme: "element" } }
       };
 
+      // 從 URL 取得副檔名，預設為 pdb
+      const ext = fileURL.split('.').pop().toLowerCase();
       const format = ["pdb", "sdf", "mol2"].includes(ext) ? ext : "pdb";
 
+      // 讀取檔案內容，並依格式載入模型
       fetch(fileURL)
         .then(res => res.text())
         .then(data => {
@@ -154,69 +159,78 @@
           viewer.setStyle({}, styleMap[styleType] || styleMap.default);
           viewer.zoomTo();
           viewer.render();
+        })
+        .catch(err => {
+          console.error(`Failed to load model from ${fileURL}:`, err);
         });
     }
 
     window.onload = () => {
+      // 三個 viewer 的檔案清單，依序輪播
       const viewer1Files = [
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf", // viewer1-1
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb", // viewer1-2
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb" // viewer1-3
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb"
       ];
 
       const viewer2Files = [
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf", // viewer2-1
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb", // viewer2-2
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb" // viewer2-3
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb"
       ];
 
       const viewer3Files = [
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf", // viewer3-1
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb", // viewer3-2
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb" // viewer3-3
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb"
       ];
 
+      // 另外三個viewer固定讀取同一個PDB檔案，但不同樣式
       const pdbFiles = [
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb", // viewer4
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb", // viewer5
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb"  // viewer6
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb"
       ];
 
+      // viewer1~3切換用樣式：皆使用 stick
       const cycleStyles = ["stick", "stick", "stick"];
+
+      // viewer4~6固定樣式分別為：
       const styles = ["spectrum", "spectrum", "default"];
 
-      let currentIndex = Math.floor(Math.random() * viewer1Files.length);
-
+      // 輪播並切換 viewer 內容
       function cycleViewer(viewerId, files, styles, indexObj) {
         const viewerElem = document.getElementById(viewerId);
 
+        // 漸變隱藏
         viewerElem.style.transition = "opacity 0.8s";
         viewerElem.style.opacity = 0;
 
         setTimeout(() => {
           viewerElem.innerHTML = "";
           loadViewer(viewerId, files[indexObj.current], styles[indexObj.current]);
+          // 漸變顯示
           setTimeout(() => { viewerElem.style.opacity = 1; }, 50);
         }, 800);
       }
 
+      // 啟動輪播，指定間隔(ms)
       function startCycle(viewerId, files, styles, intervalMs) {
         const indexObj = { current: Math.floor(Math.random() * files.length) };
         cycleViewer(viewerId, files, styles, indexObj);
+
         setInterval(() => {
           indexObj.current = (indexObj.current + 1) % files.length;
           cycleViewer(viewerId, files, styles, indexObj);
         }, intervalMs);
       }
 
+      // 啟動三個 viewer 輪播
       startCycle("viewer1", viewer1Files, cycleStyles, 30000);
       startCycle("viewer2", viewer2Files, cycleStyles, 30000);
       startCycle("viewer3", viewer3Files, cycleStyles, 30000);
 
-
-
-
-
+      // 載入 viewer4 ~ viewer6，固定檔案與樣式
       for (let i = 0; i < pdbFiles.length; i++) {
         loadViewer(`viewer${i + 4}`, pdbFiles[i], styles[i]);
       }
