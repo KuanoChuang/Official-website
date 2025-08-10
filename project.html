@@ -190,7 +190,7 @@
         viewersState[viewerId].paused = false; // 恢復輪播
       });
 
-      // 只啟動一次全局計時器
+
       if (!startCycle.globalIntervalId) {
         startCycle.globalIntervalId = setInterval(() => {
           for (const id in viewersState) {
@@ -203,7 +203,6 @@
         }, intervalMs);
       }
     }
-
 
     window.onload = () => {
       const viewer1Files = [
