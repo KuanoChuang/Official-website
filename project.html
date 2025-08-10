@@ -135,108 +135,107 @@
     </div>
   </main>
 
-<script>
-  function loadViewer(id, fileURL, styleType) {
-    const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
+  <script>
+    function loadViewer(id, fileURL, styleType) {
+      const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
 
-    const styleMap = {
-      spectrum: { cartoon: { color: "spectrum" } },
-      stick: { stick: { colorscheme: "element", radius: 0.2, bondOrder: true } },
-      default: { cartoon: { colorscheme: "element" } }
-    };
+      const styleMap = {
+        spectrum: { cartoon: { color: "spectrum" } },
+        stick: { stick: { colorscheme: "element", radius: 0.2, bondOrder: true } },
+        default: { cartoon: { colorscheme: "element" } }
+      };
 
-    const ext = fileURL.split('.').pop().toLowerCase();
-    const format = ["pdb", "sdf", "mol2"].includes(ext) ? ext : "pdb";
+      const ext = fileURL.split('.').pop().toLowerCase();
+      const format = ["pdb", "sdf", "mol2"].includes(ext) ? ext : "pdb";
 
-    fetch(fileURL)
-      .then(res => res.text())
-      .then(data => {
-        viewer.addModel(data, format);
-        viewer.setStyle({}, styleMap[styleType] || styleMap.default);
-        viewer.zoomTo();
-        viewer.render();
-      })
-      .catch(err => {
-        console.error(`Failed to load model from ${fileURL}:`, err);
-      });
-  }
-
-  function cycleViewer(viewerId, files, styles, indexObj) {
-    const viewerElem = document.getElementById(viewerId);
-
-    viewerElem.style.transition = "opacity 0.8s";
-    viewerElem.style.opacity = 0;
-
-    setTimeout(() => {
-      viewerElem.innerHTML = "";
-      loadViewer(viewerId, files[indexObj.current], styles[indexObj.current]);
-
-      setTimeout(() => {
-        viewerElem.style.opacity = 1;
-      }, 50);
-    }, 800);
-  }
-
-  // 啟動定時輪播
-  function startCycle(viewerId, files, styles, intervalMs, indexObj) {
-    setInterval(() => {
-      indexObj.current = (indexObj.current + 1) % files.length;
-      cycleViewer(viewerId, files, styles, indexObj);
-    }, intervalMs);
-  }
-
-  window.onload = () => {
-    const viewer1Files = [
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf",
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb",
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb"
-    ];
-
-    const viewer2Files = [
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf",
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb",
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb"
-    ];
-
-    const viewer3Files = [
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf",
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb",
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb"
-    ];
-
-    const pdbFiles = [
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb",
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb",
-      "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb"
-    ];
-
-    const cycleStyles = ["stick", "stick", "stick"];
-    const styles = ["spectrum", "spectrum", "default"];
-
-
-    const viewerData = [
-      { id: "viewer1", files: viewer1Files, styles: cycleStyles },
-      { id: "viewer2", files: viewer2Files, styles: cycleStyles },
-      { id: "viewer3", files: viewer3Files, styles: cycleStyles },
-    ];
-
-    viewerData.forEach(({ id, files, styles }) => {
-      const indexObj = { current: Math.floor(Math.random() * files.length) };
-      const viewerElem = document.getElementById(id);
-      viewerElem.innerHTML = "";
-      loadViewer(id, files[indexObj.current], styles[indexObj.current]);
-
-      setTimeout(() => {
-        startCycle(id, files, styles, 30000, indexObj);
-      }, 15000);
-    });
-
-
-    for (let i = 0; i < pdbFiles.length; i++) {
-      loadViewer(`viewer${i + 4}`, pdbFiles[i], styles[i]);
+      fetch(fileURL)
+        .then(res => res.text())
+        .then(data => {
+          viewer.addModel(data, format);
+          viewer.setStyle({}, styleMap[styleType] || styleMap.default);
+          viewer.zoomTo();
+          viewer.render();
+        })
+        .catch(err => {
+          console.error(`Failed to load model from ${fileURL}:`, err);
+        });
     }
-  };
-</script>
+
+    function cycleViewer(viewerId, files, styles, indexObj) {
+      const viewerElem = document.getElementById(viewerId);
+
+      viewerElem.style.transition = "opacity 0.8s";
+      viewerElem.style.opacity = 0;
+
+      setTimeout(() => {
+        viewerElem.innerHTML = "";
+        loadViewer(viewerId, files[indexObj.current], styles[indexObj.current]);
+
+        setTimeout(() => {
+          viewerElem.style.opacity = 1;
+        }, 50);
+      }, 800);
+    }
+
+    function startCycle(viewerId, files, styles, intervalMs, indexObj) {
+      setInterval(() => {
+        indexObj.current = (indexObj.current + 1) % files.length;
+        cycleViewer(viewerId, files, styles, indexObj);
+      }, intervalMs);
+    }
+
+    window.onload = () => {
+      const viewer1Files = [
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb"
+      ];
+
+      const viewer2Files = [
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb"
+      ];
+
+      const viewer3Files = [
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb"
+      ];
+
+      const pdbFiles = [
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb",
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb"
+      ];
+
+      const cycleStyles = ["stick", "stick", "stick"];
+      const styles = ["spectrum", "spectrum", "default"];
+
+
+      const viewerData = [
+        { id: "viewer1", files: viewer1Files, styles: cycleStyles },
+        { id: "viewer2", files: viewer2Files, styles: cycleStyles },
+        { id: "viewer3", files: viewer3Files, styles: cycleStyles },
+      ];
+
+      viewerData.forEach(({ id, files, styles }) => {
+        const indexObj = { current: Math.floor(Math.random() * files.length) };
+        const viewerElem = document.getElementById(id);
+        viewerElem.innerHTML = "";
+        loadViewer(id, files[indexObj.current], styles[indexObj.current]);
+
+        setTimeout(() => {
+          startCycle(id, files, styles, 10000, indexObj);
+        }, 10000);
+      });
+
+
+      for (let i = 0; i < pdbFiles.length; i++) {
+        loadViewer(`viewer${i + 4}`, pdbFiles[i], styles[i]);
+      }
+    };
+  </script>
 </body>
 
 </html>
