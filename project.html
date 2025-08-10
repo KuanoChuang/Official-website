@@ -140,9 +140,17 @@
     function loadViewer(id, fileURL, styleType) {
       const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
 
+      const elementColors = {
+        C: 'gray',
+        O: 'red',
+        N: 'blue',
+        H: 'white',
+        S: 'yellow'
+      };
+      
       const styleMap = {
         spectrum: { cartoon: { color: "spectrum" } },
-        stick: { 'prop': 'elem', map:elementColors, radius: 0.2, bondOrder: true },
+        stick: { 'prop': 'elem', map: elementColors, radius: 0.2, bondOrder: true },
         default: { cartoon: { color: "white" } }
       };
 
