@@ -145,10 +145,7 @@
         default: { cartoon: { colorscheme: "element" } }
       };
 
-      const ext = fileURL.split('.').pop().toLowerCase();
-      let format = "pdb";
-      if (ext === "sdf") format = "sdf";
-      else if (ext === "mol2") format = "mol2";
+      const format = ["pdb", "sdf", "mol2"].includes(ext) ? ext : "pdb";
 
       fetch(fileURL)
         .then(res => res.text())
@@ -161,19 +158,67 @@
     }
 
     window.onload = () => {
+      const viewer1Files = [
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf", // viewer1-1
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb", // viewer1-2
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb" // viewer1-3
+      ];
+
+      const viewer2Files = [
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf", // viewer2-1
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb", // viewer2-2
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb" // viewer2-3
+      ];
+
+      const viewer3Files = [
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf", // viewer3-1
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb", // viewer3-2
+        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb" // viewer3-3
+      ];
+
       const pdbFiles = [
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Caffeine.sdf", // viewer1
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Curcumin.pdb", // viewer2
-        "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/Rapamycin.pdb", // viewer3
         "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb", // viewer4
         "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb", // viewer5
         "https://raw.githubusercontent.com/KuanoChuang/Official-website/main/3zff.pdb"  // viewer6
       ];
 
-      const styles = ["stick", "stick", "stick", "spectrum", "spectrum", "default"];
+      const cycleStyles = ["stick", "stick", "stick"];
+      const styles = ["spectrum", "spectrum", "default"];
 
-      for (let i = 0; i < 6; i++) {
-        loadViewer(`viewer${i + 1}`, pdbFiles[i], styles[i]);
+      let currentIndex = Math.floor(Math.random() * viewer1Files.length);
+
+      function cycleViewer(viewerId, files, styles, indexObj) {
+        const viewerElem = document.getElementById(viewerId);
+
+        viewerElem.style.transition = "opacity 0.8s";
+        viewerElem.style.opacity = 0;
+
+        setTimeout(() => {
+          viewerElem.innerHTML = "";
+          loadViewer(viewerId, files[indexObj.current], styles[indexObj.current]);
+          setTimeout(() => { viewerElem.style.opacity = 1; }, 50);
+        }, 800);
+      }
+
+      function startCycle(viewerId, files, styles, intervalMs) {
+        const indexObj = { current: Math.floor(Math.random() * files.length) };
+        cycleViewer(viewerId, files, styles, indexObj);
+        setInterval(() => {
+          indexObj.current = (indexObj.current + 1) % files.length;
+          cycleViewer(viewerId, files, styles, indexObj);
+        }, intervalMs);
+      }
+
+      startCycle("viewer1", viewer1Files, cycleStyles, 30000);
+      startCycle("viewer2", viewer2Files, cycleStyles, 30000);
+      startCycle("viewer3", viewer3Files, cycleStyles, 30000);
+
+
+
+
+
+      for (let i = 0; i < pdbFiles.length; i++) {
+        loadViewer(`viewer${i + 4}`, pdbFiles[i], styles[i]);
       }
     };
   </script>
