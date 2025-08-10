@@ -177,12 +177,25 @@
       }, 800);
     }
 
-    function startCycle(viewerId, files, styles, intervalMs, indexObj) {
-      setInterval(() => {
+  function startCycle(viewerId, files, styles, intervalMs, indexObj) {
+    let intervalId = setInterval(() => {
+      indexObj.current = (indexObj.current + 1) % files.length;
+      cycleViewer(viewerId, files, styles, indexObj);
+    }, intervalMs);
+
+    const viewerElem = document.getElementById(viewerId);
+    viewerElem.addEventListener("mouseenter", () => {
+      clearInterval(intervalId);  // 滑鼠進入暫停輪播
+    });
+    viewerElem.addEventListener("mouseleave", () => {
+      // 滑鼠離開恢復輪播
+      intervalId = setInterval(() => {
         indexObj.current = (indexObj.current + 1) % files.length;
         cycleViewer(viewerId, files, styles, indexObj);
       }, intervalMs);
-    }
+    });
+  }
+
 
     window.onload = () => {
       const viewer1Files = [
