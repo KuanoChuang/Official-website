@@ -136,19 +136,24 @@
   </main>
 
   <script>
-    function loadViewer(id, pdbURL, styleType) {
+    function loadViewer(id, fileURL, styleType) {
       const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
 
       const styleMap = {
         spectrum: { cartoon: { color: "spectrum" } },
         stick: { stick: { colorscheme: "element", radius: 0.2, bondOrder: true } },
-        default: { cartoon: { colors: "white" } }
+        default: { cartoon: { colorscheme: "element" } }
       };
 
-      fetch(pdbURL)
+      const ext = fileURL.split('.').pop().toLowerCase();
+      let format = "pdb";
+      if (ext === "sdf") format = "sdf";
+      else if (ext === "mol2") format = "mol2";
+
+      fetch(fileURL)
         .then(res => res.text())
-        .then(pdb => {
-          viewer.addModel(pdb, "pdb");
+        .then(data => {
+          viewer.addModel(data, format);
           viewer.setStyle({}, styleMap[styleType] || styleMap.default);
           viewer.zoomTo();
           viewer.render();
