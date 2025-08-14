@@ -23,6 +23,42 @@
     html {
       scroll-behavior: smooth;
     }
+
+
+
+    .Modeling {
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+
+    .Modeling h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .columns {
+      display: flex;
+      gap: 40px;
+    }
+
+    .column {
+      flex: 1;
+    }
+
+    .column h3 {
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    .column ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .column li {
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
   </style>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -66,17 +102,33 @@
     <div class="lang">🌐 中文</div>
   </header>
   <main>
-    <section>
-      <h2>分子建模 Molecular modeling</h2>
-      <p>
-        精準構建分子結構：(1) 原子空間位置, 鍵長 (2) 鍵角與二面角 (3) Chirality (4) 分子內作用力
-      <ul>
-        <li>最低能量構象搜尋（Minimum-energy conformation generation）</li>
-        <li>異構體確認與篩選（Isomer identification & validation）</li>
-        <li>化學鍵價態修正（Valence state modification）</li>
-        <li>電荷標準化處理（Charge standardization）</li>
-      </ul>
-      </p>
+
+
+    <section class="Modeling">
+      <h2>分子建模 (Molecular Modeling)</h2>
+      <div class="columns">
+        <!-- 左欄：構建要素 -->
+        <div class="column">
+          <h3>構建要素</h3>
+          <ul>
+            <li><strong>原子空間位置與鍵長</strong><br>確定原子在三維空間中的位置以及鍵的長度，影響分子穩定性。</li>
+            <li><strong>鍵角與二面角</strong><br>控制分子的立體構型與旋轉自由度。</li>
+            <li><strong>手性 (Chirality)</strong><br>確保手性中心正確，以維持分子生物活性。</li>
+            <li><strong>分子內作用力</strong><br>包括范德瓦耳斯力、氫鍵等，影響分子構象與能量。</li>
+          </ul>
+        </div>
+
+        <!-- 右欄：操作步驟 -->
+        <div class="column">
+          <h3>操作步驟</h3>
+          <ul>
+            <li><strong>最低能量構象搜尋</strong><br>找出分子最穩定的三維構象 (Minimum-energy conformation generation)。</li>
+            <li><strong>異構體確認與篩選</strong><br>檢查不同異構體，保留符合需求的結構 (Isomer identification & validation)。</li>
+            <li><strong>化學鍵價態修正</strong><br>修正錯誤的化學鍵或價態，確保化學合理性 (Valence state modification)。</li>
+            <li><strong>電荷標準化處理</strong><br>統一分子電荷分布，方便後續模擬或計算 (Charge standardization)。</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <section>
