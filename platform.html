@@ -163,15 +163,7 @@
           MM2 專注有機分子的小分子結構與構象能量，MMFF94 適用範圍更廣，能處理更多官能團與元素。
         </p>
         <p>分子力場總能量的典型組成如下：</p>
-        <pre>
-E_total = E_bond + E_angle + E_torsion + E_vdw + E_electrostatic
 
-Bond stretching:  E_bond    = Σ k_b (r - r₀)²
-Angle bending:    E_angle   = Σ k_θ (θ - θ₀)²
-Torsional/Dihedral: E_torsion = Σ V_n / 2 [1 + cos(nφ - γ)]
-Van der Waals:    E_vdw     = Σ A/r^12 - B/r^6
-Electrostatic:    E_electrostatic = Σ q_i q_j / (4πϵ₀ r_ij)
-</pre>
         <div class="formula">
           $$
           E_\text{total} =
@@ -186,9 +178,17 @@ Electrostatic:    E_electrostatic = Σ q_i q_j / (4πϵ₀ r_ij)
           $$
           E_\text{torsion} = \sum V_n [1 + \cos(n\phi - \gamma)]
           $$
+          $$
+          E_\text{oop} = \sum k_\chi (\chi - \chi_0)^2 \quad \text{(out-of-plane bending)}
+          $$
+          $$
+          E_\text{vdW} = \sum \left( \frac{A_{ij}}{r_{ij}^{12}} - \frac{B_{ij}}{r_{ij}^6} \right)
+          $$
+          $$
+          E_\text{electrostatic} = \sum \frac{q_i q_j}{4\pi \epsilon_0 r_{ij}}
+          $$
         </div>
       </div>
-
     </section>
 
     <section id="nanoparticles">
