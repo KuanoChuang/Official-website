@@ -134,11 +134,11 @@
     const viewersState = {};
     function loadViewer(id, fileURL, styleType) {
       const viewer = $3Dmol.createViewer(id, { backgroundColor: "black" });
-      
+
       const styleMap = {
         spectrum: { cartoon: { color: "spectrum" } },
-        stick: { stick: { prop: 'elem', radius: 0.2, bondOrder: true } , sphere:{prop: 'elem', radius: 0.35} },
-        sphere: { sphere:{prop: 'elem', radius: 1.44} },
+        stick: { stick: { prop: 'elem', radius: 0.2, bondOrder: true }, sphere: { prop: 'elem', radius: 0.35 } },
+        sphere: { sphere: { prop: 'elem', radius: 1.44 } },
         default: { cartoon: { color: "white" } }
       };
 
@@ -159,20 +159,34 @@
     }
 
     function cycleViewer(viewerId, files, styles, indexObj) {
-      const viewerElem = document.getElementById(viewerId);
+      const parent = document.getElementById(viewerId).parentNode;
+      const oldViewer = document.getElementById(viewerId);
+      const newViewer = document.createElement("div");
+      newViewer.id = viewerId + "_new";
+      newViewer.className = oldViewer.className;
+      newViewer.style.position = "absolute";
+      newViewer.style.top = "0";
+      newViewer.style.left = "0";
+      newViewer.style.width = "100%";
+      newViewer.style.height = "100%";
+      newViewer.style.opacity = 0;
+      newViewer.style.transition = "opacity 0.8s";
+      parent.appendChild(newViewer);
+      loadViewer(newViewer.id, files[indexObj.current], styles[indexObj.current]);
 
-      viewerElem.style.transition = "opacity 0.8s";
-      viewerElem.style.opacity = 0;
 
       setTimeout(() => {
-        viewerElem.innerHTML = "";
-        loadViewer(viewerId, files[indexObj.current], styles[indexObj.current]);
-
+        newViewer.style.opacity = 1;
         setTimeout(() => {
-          viewerElem.style.opacity = 1;
-        }, 50);
-      }, 800);
+          parent.removeChild(oldViewer);
+          newViewer.id = viewerId;
+        }, 800); 
+      }, 50);
     }
+
+
+
+
 
     function startCycle(viewerId, files, styles, intervalMs, indexObj) {
       viewersState[viewerId] = { files, styles, indexObj, paused: false, };
