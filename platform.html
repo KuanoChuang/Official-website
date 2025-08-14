@@ -4,6 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
   <title>技術平台</title>
   <style>
     body {
@@ -123,7 +126,7 @@
   </header>
   <main>
 
-    <section id="modeling">
+    <section id="modeling" class="modeling">
       <h2>分子建模</h2>
       <div class="table">
 
@@ -169,21 +172,21 @@ Torsional/Dihedral: E_torsion = Σ V_n / 2 [1 + cos(nφ - γ)]
 Van der Waals:    E_vdw     = Σ A/r^12 - B/r^6
 Electrostatic:    E_electrostatic = Σ q_i q_j / (4πϵ₀ r_ij)
 </pre>
-  <div class="formula">
-    $$
-    E_\text{total} =
-    E_\text{bond} + E_\text{angle} + E_\text{torsion} + E_\text{vdW} + E_\text{electrostatic}
-    $$
-    $$
-    E_\text{bond} = \sum k_b (r - r_0)^2
-    $$
-    $$
-    E_\text{angle} = \sum k_\theta (\theta - \theta_0)^2
-    $$
-    $$
-    E_\text{torsion} = \sum V_n [1 + \cos(n\phi - \gamma)]
-    $$
-  </div>
+        <div class="formula">
+          $$
+          E_\text{total} =
+          E_\text{bond} + E_\text{angle} + E_\text{torsion} + E_\text{vdW} + E_\text{electrostatic}
+          $$
+          $$
+          E_\text{bond} = \sum k_b (r - r_0)^2
+          $$
+          $$
+          E_\text{angle} = \sum k_\theta (\theta - \theta_0)^2
+          $$
+          $$
+          E_\text{torsion} = \sum V_n [1 + \cos(n\phi - \gamma)]
+          $$
+        </div>
       </div>
 
     </section>
