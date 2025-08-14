@@ -33,29 +33,49 @@
       margin-bottom: 20px;
     }
 
-    .table {
+    .Modeling .table {
       display: flex;
       gap: 20px;
     }
 
-    .column {
+    .Modeling .column {
       flex: 1;
     }
 
-    .column h3 {
+    .Modeling .column h3 {
       margin-bottom: 10px;
       font-size: 2rem;
       color: #7d7dae;
     }
 
-    .column ul {
+    .Modeling .column ul {
       list-style: none;
       padding-left: 0;
     }
 
-    .column li {
+    .Modeling .column li {
       margin-bottom: 15px;
       line-height: 1.5;
+    }
+
+    .Modeling .core-tech {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #111;
+      color: #fff;
+      border-radius: 8px;
+    }
+
+    .Modeling .core-tech h3 {
+      margin-top: 0;
+    }
+
+    .Modeling .core-tech pre {
+      background-color: #000;
+      color: #0f0;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
     }
   </style>
   <link rel="stylesheet" href="style.css" />
@@ -130,6 +150,26 @@
           </ul>
         </div>
       </div>
+
+      <div class="core-tech">
+        <h3>核心技術</h3>
+        <p>
+          分子建模常用分子力場計算，如 <strong>Molecular Mechanics 2 (MM2)</strong> 與
+          <strong>Merck Molecular Force Field 1994 (MMFF94)</strong>。
+          MM2 專注有機分子的小分子結構與構象能量，MMFF94 適用範圍更廣，能處理更多官能團與元素。
+        </p>
+        <p>分子力場總能量的典型組成如下：</p>
+        <pre>
+E_total = E_bond + E_angle + E_torsion + E_vdw + E_electrostatic
+
+Bond stretching:  E_bond    = Σ k_b (r - r₀)²
+Angle bending:    E_angle   = Σ k_θ (θ - θ₀)²
+Torsional/Dihedral: E_torsion = Σ V_n / 2 [1 + cos(nφ - γ)]
+Van der Waals:    E_vdw     = Σ A/r^12 - B/r^6
+Electrostatic:    E_electrostatic = Σ q_i q_j / (4πϵ₀ r_ij)
+</pre>
+      </div>
+
     </section>
 
     <section>
