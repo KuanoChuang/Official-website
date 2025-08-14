@@ -205,11 +205,42 @@
     </section>
 
     <section id="nanoparticles">
-      <h2>奈米粒子拓樸 Nanoparticles Topology</h2>
+      <h2>奈米粒子拓樸</h2>
       <p>建模種類包含金屬奈米粒子,doping,聚合物粒子與官能基修飾,coating</p>
       <p>不同尺寸(如Au13,Au55), 構型(FCC), 晶面(111,100)</p>
       <p>描述與分析奈米粒子（或奈米結構體）內部與外部的結構連結方式、空腔形狀、孔洞數量、表面連續性與結構變形方式。</p>
       <p>策略:局部單元分析, 計算表面拓譜結構</p>
+
+
+      <h3>拓樸分析流程</h3>
+      <ol>
+        <li>
+          <strong>局部單元分析</strong><br>
+          將奈米粒子表面拆分為最小重複單元（vertex、edge、facet），快速定位可能的吸附位點或活性位點，支援多尺度 docking。
+        </li>
+        <li>
+          <strong>表面拓樸計算</strong><br>
+          - 建立表面模型：凸包 (Convex Hull) 或 α-shape、Voronoi/Delaunay 三角網格<br>
+          - 拓樸指標：Betti 數、Euler characteristic<br>
+          - 曲率分析：高斯曲率或平均曲率區分凹槽與凸起
+        </li>
+        <li>
+          <strong>特徵量化與應用</strong><br>
+          計算表面原子密度、可及表面面積 (ASA)、標出凹槽/孔洞區域，作為粗粒度 docking 或力場模擬的初步輸入。
+        </li>
+      </ol>
+
+      <h3>拓樸技術的優勢</h3>
+      <ul>
+        <li>節省計算資源：先定位候選位點，再進行全粒子模擬</li>
+        <li>多尺度適用：可從 Au13 → Au55 → Au147 等不同尺寸粒子通用局部結構</li>
+        <li>結構特徵量化：量化表面孔洞、空腔和曲率</li>
+        <li>結合力場/分子動力學：拓樸給出初步結構，力場/MD 精細化後得到穩定構象</li>
+      </ul>
+
+      <p>
+        總結來說，拓樸分析能夠系統地描述奈米粒子的內外結構，幫助分析表面活性位點，定位 docking 位點，並提供多尺度模擬的初步結構依據。
+      </p>
     </section>
 
     <section id="protein">
