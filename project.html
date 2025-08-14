@@ -159,30 +159,21 @@
     }
 
     function cycleViewer(viewerId, files, styles, indexObj) {
-      const parent = document.getElementById(viewerId).parentNode;
-      const oldViewer = document.getElementById(viewerId);
-      const newViewer = document.createElement("div");
-      newViewer.id = viewerId + "_new";
-      newViewer.className = oldViewer.className;
-      newViewer.style.position = "absolute";
-      newViewer.style.top = "0";
-      newViewer.style.left = "0";
-      newViewer.style.width = "100%";
-      newViewer.style.height = "100%";
-      newViewer.style.opacity = 0;
-      newViewer.style.transition = "opacity 0.8s";
-      parent.appendChild(newViewer);
-      loadViewer(newViewer.id, files[indexObj.current], styles[indexObj.current]);
+      const viewerElem = document.getElementById(viewerId);
 
+      viewerElem.style.transition = "opacity 0.8s";
+      viewerElem.style.opacity = 0;
 
       setTimeout(() => {
-        newViewer.style.opacity = 1;
+        viewerElem.innerHTML = "";
+        loadViewer(viewerId, files[indexObj.current], styles[indexObj.current]);
+
         setTimeout(() => {
-          parent.removeChild(oldViewer);
-          newViewer.id = viewerId;
-        }, 800); 
-      }, 50);
+          viewerElem.style.opacity = 1;
+        }, 50);
+      }, 800);
     }
+
 
 
 
