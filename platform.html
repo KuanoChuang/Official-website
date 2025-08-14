@@ -93,6 +93,30 @@
       line-height: 1.5;
       white-space: pre;
     }
+
+    .formula-container {
+      display: flex;
+      gap: 40px;
+      justify-content: flex-start;
+    }
+
+    .formula-column {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      flex: 1;
+    }
+
+    .formula {
+      background-color: #000;
+      color: #0f0;
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-x: auto;
+    }
   </style>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -179,24 +203,31 @@
           E_\text{total} =
           E_\text{bond} + E_\text{angle} + E_\text{torsion} + E_\text{vdW} + E_\text{electrostatic}
           $$
-          $$
-          E_\text{bond} = \sum k_b (r - r_0)^2
-          $$
-          $$
-          E_\text{angle} = \sum k_\theta (\theta - \theta_0)^2
-          $$
-          $$
-          E_\text{torsion} = \sum V_n [1 + \cos(n\phi - \gamma)]
-          $$
-          $$
-          E_\text{oop} = \sum k_\chi (\chi - \chi_0)^2 \quad \
-          $$
-          $$
-          E_\text{vdW} = \sum \left( \frac{A_{ij}}{r_{ij}^{12}} - \frac{B_{ij}}{r_{ij}^6} \right)
-          $$
-          $$
-          E_\text{electrostatic} = \sum \frac{q_i q_j}{4\pi \epsilon_0 r_{ij}}
-          $$
+        </div>
+        <div class="formula-container">
+          <div class="formula-column">
+            <div class="formula">
+              $$E_\text{bond} = \sum k_b (r - r_0)^2$$
+            </div>
+            <div class="formula">
+              $$E_\text{angle} = \sum k_\theta (\theta - \theta_0)^2$$
+            </div>
+            <div class="formula">
+              $$E_\text{torsion} = \sum V_n [1 + \cos(n\phi - \gamma)]$$
+            </div>
+          </div>
+
+          <div class="formula-column">
+            <div class="formula">
+              $$E_\text{oop} = \sum k_\chi (\chi - \chi_0)^2$$
+            </div>
+            <div class="formula">
+              $$E_\text{vdW} = \sum \left( \frac{A_{ij}}{r_{ij}^{12}} - \frac{B_{ij}}{r_{ij}^6} \right)$$
+            </div>
+            <div class="formula">
+              $$E_\text{electrostatic} = \sum \frac{q_i q_j}{4\pi \epsilon_0 r_{ij}}$$
+            </div>
+          </div>
         </div>
       </div>
     </section>
