@@ -169,6 +169,21 @@ Torsional/Dihedral: E_torsion = Σ V_n / 2 [1 + cos(nφ - γ)]
 Van der Waals:    E_vdw     = Σ A/r^12 - B/r^6
 Electrostatic:    E_electrostatic = Σ q_i q_j / (4πϵ₀ r_ij)
 </pre>
+  <div class="formula">
+    $$
+    E_\text{total} =
+    E_\text{bond} + E_\text{angle} + E_\text{torsion} + E_\text{vdW} + E_\text{electrostatic}
+    $$
+    $$
+    E_\text{bond} = \sum k_b (r - r_0)^2
+    $$
+    $$
+    E_\text{angle} = \sum k_\theta (\theta - \theta_0)^2
+    $$
+    $$
+    E_\text{torsion} = \sum V_n [1 + \cos(n\phi - \gamma)]
+    $$
+  </div>
       </div>
 
     </section>
