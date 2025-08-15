@@ -88,20 +88,13 @@
     }
 
     .formula-container {
-      display: flex;
-      gap: 10px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px 20px;
       justify-content: center;
+      align-items: center;
     }
 
-    .formula-column {
-      display: flex;
-      flex-direction: column;
-      width: 150px;
-      gap: 5px;
-      flex: 1;
-      align-items: center;
-      justify-content: center;
-    }
 
     .formula {
       background-color: #000;
@@ -112,6 +105,7 @@
       font-size: 14px;
       line-height: 1.2;
       overflow-x: auto;
+      text-align: center;
     }
   </style>
   <link rel="stylesheet" href="style.css" />
@@ -201,28 +195,23 @@
           $$
         </div>
         <div class="formula-container">
-          <div class="formula-column">
-            <div class="formula">
-              $$E_\text{bond} = \sum k_b (r - r_0)^2$$
-            </div>
-            <div class="formula">
-              $$E_\text{angle} = \sum k_\theta (\theta - \theta_0)^2$$
-            </div>
-            <div class="formula">
-              $$E_\text{torsion} = \sum V_n [1 + \cos(n\phi - \gamma)]$$
-            </div>
+          <div class="formula">
+            $$E_\text{bond} = \sum k_b (r - r_0)^2$$
           </div>
-
-          <div class="formula-column">
-            <div class="formula">
-              $$E_\text{oop} = \sum k_\chi (\chi - \chi_0)^2$$
-            </div>
-            <div class="formula">
-              $$E_\text{vdW} = \sum \left( \frac{A_{ij}}{r_{ij}^{12}} - \frac{B_{ij}}{r_{ij}^6} \right)$$
-            </div>
-            <div class="formula">
-              $$E_\text{electrostatic} = \sum \frac{q_i q_j}{4\pi \epsilon_0 r_{ij}}$$
-            </div>
+          <div class="formula">
+            $$E_\text{angle} = \sum k_\theta (\theta - \theta_0)^2$$
+          </div>
+          <div class="formula">
+            $$E_\text{torsion} = \sum V_n [1 + \cos(n\phi - \gamma)]$$
+          </div>
+          <div class="formula">
+            $$E_\text{oop} = \sum k_\chi (\chi - \chi_0)^2$$
+          </div>
+          <div class="formula">
+            $$E_\text{vdW} = \sum \left( \frac{A_{ij}}{r_{ij}^{12}} - \frac{B_{ij}}{r_{ij}^6} \right)$$
+          </div>
+          <div class="formula">
+            $$E_\text{electrostatic} = \sum \frac{q_i q_j}{4\pi \epsilon_0 r_{ij}}$$
           </div>
         </div>
       </div>
@@ -230,7 +219,8 @@
 
     <section id="nanoparticles">
       <h2>奈米粒子拓樸</h2>
-      <p>使用Atomic Simulation Environment(ASE)進行奈米粒子鍵模，可以建構Icosahedron, Decahedron, Octahedron, FCC {111}, BCC {111,110,100}, HCP。</p>
+      <p>使用Atomic Simulation Environment(ASE)進行奈米粒子鍵模，可以建構Icosahedron, Decahedron, Octahedron, FCC {111}, BCC
+        {111,110,100}, HCP。</p>
       <p>The Cambridge Energy Landscape Database</p>
       <p>建模種類包含金屬奈米粒子,doping,聚合物粒子與官能基修飾,coating</p>
       <p>不同尺寸(如Au13,Au55), 構型(FCC), 晶面(111,100)</p>
