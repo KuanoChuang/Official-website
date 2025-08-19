@@ -130,8 +130,11 @@
           <a href="platform.html" class="dropbtn">技術平台 ▾</a>
           <ul class="dropdown-content">
             <li><a href="platform.html#modeling">分子建模</a></li>
-            <li><a href="platform.html#nanoparticles">奈米粒子拓樸</a></li>
-            <li><a href="platform.html#protein">蛋白結構準備</a></li>
+            <li><a href="platform.html#nanoparticles">奈米粒子</a></li>
+            <li><a href="platform.html#protein">蛋白結構</a></li>
+            <li><a href="platform.html#topology">形狀拓樸</a></li>
+            <li><a href="platform.html#docking">分子對接</a></li>
+            <li><a href="platform.html#dynamics">分子動力學</a></li>
           </ul>
         </li>
         <li class="dropdown">
@@ -218,16 +221,33 @@
     </section>
 
     <section id="nanoparticles">
-      <h2>奈米粒子拓樸</h2>
+      <h2>奈米粒子建模</h2>
       <p>使用Atomic Simulation Environment(ASE)進行奈米粒子鍵模，可以建構Icosahedron, Decahedron, Octahedron, FCC {111}, BCC
         {111,110,100}, HCP。</p>
       <p>The Cambridge Energy Landscape Database</p>
       <p>建模種類包含金屬奈米粒子,doping,聚合物粒子與官能基修飾,coating</p>
       <p>不同尺寸(如Au13,Au55), 構型(FCC), 晶面(111,100)</p>
+    </section>
+
+    <section id="protein">
+      <h2>蛋白質結構準備</h2>
+      <p>
+        針對蛋白質進行結構優化與預處理
+      <ul>
+        <li>結構缺陷修補（Repair deficient structures），與NCBI數據庫比對，修補缺失片段與異常區域。</li>
+        <li>複合型蛋白建立（Complex assembly）：如多重軸, 酵素複合體。</li>
+        <li>活性位點辨識（Binding site identification）：分析表面積、親疏水性、突變位點、空腔大小與殘跡距離，精準定位功能性區域。</li>
+        <li>質子化狀態調整（Protonation state modification）：根據環境酸鹼度（pH）動態調整質子化狀態，模擬生理條件下的結構行為。</li>
+      </ul>
+      </p>
+    </section>
+
+
+    <section id="topology">
+      <h2>拓樸技術</h2>
       <p>描述與分析奈米粒子（或奈米結構體）內部與外部的結構連結方式、空腔形狀、孔洞數量、表面連續性與結構變形方式。</p>
       <p>策略:局部單元分析, 計算表面拓譜結構</p>
-
-
+      <p>
       <h3>拓樸分析流程</h3>
       <ol>
         <li>
@@ -259,19 +279,6 @@
       </p>
     </section>
 
-    <section id="protein">
-      <h2>蛋白質結構準備</h2>
-      <p>
-        針對蛋白質進行結構優化與預處理
-      <ul>
-        <li>結構缺陷修補（Repair deficient structures），與NCBI數據庫比對，修補缺失片段與異常區域。</li>
-        <li>複合型蛋白建立（Complex assembly）：如多重軸, 酵素複合體。</li>
-        <li>活性位點辨識（Binding site identification）：分析表面積、親疏水性、突變位點、空腔大小與殘跡距離，精準定位功能性區域。</li>
-        <li>質子化狀態調整（Protonation state modification）：根據環境酸鹼度（pH）動態調整質子化狀態，模擬生理條件下的結構行為。</li>
-      </ul>
-      </p>
-    </section>
-
     <section>
       <h2>分子對接</h2>
       <p>
@@ -290,13 +297,13 @@
       </p>
     </section>
 
-    <section>
+    <section id="docking">
       <h2>分子對接流程</h2>
       <p>流程：輸入結構 → 隨機化初始位置與構象 → 對接 → 評分 → 輸出。</p>
       <img src="Docking figure.jpg" alt="Docking figure" width="200" />
     </section>
 
-    <section>
+    <section id="dynamics">
       <h2>分子動力學</h2>
       <p>
         分子動力學技術介紹
