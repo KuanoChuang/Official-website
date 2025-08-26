@@ -152,20 +152,20 @@
         <div class="column">
           <h3>組成</h3>
           <ul>
-            <li><strong>空間位置與鍵長</strong><br>建立原子在三維空間中的位置以及鍵的長度，決定結構的幾何形狀。</li>
-            <li><strong>手性與立體構型</strong><br>確認手性中心及其立體構型，對藥物活性與立體選擇性至關重要。</li>
-            <li><strong>鍵角與二面角</strong><br>控制分子的立體構型與旋轉自由度，影響構象能量與分子間相互作用。</li>
-            <li><strong>分子內作用力</strong><br>包括凡德瓦力、氫鍵、偶極作用等，影響構象穩定性與反應性。</li>
-            <li><strong>剛性結構</strong><br>環狀結構、共軛系統或多重鍵限制分子構象變化，提高結構穩定性。<br></li>
-            <li><strong>共軛結構</strong><br>由 π 鍵與孤電子對離域化形成的共軛系統，影響分子的電子分布與反應性。<br></li>
+            <li><strong>空間位置與鍵長</strong><br>建立原子在三維空間中的座標與鍵長，決定結構的基本幾何形狀。</li>
+            <li><strong>手性與立體構型</strong><br>確認手性中心及其立體構型，確保結構的藥物活性與立體選擇性。</li>
+            <li><strong>鍵角與二面角</strong><br>定義分子的旋轉自由度與可能構象，影響構象能量與分子間相互作用。</li>
+            <li><strong>分子內作用力</strong><br>包括凡德瓦力、氫鍵、偶極作用等，影響構象穩定性與結合反應性。</li>
+            <li><strong>剛性結構與限制</strong><br>環狀結構、共軛系統或多重鍵限制分子構象變化，提高結構穩定性。<br></li>
+            <li><strong>電子分布與極性</strong><br>共軛結構、孤對電子與電荷離域化影響分子的電子密度，影響與受體的相互作用。<br></li>
           </ul>
         </div>
 
         <div class="column">
           <h3>準備</h3>
           <ul>
-            <li><strong>最低能量構象搜尋</strong><br>利用分子力場計算分子局部最低能量的三維構象，包含亞穩態與最低能量態。</li>
-            <li><strong>異構體確認與篩選</strong><br>分析立體異構體、結構異構體與互變異構體，篩選最符合目標性質的結構。</li>
+            <li><strong>最低能量構象搜尋</strong><br>利用分子力場搜尋分子穩定的三維構象，包含亞穩態與最低能量態。</li>
+            <li><strong>異構體確認與篩選</strong><br>確認所有可能異構體，保留符合實驗條件或目標活性的結構。</li>
             <li><strong>化學鍵價態修正</strong><br>確保每個原子的價電子數與鍵合方式符合價鍵理論，確保結構的化學合理性。</li>
             <li><strong>電荷標準化處理</strong><br>根據分子環境、溶液pH值與各官能基的 pKa，合理分配原子的部分電荷。</li>
             <li><strong>幾何優化與驗證</strong><br>使用分子動力學對分子進行結構優化，確認結構無異常扭曲或結構張力。</li>
@@ -177,11 +177,13 @@
       <div class="core-tech">
         <h3>核心技術</h3>
         <p>
-          採用四種不同的分子力場計算方法：
-          <br><strong>UFF</strong>：對原子序≤103的元素皆有參數化，可優化有機分子、主族化合物和金屬配合物。；
-          <br><strong>MM2</strong>：小分子與有機化合物的精確幾何結構；
-          <br><strong>MMFF94 & MMFF94s</strong>：針對有機化合物進行參數化，包含烴、醇、酚、醚、醛、酮、胺、酸、酯、鹵化物、芳香烴和雜芳烴。
-          <br><strong>GAFF</strong>：針對含有C、N、O、H、S、P、F、Cl、Br、I 的有機分子進行了參數化。
+          選擇適用的分子力場於不同的分子建模，如小分子, 藥物分子, 複雜多環分子, 多鹵素分子：
+          <br><strong>UFF, Dreiding</strong>：通用型分子力場；
+          <br><strong>MM2 & MM3</strong>：小分子與有機化合物的精確幾何結構；
+          <br><strong>MMFF94 & MMFF94s</strong>：針對有機化合物進行參數化，包含烴、醇、酚、醚、醛、酮、胺、酸、酯、鹵化物、芳香烴和雜芳烴；
+          <br><strong>GAFF & GAFF2</strong>：針對含有C、N、O、H、S、P、F、Cl、Br、I 的有機分子進行了參數化。
+          <br><strong>CGenFF</strong>：針對含有C、N、O、H、S、P、F、Cl、Br、I 的有機分子進行了參數化。
+          <br><strong>OPLS</strong>：針對含有C、N、O、H、S、P、F、Cl、Br、I 的有機分子進行了參數化。
         </p>
         <div class="formula">
           $$
