@@ -63,21 +63,26 @@
       color: #fff;
       margin-bottom: 15px;
     }
+
     .core-tech h3 {
       font-size: 32px;
       color: #7d7dae;
     }
+
     .core-tech p {
       padding-left: 30px;
     }
+
     .core-tech strong {
       font-size: 20px;
       color: #709d99;
     }
+
     /* 分子建模 */
     .modeling .column li strong {
       font-size: 20px;
     }
+
     .formula-container {
       display: grid;
       grid-template-columns: 275px 275px;
@@ -86,6 +91,7 @@
       justify-content: center;
       align-items: center;
     }
+
     .formula {
       background-color: #000;
       color: #0f0;
@@ -178,12 +184,13 @@
         <h3>核心技術</h3>
         <p>
           選擇適用的分子力場於不同的分子建模，如小分子, 藥物分子, 複雜多環分子, 多鹵素分子：
-          <br><strong>UFF, Dreiding</strong>：通用型分子力場；
-          <br><strong>MM2 & MM3</strong>：小分子與有機化合物的精確幾何結構；
-          <br><strong>MMFF94 & MMFF94s</strong>：針對有機化合物進行參數化，包含烴、醇、酚、醚、醛、酮、胺、酸、酯、鹵化物、芳香烴和雜芳烴；
-          <br><strong>GAFF & GAFF2</strong>：針對含有C、N、O、H、S、P、F、Cl、Br、I 的有機分子進行了參數化。
-          <br><strong>CGenFF</strong>：針對含有C、N、O、H、S、P、F、Cl、Br、I 的有機分子進行了參數化。
-          <br><strong>OPLS</strong>：針對含有C、N、O、H、S、P、F、Cl、Br、I 的有機分子進行了參數化。
+          <br><strong>UFF, Dreiding</strong>：通用型分子力場，適用於各類有機與無機分子初步結構建模；
+          <br><strong>MM2 & MM3</strong>：適用於小分子與有機化合物，幾何結構優化精度高；
+          <br><strong>OPLS</strong>：針對有機分子和藥物分子進行全面參數化；
+          <br><strong>MMFF94 & MMFF94s</strong>：針對多官能基參數化，包含烴、醇、酚、醚、醛、酮、胺、酸、酯、鹵化物、芳香烴和雜芳烴；
+          <br><strong>GAFF & GAFF2</strong>：針對含C、H、N、O、S、P及鹵素的有機分子參數化，適合藥物分子建模可與，AMBER蛋白質力場整合；
+          <br><strong>CGenFF</strong>：CHARMM通用力場，針對多種有機分子及藥物分子進行參數化，可與蛋白質和生物大分子結合使用。
+
         </p>
         <div class="formula">
           $$
@@ -224,9 +231,12 @@
           <p>The Cambridge Energy Landscape Database</p>
 
           <ul>
-            <li><strong>指定結構的奈米簇</strong><br>二十面體 (Icosahedron), 十面體 (Decahedron), 八面體 (Octahedron), 立方體 (Cube), 四面體 (Tetrahedron), 球形 (Sphere)</li>
-            <li><strong>指定晶格的奈米簇</strong><br>面心立方結構 (Face-Centered Cubic,FCC) {111}晶面, 體心立方結構 (Body-Centered Cubic,BCC) {111,110,100}, 六方最密堆積結構 (Hexagonal Close-Packed,HCP)</li>
-            <li><strong>異質奈米粒子</strong><br>核心-殼層 (core-shell NPs), 空心奈米粒子 (Hollow NPs), 缺陷奈米粒子 (Defective NPs),摻雜奈米粒子 (Doped NPs),合金奈米粒子 (Alloy NPs)</li>
+            <li><strong>指定結構的奈米簇</strong><br>二十面體 (Icosahedron), 十面體 (Decahedron), 八面體 (Octahedron), 立方體 (Cube), 四面體
+              (Tetrahedron), 球形 (Sphere)</li>
+            <li><strong>指定晶格的奈米簇</strong><br>面心立方結構 (Face-Centered Cubic,FCC) {111}晶面, 體心立方結構 (Body-Centered Cubic,BCC)
+              {111,110,100}, 六方最密堆積結構 (Hexagonal Close-Packed,HCP)</li>
+            <li><strong>異質奈米粒子</strong><br>核心-殼層 (core-shell NPs), 空心奈米粒子 (Hollow NPs), 缺陷奈米粒子 (Defective NPs),摻雜奈米粒子
+              (Doped NPs),合金奈米粒子 (Alloy NPs)</li>
             <li><strong>表面修飾奈米粒子</strong><br>小分子, 配體,聚合物,生物分子修飾</li>
           </ul>
         </div>
