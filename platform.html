@@ -343,45 +343,49 @@
       <img src="Docking figure.jpg" alt="Docking figure" width="200" />
 
       <h2>分子對接流程圖</h2>
-      <h2 style="color:#fff;">分子對接流程圖 (橫向版)</h2>
       <div class="mermaid" style="background-color:#1e1e1e; padding: 20px; border-radius: 10px;">
         flowchart LR
-        classDef nodeStyle fill:#2E2E2E,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
+        classDef prep fill:#154360,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
+        classDef site fill:#1E8449,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
+        classDef init fill:#B7950B,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
+        classDef dock fill:#C0392B,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
+        classDef score fill:#6C3483,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
+        classDef analyze fill:#BA4A00,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
 
         %% 準備階段
-        A[準備受體 & 準備配體]:::nodeStyle
-        B[輸入結構]:::nodeStyle
+        A[準備受體 & 準備配體]:::prep
+        B[輸入結構]:::prep
 
         %% 活性位點定義
-        C[定義活性位點]:::nodeStyle
-        C1[根據已知配體]:::nodeStyle
-        C2[口袋自動搜尋位點]:::nodeStyle
-        C3[全域搜尋]:::nodeStyle
-        C4[自定義位點]:::nodeStyle
+        C[定義活性位點]:::site
+        C1[根據已知配體]:::site
+        C2[口袋自動搜尋位點]:::site
+        C3[全域搜尋]:::site
+        C4[自定義位點]:::site
 
         %% 初始構象生成
-        D[生成初始構象於定義空間]:::nodeStyle
-        D1[隨機化配體位置]:::nodeStyle
-        D2[隨機化配體構象]:::nodeStyle
-        D3[準牛頓法 docking refinement]:::nodeStyle
+        D[生成初始構象於定義空間]:::init
+        D1[隨機化配體位置]:::init
+        D2[隨機化配體構象]:::init
+        D3[準牛頓法 docking refinement]:::init
 
         %% 對接階段
-        E[進行對接]:::nodeStyle
-        E1[蒙地卡羅採樣]:::nodeStyle
-        E2[局部優化]:::nodeStyle
-        E3[重新評分模式]:::nodeStyle
+        E[進行對接]:::dock
+        E1[蒙地卡羅採樣]:::dock
+        E2[局部優化]:::dock
+        E3[重新評分模式]:::dock
 
         %% 評分階段
-        F[評分與排序]:::nodeStyle
-        G[CNN評分]:::nodeStyle
+        F[評分與排序]:::score
+        G[CNN評分]:::score
 
         %% 分析階段
-        H[構象與位點分析]:::nodeStyle
-        H1[RSMD結構收斂分析]:::nodeStyle
-        H2[結構合理性分析]:::nodeStyle
-        H3[相似物分析]:::nodeStyle
+        H[構象與位點分析]:::analyze
+        H1[RSMD結構收斂分析]:::analyze
+        H2[結構合理性分析]:::analyze
+        H3[相似物分析]:::analyze
 
-        %% 橫向無箭頭連接
+        %% 無箭頭連接 (橫向佈局)
         B --- C
         C1 --- D
         C2 --- D
