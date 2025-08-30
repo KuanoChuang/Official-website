@@ -343,36 +343,83 @@
       <img src="Docking figure.jpg" alt="Docking figure" width="200" />
 
       <h2>分子對接流程圖</h2>
-      <div class="mermaid">
+    <div class="mermaid">
         flowchart TD
-        A[準備受體 & 準備配體] --> B[輸入結構]
-        B --> C[定義活性位點]
-        C --> C1[根據已知配體]
-        C --> C2[口袋自動搜尋位點]
-        C --> C3[全域搜尋]
-        C --> C4[自定義位點]
-        C1 --> D[生成初始構象於定義空間]
-        C2 --> D
-        C3 --> D
-        C4 --> D
-        D --> D1[隨機化配體位置]
-        D --> D2[隨機化配體構象]
-        D --> D3[準牛頓法 docking refinement]
-        D1 --> E[進行對接]
-        D2 --> E
-        D3 --> E
-        E --> E1[蒙地卡羅採樣]
-        E --> E2[局部優化]
-        E --> E3[重新評分模式]
-        E1 --> F[評分與排序]
-        E2 --> F
-        E3 --> F
-        F --> G[CNN評分]
-        G --> H[構象與位點分析]
-        H --> H1[RSMD結構收斂分析]
-        H --> H2[結構合理性分析]
-        H --> H3[相似物分析]
-      </div>
+            %% 分子對接流程子圖
+            subgraph PREP [準備階段]
+                style PREP fill:#D6EAF8,stroke:#1B4F72,stroke-width:1px
+                A[準備受體 & 準備配體]
+                B[輸入結構]
+                A --> B
+            end
+
+            subgraph SITE [活性位點定義]
+                style SITE fill:#D5F5E3,stroke:#196F3D,stroke-width:1px
+                C[定義活性位點]
+                C1[根據已知配體]
+                C2[口袋自動搜尋位點]
+                C3[全域搜尋]
+                C4[自定義位點]
+                C --> C1
+                C --> C2
+                C --> C3
+                C --> C4
+            end
+
+            subgraph INIT [生成初始構象]
+                style INIT fill:#FCF3CF,stroke:#B7950B,stroke-width:1px
+                D[生成初始構象於定義空間]
+                D1[隨機化配體位置]
+                D2[隨機化配體構象]
+                D3[準牛頓法 docking refinement]
+                D --> D1
+                D --> D2
+                D --> D3
+            end
+
+            subgraph DOCK [對接階段]
+                style DOCK fill:#FADBD8,stroke:#C0392B,stroke-width:1px
+                E[進行對接]
+                E1[蒙地卡羅採樣]
+                E2[局部優化]
+                E3[重新評分模式]
+                E --> E1
+                E --> E2
+                E --> E3
+            end
+
+            subgraph SCORE [評分階段]
+                style SCORE fill:#E8DAEF,stroke:#6C3483,stroke-width:1px
+                F[評分與排序]
+                G[CNN評分]
+                F --> G
+            end
+
+            subgraph ANALYZE [分析階段]
+                style ANALYZE fill:#FDEBD0,stroke:#BA4A00,stroke-width:1px
+                H[構象與位點分析]
+                H1[RSMD結構收斂分析]
+                H2[結構合理性分析]
+                H3[相似物分析]
+                H --> H1
+                H --> H2
+                H --> H3
+            end
+
+            %% 主流程連接
+            B --> C
+            C1 --> D
+            C2 --> D
+            C3 --> D
+            C4 --> D
+            D1 --> E
+            D2 --> E
+            D3 --> E
+            E1 --> F
+            E2 --> F
+            E3 --> F
+            G --> H
+    </div>
     </section>
 
     <section id="dynamics">
