@@ -1,103 +1,110 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>聯絡我們</title>
   <style>
     body {
-    margin: 0;
-    font-family: 'Noto Sans TC', sans-serif;
-    background: url('hero_bk.jpg') center/cover no-repeat;
-    color: #fff;
+      margin: 0;
+      font-family: 'Noto Sans TC', sans-serif;
+      background: url('hero_bk.jpg') center/cover no-repeat;
+      color: #fff;
+    }
+
+    main {
+      padding: 80px;
     }
 
     .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 80px 10%;
-    gap: 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 80px 10%;
+      gap: 5%;
     }
 
     .left {
-    flex: 1;
+      flex: 1;
     }
 
     .left h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
+      font-size: 2rem;
+      margin-bottom: 20px;
     }
 
     .left p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 40px;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 40px;
     }
 
     .feature {
-    position: relative;
-    padding-left: 30px;
-    margin-bottom: 20px;
-    font-size: 1rem;
+      position: relative;
+      padding-left: 30px;
+      margin-bottom: 20px;
+      font-size: 1rem;
     }
 
     .feature::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 4px;
-    width: 20px;
-    height: 20px;
-    background: url('arrow-icon.svg') center/contain no-repeat;
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 4px;
+      width: 20px;
+      height: 20px;
+      background: url('arrow-icon.svg') center/contain no-repeat;
     }
 
     .right {
-    flex: 1;
-    max-width: 450px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 40px;
-    border-radius: 10px;
+      flex: 1;
+      max-width: 450px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 40px;
+      border-radius: 10px;
     }
 
     .form-group {
-    margin-bottom: 20px;
+      margin-bottom: 20px;
     }
 
-    input, textarea {
-    width: 100%;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
-    color: #fff;
-    font-size: 1rem;
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      color: #fff;
+      font-size: 1rem;
     }
 
-    input::placeholder, textarea::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(255, 255, 255, 0.6);
     }
 
     textarea {
-    min-height: 120px;
-    resize: vertical;
+      min-height: 120px;
+      resize: vertical;
     }
 
     button {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    border: 1px solid #fff;
-    color: #fff;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid #fff;
+      color: #fff;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
     }
 
     button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    }    
+      background: rgba(255, 255, 255, 0.2);
+    }
 
     html {
       scroll-behavior: smooth;
@@ -105,6 +112,7 @@
   </style>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <header>
     <a href="index.html" class="logo">Theria</a>
@@ -148,41 +156,43 @@
     </nav>
     <div class="lang">🌐 中文</div>
   </header>
+  <main>
+    <div class="container">
+      <div class="left">
+        <h2>與 Theria專家諮詢</h2>
+        <p>了解我們的模擬平台如何協助您在數據分析或決策上做出更聰明的跨領域選擇。</p>
 
-  <div class="container">
-    <div class="left">
-      <h2>與 Theria專家諮詢</h2>
-      <p>了解我們的模擬平台如何協助您在數據分析或決策上做出更聰明的跨領域選擇。</p>
+        <div class="feature">免費諮詢和報價</div>
+        <div class="feature">客製化建模支持</div>
+        <div class="feature">提供全面數據分析</div>
+      </div>
 
-      <div class="feature">免費諮詢和報價</div>
-      <div class="feature">客製化建模支持</div>
-      <div class="feature">提供全面數據分析</div>
+      <div class="right">
+        <form>
+          <div class="form-group">
+            <input type="text" name="name" placeholder="姓名 *" required>
+          </div>
+          <div class="form-group">
+            <input type="email" name="email" placeholder="電子郵件 *" required>
+          </div>
+          <div class="form-group">
+            <input type="text" name="phone" placeholder="電話">
+          </div>
+          <div class="form-group">
+            <input type="text" name="subject" placeholder="主題 *" required>
+          </div>
+          <div class="form-group">
+            <textarea name="message" placeholder="信息 *" required></textarea>
+          </div>
+          <button type="submit">發送</button>
+        </form>
+      </div>
     </div>
 
-    <div class="right">
-      <form>
-        <div class="form-group">
-          <input type="text" name="name" placeholder="姓名 *" required>
-        </div>
-        <div class="form-group">
-          <input type="email" name="email" placeholder="電子郵件 *" required>
-        </div>
-        <div class="form-group">
-          <input type="text" name="phone" placeholder="電話">
-        </div>
-        <div class="form-group">
-          <input type="text" name="subject" placeholder="主題 *" required>
-        </div>
-        <div class="form-group">
-          <textarea name="message" placeholder="信息 *" required></textarea>
-        </div>
-        <button type="submit">發送</button>
-      </form>
-    </div>
-  </div>
-
-  <footer>
-    <p>© 2025 THERIA. All rights reserved.</p>
-  </footer>
+    <footer>
+      <p>© 2025 THERIA. All rights reserved.</p>
+    </footer>
+  </main>
 </body>
+
 </html>
