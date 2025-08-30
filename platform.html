@@ -343,10 +343,9 @@
       <img src="Docking figure.jpg" alt="Docking figure" width="200" />
 
       <h2>分子對接流程圖</h2>
+      <h2 style="color:#fff;">分子對接流程圖 (橫向版)</h2>
       <div class="mermaid" style="background-color:#1e1e1e; padding: 20px; border-radius: 10px;">
         flowchart LR
-        %% 橫向流程圖 (無箭頭版)
-        %% 節點樣式
         classDef nodeStyle fill:#2E2E2E,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
 
         %% 準備階段
@@ -382,7 +381,7 @@
         H2[結構合理性分析]:::nodeStyle
         H3[相似物分析]:::nodeStyle
 
-        %% 連接線改為空 (只靠佈局，不畫箭頭)
+        %% 橫向無箭頭連接
         B --- C
         C1 --- D
         C2 --- D
