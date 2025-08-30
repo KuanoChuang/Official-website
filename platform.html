@@ -342,63 +342,59 @@
       </p>
       <img src="Docking figure.jpg" alt="Docking figure" width="200" />
 
-      <h2>分子對接流程圖 (橫向版)</h2>
-      <div class="mermaid">
+      <h2>分子對接流程圖</h2>
+      <div class="mermaid" style="background-color:#1e1e1e; padding: 20px; border-radius: 10px;">
         flowchart LR
-        %% 橫向流程圖，用 LR (Left to Right)
-        %% 分子對接流程子圖
-        subgraph PREP [準備階段]
-        style PREP fill:#D6EAF8,stroke:#1B4F72,stroke-width:1px
-        A[準備受體 & 準備配體] --> B[輸入結構]
-        end
+        %% 橫向流程圖 (無箭頭版)
+        %% 節點樣式
+        classDef nodeStyle fill:#2E2E2E,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
 
-        subgraph SITE [活性位點定義]
-        style SITE fill:#D5F5E3,stroke:#196F3D,stroke-width:1px
-        C[定義活性位點] --> C1[根據已知配體]
-        C --> C2[口袋自動搜尋位點]
-        C --> C3[全域搜尋]
-        C --> C4[自定義位點]
-        end
+        %% 準備階段
+        A[準備受體 & 準備配體]:::nodeStyle
+        B[輸入結構]:::nodeStyle
 
-        subgraph INIT [生成初始構象]
-        style INIT fill:#FCF3CF,stroke:#B7950B,stroke-width:1px
-        D[生成初始構象於定義空間] --> D1[隨機化配體位置]
-        D --> D2[隨機化配體構象]
-        D --> D3[準牛頓法 docking refinement]
-        end
+        %% 活性位點定義
+        C[定義活性位點]:::nodeStyle
+        C1[根據已知配體]:::nodeStyle
+        C2[口袋自動搜尋位點]:::nodeStyle
+        C3[全域搜尋]:::nodeStyle
+        C4[自定義位點]:::nodeStyle
 
-        subgraph DOCK [對接階段]
-        style DOCK fill:#FADBD8,stroke:#C0392B,stroke-width:1px
-        E[進行對接] --> E1[蒙地卡羅採樣]
-        E --> E2[局部優化]
-        E --> E3[重新評分模式]
-        end
+        %% 初始構象生成
+        D[生成初始構象於定義空間]:::nodeStyle
+        D1[隨機化配體位置]:::nodeStyle
+        D2[隨機化配體構象]:::nodeStyle
+        D3[準牛頓法 docking refinement]:::nodeStyle
 
-        subgraph SCORE [評分階段]
-        style SCORE fill:#E8DAEF,stroke:#6C3483,stroke-width:1px
-        F[評分與排序] --> G[CNN評分]
-        end
+        %% 對接階段
+        E[進行對接]:::nodeStyle
+        E1[蒙地卡羅採樣]:::nodeStyle
+        E2[局部優化]:::nodeStyle
+        E3[重新評分模式]:::nodeStyle
 
-        subgraph ANALYZE [分析階段]
-        style ANALYZE fill:#FDEBD0,stroke:#BA4A00,stroke-width:1px
-        H[構象與位點分析] --> H1[RSMD結構收斂分析]
-        H --> H2[結構合理性分析]
-        H --> H3[相似物分析]
-        end
+        %% 評分階段
+        F[評分與排序]:::nodeStyle
+        G[CNN評分]:::nodeStyle
 
-        %% 主流程連接 (橫向連接)
-        B --> C
-        C1 --> D
-        C2 --> D
-        C3 --> D
-        C4 --> D
-        D1 --> E
-        D2 --> E
-        D3 --> E
-        E1 --> F
-        E2 --> F
-        E3 --> F
-        G --> H
+        %% 分析階段
+        H[構象與位點分析]:::nodeStyle
+        H1[RSMD結構收斂分析]:::nodeStyle
+        H2[結構合理性分析]:::nodeStyle
+        H3[相似物分析]:::nodeStyle
+
+        %% 連接線改為空 (只靠佈局，不畫箭頭)
+        B --- C
+        C1 --- D
+        C2 --- D
+        C3 --- D
+        C4 --- D
+        D1 --- E
+        D2 --- E
+        D3 --- E
+        E1 --- F
+        E2 --- F
+        E3 --- F
+        G --- H
       </div>
     </section>
 
