@@ -343,61 +343,107 @@
       <img src="Docking figure.jpg" alt="Docking figure" width="200" />
 
       <h2>分子對接流程圖</h2>
-      <div class="mermaid" style="background-color:#1e1e1e; padding: 20px; border-radius: 10px;">
-        flowchart LR
-        classDef prep fill:#154360,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
-        classDef site fill:#1E8449,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
-        classDef init fill:#B7950B,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
-        classDef dock fill:#C0392B,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
-        classDef score fill:#6C3483,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
-        classDef analyze fill:#BA4A00,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
+      <!-- CSS：黑色背景、去掉箭頭 marker、調整連線樣式 -->
+      <style>
+        .mermaid {
+          background: #121212;
+          padding: 20px;
+          border-radius: 12px;
+        }
+        /* 隱藏 SVG marker（箭頭）*/
+        .mermaid svg defs marker {
+          display: none;
+        }
+        /* 調整邊線顏色與粗細 */
+        .mermaid .edgePath path {
+          stroke: #444;
+          stroke-width: 1.6px;
+          opacity: 0.95;
+        }
+      </style>
 
-        %% 準備階段
+      <div class="mermaid">
+        %%{ init: { "flowchart": { "curve": "linear" } } }%%
+        flowchart LR
+        %% 子圖順序決定橫向欄位 (LR)
+        %% 每個子圖內 direction TB 讓子節點垂直排列 (好看又不交叉)
+
+        %% 節點樣式
+        classDef prep fill:#0D3B66,stroke:#00B7FF,stroke-width:1px,color:#FFFFFF,rx:8,ry:8;
+        classDef site fill:#146A4A,stroke:#9AE6B4,stroke-width:1px,color:#FFFFFF,rx:8,ry:8;
+        classDef init fill:#B87E00,stroke:#FFE08A,stroke-width:1px,color:#121212,rx:8,ry:8;
+        classDef dock fill:#B92E2E,stroke:#FFBFC0,stroke-width:1px,color:#FFFFFF,rx:8,ry:8;
+        classDef score fill:#5B3E91,stroke:#D7C7FF,stroke-width:1px,color:#FFFFFF,rx:8,ry:8;
+        classDef analyze fill:#A64E12,stroke:#FFD5A0,stroke-width:1px,color:#121212,rx:8,ry:8;
+        classDef invisible stroke-width:0,fill:transparent,color:transparent;
+
+        %% 準備欄位 (垂直)
+        subgraph PREP [準備階段]
+        direction TB
         A[準備受體 & 準備配體]:::prep
         B[輸入結構]:::prep
+        end
 
-        %% 活性位點定義
+        %% 活性位點欄位 (垂直)
+        subgraph SITE [活性位點定義]
+        direction TB
         C[定義活性位點]:::site
         C1[根據已知配體]:::site
         C2[口袋自動搜尋位點]:::site
         C3[全域搜尋]:::site
         C4[自定義位點]:::site
+        end
 
-        %% 初始構象生成
+        %% 初始構象欄位 (垂直) - 中央列
+        subgraph INIT [生成初始構象]
+        direction TB
         D[生成初始構象於定義空間]:::init
         D1[隨機化配體位置]:::init
         D2[隨機化配體構象]:::init
         D3[準牛頓法 docking refinement]:::init
+        end
 
-        %% 對接階段
+        %% 對接欄位 (垂直)
+        subgraph DOCK [對接階段]
+        direction TB
         E[進行對接]:::dock
         E1[蒙地卡羅採樣]:::dock
         E2[局部優化]:::dock
         E3[重新評分模式]:::dock
+        end
 
-        %% 評分階段
+        %% 評分欄位
+        subgraph SCORE [評分階段]
+        direction TB
         F[評分與排序]:::score
         G[CNN評分]:::score
+        end
 
-        %% 分析階段
+        %% 分析欄位
+        subgraph ANALYZE [分析階段]
+        direction TB
         H[構象與位點分析]:::analyze
         H1[RSMD結構收斂分析]:::analyze
         H2[結構合理性分析]:::analyze
         H3[相似物分析]:::analyze
+        end
 
-        %% 無箭頭連接 (橫向佈局)
-        B --- C
-        C1 --- D
-        C2 --- D
-        C3 --- D
-        C4 --- D
-        D1 --- E
-        D2 --- E
-        D3 --- E
-        E1 --- F
-        E2 --- F
-        E3 --- F
-        G --- H
+        %% 正確的連接（使用 --> 以獲得穩定佈局，箭頭已由 CSS 隱藏）
+        B --> C
+        C1 --> D
+        C2 --> D
+        C3 --> D
+        C4 --> D
+
+        D1 --> E
+        D2 --> E
+        D3 --> E
+
+        E1 --> F
+        E2 --> F
+        E3 --> F
+
+        G --> H
       </div>
     </section>
 
