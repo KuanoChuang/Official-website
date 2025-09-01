@@ -350,10 +350,12 @@
           padding: 20px;
           border-radius: 12px;
         }
+
         /* 隱藏 SVG marker（箭頭）*/
         .mermaid svg defs marker {
           display: none;
         }
+
         /* 調整邊線顏色與粗細 */
         .mermaid .edgePath path {
           stroke: #444;
@@ -363,10 +365,8 @@
       </style>
 
       <div class="mermaid">
-        %%{ init: { "flowchart": { "curve": "linear" } } }%%
-        flowchart LR
-        %% 子圖順序決定橫向欄位 (LR)
-        %% 每個子圖內 direction TB 讓子節點垂直排列 (好看又不交叉)
+        flowchart TB
+
 
         %% 節點樣式
         classDef prep fill:#0D3B66,stroke:#00B7FF,stroke-width:1px,color:#FFFFFF,rx:8,ry:8;
@@ -377,16 +377,16 @@
         classDef analyze fill:#A64E12,stroke:#FFD5A0,stroke-width:1px,color:#121212,rx:8,ry:8;
         classDef invisible stroke-width:0,fill:transparent,color:transparent;
 
-        %% 準備欄位 (垂直)
+        %% 準備欄位
         subgraph PREP [準備階段]
-        direction TB
+        direction LR
         A[準備受體 & 準備配體]:::prep
         B[輸入結構]:::prep
         end
 
-        %% 活性位點欄位 (垂直)
+        %% 活性位點欄位
         subgraph SITE [活性位點定義]
-        direction TB
+        direction LR
         C[定義活性位點]:::site
         C1[根據已知配體]:::site
         C2[口袋自動搜尋位點]:::site
@@ -394,18 +394,18 @@
         C4[自定義位點]:::site
         end
 
-        %% 初始構象欄位 (垂直) - 中央列
+        %% 初始構象欄位
         subgraph INIT [生成初始構象]
-        direction TB
+        direction LR
         D[生成初始構象於定義空間]:::init
         D1[隨機化配體位置]:::init
         D2[隨機化配體構象]:::init
         D3[準牛頓法 docking refinement]:::init
         end
 
-        %% 對接欄位 (垂直)
+        %% 對接欄位
         subgraph DOCK [對接階段]
-        direction TB
+        direction LR
         E[進行對接]:::dock
         E1[蒙地卡羅採樣]:::dock
         E2[局部優化]:::dock
@@ -414,21 +414,21 @@
 
         %% 評分欄位
         subgraph SCORE [評分階段]
-        direction TB
+        direction LR
         F[評分與排序]:::score
         G[CNN評分]:::score
         end
 
         %% 分析欄位
         subgraph ANALYZE [分析階段]
-        direction TB
+        direction LR
         H[構象與位點分析]:::analyze
         H1[RSMD結構收斂分析]:::analyze
         H2[結構合理性分析]:::analyze
         H3[相似物分析]:::analyze
         end
 
-        %% 正確的連接（使用 --> 以獲得穩定佈局，箭頭已由 CSS 隱藏）
+        %% 流程連接
         B --> C
         C1 --> D
         C2 --> D
