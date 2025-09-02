@@ -332,11 +332,9 @@
     <section id="docking">
       <h2>分子對接流程圖</h2>
       <div class="mermaid">
-
         flowchart TD
         subgraph s1["準備階段"]
-        n1["準備受體 & 準備配體
-        "]
+        n1["準備受體 & 準備配體"]
         n2["輸入結構"]
         end
         subgraph s2["定義搜尋空間"]
@@ -355,13 +353,80 @@
         n9["形狀搜尋
         配體表面建模"]
         end
+        subgraph s3["生成初始構象"]
+        n10["隨機化旋轉, 平移, 扭轉 配體"]
+        n11["檢查配體是否在搜尋空間"]
+        n12["在空間內"]
+        n13["在空間外"]
+        n14["初始構象"]
+        n15["優化配體"]
+        end
+        subgraph s5["蒙地卡羅取樣"]
+        n22["迭代
+        快速優化+接受準則"]
+        subgraph s8["搜尋"]
+        n16["蒙地卡羅鏈"]
+        n17["蒙地卡羅鏈"]
+        n18["蒙地卡羅鏈"]
+        end
+        n19["合併 / 能量排序
+        取前N個"]
+        subgraph s6["生成初始構象"]
+        n20["構象優化"]
+        subgraph s7["生成初始構象"]
+        n21["評分並篩選"]
+        end
+        end
+
+        end
+        subgraph s4["對接搜尋"]
+        s5
+        end
+
+        subgraph s9["輸出並分析"]
+
+        n23["輸出結果"]
+        n24["檢查
+        ◆ 與受體距離 / 物理碰撞
+        ◆ 結構合理性
+        ◆ 親疏水特性
+        ◆ 配體位向"]
+        n25["RMSD結構收斂分析"]
+        n26["相互作用力"]
+        end
+        subgraph s10[" "]
+        n27["局部優化"]
+        n28["靈活對接"]
+        n29["分子動力學"]
+        end
         n1 --> n2
-        s1--> s2
-        n3 --> n5
-        n3 --> n6
-        n4 --> n7
-        n4 --> n8
-        n4 --> n9
+        s1 --> s2
+        n3 --> n5 & n6
+        n4 --> n7 & n8 & n9
+        s2 --> s3
+        n10 --> n11
+        n11 --> n12 & n13
+        n12 --> n14
+        n13 --> n15
+        n15 --> n11
+        s3 --> s4
+        s8 --> n19
+        n19 --> n20
+        n20 --> n21
+        s8 --> n22
+        n22 --> s8
+        s4 --> s9
+        n23 --> n24
+        n24 --> n25
+        n24 --> n26
+        s9 --> n27
+        s9 --> n28
+        s9 --> n29
+        n5@{ shape: lin-proc}
+        n6@{ shape: lin-proc}
+        n7@{ shape: lin-proc}
+        n8@{ shape: lin-proc}
+        n9@{ shape: lin-proc}
       </div>
       <img src="Docking figure.jpg" alt="Docking figure" width="200" />
     </section>
