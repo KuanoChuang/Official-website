@@ -330,121 +330,40 @@
     </section>
 
     <section id="docking">
-      <h2>分子對接流程</h2>
-      <p>流程：
-        <br>準備受體 & 準備配體 → 輸入結構
-        <br>→ 定義活性位點: 1.根據已知配體 2.根據口袋自動搜尋位點 3.全域搜尋 4.自定義位點
-        <br>→ 生成初始構象於定義空間內 1.隨機化配體位置 2.隨機化配體構象 3.準牛頓法進行docking refinement
-        <br>→ 進行對接 1.蒙地卡羅採樣 2.局部優化 3.重新評分模式
-        <br>→ 評分與排序:根據函數進行評分, 包含吸引項, 排斥項, 疏水項, 氫鍵項, 扭轉自由度懲罰項
-        <br>→ CNN評分: 利用 3D 卷積神經網路評估配體-受體結合能
-        <br>→ 進行構象與位點分析 1.RSMD結構收斂分析 2. 結構合理性 3. 相似物分析
-      </p>
-      <img src="Docking figure.jpg" alt="Docking figure" width="200" />
-
       <h2>分子對接流程圖</h2>
-      <!-- CSS：黑色背景、去掉箭頭 marker、調整連線樣式 -->
-      <style>
-        .mermaid {
-          background: #121212;
-          padding: 20px;
-          border-radius: 12px;
-        }
-
-        /* 隱藏 SVG marker（箭頭）*/
-        .mermaid svg defs marker {
-          display: none;
-        }
-
-        /* 調整邊線顏色與粗細 */
-        .mermaid .edgePath path {
-          stroke: #444;
-          stroke-width: 1.6px;
-          opacity: 0.95;
-        }
-      </style>
-
       <div class="mermaid">
-        flowchart TB
 
-
-        %% 節點樣式
-        classDef prep fill:#0D3B66,stroke:#00B7FF,stroke-width:1px,color:#FFFFFF,rx:8,ry:8;
-        classDef site fill:#146A4A,stroke:#9AE6B4,stroke-width:1px,color:#FFFFFF,rx:8,ry:8;
-        classDef init fill:#B87E00,stroke:#FFE08A,stroke-width:1px,color:#121212,rx:8,ry:8;
-        classDef dock fill:#B92E2E,stroke:#FFBFC0,stroke-width:1px,color:#FFFFFF,rx:8,ry:8;
-        classDef score fill:#5B3E91,stroke:#D7C7FF,stroke-width:1px,color:#FFFFFF,rx:8,ry:8;
-        classDef analyze fill:#A64E12,stroke:#FFD5A0,stroke-width:1px,color:#121212,rx:8,ry:8;
-        classDef invisible stroke-width:0,fill:transparent,color:transparent;
-
-        %% 準備欄位
-        subgraph PREP [準備階段]
-        direction LR
-        A[準備受體 & 準備配體]:::prep
-        B[輸入結構]:::prep
+        flowchart TD
+        subgraph s1["準備階段"]
+        n1["準備受體 & 準備配體
+        "]
+        n2["輸入結構"]
         end
-
-        %% 活性位點欄位
-        subgraph SITE [活性位點定義]
-        direction LR
-        C[定義活性位點]:::site
-        C1[根據已知配體]:::site
-        C2[口袋自動搜尋位點]:::site
-        C3[全域搜尋]:::site
-        C4[自定義位點]:::site
+        subgraph s2["定義搜尋空間"]
+        n3["已知活性位點"]
+        n4["未知活性位點"]
+        n5["已結合配體
+        PDB
+        抗體位點"]
+        n6["自定義
+        關鍵位點
+        關鍵殘基"]
+        n7["全域搜尋"]
+        n8["探針搜尋
+        表面凹陷
+        空腔區域"]
+        n9["形狀搜尋
+        配體表面建模"]
         end
-
-        %% 初始構象欄位
-        subgraph INIT [生成初始構象]
-        direction LR
-        D[生成初始構象於定義空間]:::init
-        D1[隨機化配體位置]:::init
-        D2[隨機化配體構象]:::init
-        D3[準牛頓法 docking refinement]:::init
-        end
-
-        %% 對接欄位
-        subgraph DOCK [對接階段]
-        direction LR
-        E[進行對接]:::dock
-        E1[蒙地卡羅採樣]:::dock
-        E2[局部優化]:::dock
-        E3[重新評分模式]:::dock
-        end
-
-        %% 評分欄位
-        subgraph SCORE [評分階段]
-        direction LR
-        F[評分與排序]:::score
-        G[CNN評分]:::score
-        end
-
-        %% 分析欄位
-        subgraph ANALYZE [分析階段]
-        direction LR
-        H[構象與位點分析]:::analyze
-        H1[RSMD結構收斂分析]:::analyze
-        H2[結構合理性分析]:::analyze
-        H3[相似物分析]:::analyze
-        end
-
-        %% 流程連接
-        B --> C
-        C1 --> D
-        C2 --> D
-        C3 --> D
-        C4 --> D
-
-        D1 --> E
-        D2 --> E
-        D3 --> E
-
-        E1 --> F
-        E2 --> F
-        E3 --> F
-
-        G --> H
+        n1 --> n2
+        s1--> s2
+        n3 --> n5
+        n3 --> n6
+        n4 --> n7
+        n4 --> n8
+        n4 --> n9
       </div>
+      <img src="Docking figure.jpg" alt="Docking figure" width="200" />
     </section>
 
     <section id="dynamics">
