@@ -340,10 +340,10 @@
       <div class="mermaid">
         flowchart TD
 
-          %% 定義樣式
-          classDef darkNode fill=#222,stroke=#fff,color=#fff;
-          classDef darkBox fill=#111,stroke=#fff,color=#fff;
-          linkStyle default stroke:#fff,color:#fff;
+
+        classDef darkNode fill=#222,stroke=#fff,color=#fff;
+        classDef darkBox fill=#111,stroke=#fff,color=#fff;
+        linkStyle default stroke:#fff,color:#fff;
         
         subgraph s1["準備階段"]
         n1["準備受體 & 準備配體"]
@@ -441,7 +441,7 @@
         n24 --> n25 & n26
         s9 --> n27 & n28 & n29 & s11
 
-        %% 套用樣式
+        
         class s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11 darkBox;
         class n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15,n16,n17,n18,n19,n20,n21,n22,n23,n24,n25,n26,n27,n28,n29,n30 darkNode;
       </div>
