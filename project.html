@@ -167,12 +167,28 @@
       const ext = fileURL.split('.').pop().toLowerCase();
       const format = ["pdb", "sdf", "mol2"].includes(ext) ? ext : "pdb";
 
+      const zoomMap = {
+        "Au13.mol2": 0.8,
+        "Au55.mol2": 0.8,
+        "Au55_DDT.mol2": 0.8
+      };
+
+      if (zoomValue) {
+        viewer.zoom(zoomMap[zoomValue]);
+      }
+
       fetch(fileURL)
         .then(res => res.text())
         .then(data => {
           viewer.addModel(data, format);
           viewer.setStyle({}, styleMap[styleType] || styleMap.default);
           viewer.zoomTo();
+          for (const key in zoomMap) {
+            if (fileURL.includes(key)) {
+              viewer.zoom(zoomMap[key]);
+              break;
+            }
+          }
           viewer.render();
         })
         .catch(err => {
