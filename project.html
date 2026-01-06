@@ -173,10 +173,6 @@
         "Au55_DDT.mol2": 0.8
       };
 
-      if (zoomValue) {
-        viewer.zoom(zoomMap[zoomValue]);
-      }
-
       fetch(fileURL)
         .then(res => res.text())
         .then(data => {
