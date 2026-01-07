@@ -166,59 +166,29 @@
 
       const ext = fileURL.split('.').pop().toLowerCase();
       const format = ["pdb", "sdf", "mol2"].includes(ext) ? ext : "pdb";
-      const viewerConfigMap = {
-        "Au13.mol2": {
-          zoom: 0.8,
-          styles: [
-            { sel: {}, style: { sphere: { scale: 1.0 } } }
-          ]
-        },
-
-        "Au55.mol2": {
-          zoom: 0.6,
-          styles: [
-            { sel: {}, style: { sphere: { scale: 0.9 } } }
-          ]
-        },
-
-        "Au55_DDT.mol2": {
-          zoom: 0.75,
-          styles: [
-            // 配體：全部 stick
-            {
-              sel: {},
-              style: { stick: { prop: 'elem', radius: 0.2, bondOrder: true } }
-            },
-            // Au：sphere
-            {
-              sel: { elem: 'Au' },
-              style: { sphere: { scale: 0.9 } }
-            }
-          ]
-        }
+      const zoomMap = {
+        "Au13.mol2": 0.8,
+        "Au55.mol2": 0.6,
+        "Au55_DDT.mol2": 0.75
       };
+
       fetch(fileURL)
         .then(res => res.text())
         .then(data => {
           viewer.addModel(data, format);
-          if (config && config.styles) {
-            // 使用客製化 style
-            config.styles.forEach(s => {
-              viewer.setStyle(s.sel, s.style);
-            });
-          } else {
-            // 沒設定的檔案 → 用原本 styleMap
-            viewer.setStyle({}, styleMap[styleType] || styleMap.default);
-          }
+          viewer.setStyle({}, styleMap[styleType] || styleMap.default);
           viewer.zoomTo();
-          if (config && config.zoom) {
-            viewer.zoom(config.zoom);
+          for (const key in zoomMap) {
+            if (fileURL.includes(key)) {
+              viewer.zoom(zoomMap[key]);
+              break;
+            }
           }
           viewer.render();
         })
-        .catch (err => {
-      console.error(`Failed to load model from ${fileURL}:`, err);
-    });
+        .catch(err => {
+          console.error(`Failed to load model from ${fileURL}:`, err);
+        });
     }
 
     function cycleViewer(viewerId, files, styles, indexObj) {
