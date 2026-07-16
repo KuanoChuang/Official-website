@@ -1,216 +1,282 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
-
+<html lang="zh-Hant" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>聯絡我們</title>
+  <title>聯絡我們 | Moloris 默瑞思</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          colors: {
+            moloris: {
+              dark: '#030712',
+              card: '#111827',
+              cyan: '#00b7c3',
+              cyanDark: '#007b8a',
+              text: '#e5e7eb',
+              textMuted: '#9ca3af'
+            }
+          },
+          backgroundImage: {
+            'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+            'hero-glow': 'conic-gradient(from 180deg at 50% 50%, #007b8a55 0deg, #00b7c355 180deg, #007b8a55 360deg)',
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
     body {
-      margin: 0;
-      font-family: 'Noto Sans TC', sans-serif;
-      background: url('hero_bk.jpg') center/cover no-repeat;
-      color: #fff;
-    }
-
-    main {
-      padding: 100px;
-    }
-
-    .container {
+      background-color: #030712;
+      color: #e5e7eb;
+      overflow-x: hidden;
+      /* Ensure the body takes at least full height but doesn't force scroll if content fits */
+      min-height: 100vh; 
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 80px 10%;
-      gap: 5%;
+      flex-direction: column;
     }
 
-    .left {
-      flex: 1;
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #030712; }
+    ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00b7c3; }
+
+    .glass-nav {
+      background: rgba(3, 7, 18, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .left h2 {
-      font-size: 2rem;
-      margin-bottom: 5px;
+    .dropdown:hover .dropdown-menu {
+      display: block;
+      animation: fadeIn 0.2s ease-out forwards;
     }
 
-    .left p {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      margin-bottom: 0px;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .feature {
-      position: relative;
-      padding-left: 30px;
-      margin-bottom: 20px;
-      font-size: 1rem;
-    }
-
-    .feature::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 4px;
-      width: 20px;
-      height: 20px;
-      background: url('arrow-icon.svg') center/contain no-repeat;
-    }
-
-    .right {
-      flex: 1;
-      max-width: 450px;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 40px;
-      border-radius: 10px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    input,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 5px;
-      color: #fff;
-      font-size: 1rem;
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background: transparent;
-      border: 1px solid #fff;
-      color: #fff;
-      font-size: 1rem;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    html {
-      scroll-behavior: smooth;
+    input:-webkit-autofill,
+    textarea:-webkit-autofill,
+    select:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 30px #111827 inset !important;
+      -webkit-text-fill-color: white !important;
+      transition: background-color 5000s ease-in-out 0s;
     }
   </style>
-  <link rel="stylesheet" href="style.css" />
 </head>
 
-<body>
-  <header>
-    <a href="index.html" class="logo">Theria</a>
-    <nav>
-      <ul class="navbar">
-        <li class="dropdown">
-          <a href="index.html" class="dropbtn">關於Theria ▾</a>
-          <ul class="dropdown-content">
-            <li><a href="index.html#about">關於我們</a></li>
-            <li><a href="index.html#vision">團隊願景</a></li>
-            <li><a href="index.html#team">團隊架構</a></li>
-            <li><a href="index.html#pipeline">專案流程</a></li>
-            <li><a href="index.html#news">最新消息</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="platform.html" class="dropbtn">技術平台 ▾</a>
-          <ul class="dropdown-content">
-            <li><a href="platform.html#modeling">分子建模</a></li>
-            <li><a href="platform.html#nanoparticles">奈米粒子</a></li>
-            <li><a href="platform.html#protein">蛋白結構</a></li>
-            <li><a href="platform.html#topology">形狀拓樸</a></li>
-            <li><a href="platform.html#docking">分子對接</a></li>
-            <li><a href="platform.html#dynamics">分子動力學</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="project.html" class="dropbtn">專案介紹 ▾</a>
-          <ul class="dropdown-content">
-            <li><a href="#cancer">癌症</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="contact.html" class="dropbtn">聯絡我們 ▾</a>
-          <ul class="dropdown-content">
-            <li><a href="#info">聯絡資訊</a></li>
-            <li><a href="#joinus">加入我們</a></li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-    <div class="lang">🌐 中文</div>
+<body class="font-sans antialiased selection:bg-moloris-cyan selection:text-white">
+
+  <header class="fixed top-0 w-full z-50 glass-nav">
+    <div class="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between">
+      <a href="index.html" class="text-xl md:text-2xl font-bold tracking-wider text-white flex items-center gap-2 group">
+        <i class="fa-solid fa-atom text-moloris-cyan group-hover:rotate-180 transition-transform duration-700"></i>
+        Moloris
+      </a>
+
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+        <div class="relative group dropdown">
+          <a href="index.html#story" class="hover:text-moloris-cyan transition-colors py-2 flex items-center gap-1">關於 Moloris <i class="fa-solid fa-chevron-down text-xs"></i></a>
+          <div class="dropdown-menu hidden absolute top-full left-0 mt-0 w-32 bg-moloris-card border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="index.html#story" class="block px-4 py-2 hover:bg-gray-800 hover:text-moloris-cyan transition-colors whitespace-nowrap">品牌故事</a>
+            <a href="index.html#vision" class="block px-4 py-2 hover:bg-gray-800 hover:text-moloris-cyan transition-colors whitespace-nowrap">核心價值</a>
+            <a href="index.html#team" class="block px-4 py-2 hover:bg-gray-800 hover:text-moloris-cyan transition-colors whitespace-nowrap">團隊架構</a>
+          </div>
+        </div>
+
+        <div class="relative group dropdown">
+          <a href="index.html#tech" class="hover:text-moloris-cyan transition-colors py-2 flex items-center gap-1">技術平台 <i class="fa-solid fa-chevron-down text-xs"></i></a>
+          <div class="dropdown-menu hidden absolute top-full left-0 mt-0 w-44 bg-moloris-card border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="index.html#tech" class="block px-4 py-2 hover:bg-gray-800 hover:text-moloris-cyan transition-colors whitespace-nowrap">多尺度建模</a>
+            <a href="index.html#tech" class="block px-4 py-2 hover:bg-gray-800 hover:text-moloris-cyan transition-colors whitespace-nowrap">交互作用模擬與洞察</a>
+            <a href="index.html#tech" class="block px-4 py-2 hover:bg-gray-800 hover:text-moloris-cyan transition-colors whitespace-nowrap">分子動力學推演</a>
+          </div>
+        </div>
+
+        <div class="relative group dropdown">
+          <a href="project.html" class="hover:text-moloris-cyan transition-colors py-2 flex items-center gap-1">專案介紹 <i class="fa-solid fa-chevron-down text-xs"></i></a>
+          <div class="dropdown-menu hidden absolute top-full left-0 mt-0 w-36 bg-moloris-card border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="project.html#biotech" class="block px-4 py-2 hover:bg-gray-800 hover:text-moloris-cyan transition-colors whitespace-nowrap">生技與新藥開發</a>
+            <a href="project.html#materials" class="block px-4 py-2 hover:bg-gray-800 hover:text-moloris-cyan transition-colors whitespace-nowrap">化學與材料科學</a>
+          </div>
+        </div>
+
+        <div class="relative group dropdown">
+          <a href="contact.html" class="hover:text-moloris-cyan transition-colors py-2 flex items-center gap-1 text-moloris-cyan">聯絡我們 <i class="fa-solid fa-chevron-down text-xs"></i></a>
+          <div class="dropdown-menu hidden absolute top-full left-0 mt-0 w-32 bg-moloris-card border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="#info" class="block px-4 py-2 hover:bg-gray-800 hover:text-moloris-cyan transition-colors whitespace-nowrap">聯絡資訊</a>
+            <a href="#joinus" class="block px-4 py-2 hover:bg-gray-800 hover:text-moloris-cyan transition-colors whitespace-nowrap">加入我們</a>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pl-4 border-l border-gray-700">
+          <i class="fa-solid fa-globe text-gray-400"></i>
+          <span class="text-gray-300 hover:text-white cursor-pointer transition-colors">中文</span>
+        </div>
+      </nav>
+
+      <button class="md:hidden text-gray-300 hover:text-white">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </button>
+    </div>
   </header>
-  <main>
-    <div class="container">
-      <div class="left">
-        <h2>與 Theria專家諮詢</h2>
-        <p>了解我們的模擬平台如何協助您在數據分析或決策上做出更聰明的跨領域選擇。</p>
 
-        <div class="feature">免費諮詢和報價
-          <p>→相同成果可重複延續使用</p>
-          <p>→共同合作方案</p>
+  <!-- Flex-grow allows main to fill space. Centering items vertically. -->
+  <main class="flex-grow flex items-center pt-20 relative overflow-hidden">
+    
+    <!-- Background Decorators -->
+    <div class="absolute top-1/4 right-0 w-[500px] h-[500px] bg-moloris-cyan/5 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-900/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+    <div class="w-full max-w-7xl mx-auto px-6 relative z-10 py-8">
+      
+      <!-- Grid layout for Side-by-Side (Left: Text, Right: Form) -->
+      <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+        
+        <!-- Left Column: Title & Compact Features -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Header inline to save vertical space -->
+          <div>
+            <span class="inline-block py-1 px-3 rounded-full border border-moloris-cyan/30 bg-moloris-cyan/10 text-moloris-cyan text-xs font-medium tracking-widest mb-3">
+              GET IN TOUCH
+            </span>
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 tracking-tight">與 Moloris 專家諮詢</h1>
+            <p class="text-gray-400 text-sm md:text-base max-w-xl leading-relaxed">
+              了解我們的「計算發現引擎」如何協助您在藥物開發、超分子設計與材料科學等領域，做出更聰明的跨領域決策。
+            </p>
+          </div>
+
+          <!-- Compact Feature List -->
+          <div class="grid sm:grid-cols-2 lg:grid-cols-1 gap-4 mt-4">
+            
+            <div class="flex items-start gap-3 bg-gray-900/30 p-3 rounded-lg border border-gray-800/50">
+              <i class="fa-solid fa-comments text-moloris-cyan mt-1"></i>
+              <div>
+                <h3 class="text-white font-bold text-sm mb-0.5">免費諮詢與評估</h3>
+                <p class="text-gray-500 text-xs">相同成果可重複延續使用，彈性的共同合作方案。</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 bg-gray-900/30 p-3 rounded-lg border border-gray-800/50">
+              <i class="fa-solid fa-cubes text-moloris-cyan mt-1"></i>
+              <div>
+                <h3 class="text-white font-bold text-sm mb-0.5">客製化建模支援</h3>
+                <p class="text-gray-500 text-xs">提供最佳化的分析模型，涵蓋化學小分子、聚合物與奈米技術。</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 bg-gray-900/30 p-3 rounded-lg border border-gray-800/50">
+              <i class="fa-solid fa-chart-network text-moloris-cyan mt-1"></i>
+              <div>
+                <h3 class="text-white font-bold text-sm mb-0.5">全面數據分析</h3>
+                <p class="text-gray-500 text-xs">結果收斂、對照比對、與合理性物理驗證。</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 bg-gray-900/30 p-3 rounded-lg border border-gray-800/50">
+              <i class="fa-solid fa-layer-group text-moloris-cyan mt-1"></i>
+              <div>
+                <h3 class="text-white font-bold text-sm mb-0.5">一站式服務</h3>
+                <p class="text-gray-500 text-xs">從建模、模擬、分析到實驗設計與文獻支持、報告協助。</p>
+              </div>
+            </div>
+            
+          </div>
         </div>
 
-        <div class="feature">客製化建模支持
-          <p>→根據實驗設計提供最佳化的分析模型，包含化學結構與奈米技術</p>
+        <!-- Right Column: Compact Form -->
+        <div class="lg:col-span-5 relative">
+          <!-- Glow behind form -->
+          <div class="absolute inset-0 bg-moloris-cyan/5 blur-2xl rounded-3xl transform scale-105 pointer-events-none"></div>
+          
+          <div class="bg-moloris-card border border-gray-800 rounded-2xl p-6 shadow-2xl relative z-10">
+            <form action="#" method="POST" class="space-y-4" onsubmit="event.preventDefault(); alert('感謝您的來信！Moloris 專員將盡快與您聯繫。');">
+              
+              <!-- Name and Phone in one row to save vertical space -->
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label for="name" class="block text-xs font-medium text-gray-400">姓名 *</label>
+                  <input type="text" id="name" name="name" required
+                    class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-moloris-cyan focus:ring-1 focus:ring-moloris-cyan transition-colors"
+                    placeholder="您的稱呼">
+                </div>
+                <div class="space-y-1">
+                  <label for="phone" class="block text-xs font-medium text-gray-400">聯絡電話</label>
+                  <input type="tel" id="phone" name="phone"
+                    class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-moloris-cyan focus:ring-1 focus:ring-moloris-cyan transition-colors"
+                    placeholder="0912-345-678">
+                </div>
+              </div>
+
+              <div class="space-y-1">
+                <label for="email" class="block text-xs font-medium text-gray-400">電子郵件 *</label>
+                <input type="email" id="email" name="email" required
+                  class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-moloris-cyan focus:ring-1 focus:ring-moloris-cyan transition-colors"
+                  placeholder="name@company.com">
+              </div>
+
+              <div class="space-y-1">
+                <label for="subject" class="block text-xs font-medium text-gray-400">諮詢主題 *</label>
+                <select id="subject" name="subject" required
+                  class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-moloris-cyan focus:ring-1 focus:ring-moloris-cyan transition-colors appearance-none">
+                  <option value="" disabled selected class="text-gray-500">請選擇感興趣的領域</option>
+                  <option value="生技與新藥開發">生技與新藥開發</option>
+                  <option value="超分子與自組裝">超分子與自組裝</option>
+                  <option value="化學與高分子材料">化學與高分子材料</option>
+                  <option value="無機材料與固態化學">無機材料與固態化學</option>
+                  <option value="其他合作提案">其他合作提案</option>
+                </select>
+              </div>
+
+              <div class="space-y-1">
+                <label for="message" class="block text-xs font-medium text-gray-400">需求內容 *</label>
+                <textarea id="message" name="message" rows="3" required
+                  class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-moloris-cyan focus:ring-1 focus:ring-moloris-cyan transition-colors resize-none"
+                  placeholder="請簡述您的研究目標或欲建立的模型類型..."></textarea>
+              </div>
+
+              <button type="submit"
+                class="w-full py-2.5 mt-2 bg-moloris-cyan hover:bg-moloris-cyanDark text-white text-sm font-bold rounded-lg transition-all duration-300 transform shadow-[0_0_15px_rgba(0,183,195,0.3)] hover:shadow-[0_0_20px_rgba(0,183,195,0.5)]">
+                發送訊息
+              </button>
+            </form>
+          </div>
         </div>
 
-        <div class="feature">提供全面數據分析
-          <p>→結果收斂、對照比對、合理性驗證</p>
-        </div>
-
-        <div class="feature">多元解決策略
-          <p>→快速原型測試, 節省溝通成本</p>
-          <p>→子結構與藥效團分析策略</p>
-        </div>
-
-        <div class="feature">一站式服務
-          <p>→建模, 模擬, 分析, 實驗設計, 驗證策略, 文獻支持, 論文撰寫</p>
-        </div>
-      </div>
-
-      <div class="right">
-        <form>
-          <div class="form-group">
-            <input type="text" name="name" placeholder="姓名 *" required>
-          </div>
-          <div class="form-group">
-            <input type="email" name="email" placeholder="電子郵件 *" required>
-          </div>
-          <div class="form-group">
-            <input type="text" name="phone" placeholder="電話">
-          </div>
-          <div class="form-group">
-            <input type="text" name="subject" placeholder="主題 *" required>
-          </div>
-          <div class="form-group">
-            <textarea name="message" placeholder="信息 *" required></textarea>
-          </div>
-          <button type="submit">發送</button>
-        </form>
       </div>
     </div>
-
-    <footer>
-      <p>© 2025 THERIA. All rights reserved.</p>
-    </footer>
   </main>
-</body>
 
+  <!-- Slim Footer to ensure everything fits on one screen without scrolling -->
+  <footer class="bg-black py-4 border-t border-gray-900 mt-auto">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 gap-3">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-atom text-moloris-cyan text-sm"></i>
+        <span class="text-gray-300 font-bold tracking-wider">Moloris</span>
+        <span>© 2026. All rights reserved.</span>
+      </div>
+      <div class="flex gap-6">
+        <span class="hover:text-moloris-cyan transition-colors cursor-pointer"><i class="fa-solid fa-envelope mr-1.5"></i>info@moloris.com</span>
+        <span class="hover:text-moloris-cyan transition-colors cursor-pointer"><i class="fa-solid fa-map-marker-alt mr-1.5"></i>台北市科技園區</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
 </html>
