@@ -665,48 +665,105 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let mouse = { x: null, y: null, radius: 150 };
+    let mouse = {
+      x: null,
+      y: null,
+      radius: 220 // 牽引感應半徑 (稍微擴大，讓引力範圍更廣)
+    };
 
-    window.addEventListener('mousemove', function(event) {
+    // 滑鼠移動追蹤
+    window.addEventListener('mousemove', function (event) {
       mouse.x = event.x;
       mouse.y = event.y;
     });
 
-    window.addEventListener('mouseout', function() {
+    // 滑鼠移出畫布
+    window.addEventListener('mouseout', function () {
       mouse.x = undefined;
       mouse.y = undefined;
     });
 
+    // 點擊觸發「星系爆炸」特效 (強大排斥力)
+    window.addEventListener('mousedown', function () {
+      for (let i = 0; i < particlesArray.length; i++) {
+        let p = particlesArray[i];
+        let dx = p.x - mouse.x;
+        let dy = p.y - mouse.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // 爆炸範圍與推力
+        if (distance < 400) {
+          let force = (400 - distance) / 20; 
+          let forceX = (dx / distance) * force;
+          let forceY = (dy / distance) * force;
+          p.directionX += forceX;
+          p.directionY += forceY;
+        }
+      }
+    });
+
     class Particle {
-      constructor(x, y, directionX, directionY, size, color) {
+      constructor(x, y, directionX, directionY, size, opacity) {
         this.x = x;
         this.y = y;
-        this.directionX = directionX;
-        this.directionY = directionY;
+        this.baseDirectionX = directionX; 
+        this.baseDirectionY = directionY; 
+        this.directionX = directionX;     
+        this.directionY = directionY;     
         this.size = size;
-        this.color = color;
+        this.opacity = opacity;           // 每個粒子有不同的初始亮度，創造層次感
       }
-      
+
       draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-        ctx.fillStyle = this.color;
+        // 使用更亮的極光青色
+        ctx.fillStyle = `rgba(0, 229, 255, ${this.opacity})`;
+        
+        // 增強高亮度粒子的微光暈效果 (景深與發光感)
+        if (this.opacity > 0.7) {
+          ctx.shadowBlur = 12; // 提高發光半徑
+          ctx.shadowColor = '#00E5FF';
+        } else {
+          ctx.shadowBlur = 0;
+        }
         ctx.fill();
       }
-      
+
       update() {
+        // 碰觸邊界反彈
         if (this.x > canvas.width || this.x < 0) {
           this.directionX = -this.directionX;
+          this.baseDirectionX = -this.baseDirectionX;
         }
         if (this.y > canvas.height || this.y < 0) {
           this.directionY = -this.directionY;
+          this.baseDirectionY = -this.baseDirectionY;
         }
 
-        // Mouse collision
-        let dx = mouse.x - this.x;
-        let dy = mouse.y - this.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
-        
+        // 滑鼠引力牽引 (Gravitational Attraction)
+        if (mouse.x != undefined) {
+          let dx = mouse.x - this.x;
+          let dy = mouse.y - this.y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < mouse.radius) {
+            // 計算往滑鼠方向的向量
+            let forceDirectionX = dx / distance;
+            let forceDirectionY = dy / distance;
+            // 距離越近，牽引力越大
+            let force = (mouse.radius - distance) / mouse.radius;
+            
+            // 改變位置 (+= 代表被吸過去)
+            this.x += forceDirectionX * force * 1.5;
+            this.y += forceDirectionY * force * 1.5;
+          }
+        }
+
+        // 摩擦力演算法：讓爆炸後的粒子緩慢減速回到基礎速度
+        this.directionX = this.directionX * 0.96 + this.baseDirectionX * 0.04;
+        this.directionY = this.directionY * 0.96 + this.baseDirectionY * 0.04;
+
         this.x += this.directionX;
         this.y += this.directionY;
         this.draw();
@@ -715,33 +772,53 @@
 
     function init() {
       particlesArray = [];
-      let numberOfParticles = (canvas.height * canvas.width) / 12000;
+      let numberOfParticles = (canvas.height * canvas.width) / 7000;
       for (let i = 0; i < numberOfParticles; i++) {
-        let size = (Math.random() * 2) + 0.5;
+        let size = (Math.random() * 2.5) + 0.5; // 稍微放大最大粒子尺寸
         let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
         let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-        let directionX = (Math.random() * 0.8) - 0.4;
-        let directionY = (Math.random() * 0.8) - 0.4;
-        let color = '#00b7c3'; // Molris Cyan
-        
-        particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+        let directionX = (Math.random() * 1.2) - 0.6; 
+        let directionY = (Math.random() * 1.2) - 0.6;
+        let opacity = Math.random() * 0.7 + 0.3; // 基礎透明度拉高 (0.3 ~ 1.0)，整體變亮
+
+        particlesArray.push(new Particle(x, y, directionX, directionY, size, opacity));
       }
     }
 
     function connect() {
-      let opacityValue = 1;
       for (let a = 0; a < particlesArray.length; a++) {
         for (let b = a; b < particlesArray.length; b++) {
-          let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) + 
+          let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
                          ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
-                         
-          if (distance < (canvas.width / 10) * (canvas.height / 10)) {
-            opacityValue = 1 - (distance / 20000);
-            ctx.strokeStyle = 'rgba(0, 183, 195,' + opacityValue + ')';
-            ctx.lineWidth = 1;
+
+          // 1. 粒子之間的連線
+          if (distance < 16000) { 
+            let opacityValue = 1 - (distance / 16000); 
+            if (opacityValue > 0) {
+              // 提高整體線條的亮度與透明度上限
+              ctx.strokeStyle = `rgba(0, 229, 255, ${opacityValue * 0.85})`;
+              ctx.lineWidth = 1.0; // 加粗一點點讓光跡更明顯
+              ctx.beginPath();
+              ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+              ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+              ctx.stroke();
+            }
+          }
+        }
+        
+        // 2. 粒子與滑鼠的超亮牽引網
+        if (mouse.x != undefined) {
+          let dx = mouse.x - particlesArray[a].x;
+          let dy = mouse.y - particlesArray[a].y;
+          let mouseDistance = (dx * dx + dy * dy);
+          
+          if (mouseDistance < 30000) {
+            let mouseOpacity = 1 - (mouseDistance / 30000);
+            ctx.strokeStyle = `rgba(0, 255, 255, ${mouseOpacity * 0.9})`; // 近乎純白的極高亮度
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+            ctx.lineTo(mouse.x, mouse.y);
             ctx.stroke();
           }
         }
@@ -751,20 +828,19 @@
     function animate() {
       requestAnimationFrame(animate);
       ctx.clearRect(0, 0, innerWidth, innerHeight);
-      
+
       for (let i = 0; i < particlesArray.length; i++) {
         particlesArray[i].update();
       }
       connect();
     }
 
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
       canvas.width = innerWidth;
       canvas.height = innerHeight;
       init();
     });
 
-    // Initialize and start animation
     init();
     animate();
   </script>
