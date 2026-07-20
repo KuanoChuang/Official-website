@@ -668,7 +668,7 @@
     let mouse = {
       x: null,
       y: null,
-      radius: 220 // 牽引感應半徑 (稍微擴大，讓引力範圍更廣)
+      radius: 220 // 牽引感應半徑
     };
 
     // 滑鼠移動追蹤
@@ -711,19 +711,19 @@
         this.directionX = directionX;     
         this.directionY = directionY;     
         this.size = size;
-        this.opacity = opacity;           // 每個粒子有不同的初始亮度，創造層次感
+        this.opacity = opacity; // 每個粒子有不同的初始亮度
       }
 
       draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-        // 使用更亮的極光青色
-        ctx.fillStyle = `rgba(0, 229, 255, ${this.opacity})`;
+        // 【亮度提升】使用最亮的純青色 (Pure Cyan)
+        ctx.fillStyle = `rgba(0, 255, 255, ${this.opacity})`;
         
-        // 增強高亮度粒子的微光暈效果 (景深與發光感)
-        if (this.opacity > 0.7) {
-          ctx.shadowBlur = 12; // 提高發光半徑
-          ctx.shadowColor = '#00E5FF';
+        // 【亮度提升】增強高亮度粒子的光暈半徑與強度
+        if (this.opacity > 0.6) {
+          ctx.shadowBlur = 18; 
+          ctx.shadowColor = '#00FFFF';
         } else {
           ctx.shadowBlur = 0;
         }
@@ -748,13 +748,11 @@
           let distance = Math.sqrt(dx * dx + dy * dy);
           
           if (distance < mouse.radius) {
-            // 計算往滑鼠方向的向量
             let forceDirectionX = dx / distance;
             let forceDirectionY = dy / distance;
-            // 距離越近，牽引力越大
             let force = (mouse.radius - distance) / mouse.radius;
             
-            // 改變位置 (+= 代表被吸過去)
+            // 往滑鼠方向吸過去
             this.x += forceDirectionX * force * 1.5;
             this.y += forceDirectionY * force * 1.5;
           }
@@ -774,12 +772,13 @@
       particlesArray = [];
       let numberOfParticles = (canvas.height * canvas.width) / 7000;
       for (let i = 0; i < numberOfParticles; i++) {
-        let size = (Math.random() * 2.5) + 0.5; // 稍微放大最大粒子尺寸
+        let size = (Math.random() * 2.5) + 0.5; 
         let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
         let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
         let directionX = (Math.random() * 1.2) - 0.6; 
         let directionY = (Math.random() * 1.2) - 0.6;
-        let opacity = Math.random() * 0.7 + 0.3; // 基礎透明度拉高 (0.3 ~ 1.0)，整體變亮
+        // 【亮度提升】將基礎透明度大幅拉高到 0.5 ~ 1.0 (原本是 0.3~1.0)
+        let opacity = Math.random() * 0.5 + 0.5; 
 
         particlesArray.push(new Particle(x, y, directionX, directionY, size, opacity));
       }
@@ -792,12 +791,13 @@
                          ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
 
           // 1. 粒子之間的連線
-          if (distance < 16000) { 
-            let opacityValue = 1 - (distance / 16000); 
+          // 【亮度提升】放寬連線距離 (從 16000 提升到 22000)，讓網狀更密、更亮
+          if (distance < 22000) { 
+            let opacityValue = 1 - (distance / 22000); 
             if (opacityValue > 0) {
-              // 提高整體線條的亮度與透明度上限
-              ctx.strokeStyle = `rgba(0, 229, 255, ${opacityValue * 0.85})`;
-              ctx.lineWidth = 1.0; // 加粗一點點讓光跡更明顯
+              // 【亮度提升】不再打折透明度，直接使用 100% 的 opacityValue，並稍微加粗
+              ctx.strokeStyle = `rgba(0, 255, 255, ${opacityValue})`;
+              ctx.lineWidth = 1.2; 
               ctx.beginPath();
               ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
               ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
@@ -812,10 +812,11 @@
           let dy = mouse.y - particlesArray[a].y;
           let mouseDistance = (dx * dx + dy * dy);
           
-          if (mouseDistance < 30000) {
-            let mouseOpacity = 1 - (mouseDistance / 30000);
-            ctx.strokeStyle = `rgba(0, 255, 255, ${mouseOpacity * 0.9})`; // 近乎純白的極高亮度
-            ctx.lineWidth = 1.5;
+          if (mouseDistance < 35000) { // 稍微擴大牽引網的發光範圍
+            let mouseOpacity = 1 - (mouseDistance / 35000);
+            // 【亮度提升】滑鼠牽引網改用「純白色」與更粗的線條，創造高能感
+            ctx.strokeStyle = `rgba(255, 255, 255, ${mouseOpacity})`; 
+            ctx.lineWidth = 2.0;
             ctx.beginPath();
             ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
             ctx.lineTo(mouse.x, mouse.y);
