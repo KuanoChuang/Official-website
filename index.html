@@ -68,8 +68,14 @@
 
     .story-text {
       background: linear-gradient(to right, #fff, #9ca3af);
+  
+      /* WebKit 瀏覽器 (Chrome, Safari 等) 的專屬屬性 */
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+  
+      /* W3C 標準屬性 (用來解決警告並增加相容性) */
+      background-clip: text;
+      color: transparent;
     }
 
     .dropdown:hover .dropdown-menu {
