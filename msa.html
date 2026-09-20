@@ -55,8 +55,14 @@
     }
     .text-gradient {
       background: linear-gradient(135deg, #00E5FF 0%, #3B82F6 100%);
+      
+      /* WebKit 瀏覽器支援 */
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      
+      /* 標準屬性 */
+      background-clip: text;
+      color: transparent;
     }
     /* Table styling */
     .matrix-table th, .matrix-table td {
