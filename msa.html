@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+位點位點<!DOCTYPE html>
 <html lang="zh-Hant" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
@@ -160,7 +160,7 @@
         </span>
         <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-wide text-white">
           多序列比對 <br>
-          <span class="text-2xl md:text-3xl text-gray-400 font-light mt-4 inline-block tracking-widest uppercase">Multiple Sequence Alignment (MSA)</span>
+          <span class="text-2xl md:text-3xl text-gray-400 font-light mt-4 inline-block tracking-widest ">Multiple Sequence Alignment (MSA)</span>
         </h1>
         <p class="text-lg text-gray-400 leading-relaxed max-w-3xl mx-auto mb-10">
           從龐大的生物序列中，精準辨識保守區域與演化特徵。<br>
@@ -190,9 +190,8 @@
             <div class="relative bg-[#050B14] rounded-2xl overflow-hidden border border-gray-800 shadow-2xl">
               <img src="MSA.jpg" alt="Molris MSA Alignment Result Preview" 
                    class="w-full h-auto object-cover opacity-90 hover:opacity-100 transition-opacity duration-500 bg-gray-900 min-h-[300px]"
-                   onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?q=80&w=800&auto=format&fit=crop'; this.title='圖片遺失，此為暫代圖';">
               <div class="bg-gray-900/90 p-4 text-xs md:text-sm text-gray-300 text-center border-t border-gray-800 flex justify-center items-center gap-2">
-                <i class="fa-solid fa-microscope text-molris-cyan"></i> Molris 視覺化 MSA 結果範例 (含保守性熱度標記)
+                <i class="fa-solid fa-microscope text-molris-cyan"></i> Molris 視覺化 MSA 結果範例
               </div>
             </div>
           </div>
@@ -203,7 +202,7 @@
               <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
                 <span class="text-molris-cyan"><i class="fa-solid fa-circle-question"></i></span> 什麼是多序列比對？
               </h2>
-              <p class="text-gray-400 leading-relaxed text-sm md:text-base">
+              <p class="text-gray-400 leading-relaxed text-sm md:text-base text-justify">
                 多序列比對是將多條具有相關性的 DNA、RNA 或蛋白質序列進行排列與比較，使序列之間的<span class="text-white font-bold">相似性、保守區域、插入與缺失</span>等特徵能夠被系統性地辨識與分析。透過適當的比對方法，可進一步解析序列間的演化關係、功能區域及潛在的重要位點。
               </p>
             </div>
@@ -221,19 +220,21 @@
                 </div>
                 <div class="flex items-start gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
                   <i class="fa-solid fa-check text-molris-cyan mt-1 text-xs"></i>
+                  <span class="text-gray-300">辨識序列突變事件</span>
+                </div>
+                
+                <div class="flex items-start gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
+                  <i class="fa-solid fa-check text-molris-cyan mt-1 text-xs"></i>
                   <span class="text-gray-300">評估序列保守性</span>
                 </div>
                 <div class="flex items-start gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
                   <i class="fa-solid fa-check text-molris-cyan mt-1 text-xs"></i>
                   <span class="text-gray-300">輔助三維結構預測</span>
                 </div>
+                
                 <div class="flex items-start gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
                   <i class="fa-solid fa-check text-molris-cyan mt-1 text-xs"></i>
-                  <span class="text-gray-300">辨識突變事件</span>
-                </div>
-                <div class="flex items-start gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
-                  <i class="fa-solid fa-check text-molris-cyan mt-1 text-xs"></i>
-                  <span class="text-gray-300">定位功能區域</span>
+                  <span class="text-gray-300">定位蛋白功能區域</span>
                 </div>
                 <div class="flex items-start gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
                   <i class="fa-solid fa-check text-molris-cyan mt-1 text-xs"></i>
