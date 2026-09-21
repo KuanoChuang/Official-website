@@ -91,6 +91,7 @@
   <!-- ==================== Header ==================== -->
   <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <!-- Logo -->
       <a href="index.html" class="text-2xl font-bold tracking-wider text-white flex items-center gap-2 group">
         <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i>
         Molris
@@ -98,6 +99,8 @@
 
       <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+        
+        <!-- 關於Molris -->
         <div class="relative group dropdown py-8">
           <a href="index.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">關於Molris <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
           <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
@@ -109,6 +112,7 @@
           </div>
         </div>
 
+        <!-- 技術平台 -->
         <div class="relative group dropdown py-8">
           <a href="platform.html" class="text-molris-cyan flex items-center gap-1">技術平台 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
           <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-44 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
@@ -118,6 +122,7 @@
           </div>
         </div>
 
+        <!-- 專案介紹 -->
         <div class="relative group dropdown py-8">
           <a href="project.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">專案介紹 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
           <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
@@ -126,6 +131,7 @@
           </div>
         </div>
 
+        <!-- 聯絡我們 -->
         <div class="relative group dropdown py-8">
           <a href="contact.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">聯絡我們 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
           <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
@@ -161,7 +167,7 @@
           多序列比對 <br>
           <span class="text-2xl md:text-3xl text-gray-400 font-light mt-4 inline-block tracking-widest ">Multiple Sequence Alignment (MSA)</span>
         </h1>
-        <p class="text-lg text-gray-400 leading-relaxed max-w-3xl mx-auto mb-10 text-justify">
+        <p class="text-lg text-gray-400 leading-relaxed max-w-3xl mx-auto mb-10">
           從龐大的生物序列中，精準辨識保守區域與演化特徵。<br>
           為結構預測、藥物開發與蛋白質工程，提供最關鍵的底層數據支持。
         </p>
@@ -187,6 +193,7 @@
           <div class="relative group">
             <div class="absolute -inset-1 bg-gradient-to-r from-molris-cyan to-blue-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
             <div class="relative bg-[#050B14] rounded-2xl overflow-hidden border border-gray-800 shadow-2xl">
+              <!-- 修復圖片標籤 -->
               <img src="MSA.jpg" alt="Molris MSA Alignment Result Preview" class="w-full h-auto object-cover opacity-90 hover:opacity-100 transition-opacity duration-500 bg-gray-900 min-h-[300px]">
               <div class="bg-gray-900/90 p-4 text-xs md:text-sm text-gray-300 text-center border-t border-gray-800 flex justify-center items-center gap-2">
                 <i class="fa-solid fa-microscope text-molris-cyan"></i> Molris 視覺化 MSA 結果範例
@@ -315,7 +322,7 @@
             <i class="fa-solid fa-book-journal-whills text-gray-500 mt-1"></i>
             <div>
               <p class="text-xs text-gray-500 font-medium">技術理論支持文獻：</p>
-              <p class="text-xs text-gray-400 mt-1">
+              <p class="text-xs text-gray-400 mt-1 text-justify">
                 Waterhouse, A., et al. "SWISS-MODEL: homology modelling of protein structures and complexes." <em>Nucleic acids research</em> (2018).<br>
                 Katoh, K., & Standley, D. M. "MAFFT multiple sequence alignment software version 7: improvements in performance and usability." <em>Molecular biology and evolution</em> (2013).
               </p>
@@ -345,16 +352,18 @@
           <table class="w-full text-left matrix-table border-collapse min-w-[800px]">
             <thead>
               <tr class="bg-gray-800/80">
-                <th class="p-4 text-gray-300 font-bold w-1/4 border-r border-gray-700">資料集規模 \ 序列相似度</th>
-                <th class="p-4 text-molris-cyan font-bold text-center w-1/4">&lt; 30%</th>
-                <th class="p-4 text-molris-cyan font-bold text-center w-1/4">30–70%</th>
-                <th class="p-4 text-molris-cyan font-bold text-center w-1/4">&gt; 70%</th>
+                <!-- 縮小第一欄寬度 w-[16%]，剩下平均分配 w-[28%] -->
+                <th class="p-4 text-gray-300 font-bold w-[16%] border-r border-gray-700">資料集規模 \ 序列相似度</th>
+                <th class="p-4 text-molris-cyan font-bold text-center w-[28%]">&lt; 30%</th>
+                <th class="p-4 text-molris-cyan font-bold text-center w-[28%]">30–70%</th>
+                <th class="p-4 text-molris-cyan font-bold text-center w-[28%]">&gt; 70%</th>
               </tr>
             </thead>
             <tbody class="bg-gray-900/40 text-sm">
               <tr class="hover:bg-gray-800/30 transition-colors">
                 <td class="p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">小型資料集</strong><span class="text-gray-500 text-xs">&lt; 100 條序列</span></td>
                 <td class="p-4 border-t border-gray-800 text-center">
+                  <!-- 實底演算法 -->
                   <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
@@ -364,6 +373,7 @@
                   </div>
                 </td>
                 <td class="p-4 border-t border-gray-800 text-center">
+                  <!-- 實底演算法 -->
                   <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
@@ -373,9 +383,13 @@
                   </div>
                 </td>
                 <td class="p-4 border-t border-gray-800 text-center">
-                  <div class="flex flex-wrap justify-center gap-1.5">
+                  <!-- 實底演算法 -->
+                  <div class="flex flex-wrap justify-center gap-1.5 mb-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
+                  </div>
+                  <!-- 空心/括號演算法 獨立成行 -->
+                  <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-outline">(T-Coffee)</span>
                     <span class="algo-badge algo-badge-outline">(ProbCons)</span>
                   </div>
@@ -384,23 +398,30 @@
               <tr class="hover:bg-gray-800/30 transition-colors">
                 <td class="p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">中型資料集</strong><span class="text-gray-500 text-xs">&lt; 1k 條序列</span></td>
                 <td class="p-4 border-t border-gray-800 text-center">
-                  <div class="flex flex-wrap justify-center gap-1.5">
+                  <div class="flex flex-wrap justify-center gap-1.5 mb-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
+                  </div>
+                  <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-outline">(ProbCons)</span>
                   </div>
                 </td>
                 <td class="p-4 border-t border-gray-800 text-center">
-                  <div class="flex flex-wrap justify-center gap-1.5">
+                  <div class="flex flex-wrap justify-center gap-1.5 mb-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
+                  </div>
+                  <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-outline">(ProbCons)</span>
                   </div>
                 </td>
                 <td class="p-4 border-t border-gray-800 text-center">
-                  <div class="flex flex-wrap justify-center gap-1.5">
+                  <div class="flex flex-wrap justify-center gap-1.5 mb-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
+                  </div>
+                  <!-- 確保足夠寬度可以塞入同一列 -->
+                  <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-outline">(Clustal Omega)</span>
                     <span class="algo-badge algo-badge-outline">(T-Coffee)</span>
                     <span class="algo-badge algo-badge-outline">(ProbCons)</span>
@@ -416,9 +437,11 @@
                   </div>
                 </td>
                 <td class="p-4 border-t border-gray-800 text-center">
-                  <div class="flex flex-wrap justify-center gap-1.5">
+                  <div class="flex flex-wrap justify-center gap-1.5 mb-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
+                  </div>
+                  <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-outline">(Clustal Omega)</span>
                   </div>
                 </td>
@@ -457,39 +480,65 @@
 
         <h3 class="text-2xl font-bold text-white mb-6">有哪些多序列比對方法可以選擇？</h3>
         <p class="text-gray-400 text-sm mb-6 text-justify">不同演算法在序列數量、相似度、比對速度及插入缺失處理上各有差異。常見方法包括：</p>
+        
+        <!-- 演算法可點擊卡片區塊 -->
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">MAFFT</h4>
-            <p class="text-xs text-gray-400 leading-relaxed text-justify">採用快速傅立葉轉換等策略進行高效多序列比對，適合處理從中小型到大型資料集，泛用性高。</p>
-          </div>
-          <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">MUSCLE v5</h4>
-            <p class="text-xs text-gray-400 leading-relaxed text-justify">以高效的多序列比對策略進行序列最佳化，兼顧比對速度與準確性，適用於多種規模的序列資料。</p>
-          </div>
-          <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">Clustal Omega</h4>
-            <p class="text-xs text-gray-400 leading-relaxed text-justify">利用種子引導樹及隱馬可夫模型（HMM）等方法進行多序列比對，適合處理大量序列。</p>
-          </div>
-          <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">T-Coffee</h4>
-            <p class="text-xs text-gray-400 leading-relaxed text-justify">以漸進式比對為基礎，透過一致性資訊提升可靠性，適合對比對品質要求較高的情境。</p>
-          </div>
-          <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">ProbCons</h4>
-            <p class="text-xs text-gray-400 leading-relaxed text-justify">利用成對隱馬可夫模型及機率一致性資訊，改善序列間的保守區域辨識。</p>
-          </div>
-          <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">PRANK</h4>
-            <p class="text-xs text-gray-400 leading-relaxed text-justify">基於演化模型進行序列比對，特別重視插入與缺失的演化處理。</p>
-          </div>
-          <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">DIALIGN-TX</h4>
-            <p class="text-xs text-gray-400 leading-relaxed text-justify">以片段為基礎進行比對，適合處理具有局部相似區域的序列資料。</p>
-          </div>
-          <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">EMBOSS Cons</h4>
-            <p class="text-xs text-gray-400 leading-relaxed text-justify">根據既有的多序列比對結果建立共識序列，可用於後續的序列特徵整理與分析。</p>
-          </div>
+          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+              MAFFT
+              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+            </h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">採用快速傅立葉轉換等策略進行高效多序列比對，適合處理從中小型到大型資料集，泛用性高。</p>
+          </a>
+          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+              MUSCLE v5
+              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+            </h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">以高效的多序列比對策略進行序列最佳化，兼顧比對速度與準確性，適用於多種規模的序列資料。</p>
+          </a>
+          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+              Clustal Omega
+              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+            </h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">利用種子引導樹及隱馬可夫模型（HMM）等方法進行多序列比對，適合處理大量序列。</p>
+          </a>
+          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+              T-Coffee
+              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+            </h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">以漸進式比對為基礎，透過一致性資訊提升可靠性，適合對比對品質要求較高的情境。</p>
+          </a>
+          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+              ProbCons
+              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+            </h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">利用成對隱馬可夫模型及機率一致性資訊，改善序列間的保守區域辨識。</p>
+          </a>
+          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+              PRANK
+              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+            </h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">基於演化模型進行序列比對，特別重視插入與缺失的演化處理。</p>
+          </a>
+          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+              DIALIGN-TX
+              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+            </h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">以片段為基礎進行比對，適合處理具有局部相似區域的序列資料。</p>
+          </a>
+          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+              EMBOSS Cons
+              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+            </h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">根據既有的多序列比對結果建立共識序列，可用於後續的序列特徵整理與分析。</p>
+          </a>
         </div>
       </div>
     </section>
@@ -516,7 +565,7 @@
           <div class="bg-gray-900/30 p-6 rounded-2xl border border-gray-800">
             <h3 class="text-xl font-bold text-white mb-4">為何資料品質會影響結果？</h3>
             <p class="text-xs text-gray-400 mb-4 text-justify">分析前應進行基本的資料檢查，以降低非生物性因素的干擾：</p>
-            <ul class="space-y-2 text-sm text-gray-300">
+            <ul class="space-y-2 text-sm text-gray-300 text-justify">
               <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 序列方向是否一致</li>
               <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 序列大小寫是否統一</li>
               <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 非預期符號或非法字元</li>
@@ -585,7 +634,7 @@
         <div class="mt-24 pt-16 border-t border-gray-800">
           <div class="text-center mb-12">
             <h2 class="text-3xl font-bold text-white mb-4">如何確保比對結果的可靠性？</h2>
-            <p class="text-gray-400 max-w-3xl mx-auto">為避免「垃圾進，垃圾出 (GIGO)」，Molris 在交付分析數據前，會針對比對結果進行嚴格的交叉驗證與品質把關：</p>
+            <p class="text-gray-400 max-w-3xl mx-auto text-justify md:text-center">Molris 在交付分析數據前，會針對比對結果進行嚴格的交叉驗證與品質把關：</p>
           </div>
 
           <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -594,7 +643,7 @@
               <div class="text-molris-cyan mb-4"><i class="fa-solid fa-code-compare text-2xl group-hover:scale-110 transition-transform"></i></div>
               <h4 class="text-white font-bold mb-2 text-sm">多演算法交叉驗證</h4>
               <p class="text-xs text-gray-400 leading-relaxed text-justify">
-                不盲目信任單一模型。我們會平行執行多種演算法 (如 MAFFT vs. MUSCLE)，交叉檢視結果的收斂度，確認 Gap 位置不因演算法偏差而失真。
+                平行執行多種演算法，交叉檢視結果的收斂度，確認 Gap 位置不因演算法偏差而失真。
               </p>
             </div>
             <!-- QC 2 -->
@@ -602,7 +651,7 @@
               <div class="text-molris-cyan mb-4"><i class="fa-solid fa-cubes text-2xl group-hover:scale-110 transition-transform"></i></div>
               <h4 class="text-white font-bold mb-2 text-sm">結構輔助驗證 (3D Mapping)</h4>
               <p class="text-xs text-gray-400 leading-relaxed text-justify">
-                將一維序列的保守區域直接映射至已知的 3D 蛋白質結構上。若高度保守區域未落在結構核心或活性位點上，即會觸發人工覆核機制。
+                將一維序列的保守區域映射至已知的 3D 蛋白質結構，確認高度保守區域與結構核心的對應關係，並依據分析結果進行人工覆核。
               </p>
             </div>
             <!-- QC 3 -->
@@ -610,7 +659,7 @@
               <div class="text-molris-cyan mb-4"><i class="fa-solid fa-network-wired text-2xl group-hover:scale-110 transition-transform"></i></div>
               <h4 class="text-white font-bold mb-2 text-sm">演化合理性評估</h4>
               <p class="text-xs text-gray-400 leading-relaxed text-justify">
-                針對含有不同物種或變異株的資料，透過構建初步的系統發育樹 (Phylogenetic Tree)，檢視物種間的親緣分群是否符合基礎生物學邏輯。
+                針對含有不同物種或變異株的資料，透過構建初步的系統發育樹，檢視物種間的親緣分群是否符合基礎生物學邏輯。
               </p>
             </div>
             <!-- QC 4 -->
@@ -618,7 +667,7 @@
               <div class="text-molris-cyan mb-4"><i class="fa-solid fa-calculator text-2xl group-hover:scale-110 transition-transform"></i></div>
               <h4 class="text-white font-bold mb-2 text-sm">數學評分與專家覆核</h4>
               <p class="text-xs text-gray-400 leading-relaxed text-justify">
-                導入 SP (Sum-of-Pairs) 或 TC (Total Column) 等客觀評分指標進行量化評估，最後由結構生物學專家對關鍵功能位點進行視覺確認。
+                導入 TC (Total Column) 或 SP (Sum-of-Pairs) 等客觀評分指標進行量化評估，最後由結構生物學專家對關鍵位點進行視覺確認。
               </p>
             </div>
           </div>
@@ -635,7 +684,7 @@
         <div class="glass-card p-10 md:p-16 rounded-3xl border border-molris-cyan/30 text-center relative shadow-[0_0_50px_rgba(0,229,255,0.1)]">
           
           <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
-            為什麼多序列比對<br class="md:hidden">適合交由 Molris 專業分析？
+            為什麼決定交由 Molris 專業分析？
           </h2>
           
           <p class="text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
@@ -656,7 +705,8 @@
           </div>
 
           <p class="text-gray-400 mb-10 max-w-3xl mx-auto text-sm leading-relaxed text-justify md:text-center">
-            不同演算法與參數可能產生不同的 gap 配置、保守區域與序列對應關係；若後續還要進行結構預測、功能位點分析或藥物設計，<strong class="text-white">比對品質將直接影響後續研發的成敗</strong>。<br><br>
+            不同演算法與參數可能產生不同的 gap 配置、保守區域與序列對應關係；<br>
+            若後續還要進行結構預測、功能位點分析或藥物設計，<strong class="text-white">比對品質將直接影響後續研發的成果</strong>。<br><br>
             Molris 能依據資料特性與研究目的，協助您選擇最佳演算法、調整參數，並進行嚴格的品質檢查。<strong class="text-molris-cyan">省下您反覆測試所需的人力與時間成本</strong>，讓 MSA 不只是「得到一個結果」，而是取得可供後續研究使用的可靠數據。
           </p>
 
@@ -680,7 +730,6 @@
         <div class="flex gap-6 text-sm text-gray-500">
           <a href="#" class="hover:text-molris-cyan transition-colors">Privacy Policy</a>
           <a href="#" class="hover:text-molris-cyan transition-colors">Terms of Service</a>
-          <a href="#" class="hover:text-molris-cyan transition-colors">LinkedIn</a>
         </div>
       </div>
       <div class="text-center text-gray-600 text-sm border-t border-gray-900 pt-8">
