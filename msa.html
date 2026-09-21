@@ -1,4 +1,4 @@
-位點位點<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-Hant" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
@@ -98,7 +98,6 @@
 
       <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
-        <!-- (導航列內容保持原樣) -->
         <div class="relative group dropdown py-8">
           <a href="index.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">關於Molris <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
           <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
@@ -162,7 +161,7 @@
           多序列比對 <br>
           <span class="text-2xl md:text-3xl text-gray-400 font-light mt-4 inline-block tracking-widest ">Multiple Sequence Alignment (MSA)</span>
         </h1>
-        <p class="text-lg text-gray-400 leading-relaxed max-w-3xl mx-auto mb-10">
+        <p class="text-lg text-gray-400 leading-relaxed max-w-3xl mx-auto mb-10 text-justify">
           從龐大的生物序列中，精準辨識保守區域與演化特徵。<br>
           為結構預測、藥物開發與蛋白質工程，提供最關鍵的底層數據支持。
         </p>
@@ -188,8 +187,7 @@
           <div class="relative group">
             <div class="absolute -inset-1 bg-gradient-to-r from-molris-cyan to-blue-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
             <div class="relative bg-[#050B14] rounded-2xl overflow-hidden border border-gray-800 shadow-2xl">
-              <img src="MSA.jpg" alt="Molris MSA Alignment Result Preview" 
-                   class="w-full h-auto object-cover opacity-90 hover:opacity-100 transition-opacity duration-500 bg-gray-900 min-h-[300px]">
+              <img src="MSA.jpg" alt="Molris MSA Alignment Result Preview" class="w-full h-auto object-cover opacity-90 hover:opacity-100 transition-opacity duration-500 bg-gray-900 min-h-[300px]">
               <div class="bg-gray-900/90 p-4 text-xs md:text-sm text-gray-300 text-center border-t border-gray-800 flex justify-center items-center gap-2">
                 <i class="fa-solid fa-microscope text-molris-cyan"></i> Molris 視覺化 MSA 結果範例
               </div>
@@ -264,7 +262,7 @@
               <i class="fa-solid fa-capsules text-xl"></i>
             </div>
             <h3 class="text-xl font-bold text-white mb-4">藥物開發與精準醫療</h3>
-            <ul class="space-y-3 text-sm text-gray-400">
+            <ul class="space-y-3 text-sm text-gray-400 text-justify">
               <li><strong class="text-gray-200">廣效性藥物開發：</strong>尋找跨變異株皆高度保守的活性位點或結合口袋，作為廣效性抑制劑的標靶。</li>
               <li><strong class="text-gray-200">脫靶效應評估：</strong>比對標靶蛋白與人體內其他同源蛋白，確認藥物結合區域的特異性，降低潛在副作用。</li>
               <li><strong class="text-gray-200">抗藥性與變異分析：</strong>分析臨床變異株的序列突變（如 SNP），評估其對結構或結合能力的潛在影響。</li>
@@ -276,7 +274,7 @@
               <i class="fa-solid fa-dna text-xl"></i>
             </div>
             <h3 class="text-xl font-bold text-white mb-4">結構生物學與工程</h3>
-            <ul class="space-y-3 text-sm text-gray-400">
+            <ul class="space-y-3 text-sm text-gray-400 text-justify">
               <li><strong class="text-gray-200">輔助 3D 結構預測：</strong>為結構預測或同源建模提供必要的序列特徵與共演化資訊，提升準確度。</li>
               <li><strong class="text-gray-200">蛋白質工程設計：</strong>分析家族保守與變異區域，輔助酵素功能優化、熱穩定性提升或突變體理學設計。</li>
             </ul>
@@ -287,7 +285,7 @@
               <i class="fa-solid fa-network-wired text-xl"></i>
             </div>
             <h3 class="text-xl font-bold text-white mb-4">分子生物學與演化</h3>
-            <ul class="space-y-3 text-sm text-gray-400">
+            <ul class="space-y-3 text-sm text-gray-400 text-justify">
               <li><strong class="text-gray-200">Primer設計：</strong>根據多條序列的絕對保守區域，設計可廣泛擴增多種變異株的 PCR 引子或探針。</li>
               <li><strong class="text-gray-200">系統發育分析：</strong>比較特徵基因或蛋白質序列，建立演化樹，解析物種間的親緣關係或追蹤病原體。</li>
             </ul>
@@ -307,7 +305,7 @@
             <h2 class="text-2xl font-bold text-white">真實案例：結構輔助 MSA 定位廣效性抗體標靶</h2>
           </div>
           
-          <p class="text-gray-400 leading-relaxed mb-6 relative z-10 text-sm md:text-base">
+          <p class="text-gray-400 leading-relaxed mb-6 relative z-10 text-sm md:text-base text-justify">
             在面對高突變率的病毒（如 SARS-CoV-2 或流感病毒）時，單一變異株的結構資訊往往不足以開發具備長期效力的藥物。Molris 團隊曾運用深度多序列比對（結合 MAFFT 與 HMM 模型），分析超過 10,000 條跨國度與跨時間的病毒棘蛋白序列。
             <br><br>
             我們不僅找出了在演化壓力下<strong>「絕對保守的空間微區塊」</strong>，更進一步將這些序列比對結果映射至三維結構模型上。這項計算結果為合作的新藥研發團隊提供了精準的標靶定位，成功篩選出對多種變異株皆具備高中和能力的廣效性抗體候選物。
@@ -334,7 +332,7 @@
       <div class="max-w-7xl mx-auto px-6 relative z-10">
         <div class="mb-16">
           <h2 class="text-3xl font-bold text-white mb-4">如何選擇適合的比對方法？</h2>
-          <p class="text-gray-400 max-w-3xl">
+          <p class="text-gray-400 max-w-3xl text-justify">
             演算法的選擇通常需要同時考量：<br>
             <span class="inline-block mt-3 px-4 py-2 bg-gray-800 rounded-lg text-molris-cyan font-bold tracking-wide">
               序列數量 × 序列相似度 × 序列長度 × 分析目的
@@ -458,39 +456,39 @@
         </div>
 
         <h3 class="text-2xl font-bold text-white mb-6">有哪些多序列比對方法可以選擇？</h3>
-        <p class="text-gray-400 text-sm mb-6">不同演算法在序列數量、相似度、比對速度及插入缺失處理上各有差異。常見方法包括：</p>
+        <p class="text-gray-400 text-sm mb-6 text-justify">不同演算法在序列數量、相似度、比對速度及插入缺失處理上各有差異。常見方法包括：</p>
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 group-hover:text-white transition-colors">MAFFT</h4>
-            <p class="text-xs text-gray-400 leading-relaxed">採用快速傅立葉轉換等策略進行高效多序列比對，適合處理從中小型到大型資料集，泛用性高。</p>
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">MAFFT</h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify">採用快速傅立葉轉換等策略進行高效多序列比對，適合處理從中小型到大型資料集，泛用性高。</p>
           </div>
           <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 group-hover:text-white transition-colors">MUSCLE v5</h4>
-            <p class="text-xs text-gray-400 leading-relaxed">以高效的多序列比對策略進行序列最佳化，兼顧比對速度與準確性，適用於多種規模的序列資料。</p>
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">MUSCLE v5</h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify">以高效的多序列比對策略進行序列最佳化，兼顧比對速度與準確性，適用於多種規模的序列資料。</p>
           </div>
           <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 group-hover:text-white transition-colors">Clustal Omega</h4>
-            <p class="text-xs text-gray-400 leading-relaxed">利用種子引導樹及隱馬可夫模型（HMM）等方法進行多序列比對，適合處理大量序列。</p>
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">Clustal Omega</h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify">利用種子引導樹及隱馬可夫模型（HMM）等方法進行多序列比對，適合處理大量序列。</p>
           </div>
           <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 group-hover:text-white transition-colors">T-Coffee</h4>
-            <p class="text-xs text-gray-400 leading-relaxed">以漸進式比對為基礎，透過一致性資訊提升可靠性，適合對比對品質要求較高的情境。</p>
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">T-Coffee</h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify">以漸進式比對為基礎，透過一致性資訊提升可靠性，適合對比對品質要求較高的情境。</p>
           </div>
           <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 group-hover:text-white transition-colors">ProbCons</h4>
-            <p class="text-xs text-gray-400 leading-relaxed">利用成對隱馬可夫模型及機率一致性資訊，改善序列間的保守區域辨識。</p>
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">ProbCons</h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify">利用成對隱馬可夫模型及機率一致性資訊，改善序列間的保守區域辨識。</p>
           </div>
           <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 group-hover:text-white transition-colors">PRANK</h4>
-            <p class="text-xs text-gray-400 leading-relaxed">基於演化模型進行序列比對，特別重視插入與缺失的演化處理。</p>
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">PRANK</h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify">基於演化模型進行序列比對，特別重視插入與缺失的演化處理。</p>
           </div>
           <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 group-hover:text-white transition-colors">DIALIGN-TX</h4>
-            <p class="text-xs text-gray-400 leading-relaxed">以片段為基礎進行比對，適合處理具有局部相似區域的序列資料。</p>
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">DIALIGN-TX</h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify">以片段為基礎進行比對，適合處理具有局部相似區域的序列資料。</p>
           </div>
           <div class="bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:border-molris-cyan/30 transition-colors group">
-            <h4 class="text-molris-cyan font-bold mb-2 group-hover:text-white transition-colors">EMBOSS Cons</h4>
-            <p class="text-xs text-gray-400 leading-relaxed">根據既有的多序列比對結果建立共識序列，可用於後續的序列特徵整理與分析。</p>
+            <h4 class="text-molris-cyan font-bold mb-2 transition-colors">EMBOSS Cons</h4>
+            <p class="text-xs text-gray-400 leading-relaxed text-justify">根據既有的多序列比對結果建立共識序列，可用於後續的序列特徵整理與分析。</p>
           </div>
         </div>
       </div>
@@ -504,7 +502,7 @@
         <div class="grid md:grid-cols-3 gap-8 mb-20">
           <div class="bg-gray-900/30 p-6 rounded-2xl border border-gray-800">
             <h3 class="text-xl font-bold text-white mb-4">適合哪些輸入資料？</h3>
-            <p class="text-xs text-gray-400 mb-4">多序列比對可處理不同來源與用途的生物序列：</p>
+            <p class="text-xs text-gray-400 mb-4 text-justify">多序列比對可處理不同來源與用途的生物序列：</p>
             <ul class="space-y-2 text-sm text-gray-300 list-disc list-inside">
               <li>同源基因序列</li>
               <li>同源蛋白質序列</li>
@@ -517,7 +515,7 @@
 
           <div class="bg-gray-900/30 p-6 rounded-2xl border border-gray-800">
             <h3 class="text-xl font-bold text-white mb-4">為何資料品質會影響結果？</h3>
-            <p class="text-xs text-gray-400 mb-4">分析前應進行基本的資料檢查，以降低非生物性因素的干擾：</p>
+            <p class="text-xs text-gray-400 mb-4 text-justify">分析前應進行基本的資料檢查，以降低非生物性因素的干擾：</p>
             <ul class="space-y-2 text-sm text-gray-300">
               <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 序列方向是否一致</li>
               <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 序列大小寫是否統一</li>
@@ -529,7 +527,7 @@
 
           <div class="bg-gray-900/30 p-6 rounded-2xl border border-gray-800">
             <h3 class="text-xl font-bold text-white mb-4">多序列比對可以得到什麼？</h3>
-            <p class="text-xs text-gray-400 mb-4">完成比對後，可從結果中觀察，並標記以利後續分析：</p>
+            <p class="text-xs text-gray-400 mb-4 text-justify">完成比對後，可從結果中觀察，並標記以利後續分析：</p>
             <div class="flex flex-wrap gap-2 text-sm text-gray-300 mb-4">
               <span class="px-2 py-1 bg-gray-800 rounded">序列相似性</span>
               <span class="px-2 py-1 bg-gray-800 rounded">保守區域</span>
@@ -538,7 +536,7 @@
               <span class="px-2 py-1 bg-gray-800 rounded">共識序列</span>
               <span class="px-2 py-1 bg-gray-800 rounded">可能的功能位點</span>
             </div>
-            <p class="text-xs text-gray-500">蛋白質序列亦可搭配胺基酸性質與 BLOSUM62 等矩陣，以顏色標示保守程度。</p>
+            <p class="text-xs text-gray-500 text-justify">蛋白質序列亦可搭配胺基酸性質與 BLOSUM62 等矩陣，以顏色標示保守程度。</p>
           </div>
         </div>
 
@@ -551,35 +549,35 @@
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div class="border-l-2 border-molris-cyan/50 pl-4">
             <h4 class="text-white font-bold text-sm mb-1">動態規劃</h4>
-            <p class="text-xs text-gray-500">透過計算不同序列排列方式的得分，尋找全局或局部的最佳序列比對路徑。</p>
+            <p class="text-xs text-gray-500 text-justify">透過計算不同序列排列方式的得分，尋找全局或局部的最佳序列比對路徑。</p>
           </div>
           <div class="border-l-2 border-molris-cyan/50 pl-4">
             <h4 class="text-white font-bold text-sm mb-1">漸進式比對</h4>
-            <p class="text-xs text-gray-500">先計算兩兩相似度建立導引樹，再依循樹狀結構逐步將序列合併比對。</p>
+            <p class="text-xs text-gray-500 text-justify">先計算兩兩相似度建立導引樹，再依循樹狀結構逐步將序列合併比對。</p>
           </div>
           <div class="border-l-2 border-molris-cyan/50 pl-4">
             <h4 class="text-white font-bold text-sm mb-1">迭代式最佳化</h4>
-            <p class="text-xs text-gray-500">先產生初始快速比對，再反覆將序列拆解與重新比對，修正早期誤差。</p>
+            <p class="text-xs text-gray-500 text-justify">先產生初始快速比對，再反覆將序列拆解與重新比對，修正早期誤差。</p>
           </div>
           <div class="border-l-2 border-molris-cyan/50 pl-4">
             <h4 class="text-white font-bold text-sm mb-1">一致性方法</h4>
-            <p class="text-xs text-gray-500">整合多對序列的比對資訊庫，使局部與整體關係能相互驗證。</p>
+            <p class="text-xs text-gray-500 text-justify">整合多對序列的比對資訊庫，使局部與整體關係能相互驗證。</p>
           </div>
           <div class="border-l-2 border-gray-700 pl-4">
             <h4 class="text-white font-bold text-sm mb-1">隱馬可夫模型 (HMM)</h4>
-            <p class="text-xs text-gray-500">以機率模型描述不同位置狀態(匹配、插入、缺失)，有效辨識微弱同源特徵。</p>
+            <p class="text-xs text-gray-500 text-justify">以機率模型描述不同位置狀態(匹配、插入、缺失)，有效辨識微弱同源特徵。</p>
           </div>
           <div class="border-l-2 border-gray-700 pl-4">
             <h4 class="text-white font-bold text-sm mb-1">系統發育方法</h4>
-            <p class="text-xs text-gray-500">將演化資訊納入計算，嚴謹區分插入與缺失，精準還原演化關係。</p>
+            <p class="text-xs text-gray-500 text-justify">將演化資訊納入計算，嚴謹區分插入與缺失，精準還原演化關係。</p>
           </div>
           <div class="border-l-2 border-gray-700 pl-4">
             <h4 class="text-white font-bold text-sm mb-1">片段 / 模體比對</h4>
-            <p class="text-xs text-gray-500">優先對齊高度相似的局部片段，適合處理長度差異大或局部同源的資料。</p>
+            <p class="text-xs text-gray-500 text-justify">優先對齊高度相似的局部片段，適合處理長度差異大或局部同源的資料。</p>
           </div>
           <div class="border-l-2 border-gray-700 pl-4">
             <h4 class="text-white font-bold text-sm mb-1">結構輔助比對</h4>
-            <p class="text-xs text-gray-500">引入三維結構資訊，以空間摺疊特徵引導一維比對，確保關鍵位點精準對齊。</p>
+            <p class="text-xs text-gray-500 text-justify">引入三維結構資訊，以空間摺疊特徵引導一維比對，確保關鍵位點精準對齊。</p>
           </div>
         </div>
 
@@ -595,7 +593,7 @@
             <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
               <div class="text-molris-cyan mb-4"><i class="fa-solid fa-code-compare text-2xl group-hover:scale-110 transition-transform"></i></div>
               <h4 class="text-white font-bold mb-2 text-sm">多演算法交叉驗證</h4>
-              <p class="text-xs text-gray-400 leading-relaxed">
+              <p class="text-xs text-gray-400 leading-relaxed text-justify">
                 不盲目信任單一模型。我們會平行執行多種演算法 (如 MAFFT vs. MUSCLE)，交叉檢視結果的收斂度，確認 Gap 位置不因演算法偏差而失真。
               </p>
             </div>
@@ -603,7 +601,7 @@
             <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
               <div class="text-molris-cyan mb-4"><i class="fa-solid fa-cubes text-2xl group-hover:scale-110 transition-transform"></i></div>
               <h4 class="text-white font-bold mb-2 text-sm">結構輔助驗證 (3D Mapping)</h4>
-              <p class="text-xs text-gray-400 leading-relaxed">
+              <p class="text-xs text-gray-400 leading-relaxed text-justify">
                 將一維序列的保守區域直接映射至已知的 3D 蛋白質結構上。若高度保守區域未落在結構核心或活性位點上，即會觸發人工覆核機制。
               </p>
             </div>
@@ -611,7 +609,7 @@
             <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
               <div class="text-molris-cyan mb-4"><i class="fa-solid fa-network-wired text-2xl group-hover:scale-110 transition-transform"></i></div>
               <h4 class="text-white font-bold mb-2 text-sm">演化合理性評估</h4>
-              <p class="text-xs text-gray-400 leading-relaxed">
+              <p class="text-xs text-gray-400 leading-relaxed text-justify">
                 針對含有不同物種或變異株的資料，透過構建初步的系統發育樹 (Phylogenetic Tree)，檢視物種間的親緣分群是否符合基礎生物學邏輯。
               </p>
             </div>
@@ -619,7 +617,7 @@
             <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
               <div class="text-molris-cyan mb-4"><i class="fa-solid fa-calculator text-2xl group-hover:scale-110 transition-transform"></i></div>
               <h4 class="text-white font-bold mb-2 text-sm">數學評分與專家覆核</h4>
-              <p class="text-xs text-gray-400 leading-relaxed">
+              <p class="text-xs text-gray-400 leading-relaxed text-justify">
                 導入 SP (Sum-of-Pairs) 或 TC (Total Column) 等客觀評分指標進行量化評估，最後由結構生物學專家對關鍵功能位點進行視覺確認。
               </p>
             </div>
@@ -657,7 +655,7 @@
             <span class="px-3 py-1.5 bg-green-900/30 border border-green-500/50 text-green-400 rounded">品質交叉驗證</span>
           </div>
 
-          <p class="text-gray-400 mb-10 max-w-3xl mx-auto text-sm leading-relaxed text-left md:text-center">
+          <p class="text-gray-400 mb-10 max-w-3xl mx-auto text-sm leading-relaxed text-justify md:text-center">
             不同演算法與參數可能產生不同的 gap 配置、保守區域與序列對應關係；若後續還要進行結構預測、功能位點分析或藥物設計，<strong class="text-white">比對品質將直接影響後續研發的成敗</strong>。<br><br>
             Molris 能依據資料特性與研究目的，協助您選擇最佳演算法、調整參數，並進行嚴格的品質檢查。<strong class="text-molris-cyan">省下您反覆測試所需的人力與時間成本</strong>，讓 MSA 不只是「得到一個結果」，而是取得可供後續研究使用的可靠數據。
           </p>
