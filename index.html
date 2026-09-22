@@ -102,10 +102,10 @@
 
 <body class="font-sans antialiased selection:bg-molris-cyan selection:text-white">
 
-  <header class="fixed top-0 w-full z-50 glass-nav transition-all duration-300">
+  <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
       <!-- Logo -->
-      <a href="#" class="text-2xl font-bold tracking-wider text-white flex items-center gap-2 group">
+      <a href="index.html" class="text-2xl font-bold tracking-wider text-white flex items-center gap-2 group">
         <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i>
         Molris
       </a>
@@ -114,61 +114,61 @@
       <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
         
         <!-- 關於Molris -->
-        <div class="relative group dropdown">
-          <a href="index.html" class="hover:text-molris-cyan transition-colors py-2 flex items-center gap-1">關於Molris <i class="fa-solid fa-chevron-down text-xs"></i></a>
-          <div class="dropdown-menu hidden absolute top-full left-0 mt-0 w-36 bg-molris-card border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="index.html#story" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">品牌故事</a>
-            <a href="index.html#vision" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心價值</a>
-            <a href="index.html#advantages" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心優勢</a>
-            <a href="index.html#tech" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心技術</a>
-            <a href="index.html#team" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">團隊架構</a>
+        <div class="relative group dropdown py-8">
+          <a href="index.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">關於Molris <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="index.html#vision" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心價值</a>
+            <a href="index.html#advantages" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心優勢</a>
+            <a href="index.html#tech" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心技術</a>
+            <a href="index.html#team" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">團隊架構</a>
+            <a href="index.html#story" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">品牌故事</a>
           </div>
         </div>
 
         <!-- 技術平台 -->
-        <div class="relative group dropdown">
-          <a href="platform.html" class="hover:text-molris-cyan transition-colors py-2 flex items-center gap-1">技術平台 <i class="fa-solid fa-chevron-down text-xs"></i></a>
-          <div class="dropdown-menu hidden absolute top-full left-0 mt-0 w-44 bg-molris-card border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="platform.html#modeling" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多尺度建模</a>
-            <a href="platform.html#docking" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子對接</a>
-            <a href="platform.html#dynamics" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子動力學模擬</a>
+        <div class="relative group dropdown py-8">
+          <a href="platform.html" class="text-molris-cyan flex items-center gap-1">技術平台 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-44 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="msa.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多序列比對</a>
+            <a href="platform.html#modeling" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多尺度建模</a>
+            <a href="platform.html#docking" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子對接</a>
+            <a href="platform.html#dynamics" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子動力學模擬</a>
           </div>
         </div>
 
         <!-- 專案介紹 -->
-        <div class="relative group dropdown">
-          <a href="project.html" class="hover:text-molris-cyan transition-colors py-2 flex items-center gap-1">專案介紹 <i class="fa-solid fa-chevron-down text-xs"></i></a>
-          <div class="dropdown-menu hidden absolute top-full left-0 mt-0 w-36 bg-molris-card border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="project.html#biotech" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">生技與新藥開發</a>
-            <a href="project.html#materials" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">化學與材料科學</a>
+        <div class="relative group dropdown py-8">
+          <a href="project.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">專案介紹 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="project.html#biotech" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">生技與新藥開發</a>
+            <a href="project.html#materials" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">化學與材料科學</a>
           </div>
         </div>
 
-        <!-- 價格方案 -->
-        <div class="relative group dropdown">
-          <a href="pricing.html" class="hover:text-molris-cyan transition-colors py-2 flex items-center gap-1">價格方案 <i class="fa-solid fa-chevron-down text-xs"></i></a>
-          <div class="dropdown-menu hidden absolute top-full left-0 mt-0 w-36 bg-molris-card border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="pricing.html" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">價格</a>
-            <a href="pricing.html#modules" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">模組列表</a>
+        <!-- 服務方案 -->
+        <div class="relative group dropdown py-8">
+          <a href="pricing.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">方案介紹 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="pricing.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">方案價格</a>
+            <a href="modules.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">功能模組</a>
           </div>
         </div>
 
         <!-- 聯絡我們 -->
-        <div class="relative group dropdown">
-          <a href="contact.html" class="hover:text-molris-cyan transition-colors py-2 flex items-center gap-1">聯絡我們 <i class="fa-solid fa-chevron-down text-xs"></i></a>
-          <div class="dropdown-menu hidden absolute top-full left-0 mt-0 w-36 bg-molris-card border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="contact.html#info" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">聯絡資訊</a>
-            <a href="contact.html#joinus" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">加入我們</a>
+        <div class="relative group dropdown py-8">
+          <a href="contact.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">聯絡我們 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="contact.html#info" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">聯絡資訊</a>
+            <a href="contact.html#joinus" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">加入我們</a>
           </div>
         </div>
 
         <div class="flex items-center gap-2 pl-4 border-l border-gray-700">
           <i class="fa-solid fa-globe text-gray-400"></i>
-          <span class="text-gray-300 hover:text-white cursor-pointer">中文</span>
+          <span class="text-gray-300 hover:text-white cursor-pointer transition-colors">中文</span>
         </div>
       </nav>
 
-      <!-- Mobile Menu Button -->
       <button class="md:hidden text-gray-300 hover:text-white">
         <i class="fa-solid fa-bars text-xl"></i>
       </button>
@@ -845,8 +845,6 @@
       }
       connect();
     }
-
-    // 【效能優化】加入防抖 (Debounce) 機制，防止視窗縮放時瞬間觸發海量重算導致卡頓
     let resizeTimeout;
     window.addEventListener('resize', function () {
       clearTimeout(resizeTimeout);
