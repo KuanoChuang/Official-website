@@ -68,14 +68,8 @@
 
     .story-text {
       background: linear-gradient(to right, #fff, #9ca3af);
-  
-      /* WebKit 瀏覽器 (Chrome, Safari 等) 的專屬屬性 */
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-  
-      /* W3C 標準屬性 (用來解決警告並增加相容性) */
-      background-clip: text;
-      color: transparent;
     }
 
     .dropdown:hover .dropdown-menu {
@@ -132,17 +126,12 @@
         </div>
 
         <!-- 技術平台 -->
-        <div class="relative dropdown group py-8">
-          <a href="msa.html" class="text-molris-cyan hover:text-white transition-colors font-medium flex items-center gap-1">
-            技術平台 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i>
-          </a>
-          <div class="dropdown-content absolute top-[70px] left-1/2 -translate-x-1/2 w-56 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl hidden overflow-hidden z-50">
-            <div class="py-2">
-              <a href="platform.html#modeling" class="block px-5 py-3 text-sm text-gray-300 hover:bg-gray-800/50 hover:text-molris-cyan transition-colors">多尺度建模</a>
-              <a href="platform.html#docking" class="block px-5 py-3 text-sm text-gray-300 hover:bg-gray-800/50 hover:text-molris-cyan transition-colors">分子對接</a>
-              <a href="platform.html#dynamics" class="block px-5 py-3 text-sm text-gray-300 hover:bg-gray-800/50 hover:text-molris-cyan transition-colors">分子動力學模擬</a>
-              <a href="msa.html" class="block px-5 py-3 text-sm text-molris-cyan hover:bg-gray-800/50 transition-colors bg-gray-800/30">多序列比對 (MSA)</a>
-            </div>
+        <div class="relative group dropdown">
+          <a href="platform.html" class="hover:text-molris-cyan transition-colors py-2 flex items-center gap-1">技術平台 <i class="fa-solid fa-chevron-down text-xs"></i></a>
+          <div class="dropdown-menu hidden absolute top-full left-0 mt-0 w-44 bg-molris-card border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="platform.html#modeling" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多尺度建模</a>
+            <a href="platform.html#docking" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子對接</a>
+            <a href="platform.html#dynamics" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子動力學模擬</a>
           </div>
         </div>
 
@@ -152,6 +141,15 @@
           <div class="dropdown-menu hidden absolute top-full left-0 mt-0 w-36 bg-molris-card border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
             <a href="project.html#biotech" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">生技與新藥開發</a>
             <a href="project.html#materials" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">化學與材料科學</a>
+          </div>
+        </div>
+
+        <!-- 價格方案 -->
+        <div class="relative group dropdown">
+          <a href="pricing.html" class="hover:text-molris-cyan transition-colors py-2 flex items-center gap-1">價格方案 <i class="fa-solid fa-chevron-down text-xs"></i></a>
+          <div class="dropdown-menu hidden absolute top-full left-0 mt-0 w-36 bg-molris-card border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="pricing.html" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">價格</a>
+            <a href="pricing.html#modules" class="block px-4 py-2 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">模組列表</a>
           </div>
         </div>
 
@@ -781,13 +779,15 @@
 
     function init() {
       particlesArray = [];
-      let numberOfParticles = (canvas.height * canvas.width) / 7000;
+      // 【效能優化】1. 降低粒子密度 (7000 -> 15000) 2. 設定最大數量上限 (120)，避免 4K 大螢幕算繪崩潰
+      let numberOfParticles = Math.min(Math.floor((canvas.height * canvas.width) / 15000), 120); 
       for (let i = 0; i < numberOfParticles; i++) {
         let size = (Math.random() * 2.5) + 0.5; 
         let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
         let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-        let directionX = (Math.random() * 1.2) - 0.6; 
-        let directionY = (Math.random() * 1.2) - 0.6;
+        // 【效能與視覺優化】稍微調降粒子的移動速度，讓動畫更優雅且省效能
+        let directionX = (Math.random() * 0.8) - 0.4; 
+        let directionY = (Math.random() * 0.8) - 0.4;
         // 【亮度提升】將基礎透明度大幅拉高到 0.5 ~ 1.0 (原本是 0.3~1.0)
         let opacity = Math.random() * 0.5 + 0.5; 
 
@@ -796,19 +796,18 @@
     }
 
     function connect() {
+      ctx.lineWidth = 1.2; // 【效能優化】將線寬設定移出雙層迴圈，大幅減少 Canvas 狀態切換次數
       for (let a = 0; a < particlesArray.length; a++) {
         for (let b = a; b < particlesArray.length; b++) {
-          let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
-                         ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+          let dx = particlesArray[a].x - particlesArray[b].x;
+          let dy = particlesArray[a].y - particlesArray[b].y;
+          let distance = dx * dx + dy * dy; // 提取共用變數，減少重複計算
 
           // 1. 粒子之間的連線
-          // 【亮度提升】放寬連線距離 (從 16000 提升到 22000)，讓網狀更密、更亮
           if (distance < 22000) { 
             let opacityValue = 1 - (distance / 22000); 
             if (opacityValue > 0) {
-              // 【亮度提升】不再打折透明度，直接使用 100% 的 opacityValue，並稍微加粗
               ctx.strokeStyle = `rgba(0, 255, 255, ${opacityValue})`;
-              ctx.lineWidth = 1.2; 
               ctx.beginPath();
               ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
               ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
@@ -821,17 +820,17 @@
         if (mouse.x != undefined) {
           let dx = mouse.x - particlesArray[a].x;
           let dy = mouse.y - particlesArray[a].y;
-          let mouseDistance = (dx * dx + dy * dy);
+          let mouseDistance = dx * dx + dy * dy;
           
-          if (mouseDistance < 35000) { // 稍微擴大牽引網的發光範圍
+          if (mouseDistance < 35000) { 
             let mouseOpacity = 1 - (mouseDistance / 35000);
-            // 【亮度提升】滑鼠牽引網改用「純白色」與更粗的線條，創造高能感
             ctx.strokeStyle = `rgba(255, 255, 255, ${mouseOpacity})`; 
-            ctx.lineWidth = 2.0;
+            ctx.lineWidth = 2.0; // 滑鼠牽引線加粗
             ctx.beginPath();
             ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
             ctx.lineTo(mouse.x, mouse.y);
             ctx.stroke();
+            ctx.lineWidth = 1.2; // 畫完恢復預設線寬給下一個粒子用
           }
         }
       }
@@ -847,10 +846,15 @@
       connect();
     }
 
+    // 【效能優化】加入防抖 (Debounce) 機制，防止視窗縮放時瞬間觸發海量重算導致卡頓
+    let resizeTimeout;
     window.addEventListener('resize', function () {
-      canvas.width = innerWidth;
-      canvas.height = innerHeight;
-      init();
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(function() {
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        init();
+      }, 200);
     });
 
     init();
