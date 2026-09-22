@@ -548,7 +548,7 @@
       <div class="max-w-7xl mx-auto px-6">
         
         <!-- 輸入與品質 -->
-        <div class="grid md:grid-cols-3 gap-8 mb-20">
+        <div class="grid md:grid-cols-3 gap-8 relative z-10">
           <div class="bg-gray-900/30 p-6 rounded-2xl border border-gray-800">
             <h3 class="text-xl font-bold text-white mb-4">適合哪些輸入資料？</h3>
             <p class="text-xs text-gray-400 mb-4 text-justify">多序列比對可處理不同來源與用途的生物序列：</p>
@@ -570,7 +570,7 @@
               <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 序列大小寫是否統一</li>
               <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 非預期符號或非法字元</li>
               <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 長度異常或品質異常的序列</li>
-              <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 摻雜與研究無關的雜訊序列</li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 混入與研究無關的雜訊序列</li>
             </ul>
           </div>
 
@@ -578,14 +578,121 @@
             <h3 class="text-xl font-bold text-white mb-4">多序列比對可以得到什麼？</h3>
             <p class="text-xs text-gray-400 mb-4 text-justify">完成比對後，可從結果中觀察，並標記以利後續分析：</p>
             <div class="flex flex-wrap gap-2 text-sm text-gray-300 mb-4">
-              <span class="px-2 py-1 bg-gray-800 rounded">序列相似性</span>
-              <span class="px-2 py-1 bg-gray-800 rounded">保守區域</span>
-              <span class="px-2 py-1 bg-gray-800 rounded">高度變異區域</span>
-              <span class="px-2 py-1 bg-gray-800 rounded">插入與缺失位置</span>
-              <span class="px-2 py-1 bg-gray-800 rounded">共識序列</span>
-              <span class="px-2 py-1 bg-gray-800 rounded">可能的功能位點</span>
+              <span class="px-2 py-1 bg-gray-800 border border-gray-700 rounded">序列相似性</span>
+              <span class="px-2 py-1 bg-gray-800 border border-gray-700 rounded">保守區域</span>
+              <span class="px-2 py-1 bg-gray-800 border border-gray-700 rounded">高度變異區域</span>
+              <span class="px-2 py-1 bg-gray-800 border border-gray-700 rounded">保守性比例</span>
+              <span class="px-2 py-1 bg-gray-800 border border-gray-700 rounded">序列覆蓋率</span>
+              <span class="px-2 py-1 bg-gray-800 border border-gray-700 rounded">多樣性 (Entropy)</span>
+              <span class="px-2 py-1 bg-gray-800 border border-gray-700 rounded">插入與缺失</span>
+              <span class="px-2 py-1 bg-gray-800 border border-gray-700 rounded">缺口比例</span>
+              <span class="px-2 py-1 bg-gray-800 border border-gray-700 rounded">共識序列</span>
+              <span class="px-2 py-1 bg-gray-800 border border-gray-700 rounded">比對可信度</span>
             </div>
-            <p class="text-xs text-gray-500 text-justify">蛋白質序列亦可搭配胺基酸性質與 BLOSUM62 等矩陣，以顏色標示保守程度。</p>
+          </div>
+        </div>
+
+        <!-- 銜接過渡區 (Visual Connector) -->
+        <div class="flex flex-col items-center justify-center my-6 relative z-0">
+          <div class="h-12 w-[1px] bg-gradient-to-b from-gray-700 to-molris-cyan/50"></div>
+          <div class="w-8 h-8 rounded-full bg-gray-900 border border-molris-cyan/50 flex items-center justify-center text-molris-cyan text-xs shadow-[0_0_10px_rgba(0,229,255,0.2)]">
+            <i class="fa-solid fa-arrow-down"></i>
+          </div>
+        </div>
+
+        <!-- 獨立視覺化區塊 (Full Width Banner) -->
+        <div class="mb-20 relative rounded-3xl border border-gray-800/60 bg-[#070D18] overflow-hidden shadow-2xl">
+          <!-- 背景光暈 -->
+          <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-molris-cyan/5 blur-[100px] rounded-full pointer-events-none"></div>
+          
+          <div class="p-8 md:p-12 relative z-10 flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
+            
+            <!-- 左側：標題與文案 -->
+            <div class="lg:w-5/12">
+              <span class="text-molris-cyan text-xs font-bold tracking-widest uppercase mb-3 block">Data Visualization</span>
+              <h4 class="text-3xl font-bold text-white mb-6 leading-snug">
+                比對結果該如何呈現？
+              </h4>
+              <p class="text-sm text-gray-400 leading-relaxed text-justify mb-6">
+                Molris 提供多種序列可視化方案，透過不同著色方式呈現序列相似性、保守區域與變異位置，並可依研究目的選擇合適的呈現方式。
+              </p>
+            </div>
+
+            <!-- 右側：展示參數牆 (移除遮罩，直接清晰顯示) -->
+            <div class="lg:w-7/12 relative">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-8 pl-4 lg:border-l lg:border-gray-800/50 py-4">
+                
+                <!-- 1. 序列相似性 -->
+                <div class="relative">
+                  <div class="flex items-center gap-2 mb-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-molris-cyan/70"></span>
+                    <strong class="text-gray-300 text-xs tracking-wide">序列相似性</strong>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5 pl-3.5">
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">BLOSUM 45</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">BLOSUM 62</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">BLOSUM 80</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">PAM 30</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">PAM 70</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">PAM 250</span>
+                  </div>
+                </div>
+
+                <!-- 2. 核苷酸特徵 -->
+                <div class="relative">
+                  <div class="flex items-center gap-2 mb-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-molris-cyan/70"></span>
+                    <strong class="text-gray-300 text-xs tracking-wide">核苷酸特徵</strong>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5 pl-3.5">
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">標準鹼基</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">嘌呤 / 嘧啶</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">GC 含量</span>
+                  </div>
+                </div>
+
+                <!-- 3. 胺基酸特徵 -->
+                <div class="relative">
+                  <div class="flex items-center gap-2 mb-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-molris-cyan/70"></span>
+                    <strong class="text-gray-300 text-xs tracking-wide">胺基酸特徵</strong>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5 pl-3.5">
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">Clustal</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">Zappo</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">Taylor</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">Hydrophobicity</span>
+                  </div>
+                </div>
+
+                <!-- 4. 演化資訊 -->
+                <div class="relative">
+                  <div class="flex items-center gap-2 mb-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-molris-cyan/70"></span>
+                    <strong class="text-gray-300 text-xs tracking-wide">演化資訊</strong>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5 pl-3.5">
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">JTT</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">WAG</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">LG</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">mtREV</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">cpREV</span>
+                  </div>
+                </div>
+
+                <!-- 5. 缺口降噪 -->
+                <div class="relative sm:col-span-2">
+                  <div class="flex items-center gap-2 mb-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
+                    <strong class="text-gray-300 text-xs tracking-wide">缺口灰階顯示</strong>
+                  </div>
+                  <div class="flex items-center gap-2 pl-3.5">
+                    <span class="text-[10px] text-gray-400">自動淡化對齊缺口，降低視覺干擾並凸顯核心保守區域。</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
           </div>
         </div>
 
