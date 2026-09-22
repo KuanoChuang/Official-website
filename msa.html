@@ -672,16 +672,18 @@
                   </div>
                 </div>
 
-                <!-- 2. 核苷酸特徵 -->
+                <!-- 2. 演化資訊 -->
                 <div class="relative">
                   <div class="flex items-center gap-2 mb-2.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-molris-cyan/70"></span>
-                    <strong class="text-gray-300 text-xs tracking-wide">核苷酸特徵</strong>
+                    <strong class="text-gray-300 text-xs tracking-wide">演化資訊</strong>
                   </div>
                   <div class="flex flex-wrap gap-1.5 pl-3.5">
-                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">標準鹼基</span>
-                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">嘌呤 / 嘧啶</span>
-                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">GC 含量</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">JTT</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">WAG</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">LG</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">mtREV</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">cpREV</span>
                   </div>
                 </div>
 
@@ -699,35 +701,7 @@
                   </div>
                 </div>
 
-                <!-- 4. 演化資訊 -->
-                <div class="relative">
-                  <div class="flex items-center gap-2 mb-2.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-molris-cyan/70"></span>
-                    <strong class="text-gray-300 text-xs tracking-wide">演化資訊</strong>
-                  </div>
-                  <div class="flex flex-wrap gap-1.5 pl-3.5">
-                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">JTT</span>
-                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">WAG</span>
-                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">LG</span>
-                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">mtREV</span>
-                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">cpREV</span>
-                  </div>
-                </div>
-
-                <!-- 5. 缺口降噪 -->
-                <div class="relative">
-                  <div class="flex items-center gap-2 mb-2.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
-                    <strong class="text-gray-300 text-xs tracking-wide">缺口灰階處理</strong>
-                  </div>
-                  <div class="flex flex-wrap gap-1.5 pl-3.5">
-                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">灰階淡化</span>
-                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">視覺降噪</span>
-                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">凸顯保守區</span>
-                  </div>
-                </div>
-
-                <!-- 6. 特徵標記 -->
+                <!-- 4. 特徵標記 -->
                 <div class="relative">
                   <div class="flex items-center gap-2 mb-2.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-molris-cyan/70"></span>
@@ -740,6 +714,34 @@
                     <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">功能結構域</span>
                   </div>
                 </div>
+
+                <!-- 5. 核苷酸特徵 -->
+                <div class="relative">
+                  <div class="flex items-center gap-2 mb-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-molris-cyan/70"></span>
+                    <strong class="text-gray-300 text-xs tracking-wide">核苷酸特徵</strong>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5 pl-3.5">
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">標準鹼基</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">嘌呤 / 嘧啶</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">GC 含量</span>
+                  </div>
+                </div>
+
+                <!-- 6. 缺口處理 -->
+                <div class="relative">
+                  <div class="flex items-center gap-2 mb-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
+                    <strong class="text-gray-300 text-xs tracking-wide">缺口處理</strong>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5 pl-3.5">
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">灰階淡化</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">視覺降噪</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">凸顯保守區</span>
+                  </div>
+                </div>
+
+
 
               </div>
             </div>
