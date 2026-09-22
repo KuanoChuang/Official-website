@@ -608,17 +608,52 @@
           <div class="p-8 md:p-12 relative z-10 flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
             
             <!-- 左側：標題與文案 -->
-            <div class="lg:w-5/12">
+            <div class="lg:w-5/12 flex flex-col justify-center">
               <span class="text-molris-cyan text-xs font-bold tracking-widest uppercase mb-3 block">Data Visualization</span>
               <h4 class="text-3xl font-bold text-white mb-6 leading-snug">
                 比對結果該如何呈現？
               </h4>
-              <p class="text-sm text-gray-400 leading-relaxed text-justify mb-6">
+              <p class="text-sm text-gray-400 leading-relaxed text-justify mb-8">
                 Molris 提供多種序列可視化方案，透過不同著色方式呈現序列相似性、保守區域與變異位置，並可依研究目的選擇合適的呈現方式。
               </p>
+
+              <!-- 交付規格，平衡左右高度並強調產出物 -->
+              <div class="space-y-5 border-t border-gray-800/60 pt-8">
+                <h5 class="text-gray-300 font-bold text-xs tracking-wider">標準交付規格</h5>
+                
+                <div class="flex items-start gap-3 group">
+                  <div class="w-7 h-7 rounded-lg bg-gray-900 border border-gray-700 flex items-center justify-center text-molris-cyan shrink-0 group-hover:border-molris-cyan/50 transition-colors">
+                    <i class="fa-solid fa-file-image text-xs"></i>
+                  </div>
+                  <div>
+                    <strong class="text-white text-xs block mb-1">期刊級高解析圖檔</strong>
+                    <p class="text-[11px] text-gray-500 leading-relaxed text-justify">匯出 ≥ 300dpi 以上出版規格 (TIFF/PNG/PDF)，直接可用於學術論文、計畫書或專案內容。</p>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3 group">
+                  <div class="w-7 h-7 rounded-lg bg-gray-900 border border-gray-700 flex items-center justify-center text-molris-cyan shrink-0 group-hover:border-molris-cyan/50 transition-colors">
+                    <i class="fa-solid fa-file-code text-xs"></i>
+                  </div>
+                  <div>
+                    <strong class="text-white text-xs block mb-1">通用原始數據檔</strong>
+                    <p class="text-[11px] text-gray-500 leading-relaxed text-justify">交付標準格式 (如 .aln, .fasta, .phy)，銜接後續演化樹建立或 3D 結構預測。</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start gap-3 group">
+                  <div class="w-7 h-7 rounded-lg bg-gray-900 border border-gray-700 flex items-center justify-center text-molris-cyan shrink-0 group-hover:border-molris-cyan/50 transition-colors">
+                    <i class="fa-solid fa-pen-nib text-xs"></i>
+                  </div>
+                  <div>
+                    <strong class="text-white text-xs block mb-1">客製化特徵標註</strong>
+                    <p class="text-[11px] text-gray-500 leading-relaxed text-justify">依據研究需求，為關鍵活性位點、結合口袋或突變熱點，添加專屬的方框或指示標記。</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!-- 右側：展示參數牆 (移除遮罩，直接清晰顯示) -->
+            <!-- 右側：展示參數牆 -->
             <div class="lg:w-7/12 relative">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-8 pl-4 lg:border-l lg:border-gray-800/50 py-4">
                 
@@ -681,13 +716,27 @@
                 </div>
 
                 <!-- 5. 缺口降噪 -->
-                <div class="relative sm:col-span-2">
+                <div class="relative">
                   <div class="flex items-center gap-2 mb-2.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
                     <strong class="text-gray-300 text-xs tracking-wide">缺口灰階顯示</strong>
                   </div>
                   <div class="flex items-center gap-2 pl-3.5">
-                    <span class="text-[10px] text-gray-400">自動淡化對齊缺口，降低視覺干擾並凸顯核心保守區域。</span>
+                    <span class="text-[10px] text-gray-400 leading-relaxed">自動淡化對齊缺口，降低視覺干擾並凸顯核心保守區域。</span>
+                  </div>
+                </div>
+
+                <!-- 6. 特徵標記 -->
+                <div class="relative">
+                  <div class="flex items-center gap-2 mb-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-molris-cyan/70"></span>
+                    <strong class="text-gray-300 text-xs tracking-wide">特徵標記</strong>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5 pl-3.5">
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">活性位點方框</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">突變熱點標記</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">二級結構 (α/β)</span>
+                    <span class="px-2 py-1 text-[10px] text-gray-400 border border-gray-700 rounded bg-gray-800/50">功能結構域</span>
                   </div>
                 </div>
 
