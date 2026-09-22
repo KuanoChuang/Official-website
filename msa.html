@@ -28,7 +28,64 @@
       }
     }
   </script>
-  
+  <script>
+    // 圖片輪播邏輯
+    let currentSlideIdx = 0;
+    const totalMsaSlides = 3;
+    
+    // 定義三張圖片對應的說明文字
+    const slideCaptions = [
+      "Molris 視覺化 MSA 結果範例 - 總覽視角",
+      "Molris 視覺化 MSA 結果範例 - 關鍵特徵比對",
+      "Molris 視覺化 MSA 結果範例 - 變異位點標記"
+    ];
+    let autoPlayInterval;
+
+    function renderSlide(index) {
+      for (let i = 0; i < totalMsaSlides; i++) {
+        const img = document.getElementById(`msa-img-${i}`);
+        const dot = document.getElementById(`msa-dot-${i}`);
+        
+        // 切換圖片透明度與層級
+        if (i === index) {
+          img.classList.remove('opacity-0', 'z-0');
+          img.classList.add('opacity-100', 'z-10');
+          dot.classList.remove('bg-white/40');
+          dot.classList.add('bg-molris-cyan');
+        } else {
+          img.classList.remove('opacity-100', 'z-10');
+          img.classList.add('opacity-0', 'z-0');
+          dot.classList.remove('bg-molris-cyan');
+          dot.classList.add('bg-white/40');
+        }
+      }
+      // 更新標題
+      document.getElementById('msa-slider-caption').innerText = slideCaptions[index];
+    }
+
+    function nextSlide(step) {
+      currentSlideIdx = (currentSlideIdx + step + totalMsaSlides) % totalMsaSlides;
+      renderSlide(currentSlideIdx);
+      resetAutoPlay();
+    }
+
+    function setSlide(index) {
+      currentSlideIdx = index;
+      renderSlide(currentSlideIdx);
+      resetAutoPlay();
+    }
+
+    function resetAutoPlay() {
+      clearInterval(autoPlayInterval);
+      // 設定每 4.5 秒自動切換一次
+      autoPlayInterval = setInterval(() => {
+        nextSlide(1);
+      }, 4500); 
+    }
+
+    // 啟動輪播
+    resetAutoPlay();
+  </script>
   <style>
     body {
       background-color: #050B14;
@@ -199,13 +256,38 @@
       <div class="max-w-7xl mx-auto px-6">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
           
-          <!-- 左側：圖片匯入區塊 -->
+          <!-- 左側：圖片匯入區塊 (動態切換輪播) -->
           <div class="relative group">
             <div class="absolute -inset-1 bg-gradient-to-r from-molris-cyan to-blue-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-            <div class="relative bg-[#050B14] rounded-2xl overflow-hidden border border-gray-800 shadow-2xl">
-              <img src="MSA.jpg" alt="Molris MSA Alignment Result Preview" class="w-full h-auto object-cover opacity-90 hover:opacity-100 transition-opacity duration-500 bg-gray-900 min-h-[300px]">
+            <div class="relative bg-[#050B14] rounded-2xl overflow-hidden border border-gray-800 shadow-2xl group/slider">
+              
+              <!-- 圖片輪播容器 -->
+              <div class="relative w-full h-[300px] md:h-[400px] bg-gray-900">
+                <!-- 第一張圖 -->
+                <img id="msa-img-0" src="MSA-1.jpg" alt="Molris MSA Result 1" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-100 z-10">
+                <!-- 第二張圖 -->
+                <img id="msa-img-1" src="MSA-2.jpg" alt="Molris MSA Result 2" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-0 z-0">
+                <!-- 第三張圖 -->
+                <img id="msa-img-2" src="MSA-3.jpg" alt="Molris MSA Result 3" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-0 z-0">
+                
+                <!-- 左右控制按鈕 -->
+                <button onclick="nextSlide(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity hover:bg-molris-cyan hover:text-black z-20 backdrop-blur-sm">
+                  <i class="fa-solid fa-chevron-left text-sm"></i>
+                </button>
+                <button onclick="nextSlide(1)" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity hover:bg-molris-cyan hover:text-black z-20 backdrop-blur-sm">
+                  <i class="fa-solid fa-chevron-right text-sm"></i>
+                </button>
+
+                <!-- 底部圓點指示器 -->
+                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                  <button onclick="setSlide(0)" id="msa-dot-0" class="w-2.5 h-2.5 rounded-full bg-molris-cyan transition-colors shadow-lg"></button>
+                  <button onclick="setSlide(1)" id="msa-dot-1" class="w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white/80 transition-colors shadow-lg"></button>
+                  <button onclick="setSlide(2)" id="msa-dot-2" class="w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white/80 transition-colors shadow-lg"></button>
+                </div>
+              </div>
+
               <div class="bg-gray-900/90 p-4 text-xs md:text-sm text-gray-300 text-center border-t border-gray-800 flex justify-center items-center gap-2">
-                <i class="text-molris-cyan"></i> Molris 視覺化 MSA 結果範例
+                <i class="fa-solid fa-layer-group text-molris-cyan"></i> <span id="msa-slider-caption">Molris 視覺化 MSA 結果範例 - 總覽視角</span>
               </div>
             </div>
           </div>
