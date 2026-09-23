@@ -283,7 +283,7 @@
 
           // == 智慧標籤配置邏輯 (交錯出現) ==
           let chosenLabelRow = -1;
-          if (Math.random() > 0.5) { // 50%的機率配置標籤
+          if (Math.random() > 0.75) { // 50%的機率配置標籤
             let availableRows = rowIndices.filter(idx => rowStates[idx] !== 'gap' && !usedLabelRows.has(idx));
             if (availableRows.length === 0) {
               availableRows = rowIndices.filter(idx => rowStates[idx] !== 'gap');
