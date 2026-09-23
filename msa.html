@@ -1055,13 +1055,13 @@
 
           <div class="bg-gray-900/30 p-6 rounded-2xl border border-gray-800">
             <h3 class="text-xl font-bold text-white mb-4">資料品質，從分析前開始把關</h3>
-            <p class="text-xs text-gray-400 mb-4 text-justify">分析前應進行基本的資料檢查，以降低非生物性因素的干擾：</p>
-            <ul class="space-y-2 text-sm text-gray-300 text-justify">
-              <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 序列方向是否一致</li>
-              <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 序列大小寫是否統一</li>
-              <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 非預期符號或非法字元</li>
-              <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 長度異常或品質異常的序列</li>
-              <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1 text-xs"></i> 摻雜與研究無關的雜訊序列</li>
+            <p class="text-xs text-gray-400 mb-4 text-justify">在啟動正式運算前，Molris 會為您逐項嚴格檢查，排除非生物性雜訊：</p>
+            <ul class="space-y-3 text-sm text-gray-300 text-justify">
+              <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-molris-cyan mt-0.5 text-sm"></i> 檢查序列方向是否一致</li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-molris-cyan mt-0.5 text-sm"></i> 確認序列大小寫統一規範</li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-molris-cyan mt-0.5 text-sm"></i> 排除非預期符號或非法字元</li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-molris-cyan mt-0.5 text-sm"></i> 調整長度異常或品質異常的序列</li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-molris-cyan mt-0.5 text-sm"></i> 過濾與研究無關的雜訊序列</li>
             </ul>
           </div>
 
@@ -1091,53 +1091,56 @@
         </div>
 
         <!-- 獨立視覺化區塊 (Full Width Banner) -->
-        <div class="mb-20 relative rounded-3xl border border-gray-800/60 bg-[#070D18] overflow-hidden shadow-2xl">
+        <div id="visualization" class="mb-20 relative rounded-3xl border border-gray-800/60 bg-[#070D18] overflow-hidden shadow-2xl scroll-mt-24">
           <!-- 背景光暈 -->
           <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-molris-cyan/5 blur-[100px] rounded-full pointer-events-none"></div>
           
           <div class="p-8 md:p-12 relative z-10 flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
             
             <!-- 左側：標題與文案 -->
-            <div class="lg:w-5/12 flex flex-col justify-center">
+            <div class="lg:w-1/2 flex flex-col justify-center">
               <span class="text-molris-cyan text-xs font-bold tracking-widest uppercase mb-3 block">Data Visualization</span>
-              <h4 class="text-3xl font-bold text-white mb-6 leading-snug">
+              
+              <!-- 標題控制在一行 -->
+              <h4 class="text-2xl md:text-[28px] lg:text-3xl font-bold text-white mb-6 leading-snug truncate lg:whitespace-nowrap">
                 多元可視化方案，清晰呈現比對結果
               </h4>
-              <p class="text-sm text-gray-400 leading-relaxed text-justify mb-5">
+              
+              <p class="text-sm text-gray-400 leading-relaxed text-justify mb-6">
                 Molris 提供多種序列可視化方案，透過不同著色方式呈現序列相似性、保守區域與變異位置，並可依研究目的選擇合適的呈現方式。
               </p>
 
-              <!-- 交付規格 -->
-              <div class="space-y-5 border-t border-gray-800/60 pt-3">
-                <h5 class="text-gray-300 font-bold text-xs tracking-wider">標準交付規格</h5>
+              <!-- 交付規格 (字體放大) -->
+              <div class="space-y-6 border-t border-gray-800/60 pt-6">
+                <h5 class="text-gray-300 font-bold text-sm tracking-wider">標準交付規格</h5>
                 
-                <div class="flex items-start gap-2 group">
-                  <div class="w-7 h-7 rounded-lg bg-gray-900 border border-gray-700 flex items-center justify-center text-molris-cyan shrink-0 group-hover:border-molris-cyan/50 transition-colors">
-                    <i class="fa-solid fa-file-image text-xs"></i>
+                <div class="flex items-start gap-4 group">
+                  <div class="w-9 h-9 rounded-lg bg-gray-900 border border-gray-700 flex items-center justify-center text-molris-cyan shrink-0 group-hover:border-molris-cyan/50 transition-colors">
+                    <i class="fa-solid fa-file-image text-sm"></i>
                   </div>
                   <div>
-                    <strong class="text-white text-xs block mb-1">期刊級高解析圖檔</strong>
-                    <p class="text-[11px] text-gray-500 leading-relaxed text-justify">匯出 ≥ 300dpi 以上出版規格 (TIFF/PNG/PDF)，直接可用於學術論文、計畫書或專案內容。</p>
+                    <strong class="text-white text-sm block mb-1">期刊級高解析圖檔</strong>
+                    <p class="text-xs text-gray-500 leading-relaxed text-justify">匯出 ≥ 300dpi 以上出版規格 (TIFF/PNG/PDF)，直接可用於學術論文、計畫書或專案內容。</p>
                   </div>
                 </div>
 
-                <div class="flex items-start gap-2 group">
-                  <div class="w-7 h-7 rounded-lg bg-gray-900 border border-gray-700 flex items-center justify-center text-molris-cyan shrink-0 group-hover:border-molris-cyan/50 transition-colors">
-                    <i class="fa-solid fa-file-code text-xs"></i>
+                <div class="flex items-start gap-4 group">
+                  <div class="w-9 h-9 rounded-lg bg-gray-900 border border-gray-700 flex items-center justify-center text-molris-cyan shrink-0 group-hover:border-molris-cyan/50 transition-colors">
+                    <i class="fa-solid fa-file-code text-sm"></i>
                   </div>
                   <div>
-                    <strong class="text-white text-xs block mb-1">通用原始數據檔</strong>
-                    <p class="text-[11px] text-gray-500 leading-relaxed text-justify">交付標準格式 (如 .aln, .fasta, .phy)，銜接後續演化樹建立或 3D 結構預測。</p>
+                    <strong class="text-white text-sm block mb-1">通用原始數據檔</strong>
+                    <p class="text-xs text-gray-500 leading-relaxed text-justify">交付標準格式 (如 .aln, .fasta, .phy)，銜接後續演化樹建立或 3D 結構預測。</p>
                   </div>
                 </div>
                 
-                <div class="flex items-start gap-2 group">
-                  <div class="w-7 h-7 rounded-lg bg-gray-900 border border-gray-700 flex items-center justify-center text-molris-cyan shrink-0 group-hover:border-molris-cyan/50 transition-colors">
-                    <i class="fa-solid fa-pen-nib text-xs"></i>
+                <div class="flex items-start gap-4 group">
+                  <div class="w-9 h-9 rounded-lg bg-gray-900 border border-gray-700 flex items-center justify-center text-molris-cyan shrink-0 group-hover:border-molris-cyan/50 transition-colors">
+                    <i class="fa-solid fa-pen-nib text-sm"></i>
                   </div>
                   <div>
-                    <strong class="text-white text-xs block mb-1">客製化特徵標註</strong>
-                    <p class="text-[11px] text-gray-500 leading-relaxed text-justify">依據研究需求，為關鍵活性位點、結合口袋或突變熱點，添加專屬的方框或指示標記。</p>
+                    <strong class="text-white text-sm block mb-1">客製化特徵標註</strong>
+                    <p class="text-xs text-gray-500 leading-relaxed text-justify">依據研究需求，為關鍵活性位點、結合口袋或突變熱點，添加專屬的方框或指示標記。</p>
                   </div>
                 </div>
               </div>
