@@ -418,6 +418,15 @@
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide-down {
+      animation: slideDown 0.4s ease-out forwards;
+    }
+    
     .glass-card {
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.05);
@@ -733,37 +742,151 @@
         </div>
         
         <div class="grid md:grid-cols-3 gap-8">
-          <div class="glass-card p-8 rounded-2xl hover:border-molris-cyan/50 transition-all">
-            <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-molris-cyan mb-6 border border-gray-700">
-              <i class="fa-solid fa-capsules text-xl"></i>
+          <!-- 區塊 1 -->
+          <div class="glass-card p-8 rounded-2xl border border-gray-800/80 shadow-lg relative">
+            <div class="flex items-center gap-4 mb-6 border-b border-gray-800/50 pb-4">
+              <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-molris-cyan border border-gray-700 shrink-0">
+                <i class="fa-solid fa-capsules text-xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white">藥物開發與精準醫療</h3>
             </div>
-            <h3 class="text-xl font-bold text-white mb-4">藥物開發與精準醫療</h3>
-            <ul class="space-y-3 text-sm text-gray-400 text-justify">
-              <li><strong class="text-gray-200">廣效性藥物開發：</strong>尋找跨變異株皆高度保守的活性位點或結合口袋，作為廣效性抑制劑的標靶。</li>
-              <li><strong class="text-gray-200">脫靶效應評估：</strong>比對標靶蛋白與人體內其他同源蛋白，確認藥物結合區域的特異性，降低潛在副作用。</li>
-              <li><strong class="text-gray-200">抗藥性與變異分析：</strong>分析臨床變異株的序列突變（如 SNP），評估其對結構或結合能力的潛在影響。</li>
+            <ul class="space-y-1">
+              <li class="group cursor-default md:cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-molris-cyan transition-colors shadow-[0_0_0px_#00E5FF] group-hover:shadow-[0_0_8px_#00E5FF]"></span>
+                    <strong class="text-gray-300 group-hover:text-molris-cyan transition-colors text-sm">廣效性藥物開發</strong>
+                  </div>
+                  <i class="fa-solid fa-plus text-xs text-gray-600 group-hover:text-molris-cyan group-hover:rotate-45 transition-all duration-300"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[13px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      尋找跨變異株皆高度保守的活性位點或結合口袋，作為廣效性抑制劑的標靶。
+                    </p>
+                  </div>
+                </div>
+              </li>
+              <li class="group cursor-default md:cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-molris-cyan transition-colors shadow-[0_0_0px_#00E5FF] group-hover:shadow-[0_0_8px_#00E5FF]"></span>
+                    <strong class="text-gray-300 group-hover:text-molris-cyan transition-colors text-sm">脫靶效應評估</strong>
+                  </div>
+                  <i class="fa-solid fa-plus text-xs text-gray-600 group-hover:text-molris-cyan group-hover:rotate-45 transition-all duration-300"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[13px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      比對標靶蛋白與人體內其他同源蛋白，確認藥物結合區域的特異性，降低潛在副作用。
+                    </p>
+                  </div>
+                </div>
+              </li>
+              <li class="group cursor-default md:cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-molris-cyan transition-colors shadow-[0_0_0px_#00E5FF] group-hover:shadow-[0_0_8px_#00E5FF]"></span>
+                    <strong class="text-gray-300 group-hover:text-molris-cyan transition-colors text-sm">抗藥性與變異分析</strong>
+                  </div>
+                  <i class="fa-solid fa-plus text-xs text-gray-600 group-hover:text-molris-cyan group-hover:rotate-45 transition-all duration-300"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[13px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      分析臨床變異株的序列突變（如 SNP），評估其對結構或結合能力的潛在影響。
+                    </p>
+                  </div>
+                </div>
+              </li>
             </ul>
           </div>
 
-          <div class="glass-card p-8 rounded-2xl hover:border-molris-cyan/50 transition-all">
-            <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-molris-cyan mb-6 border border-gray-700">
-              <i class="fa-solid fa-dna text-xl"></i>
+          <!-- 區塊 2 -->
+          <div class="glass-card p-8 rounded-2xl border border-gray-800/80 shadow-lg relative">
+            <div class="flex items-center gap-4 mb-6 border-b border-gray-800/50 pb-4">
+              <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-molris-cyan border border-gray-700 shrink-0">
+                <i class="fa-solid fa-dna text-xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white">結構生物學與工程</h3>
             </div>
-            <h3 class="text-xl font-bold text-white mb-4">結構生物學與工程</h3>
-            <ul class="space-y-3 text-sm text-gray-400 text-justify">
-              <li><strong class="text-gray-200">輔助三維結構預測：</strong>為結構預測或同源建模提供必要的序列特徵與共演化資訊，提升準確度。</li>
-              <li><strong class="text-gray-200">蛋白質工程設計：</strong>分析家族保守與變異區域，輔助酵素功能優化、熱穩定性提升或突變體理學設計。</li>
+            <ul class="space-y-1">
+              <li class="group cursor-default md:cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-molris-cyan transition-colors shadow-[0_0_0px_#00E5FF] group-hover:shadow-[0_0_8px_#00E5FF]"></span>
+                    <strong class="text-gray-300 group-hover:text-molris-cyan transition-colors text-sm">輔助三維結構預測</strong>
+                  </div>
+                  <i class="fa-solid fa-plus text-xs text-gray-600 group-hover:text-molris-cyan group-hover:rotate-45 transition-all duration-300"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[13px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      為結構預測或同源建模提供必要的序列特徵與共演化資訊，提升準確度。
+                    </p>
+                  </div>
+                </div>
+              </li>
+              <li class="group cursor-default md:cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-molris-cyan transition-colors shadow-[0_0_0px_#00E5FF] group-hover:shadow-[0_0_8px_#00E5FF]"></span>
+                    <strong class="text-gray-300 group-hover:text-molris-cyan transition-colors text-sm">蛋白質工程設計</strong>
+                  </div>
+                  <i class="fa-solid fa-plus text-xs text-gray-600 group-hover:text-molris-cyan group-hover:rotate-45 transition-all duration-300"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[13px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      分析家族保守與變異區域，輔助酵素功能優化、熱穩定性提升或突變體理學設計。
+                    </p>
+                  </div>
+                </div>
+              </li>
             </ul>
           </div>
 
-          <div class="glass-card p-8 rounded-2xl hover:border-molris-cyan/50 transition-all">
-            <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-molris-cyan mb-6 border border-gray-700">
-              <i class="fa-solid fa-network-wired text-xl"></i>
+          <!-- 區塊 3 -->
+          <div class="glass-card p-8 rounded-2xl border border-gray-800/80 shadow-lg relative">
+            <div class="flex items-center gap-4 mb-6 border-b border-gray-800/50 pb-4">
+              <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-molris-cyan border border-gray-700 shrink-0">
+                <i class="fa-solid fa-network-wired text-xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white">分子生物學與演化</h3>
             </div>
-            <h3 class="text-xl font-bold text-white mb-4">分子生物學與演化</h3>
-            <ul class="space-y-3 text-sm text-gray-400 text-justify">
-              <li><strong class="text-gray-200">Primer設計：</strong>根據多條序列的絕對保守區域，設計可廣泛擴增多種變異株的 PCR 引子。</li>
-              <li><strong class="text-gray-200">系統發育分析：</strong>比較特徵基因或蛋白質序列，建立演化樹，解析物種間的親緣關係或追蹤病原體。</li>
+            <ul class="space-y-1">
+              <li class="group cursor-default md:cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-molris-cyan transition-colors shadow-[0_0_0px_#00E5FF] group-hover:shadow-[0_0_8px_#00E5FF]"></span>
+                    <strong class="text-gray-300 group-hover:text-molris-cyan transition-colors text-sm">Primer 設計</strong>
+                  </div>
+                  <i class="fa-solid fa-plus text-xs text-gray-600 group-hover:text-molris-cyan group-hover:rotate-45 transition-all duration-300"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[13px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      根據多條序列的絕對保守區域，設計可廣泛擴增多種變異株的 PCR 引子。
+                    </p>
+                  </div>
+                </div>
+              </li>
+              <li class="group cursor-default md:cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-molris-cyan transition-colors shadow-[0_0_0px_#00E5FF] group-hover:shadow-[0_0_8px_#00E5FF]"></span>
+                    <strong class="text-gray-300 group-hover:text-molris-cyan transition-colors text-sm">系統發育分析</strong>
+                  </div>
+                  <i class="fa-solid fa-plus text-xs text-gray-600 group-hover:text-molris-cyan group-hover:rotate-45 transition-all duration-300"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[13px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      比較特徵基因或蛋白質序列，建立演化樹，解析物種間的親緣關係或追蹤病原體。
+                    </p>
+                  </div>
+                </div>
+              </li>
             </ul>
           </div>
         </div>
