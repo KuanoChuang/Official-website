@@ -283,7 +283,7 @@
 
           // == 智慧標籤配置邏輯 (交錯出現) ==
           let chosenLabelRow = -1;
-          if (Math.random() > 0.75) { // 50%的機率配置標籤
+          if (Math.random() > 0.75) { // 75%的機率配置標籤
             let availableRows = rowIndices.filter(idx => rowStates[idx] !== 'gap' && !usedLabelRows.has(idx));
             if (availableRows.length === 0) {
               availableRows = rowIndices.filter(idx => rowStates[idx] !== 'gap');
@@ -392,7 +392,15 @@
         current += width;
       }
     }
-
+    // --- 互動清單釘選 (Pin) 切換邏輯 ---
+    function togglePin(element) {
+      // 透過自訂資料屬性 (data-pinned) 來控制狀態
+      if (element.dataset.pinned === "true") {
+        element.dataset.pinned = "false";
+      } else {
+        element.dataset.pinned = "true";
+      }
+    }
     window.onload = () => {
       resetAutoPlay();
       generateMSABackground();
