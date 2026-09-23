@@ -24,7 +24,7 @@
               dark: '#030509',
               gray: '#8A9BAE',
               neonpink: '#F000FF',
-              orange: '#F97316' /* 賽博龐克橘 */
+              orange: '#F97316'
             }
           }
         }
@@ -37,9 +37,9 @@
     const totalMsaSlides = 3;
     
     const slideCaptions = [
-      "Molris 視覺化 - ○○",
-      "Molris 視覺化 - ○○",
-      "Molris 視覺化 - ○○"
+      "Molris 視覺化 - 全覽比對視圖",
+      "Molris 視覺化 - 關鍵保守區域",
+      "Molris 視覺化 - 突變位點特徵"
     ];
     let autoPlayInterval;
 
@@ -79,15 +79,16 @@
       clearInterval(autoPlayInterval);
       autoPlayInterval = setInterval(() => {
         nextSlide(1);
-      }, 4500); // 圖片輪播維持 4.5 秒
+      }, 4500); 
     }
 
-    // === 動態背景引擎 (嚴格依照機率與數量規則生成) ===
+    // === 動態背景引擎 ===
+    const SCAN_DURATION = 4; // 雷達掃描耗時(秒)
+
     function generateMSABackground() {
       const container = document.getElementById('dynamic-msa-bg');
       if (!container) return;
       
-      // 觸發淡出
       container.style.opacity = '0';
       
       setTimeout(() => {
@@ -95,75 +96,171 @@
         
         // 規則 1: 橫向序列共 10 條
         const numRows = 10;
-        
-        // 規則 2 & 6: 2或3條光柱 (機率各半)，x方向位置隨機但不重疊
+        const rowYPositions = [];
+        for (let i = 0; i < numRows; i++) {
+          rowYPositions.push(8 + (i * 9) + (Math.random() * 2 - 1));
+        }
+
+        // --- 特效: 隱形掃描雷達 ---
+        const scanner = document.createElement('div');
+        scanner.className = 'absolute top-0 bottom-0 w-[2px] z-20 pointer-events-none';
+        scanner.style.background = 'linear-gradient(to bottom, transparent, #00E5FF, transparent)';
+        scanner.style.boxShadow = '0 0 15px #00E5FF, 0 0 30px #00E5FF';
+        scanner.style.animation = `scanSweep ${SCAN_DURATION}s linear forwards`;
+        container.appendChild(scanner);
+
+        // 建立 10 條水平序列容器
+        const rowDivs = [];
+        for (let i = 0; i < numRows; i++) {
+          const rowDiv = document.createElement('div');
+          rowDiv.className = 'absolute w-full h-[5px] z-10';
+          rowDiv.style.top = `${rowYPositions[i]}%`;
+          
+          // 稍微提亮基底軌道線，讓背景序列更有存在感
+          const trace = document.createElement('div');
+          trace.className = 'absolute top-[2px] w-full h-[1px] bg-gray-700/40 z-0';
+          rowDiv.appendChild(trace);
+          
+          rowDivs.push(rowDiv);
+          container.appendChild(rowDiv);
+        }
+
+        // 預先計算 光柱/雷射 的位置
         const numCols = Math.random() < 0.5 ? 2 : 3;
         const cols = [];
-        
-        // 將畫面分為 3 個安全區段，避免光柱重疊
         const zones = [
-          { min: 12, max: 28 }, // 左區
-          { min: 42, max: 58 }, // 中區
-          { min: 72, max: 88 }  // 右區
+          { min: 15, max: 35 }, 
+          { min: 45, max: 65 }, 
+          { min: 75, max: 90 }  
         ];
 
         for (let i = 0; i < numCols; i++) {
-          // 決定長度型態 (長保守:光柱 wide / 短保守:雷射 laser)
-          const type = Math.random() > 0.5 ? 'wide' : 'laser';
-          // 決定屬性顏色
+          const isLaser = Math.random() > 0.6; // 短片段保守序列(雷射)
+          const type = isLaser ? 'laser' : 'wide';
           const color = Math.random() > 0.5 ? 'cyan' : 'purple';
-          // 決定寬度
-          const width = type === 'wide' ? (Math.random() * 4 + 3) : 0.2; 
-          // 決定隨機位置
+          
+          // 寬度限制 2.5 ~ 4.5% (約等同 5-8 個位點)
+          const width = isLaser ? 0 : (Math.random() * 2 + 2.5); 
           const left = Math.random() * (zones[i].max - zones[i].min) + zones[i].min;
           
           cols.push({ left, width, type, color });
         }
 
-        // 繪製背景引導光柱 (Guide)
-        cols.forEach(col => {
-          const guide = document.createElement('div');
-          if (col.type === 'wide') {
-            guide.className = `absolute top-0 bottom-0 border-x ${col.color === 'cyan' ? 'bg-molris-cyan/10 border-molris-cyan/20' : 'bg-[#F000FF]/10 border-[#F000FF]/20'}`;
-            guide.style.left = `${col.left}%`;
-            guide.style.width = `${col.width}%`;
-          } else {
-            guide.className = `absolute top-0 bottom-0 ${col.color === 'cyan' ? 'bg-molris-cyan/60 shadow-[0_0_15px_#00E5FF]' : 'bg-[#F000FF]/60 shadow-[0_0_15px_#F000FF]'}`;
-            guide.style.left = `${col.left}%`;
-            guide.style.width = '2px';
+        // 建立安全避讓區 (保護光柱不被電路穿越)
+        let safeZones = [];
+        let currentX = 5; 
+        const sortedCols = [...cols].sort((a, b) => a.left - b.left);
+        
+        sortedCols.forEach(col => {
+          const colStart = col.left - 4;
+          if (colStart > currentX + 3) {
+            safeZones.push({ min: currentX, max: colStart });
           }
-          container.appendChild(guide);
+          currentX = col.left + (col.type === 'wide' ? col.width : 0) + 4;
         });
+        if (currentX < 95) safeZones.push({ min: currentX, max: 95 });
 
-        // 建立 10 條橫向軌道並插入無關序列
-        const rowDivs = [];
-        for (let i = 0; i < numRows; i++) {
-          const rowY = 8 + (i * 9) + (Math.random() * 2 - 1);
-          const rowDiv = document.createElement('div');
-          rowDiv.className = 'absolute w-full h-[5px]';
-          rowDiv.style.top = `${rowY}%`;
-          rowDivs.push(rowDiv);
-          container.appendChild(rowDiv);
+        // 規則 2: 在安全區內生成 電路橋接 (降噪與錯落機制)
+        let lastCircuitRow = -2;
+        for (let i = 0; i < numRows - 1; i++) {
+          // 強制錯開機制：若上一行剛畫過，70% 機率強迫跳過本行，避免擠在一起
+          if (i - lastCircuitRow === 1 && Math.random() < 0.7) continue;
 
-          // 規則 7: 繪製無關序列，避開光柱區間
+          // 整體生成機率降為 45%
+          if (Math.random() < 0.45) { 
+            const validZones = safeZones.filter(z => (z.max - z.min) > 4);
+            if (validZones.length === 0) continue;
+            const targetZone = validZones[Math.floor(Math.random() * validZones.length)];
+            
+            lastCircuitRow = i; // 紀錄最後畫的行號
+
+            let startX, endX, pathD;
+            const isVertical = Math.random() > 0.5; // 50%直角ㄣ字型, 50%垂直
+            
+            if (isVertical) {
+              startX = Math.random() * (targetZone.max - targetZone.min) + targetZone.min;
+              endX = startX;
+              pathD = `M ${startX} ${rowYPositions[i]} L ${endX} ${rowYPositions[i+1]}`;
+            } else {
+              startX = Math.random() * (targetZone.max - targetZone.min - 3) + targetZone.min + 1.5;
+              const direction = Math.random() > 0.5 ? 1 : -1;
+              endX = startX + direction * (Math.random() * 2.5 + 1); 
+              endX = Math.max(targetZone.min, Math.min(targetZone.max, endX));
+              
+              const y1 = rowYPositions[i];
+              const y2 = rowYPositions[i+1];
+              const midY = y1 + (y2 - y1) * 0.5;
+              pathD = `M ${startX} ${y1} L ${startX} ${midY} L ${endX} ${midY} L ${endX} ${y2}`;
+            }
+
+            const svgContainer = document.createElement('div');
+            svgContainer.className = 'absolute inset-0 w-full h-full z-0 reveal-item pointer-events-none opacity-60';
+            svgContainer.style.animationDelay = `${(startX / 100) * SCAN_DURATION}s`;
+            
+            svgContainer.innerHTML = `
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="w-full h-full">
+                <path d="${pathD}" fill="none" stroke="rgba(75, 85, 99, 0.5)" vector-effect="non-scaling-stroke" stroke-width="1.2" stroke-linejoin="miter" />
+              </svg>
+            `;
+            
+            const node1 = document.createElement('div');
+            node1.className = 'absolute w-[3px] h-[3px] rounded-full bg-gray-500 shadow-[0_0_5px_rgba(255,255,255,0.3)]';
+            node1.style.left = `calc(${startX}% - 1.5px)`;
+            node1.style.top = `calc(${rowYPositions[i]}% - 0.5px)`;
+            svgContainer.appendChild(node1);
+            
+            const node2 = document.createElement('div');
+            node2.className = 'absolute w-[3px] h-[3px] rounded-full bg-gray-500 shadow-[0_0_5px_rgba(255,255,255,0.3)]';
+            node2.style.left = `calc(${endX}% - 1.5px)`;
+            node2.style.top = `calc(${rowYPositions[i+1]}% - 0.5px)`;
+            svgContainer.appendChild(node2);
+
+            container.appendChild(svgContainer);
+          }
+        }
+
+        // 繪製無關序列碎塊
+        rowDivs.forEach((rowDiv) => {
           let currentStart = -2;
           cols.forEach(col => {
             createFragments(rowDiv, currentStart, col.left - 1.5);
-            currentStart = col.left + col.width + 1.5;
+            currentStart = col.left + (col.type === 'wide' ? col.width : 0) + 1.5;
           });
           createFragments(rowDiv, currentStart, 102);
-        }
+        });
 
-        // 規則 3, 4, 5: 處理每個光柱對應的保守序列與特徵
+        // 全域追蹤已經獲得標籤的行數，確保交錯出現不重疊
+        const usedLabelRows = new Set();
+
+        // 處理光柱/雷射與其附屬特徵
         cols.forEach(col => {
-          // 洗牌 10 條序列的 index
+          const animDelay = (col.left / 100) * SCAN_DURATION;
+          
+          const guide = document.createElement('div');
+          if (col.type === 'wide') {
+            guide.className = `absolute top-0 bottom-0 reveal-item border-x ${col.color === 'cyan' ? 'bg-molris-cyan/10 border-molris-cyan/20' : 'bg-[#F000FF]/10 border-[#F000FF]/20'}`;
+            guide.style.width = `${col.width}%`;
+            guide.style.left = `${col.left}%`;
+          } else {
+            // 雷射實心化修正
+            guide.className = `absolute top-0 bottom-0 reveal-item ${col.color === 'cyan' ? 'bg-molris-cyan shadow-[0_0_4px_#00E5FF]' : 'bg-[#F000FF] shadow-[0_0_4px_#F000FF]'}`;
+            guide.style.width = '2px';
+            guide.style.left = `${col.left}%`;
+          }
+          guide.style.animationDelay = `${animDelay}s`;
+          container.appendChild(guide);
+
           let rowIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
           rowIndices = rowIndices.sort(() => Math.random() - 0.5);
 
-          // 分配特徵數量，確保符合「小於等於2」的限制
-          let gapCount = Math.floor(Math.random() * 2) + 1; // 1~2 條缺失
-          let mutatedCount = Math.floor(Math.random() * 3); // 0~2 條含有突變(橘點)
-          let fadedCount = Math.floor(Math.random() * 3);   // 0~2 條淡化白色
+          // == 嚴格機率設定: 60%保守(6), 20%缺口(2), 10%突變(1), 10%淡化(1) ==
+          let gapCount = 2;
+          let mutatedCount = 1; 
+          let fadedCount = 1;   
+          
+          // 加入一點點波動，但不超過單列 2 個的上限
+          if (Math.random() > 0.7) mutatedCount = 2;
+          if (Math.random() > 0.7) fadedCount = 2;
 
           const rowStates = Array(10).fill('conserved');
           rowIndices.forEach(idx => {
@@ -172,64 +269,115 @@
             else if (fadedCount > 0) { rowStates[idx] = 'faded'; fadedCount--; }
           });
 
-          // 渲染保守序列
+          // == 智慧標籤配置邏輯 (交錯出現) ==
+          let chosenLabelRow = -1;
+          if (Math.random() > 0.5) { // 50%的機率配置標籤
+            let availableRows = rowIndices.filter(idx => rowStates[idx] !== 'gap' && !usedLabelRows.has(idx));
+            if (availableRows.length === 0) {
+              availableRows = rowIndices.filter(idx => rowStates[idx] !== 'gap');
+            }
+            if (availableRows.length > 0) {
+              chosenLabelRow = availableRows[Math.floor(Math.random() * availableRows.length)];
+              usedLabelRows.add(chosenLabelRow); 
+            }
+          }
+
           rowDivs.forEach((rowDiv, rowIndex) => {
             const state = rowStates[rowIndex];
-            if (state === 'gap') return; // 缺失則留空
+            if (state === 'gap') return; 
 
             const block = document.createElement('div');
+            block.classList.add('reveal-item');
+            block.style.animationDelay = `${animDelay}s`;
             
             if (col.type === 'wide') {
-              // 長保守區塊
               let bgClass = '';
               if (state === 'faded') bgClass = 'bg-white/40';
               else bgClass = col.color === 'cyan' ? 'bg-molris-cyan shadow-[0_0_10px_#00E5FF]' : 'bg-[#F000FF] shadow-[0_0_10px_#F000FF]';
               
-              block.className = `absolute h-full rounded-sm ${bgClass}`;
+              block.className += ` absolute top-[1px] h-[3px] rounded-sm ${bgClass}`; 
               block.style.left = `${col.left}%`;
               block.style.width = `${col.width}%`;
 
-              // 規則 4: 若為突變，只在序列內部打上一個小橘色位點
               if (state === 'mutated') {
                 const point = document.createElement('div');
-                point.className = 'absolute top-[-1px] h-[7px] w-[6px] bg-molris-orange shadow-[0_0_10px_#F97316] rounded-sm';
-                point.style.left = `${Math.random() * 80}%`; // 隨機位置
+                // 完美貼合高度與 Y 軸對齊
+                point.className = 'absolute top-0 h-full w-[4px] rounded-[1px] glitch-dot z-20';
+                point.style.left = `${Math.random() * 60 + 20}%`;
                 block.appendChild(point);
               }
             } else {
-              // 雷射模式 (單一位點)
               let bgClass = '';
-              if (state === 'mutated') bgClass = 'bg-molris-orange shadow-[0_0_10px_#F97316]'; // 點綴橘色
-              else if (state === 'faded') bgClass = 'bg-white/60 shadow-[0_0_8px_#ffffff]';
-              else bgClass = col.color === 'cyan' ? 'bg-molris-cyan shadow-[0_0_12px_#00E5FF]' : 'bg-[#F000FF] shadow-[0_0_12px_#F000FF]';
+              if (state === 'mutated') bgClass = 'glitch-dot z-20'; 
+              else if (state === 'faded') bgClass = 'bg-white shadow-[0_0_8px_#ffffff] opacity-80';
+              else bgClass = col.color === 'cyan' ? 'bg-molris-cyan shadow-[0_0_10px_#00E5FF]' : 'bg-[#F000FF] shadow-[0_0_10px_#F000FF]';
               
-              block.className = `absolute w-[8px] h-[8px] rounded-full ${bgClass} -translate-x-[3px] top-[-1.5px]`;
-              block.style.left = `${col.left}%`;
+              // 像素級置中校正
+              block.className += ` absolute w-[6px] h-[6px] rounded-full ${bgClass}`;
+              block.style.left = `calc(${col.left}% - 2px)`;
+              block.style.top = `-0.5px`;
             }
             
+            // HUD 標籤生成 
+            if (rowIndex === chosenLabelRow) {
+              const hud = document.createElement('div');
+              
+              let opacityClass = 'opacity-70';
+              if (col.left > 30 && col.left < 70) opacityClass = 'opacity-20';
+              
+              // 標籤顏色精準跟隨狀態
+              let textColorClass = '';
+              if (state === 'faded') textColorClass = 'text-white';
+              else if (state === 'mutated') textColorClass = 'text-[#F97316]'; 
+              else textColorClass = col.color === 'cyan' ? 'text-molris-cyan' : 'text-[#F000FF]';
+              
+              hud.className = `absolute left-[calc(100%+6px)] top-1/2 -translate-y-1/2 font-mono text-[9px] font-bold tracking-widest whitespace-nowrap ${opacityClass} ${textColorClass}`;
+              
+              const labelPrefixes = ['SNP', 'REG', 'ALN', 'CON', 'MUT'];
+              const prefix = labelPrefixes[Math.floor(Math.random() * labelPrefixes.length)];
+              const dummyPos = Math.floor(Math.random() * 5000) + 1000;
+              hud.innerHTML = `${prefix}_${dummyPos}`;
+              
+              block.appendChild(hud);
+            }
+
             rowDiv.appendChild(block);
           });
         });
         
-        // 淡入新畫面
         container.style.opacity = '1';
       }, 700);
     }
 
-    // 產生不規則碎片
     function createFragments(parent, startPct, endPct) {
       let current = startPct;
       while (current < endPct) {
-        current += (Math.random() * 4 + 2); // 隨機間隔
-        let width = Math.random() * 8 + 2;  // 隨機長度
-        if (current + width > endPct) width = endPct - current;
-        if (width > 1.5 && current < endPct) {
-          const frag = document.createElement('div');
-          frag.className = `absolute h-full rounded-sm ${Math.random() > 0.5 ? 'bg-gray-800' : 'bg-gray-700/60'}`;
-          frag.style.left = `${current}%`;
-          frag.style.width = `${width}%`;
-          parent.appendChild(frag);
+        current += (Math.random() * 18 + 5); 
+        if (current >= endPct) break;
+
+        if (Math.random() < 0.3) continue; 
+
+        let width;
+        if (Math.random() > 0.7) {
+          width = Math.random() * 15 + 8; // 長片段
+        } else {
+          width = Math.random() * 3 + 1;  // 短碎片
         }
+        
+        if (current + width > endPct) width = endPct - current;
+        
+        const frag = document.createElement('div');
+        
+        // 隨機產生較粗的碎片，增加長序列的真實感
+        const isThick = Math.random() > 0.75;
+        const heightClass = isThick ? 'h-[3px] top-[1px]' : 'h-[2px] top-[1.5px]';
+        const bgClass = Math.random() > 0.5 ? 'bg-gray-500/60' : 'bg-gray-600/40';
+        
+        frag.className = `absolute rounded-sm ${heightClass} ${bgClass} z-10`;
+        frag.style.left = `${current}%`;
+        frag.style.width = `${width}%`;
+        parent.appendChild(frag);
+        
         current += width;
       }
     }
@@ -237,13 +385,12 @@
     window.onload = () => {
       resetAutoPlay();
       generateMSABackground();
-      // 規則 8: 改為 10 秒變換一次
-      setInterval(generateMSABackground, 10000); 
+      setInterval(generateMSABackground, 20000); 
     };
   </script>
-  <style>
+    <style>
     body {
-      background-color: #030509; /* 賽博龐克極致黑 */
+      background-color: #030509; 
       color: #E2E8F0;
     }
     .glass-nav {
@@ -290,21 +437,42 @@
       color: #9CA3AF;
       border-color: #6B7280;
     }
-    
     .matrix-table th, .matrix-table td {
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* 賽博龐克掃描線背景 */
-    .scanlines {
-      background: linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0),
-        rgba(255, 255, 255, 0) 50%,
-        rgba(0, 0, 0, 0.2) 50%,
-        rgba(0, 0, 0, 0.2)
-      );
-      background-size: 100% 4px;
+    /* === 賽博龐克掃描與特效 === */
+    @keyframes scanSweep {
+      0% { left: 0%; opacity: 0; }
+      5% { opacity: 1; }
+      95% { left: 100%; opacity: 1; }
+      100% { left: 100%; opacity: 0; }
+    }
+    
+    @keyframes featureReveal {
+      0% { opacity: 0; filter: brightness(3); transform: scaleY(0.9); }
+      100% { opacity: 1; filter: brightness(1); transform: scaleY(1); }
+    }
+    
+    .reveal-item {
+      opacity: 0; 
+      animation: featureReveal 0.5s ease-out forwards;
+    }
+
+    /* 橘色突變點純粹明暗閃爍 (純粹呼吸與擴散) */
+    @keyframes glitch {
+      0%, 100% { 
+        box-shadow: 0 0 10px 2px #F97316; 
+        background-color: #F97316; 
+      }
+      50% { 
+        box-shadow: 0 0 2px 0px #ea580c; 
+        background-color: #c2410c; 
+      }
+    }
+    
+    .glitch-dot {
+      animation: glitch 2s ease-in-out infinite;
     }
   </style>
 </head>
@@ -390,22 +558,19 @@
     <!-- ==================== 1. Hero Banner ==================== -->
     <section class="relative min-h-[90vh] flex flex-col justify-center overflow-hidden border-b border-gray-800/80 bg-molris-dark">
       
-      <!-- 全局掃描線 -->
-      <div class="absolute inset-0 scanlines pointer-events-none z-0"></div>
+      <!-- 賽博龐克光暈 -->
+      <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#F000FF]/15 rounded-full blur-[150px] pointer-events-none z-0"></div>
+      <div class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-molris-cyan/15 rounded-full blur-[180px] pointer-events-none z-0"></div>
 
-      <!-- 氛圍光暈 -->
-      <div class="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-molris-neonpink/10 rounded-full blur-[150px] pointer-events-none z-0"></div>
-      <div class="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-molris-cyan/15 rounded-full blur-[180px] pointer-events-none z-0"></div>
+      <!-- 邊角 UI 裝飾 -->
+      <div class="absolute top-8 left-8 w-12 h-12 border-t-2 border-l-2 border-molris-cyan/30 pointer-events-none z-0"></div>
+      <div class="absolute bottom-8 right-8 w-12 h-12 border-b-2 border-r-2 border-molris-cyan/30 pointer-events-none z-0"></div>
 
-      <!-- Cyberpunk UI 邊角裝飾 -->
-      <div class="absolute top-6 left-6 w-8 h-8 border-t-2 border-l-2 border-molris-cyan/30 pointer-events-none z-0"></div>
-      <div class="absolute bottom-6 right-6 w-8 h-8 border-b-2 border-r-2 border-molris-cyan/30 pointer-events-none z-0"></div>
-
-      <!-- === 動態序列資料面板 (JS 生成，嚴格執行規則) === -->
+      <!-- === 動態序列資料引擎 === -->
       <div id="dynamic-msa-bg" class="absolute inset-0 z-0 pointer-events-none w-full h-full transition-opacity duration-700 ease-in-out"></div>
 
-      <!-- 中央防護遮罩 (確保文字極度清晰) -->
-      <div class="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(5,11,20,0.95)_10%,rgba(5,11,20,0.7)_40%,transparent_75%)]"></div>
+      <!-- === 中央光學防護罩 === -->
+      <div class="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(3,5,9,0.95)_15%,rgba(3,5,9,0.7)_40%,transparent_75%)]"></div>
 
       <!-- === 文字內容 === -->
       <div class="max-w-4xl mx-auto px-6 relative z-10 text-center">
@@ -416,7 +581,7 @@
           多序列比對 <br>
           <span class="text-2xl md:text-3xl text-gray-400 font-light mt-4 inline-block tracking-widest ">Multiple Sequence Alignment (MSA)</span>
         </h1>
-        <p class="text-lg text-gray-400 leading-relaxed max-w-3xl mx-auto mb-10 drop-shadow-md">
+        <p class="text-lg text-gray-400 leading-relaxed max-w-3xl mx-auto mb-10 drop-shadow-md text-justify md:text-center">
           從龐大的生物序列中，精準辨識保守區域與演化特徵。<br>
           為結構預測、藥物開發與蛋白質工程，提供最關鍵的底層數據支持。
         </p>
