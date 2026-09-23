@@ -81,7 +81,19 @@
         nextSlide(1);
       }, 4500); 
     }
-
+    function toggleHowItWorks() {
+      const content = document.getElementById('how-it-works-content');
+      const icon = document.getElementById('how-it-works-icon');
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        content.classList.add('animate-slide-down');
+        icon.classList.add('rotate-180');
+      } else {
+        content.classList.add('hidden');
+        content.classList.remove('animate-slide-down');
+        icon.classList.remove('rotate-180');
+      }
+    }
     // === 動態背景引擎 ===
     const SCAN_DURATION = 4; // 雷達掃描耗時(秒)
 
@@ -1223,8 +1235,6 @@
             </div>
           </div>
         </div>
-
-       
 
         <!-- 驗證機制 (Quality Control) -->
         <div class="mt-24 pt-16 border-t border-gray-800">
