@@ -486,6 +486,26 @@
     .glitch-dot {
       animation: glitch 2s ease-in-out infinite;
     }
+
+    /* 全新實體化賽博資料流 */
+    @keyframes cometFall {
+      0% { top: -40px; opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+    .animate-comet {
+      animation: cometFall 2.5s ease-in-out infinite;
+    }
+
+    /* 懸停輕微彈跳 */
+    @keyframes subtleBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    .group:hover .hover-animate-bounce {
+      animation: subtleBounce 1s ease-in-out infinite;
+    }
   </style>
 </head>
 
