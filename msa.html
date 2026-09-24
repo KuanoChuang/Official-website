@@ -401,13 +401,115 @@
         element.dataset.pinned = "true";
       }
     }
+    // === 演算法矩陣互動邏輯 ===
+    let matrixState = { size: null, sim: null };
+
+    function selectMatrix(type, value) {
+      if (matrixState[type] === value) {
+        matrixState[type] = null; // 再次點擊取消選取
+      } else {
+        matrixState[type] = value;
+      }
+      updateMatrixUI();
+    }
+
+    function updateMatrixUI() {
+      // 1. 更新篩選按鈕狀態
+      const types = ['size', 'sim'];
+      types.forEach(type => {
+        const buttons = document.querySelectorAll(`[id^="btn-${type}-"]`);
+        buttons.forEach(btn => {
+          const btnVal = btn.id.replace(`btn-${type}-`, '');
+          if (btnVal === matrixState[type]) {
+             btn.classList.add('border-molris-cyan', 'bg-molris-cyan/10', 'text-molris-cyan', 'font-bold', 'shadow-[0_0_10px_rgba(0,229,255,0.2)]');
+             btn.classList.remove('border-gray-700', 'bg-gray-800', 'text-gray-300');
+          } else {
+             btn.classList.remove('border-molris-cyan', 'bg-molris-cyan/10', 'text-molris-cyan', 'font-bold', 'shadow-[0_0_10px_rgba(0,229,255,0.2)]');
+             btn.classList.add('border-gray-700', 'bg-gray-800', 'text-gray-300');
+          }
+        });
+      });
+
+      // 2. 更新表格高亮與淡化
+      const allCells = document.querySelectorAll('.matrix-cell');
+      const allHeaders = document.querySelectorAll('.matrix-header');
+      
+      const { size, sim } = matrixState;
+      
+      if (!size && !sim) {
+         // 全無選取時恢復預設狀態
+         allCells.forEach(el => el.classList.remove('opacity-20', 'bg-molris-cyan/10', 'ring-1', 'ring-molris-cyan'));
+         allHeaders.forEach(el => {
+           el.classList.remove('opacity-30', 'text-molris-cyan');
+         });
+         return;
+      }
+
+      // 內容儲存格判定
+      allCells.forEach(cell => {
+         const cSize = cell.getAttribute('data-size');
+         const cSim = cell.getAttribute('data-sim');
+         
+         const matchSize = !size || size === 'unsure' || size === cSize;
+         const matchSim = !sim || sim === 'unsure' || sim === cSim;
+         
+         if (matchSize && matchSim) {
+             cell.classList.remove('opacity-20');
+             cell.classList.add('bg-molris-cyan/10', 'ring-1', 'ring-molris-cyan');
+         } else {
+             cell.classList.remove('bg-molris-cyan/10', 'ring-1', 'ring-molris-cyan');
+             cell.classList.add('opacity-20');
+         }
+      });
+      
+      // 標題列判定 (引導視線)
+      allHeaders.forEach(header => {
+         const hSize = header.getAttribute('data-size');
+         const hSim = header.getAttribute('data-sim');
+         
+         if (hSize) {
+             if (size && size !== 'unsure' && size !== hSize) {
+                 header.classList.add('opacity-30');
+                 header.classList.remove('text-molris-cyan');
+             } else {
+                 header.classList.remove('opacity-30');
+                 if (size && size === hSize) header.classList.add('text-molris-cyan');
+             }
+         }
+         
+         if (hSim) {
+             if (sim && sim !== 'unsure' && sim !== hSim) {
+                 header.classList.add('opacity-30');
+                 header.classList.remove('text-molris-cyan');
+             } else {
+                 header.classList.remove('opacity-30');
+                 if (sim && sim === hSim) header.classList.add('text-molris-cyan');
+             }
+         }
+      });
+    }
+
+    // --- 演算法詳細列表漸進式揭露 ---
+    function toggleAlgorithmList() {
+       const list = document.getElementById('algorithm-list-container');
+       const icon = document.getElementById('algorithm-list-icon');
+       if(list.classList.contains('hidden')) {
+           list.classList.remove('hidden');
+           list.classList.add('animate-slide-down');
+           icon.classList.add('rotate-180');
+       } else {
+           list.classList.add('hidden');
+           list.classList.remove('animate-slide-down');
+           icon.classList.remove('rotate-180');
+       }
+    }
     window.onload = () => {
       resetAutoPlay();
       generateMSABackground();
       setInterval(generateMSABackground, 20000); 
     };
   </script>
-    <style>
+  <style>
     body {
       background-color: #030509; 
       color: #E2E8F0;
@@ -940,7 +1042,7 @@
       <div class="absolute left-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/10 blur-[120px] rounded-full pointer-events-none"></div>
 
       <div class="max-w-7xl mx-auto px-6 relative z-10">
-        <div class="mb-16">
+        <div class="mb-12">
           <h2 class="text-3xl font-bold text-white mb-4">專屬演算法策略，交由專業團隊為您把關</h2>
           <p class="text-gray-400 max-w-3xl text-justify text-[16px]">
             面對繁雜的參數與演算法，您無需親自反覆測試。<br>
@@ -951,20 +1053,54 @@
           </p>
         </div>
 
+        <!-- 互動式引導選擇器 -->
+        <div class="bg-gray-900/40 p-6 md:p-8 rounded-2xl border border-gray-800 mb-10 shadow-inner">
+          <div class="grid md:grid-cols-2 gap-8">
+            <!-- Size Selector -->
+            <div>
+              <h3 class="text-white font-bold mb-4 text-[16px] flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-molris-cyan/20 text-molris-cyan flex items-center justify-center text-xs">1</span> 
+                資料集規模 (序列數量)
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                <button onclick="selectMatrix('size', 'small')" id="btn-size-small" class="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800 text-gray-300 hover:border-molris-cyan/50 hover:text-molris-cyan transition-all text-sm shadow-sm hover:shadow-[0_0_10px_rgba(0,229,255,0.1)]">小型 (&lt; 100)</button>
+                <button onclick="selectMatrix('size', 'medium')" id="btn-size-medium" class="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800 text-gray-300 hover:border-molris-cyan/50 hover:text-molris-cyan transition-all text-sm shadow-sm hover:shadow-[0_0_10px_rgba(0,229,255,0.1)]">中型 (&lt; 1k)</button>
+                <button onclick="selectMatrix('size', 'large')" id="btn-size-large" class="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800 text-gray-300 hover:border-molris-cyan/50 hover:text-molris-cyan transition-all text-sm shadow-sm hover:shadow-[0_0_10px_rgba(0,229,255,0.1)]">大型 (&lt; 10k)</button>
+                <button onclick="selectMatrix('size', 'xlarge')" id="btn-size-xlarge" class="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800 text-gray-300 hover:border-molris-cyan/50 hover:text-molris-cyan transition-all text-sm shadow-sm hover:shadow-[0_0_10px_rgba(0,229,255,0.1)]">超大型 (> 10k)</button>
+                <button onclick="selectMatrix('size', 'unsure')" id="btn-size-unsure" class="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800 text-gray-300 hover:border-molris-cyan/50 hover:text-molris-cyan transition-all text-sm shadow-sm hover:shadow-[0_0_10px_rgba(0,229,255,0.1)]">不清楚</button>
+              </div>
+            </div>
+            
+            <!-- Similarity Selector -->
+            <div>
+              <h3 class="text-white font-bold mb-4 text-[16px] flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-molris-cyan/20 text-molris-cyan flex items-center justify-center text-xs">2</span> 
+                序列相似度
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                 <button onclick="selectMatrix('sim', 'high')" id="btn-sim-high" class="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800 text-gray-300 hover:border-molris-cyan/50 hover:text-molris-cyan transition-all text-sm shadow-sm hover:shadow-[0_0_10px_rgba(0,229,255,0.1)]">&gt; 70% (高相似度)</button>
+                 <button onclick="selectMatrix('sim', 'medium')" id="btn-sim-medium" class="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800 text-gray-300 hover:border-molris-cyan/50 hover:text-molris-cyan transition-all text-sm shadow-sm hover:shadow-[0_0_10px_rgba(0,229,255,0.1)]">30–70% (中度)</button>
+                 <button onclick="selectMatrix('sim', 'low')" id="btn-sim-low" class="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800 text-gray-300 hover:border-molris-cyan/50 hover:text-molris-cyan transition-all text-sm shadow-sm hover:shadow-[0_0_10px_rgba(0,229,255,0.1)]">&lt; 30% (低相似度)</button>
+                 <button onclick="selectMatrix('sim', 'unsure')" id="btn-sim-unsure" class="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800 text-gray-300 hover:border-molris-cyan/50 hover:text-molris-cyan transition-all text-sm shadow-sm hover:shadow-[0_0_10px_rgba(0,229,255,0.1)]">不清楚</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="overflow-x-auto overflow-y-hidden mb-16">
           <table class="w-full text-left matrix-table border-collapse min-w-[800px]">
             <thead>
               <tr class="bg-gray-800/80">
-                <th class="p-4 text-molris-cyan font-bold w-[16%] border-r border-gray-700">序列相似度</th>
-                <th class="p-4 text-molris-cyan font-bold text-center w-[28%]">&gt; 70%</th>
-                <th class="p-4 text-molris-cyan font-bold text-center w-[28%]">30–70%</th>
-                <th class="p-4 text-molris-cyan font-bold text-center w-[28%]">&lt; 30%</th>
+                <th class="p-4 text-gray-300 font-bold w-[16%] border-r border-gray-700">對應矩陣</th>
+                <th data-sim="high" class="matrix-header transition-all duration-300 p-4 font-bold text-center w-[28%] text-gray-300">&gt; 70%</th>
+                <th data-sim="medium" class="matrix-header transition-all duration-300 p-4 font-bold text-center w-[28%] text-gray-300">30–70%</th>
+                <th data-sim="low" class="matrix-header transition-all duration-300 p-4 font-bold text-center w-[28%] text-gray-300">&lt; 30%</th>
               </tr>
             </thead>
             <tbody class="bg-gray-900/40 text-sm">
               <tr class="hover:bg-gray-800/30 transition-colors">
-                <td class="p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">小型資料集</strong><span class="text-gray-500 text-xs">&lt; 100 條序列</span></td>
-                <td class="p-4 border-t border-gray-800 text-center">
+                <td data-size="small" class="matrix-header transition-all duration-300 p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">小型資料集</strong><span class="text-gray-500 text-xs">&lt; 100 條序列</span></td>
+                <td data-size="small" data-sim="high" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5 mb-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
@@ -974,7 +1110,7 @@
                     <span class="algo-badge algo-badge-outline">(ProbCons)</span>
                   </div>
                 </td>
-                <td class="p-4 border-t border-gray-800 text-center">
+                <td data-size="small" data-sim="medium" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
@@ -983,7 +1119,7 @@
                     <span class="algo-badge algo-badge-solid">Dialign-TX</span>
                   </div>
                 </td>
-                <td class="p-4 border-t border-gray-800 text-center">
+                <td data-size="small" data-sim="low" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
@@ -992,11 +1128,10 @@
                     <span class="algo-badge algo-badge-solid">Dialign-TX</span>
                   </div>
                 </td>
-
               </tr>
               <tr class="hover:bg-gray-800/30 transition-colors">
-                <td class="p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">中型資料集</strong><span class="text-gray-500 text-xs">&lt; 1k 條序列</span></td>
-                <td class="p-4 border-t border-gray-800 text-center">
+                <td data-size="medium" class="matrix-header transition-all duration-300 p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">中型資料集</strong><span class="text-gray-500 text-xs">&lt; 1k 條序列</span></td>
+                <td data-size="medium" data-sim="high" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5 mb-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
@@ -1007,7 +1142,7 @@
                     <span class="algo-badge algo-badge-outline">(ProbCons)</span>
                   </div>
                 </td>
-                <td class="p-4 border-t border-gray-800 text-center">
+                <td data-size="medium" data-sim="medium" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5 mb-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
@@ -1016,7 +1151,7 @@
                     <span class="algo-badge algo-badge-outline">(ProbCons)</span>
                   </div>
                 </td>
-                <td class="p-4 border-t border-gray-800 text-center">
+                <td data-size="medium" data-sim="low" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5 mb-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
@@ -1027,15 +1162,15 @@
                 </td>
               </tr>
               <tr class="hover:bg-gray-800/30 transition-colors">
-                <td class="p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">大型資料集</strong><span class="text-gray-500 text-xs">&lt; 10k 條序列</span></td>
-                <td class="p-4 border-t border-gray-800 text-center">
+                <td data-size="large" class="matrix-header transition-all duration-300 p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">大型資料集</strong><span class="text-gray-500 text-xs">&lt; 10k 條序列</span></td>
+                <td data-size="large" data-sim="high" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
                     <span class="algo-badge algo-badge-solid">Clustal Omega</span>
                   </div>
                 </td>
-                <td class="p-4 border-t border-gray-800 text-center">
+                <td data-size="large" data-sim="medium" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5 mb-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
@@ -1044,7 +1179,7 @@
                     <span class="algo-badge algo-badge-outline">(Clustal Omega)</span>
                   </div>
                 </td>
-                <td class="p-4 border-t border-gray-800 text-center">
+                <td data-size="large" data-sim="low" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">MUSCLE v5</span>
@@ -1052,20 +1187,20 @@
                 </td>
               </tr>
               <tr class="hover:bg-gray-800/30 transition-colors">
-                <td class="p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">超大型資料</strong><span class="text-gray-500 text-xs">10k – 1M 條序列</span></td>
-                <td class="p-4 border-t border-gray-800 text-center">
+                <td data-size="xlarge" class="matrix-header transition-all duration-300 p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">超大型資料</strong><span class="text-gray-500 text-xs">10k – 1M 條序列</span></td>
+                <td data-size="xlarge" data-sim="high" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">Clustal Omega</span>
                   </div>
                 </td>
-                <td class="p-4 border-t border-gray-800 text-center">
+                <td data-size="xlarge" data-sim="medium" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                     <span class="algo-badge algo-badge-solid">Clustal Omega</span>
                   </div>
                 </td>
-                <td class="p-4 border-t border-gray-800 text-center">
+                <td data-size="xlarge" data-sim="low" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-solid">MAFFT</span>
                   </div>
@@ -1076,113 +1211,122 @@
           <p class="text-xs text-gray-500 mt-2 text-right">* 括號代表在特定條件或參數下可斟酌使用</p>
         </div>
 
-        <h3 class="text-2xl font-bold text-white mb-6">多種演算法，全面對應分析情境</h3>
-        <p class="text-gray-400 text-[16px] mb-6 text-justify">Molris 具備豐富的演算法知識庫，我們深知不同演算法在比對速度及插入缺失處理上的優勢與限制：</p>
-        
-        <!-- 演算法可點擊卡片區塊 -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
-            <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
-              MAFFT
-              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
-            </h4>
-            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">採用快速傅立葉轉換, WSP迭代, 一致性迭代等策略進行高效多序列比對，泛用性高。</p>
-          </a>
-          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
-            <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
-              MUSCLE v5
-              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
-            </h4>
-            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">基於對數期望的多序列比對，兼顧比對速度與準確性，適用於高精度分析。</p>
-          </a>
-          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
-            <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
-              Clustal Omega
-              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
-            </h4>
-            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">利用種子引導樹及隱馬可夫模型等方法進行多序列比對，適合處理大量序列。</p>
-          </a>
-          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
-            <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
-              T-Coffee
-              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
-            </h4>
-            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">以漸進式比對為基礎，結合一致性資訊提升比對穩定性，並可整合其他結構資訊，適合高品質比對需求。</p>
-          </a>
-          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
-            <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
-              ProbCons
-              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
-            </h4>
-            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">利用成對隱馬可夫模型及機率一致性資訊，改善序列間的保守區域辨識，適用高精度的小數據集與遠緣蛋白序列。</p>
-          </a>
-          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
-            <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
-              PRANK
-              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
-            </h4>
-            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">基於演化模型進行序列比對，特別重視插入與缺失的演化處理。</p>
-          </a>
-          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
-            <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
-              DIALIGN-TX
-              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
-            </h4>
-            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">以片段為基礎進行比對，適合處理具有局部相似區域的序列資料。</p>
-          </a>
-          <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
-            <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
-              EMBOSS Cons
-              <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
-            </h4>
-            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">根據既有的多序列比對結果建立共識序列，可用於後續的序列特徵整理與分析。</p>
-          </a>
-        </div>
-        <div class="mt-10 text-center relative z-20">
-          <button onclick="toggleHowItWorks()" class="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-gray-700 bg-gray-900/50 text-gray-300 hover:text-molris-cyan hover:border-molris-cyan transition-all text-sm font-bold shadow-lg">
-            進一步了解底層運作原理 <i id="how-it-works-icon" class="fa-solid fa-chevron-down transition-transform duration-300"></i>
+        <div class="text-center relative z-20">
+          <button onclick="toggleAlgorithmList()" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full border border-gray-700 bg-[#050B14] text-gray-300 hover:text-molris-cyan hover:border-molris-cyan transition-all text-[16px] font-bold shadow-lg hover:shadow-[0_0_20px_rgba(0,229,255,0.2)]">
+            查看推薦演算法詳細介紹 <i id="algorithm-list-icon" class="fa-solid fa-chevron-down transition-transform duration-300 ml-1"></i>
           </button>
         </div>
 
-        <div id="how-it-works-content" class="hidden mt-8 transition-all">
-          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 bg-[#03060A]/80 p-8 rounded-2xl border border-gray-800/80 shadow-inner">
-            <div class="border-l-2 border-molris-cyan/50 pl-4">
-              <h4 class="text-white font-bold text-lg mb-1">動態規劃</h4>
-              <p class="text-sm text-gray-500 text-justify">透過計算不同序列排列方式的得分，尋找全局或局部的最佳序列比對路徑。</p>
-            </div>
-            <div class="border-l-2 border-molris-cyan/50 pl-4">
-              <h4 class="text-white font-bold text-lg mb-1">漸進式比對</h4>
-              <p class="text-sm text-gray-500 text-justify">先計算兩兩相似度建立導引樹，再依循樹狀結構逐步將序列合併比對。</p>
-            </div>
-            <div class="border-l-2 border-molris-cyan/50 pl-4">
-              <h4 class="text-white font-bold text-lg mb-1">迭代式最佳化</h4>
-              <p class="text-sm text-gray-500 text-justify">先產生初始快速比對，再反覆將序列拆解與重新比對，修正早期誤差。</p>
-            </div>
-            <div class="border-l-2 border-molris-cyan/50 pl-4">
-              <h4 class="text-white font-bold text-lg mb-1">一致性方法</h4>
-              <p class="text-sm text-gray-500 text-justify">整合多對序列的比對資訊庫，使局部與整體關係能相互驗證。</p>
-            </div>
-            <div class="border-l-2 border-gray-700 pl-4">
-              <h4 class="text-white font-bold text-lg mb-1">隱馬可夫模型</h4>
-              <p class="text-sm text-gray-500 text-justify">以機率模型描述不同位置狀態(匹配、插入、缺失)，有效辨識微弱同源特徵。</p>
-            </div>
-            <div class="border-l-2 border-gray-700 pl-4">
-              <h4 class="text-white font-bold text-lg mb-1">系統發育方法</h4>
-              <p class="text-sm text-gray-500 text-justify">將演化資訊納入計算，嚴謹區分插入與缺失，精準還原演化關係。</p>
-            </div>
-            <div class="border-l-2 border-gray-700 pl-4">
-              <h4 class="text-white font-bold text-lg mb-1">片段 / 模體比對</h4>
-              <p class="text-sm text-gray-500 text-justify">優先對齊高度相似的局部片段，適合處理長度差異大或局部同源的資料。</p>
-            </div>
-            <div class="border-l-2 border-gray-700 pl-4">
-              <h4 class="text-white font-bold text-lg mb-1">結構輔助比對</h4>
-              <p class="text-sm text-gray-500 text-justify">引入三維結構資訊，以空間摺疊特徵引導一維比對，確保關鍵位點精準對齊。</p>
+        <div id="algorithm-list-container" class="hidden mt-12 transition-all">
+          <h3 class="text-2xl font-bold text-white mb-6 border-l-4 border-molris-cyan pl-4">多種演算法，全面對應分析情境</h3>
+          <p class="text-gray-400 text-[16px] mb-6 text-justify">Molris 具備豐富的演算法知識庫，我們深知不同演算法在比對速度及插入缺失處理上的優勢與限制：</p>
+          
+          <!-- 演算法可點擊卡片區塊 -->
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+              <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+                MAFFT
+                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+              </h4>
+              <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">採用快速傅立葉轉換, WSP迭代, 一致性迭代等策略進行高效多序列比對，泛用性高。</p>
+            </a>
+            <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+              <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+                MUSCLE v5
+                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+              </h4>
+              <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">基於對數期望的多序列比對，兼顧比對速度與準確性，適用於高精度分析。</p>
+            </a>
+            <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+              <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+                Clustal Omega
+                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+              </h4>
+              <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">利用種子引導樹及隱馬可夫模型等方法進行多序列比對，適合處理大量序列。</p>
+            </a>
+            <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+              <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+                T-Coffee
+                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+              </h4>
+              <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">以漸進式比對為基礎，結合一致性資訊提升比對穩定性，並可整合其他結構資訊，適合高品質比對需求。</p>
+            </a>
+            <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+              <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+                ProbCons
+                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+              </h4>
+              <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">利用成對隱馬可夫模型及機率一致性資訊，改善序列間的保守區域辨識，適用高精度的小數據集與遠緣蛋白序列。</p>
+            </a>
+            <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+              <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+                PRANK
+                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+              </h4>
+              <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">基於演化模型進行序列比對，特別重視插入與缺失的演化處理。</p>
+            </a>
+            <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+              <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+                DIALIGN-TX
+                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+              </h4>
+              <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">以片段為基礎進行比對，適合處理具有局部相似區域的序列資料。</p>
+            </a>
+            <a href="#" class="block bg-gray-900/50 border border-gray-800 p-5 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group cursor-pointer shadow-sm">
+              <h4 class="text-lg text-molris-cyan font-bold mb-2 transition-colors border-b border-gray-800/50 pb-1 flex justify-between items-center group-hover:border-molris-cyan/30">
+                EMBOSS Cons
+                <i class="fa-solid fa-arrow-right text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"></i>
+              </h4>
+              <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">根據既有的多序列比對結果建立共識序列，可用於後續的序列特徵整理與分析。</p>
+            </a>
+          </div>
+          
+          <!-- NEW: 內嵌的底層運作原理開關 -->
+          <div class="mt-10 text-center relative z-20">
+            <button onclick="toggleHowItWorks()" class="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-gray-700 bg-gray-900/50 text-gray-300 hover:text-molris-cyan hover:border-molris-cyan transition-all text-[16px] font-bold shadow-lg">
+              進一步了解底層運作原理 <i id="how-it-works-icon" class="fa-solid fa-chevron-down transition-transform duration-300 ml-1"></i>
+            </button>
+          </div>
+
+          <div id="how-it-works-content" class="hidden mt-8 transition-all">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 bg-[#03060A]/80 p-8 rounded-2xl border border-gray-800/80 shadow-inner">
+              <div class="border-l-2 border-molris-cyan/50 pl-4">
+                <h4 class="text-white font-bold text-lg mb-1">動態規劃</h4>
+                <p class="text-[15px] text-gray-500 text-justify">透過計算不同序列排列方式的得分，尋找全局或局部的最佳序列比對路徑。</p>
+              </div>
+              <div class="border-l-2 border-molris-cyan/50 pl-4">
+                <h4 class="text-white font-bold text-lg mb-1">漸進式比對</h4>
+                <p class="text-[15px] text-gray-500 text-justify">先計算兩兩相似度建立導引樹，再依循樹狀結構逐步將序列合併比對。</p>
+              </div>
+              <div class="border-l-2 border-molris-cyan/50 pl-4">
+                <h4 class="text-white font-bold text-lg mb-1">迭代式最佳化</h4>
+                <p class="text-[15px] text-gray-500 text-justify">先產生初始快速比對，再反覆將序列拆解與重新比對，修正早期誤差。</p>
+              </div>
+              <div class="border-l-2 border-molris-cyan/50 pl-4">
+                <h4 class="text-white font-bold text-lg mb-1">一致性方法</h4>
+                <p class="text-[15px] text-gray-500 text-justify">整合多對序列的比對資訊庫，使局部與整體關係能相互驗證。</p>
+              </div>
+              <div class="border-l-2 border-gray-700 pl-4">
+                <h4 class="text-white font-bold text-lg mb-1">隱馬可夫模型</h4>
+                <p class="text-[15px] text-gray-500 text-justify">以機率模型描述不同位置狀態(匹配、插入、缺失)，有效辨識微弱同源特徵。</p>
+              </div>
+              <div class="border-l-2 border-gray-700 pl-4">
+                <h4 class="text-white font-bold text-lg mb-1">系統發育方法</h4>
+                <p class="text-[15px] text-gray-500 text-justify">將演化資訊納入計算，嚴謹區分插入與缺失，精準還原演化關係。</p>
+              </div>
+              <div class="border-l-2 border-gray-700 pl-4">
+                <h4 class="text-white font-bold text-lg mb-1">片段 / 模體比對</h4>
+                <p class="text-[15px] text-gray-500 text-justify">優先對齊高度相似的局部片段，適合處理長度差異大或局部同源的資料。</p>
+              </div>
+              <div class="border-l-2 border-gray-700 pl-4">
+                <h4 class="text-white font-bold text-lg mb-1">結構輔助比對</h4>
+                <p class="text-[15px] text-gray-500 text-justify">引入三維結構資訊，以空間摺疊特徵引導一維比對，確保關鍵位點精準對齊。</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
-
     <!-- ==================== 6. 輸入、品質 ==================== -->
     <section class="py-20 bg-[#0A111A] border-t border-gray-800">
       <div class="max-w-7xl mx-auto px-6">
