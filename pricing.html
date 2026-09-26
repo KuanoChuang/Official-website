@@ -54,19 +54,6 @@
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
-    
-    /* Toggle Switch Styles */
-    .toggle-checkbox:checked {
-      right: 0;
-      border-color: #00E5FF;
-    }
-    .toggle-checkbox:checked + .toggle-label {
-      background-color: rgba(0, 229, 255, 0.2);
-    }
-    .toggle-checkbox:checked + .toggle-label:after {
-      transform: translateX(100%);
-      background-color: #00E5FF;
-    }
 
     /* Comparison Table Styles */
     .comparison-table th {
@@ -131,8 +118,8 @@
         <div class="relative group dropdown py-8">
           <a href="pricing.html" class="text-molris-cyan flex items-center gap-1">價格方案 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
           <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="pricing.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">價格</a>
-            <a href="pricing.html#modules" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">模組列表</a>
+            <a href="pricing.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">方案價格</a>
+            <a href="pricing.html#modules" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">功能模組</a>
           </div>
         </div>
 
@@ -158,57 +145,44 @@
 
   <main class="pt-32 pb-24 relative">
     
-    <!-- Hero Background Effects -->
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-molris-cyan/10 blur-[150px] rounded-full pointer-events-none"></div>
+    <!-- Background Decorators -->
+    <div class="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-molris-cyan/10 blur-[150px] rounded-full pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto px-6 relative z-10">
       
-      <div class="text-center mb-16">
-        <span class="inline-block py-1 px-3 rounded-full border border-molris-cyan/30 bg-molris-cyan/10 text-molris-cyan text-sm font-medium tracking-widest mb-4">
-          FLEXIBLE PLANS
-        </span>
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-wide text-white">
-          簡單，透明的價格方案
-        </h1>
-        <p class="text-gray-400 text-lg max-w-2xl mx-auto mb-10">
-          無論是單次驗證、常規模擬或企業級大規模佈署，<br>Molris 提供彈性的計費模式，讓每一分研發預算都花在刀口上。
-        </p>
-
-        <!-- Toggle Switch (Monthly / Annual) -->
-        <div class="flex flex-col items-center justify-center gap-3 mb-6">
-          <div id="toggle-container" class="relative flex items-center bg-gray-900/80 border border-gray-700 rounded-full p-1 cursor-pointer w-64 shadow-inner">
-            <!-- Sliding Background -->
-            <div id="slide-bg" class="absolute left-1 top-1 w-[calc(50%-4px)] h-[calc(100%-8px)] bg-molris-cyan rounded-full transition-transform duration-300 ease-in-out shadow-md"></div>
-            
-            <!-- Buttons -->
-            <div id="btn-monthly" class="w-1/2 text-center py-2 text-[#0A1628] text-sm font-bold z-10 transition-colors duration-300">
-              月費制
-            </div>
-            <div id="btn-annual" class="w-1/2 text-center py-2 text-gray-400 text-sm font-bold z-10 transition-colors duration-300">
-              年費制
-            </div>
-            <input type="checkbox" id="billing-toggle" class="hidden" />
-          </div>
-          <p class="text-xs text-gray-500">*贈送優惠不得合併使用</p>
-        </div>
-
+      <!-- Headers -->
+      <div class="text-center mb-10">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 tracking-wide">簡單，透明的價格方案</h1>
+        <p class="text-gray-400 text-lg">選擇最符合您研究需求的算力規模，隨時升級，靈活擴充。</p>
       </div>
 
-      <!-- Pricing Grid - Top 4 Main Tiers -->
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+      <!-- Toggle Switch (Monthly / Annual) - iOS Segmented Control -->
+      <div class="flex justify-center mb-12">
+        <div id="toggle-container" class="relative flex items-center p-1 bg-gray-900 rounded-full border border-gray-700 cursor-pointer w-64 h-12 shadow-inner">
+          <input type="checkbox" id="billing-toggle" class="sr-only">
+          <!-- 膠囊滑塊背景 -->
+          <div id="slide-bg" class="absolute left-1 top-1 w-[calc(50%-4px)] h-10 bg-molris-cyan rounded-full transition-transform duration-300 ease-in-out shadow-md"></div>
+          
+          <!-- 文字按鈕 -->
+          <div id="btn-monthly" class="w-1/2 text-center text-sm font-bold text-[#0A1628] relative z-10 transition-colors duration-300 select-none">月費制</div>
+          <div id="btn-annual" class="w-1/2 text-center text-sm font-bold text-gray-400 relative z-10 transition-colors duration-300 select-none">年費制</div>
+        </div>
+      </div>
+
+      <!-- Pricing Grid - Top 4 Tiers -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
         
         <!-- Tier 1: Trial -->
-        <div class="glass-card rounded-3xl p-8 flex flex-col transition-all duration-300 hover:-translate-y-2 hover:border-gray-500 hover:shadow-xl">
-          <div class="mb-6 border-b border-gray-800 pb-6">
-            <h3 class="text-xl font-bold text-white mb-2 text-center">Trial</h3>
-            <p class="text-xs text-gray-400 mb-6 h-4 text-center">首次接觸模擬技術</p>
-            <div class="flex justify-center items-baseline gap-1">
-              <span class="text-4xl font-black text-white">$ 100</span>
-              <span class="text-gray-500 font-medium text-sm">/ 次</span>
-            </div>
-            <p class="text-molris-cyan text-sm mt-3 font-medium text-center">100 credits / 次</p>
+        <div class="bg-gray-900/40 rounded-3xl p-8 border border-gray-800 flex flex-col h-full transition-all duration-300 hover:-translate-y-2 hover:border-gray-600 hover:shadow-xl relative">
+          <!-- 上半部高度固定，確保分隔線切齊 -->
+          <div class="text-center mb-8 h-36 flex flex-col justify-center">
+            <h3 class="text-xl font-bold text-white mb-2">Trial</h3>
+            <p class="text-sm text-gray-400 mb-4">首次接觸模擬技術</p>
+            <div class="text-3xl font-black text-white mb-2">$ 100 <span class="text-sm font-medium text-gray-500">/ 次</span></div>
+            <p class="text-molris-cyan text-sm font-medium">100 credits / 次</p>
           </div>
-          <div class="flex-grow">
+          
+          <div class="flex-grow border-t border-gray-800 pt-6">
             <ul class="space-y-4 text-sm text-gray-300">
               <li class="flex items-start gap-3">
                 <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
@@ -220,25 +194,24 @@
               </li>
             </ul>
           </div>
-          <button class="w-full mt-8 py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors">
+          
+          <button class="w-full py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors mt-8">
             開始體驗
           </button>
         </div>
 
         <!-- Tier 2: Regular -->
-        <div class="glass-card rounded-3xl p-8 flex flex-col transition-all duration-300 hover:-translate-y-2 hover:border-gray-500 hover:shadow-xl">
-          <div class="mb-6 border-b border-gray-800 pb-6">
-            <h3 class="text-xl font-bold text-white mb-2 text-center">Regular</h3>
-            <p class="text-xs text-gray-400 mb-6 h-4 text-center">初階研究</p>
-            <div class="flex justify-center items-baseline gap-1">
-              <span class="text-4xl font-black text-white">$ 1,000</span>
-              <span class="text-gray-500 font-medium text-sm">/ 月</span>
-            </div>
-            <p class="text-molris-cyan text-sm mt-3 font-medium text-center">1,250 credits / 月</p>
+        <div class="bg-gray-900/40 rounded-3xl p-8 border border-gray-800 flex flex-col h-full transition-all duration-300 hover:-translate-y-2 hover:border-gray-600 hover:shadow-xl relative">
+          <div class="text-center mb-8 h-36 flex flex-col justify-center">
+            <h3 class="text-xl font-bold text-white mb-2">Regular</h3>
+            <p class="text-sm text-gray-400 mb-4">初階研究</p>
+            <div class="text-3xl font-black text-white mb-2">$ 1,000 <span class="text-sm font-medium text-gray-500">/ 月</span></div>
+            <p class="text-molris-cyan text-sm font-medium">1,250 credits / 月</p>
           </div>
-          <div class="flex-grow">
+          
+          <div class="flex-grow border-t border-gray-800 pt-6">
             <ul class="space-y-4 text-sm text-gray-300">
-              <li class="flex items-start gap-3">
+              <li class="flex items-start gap-3 mb-2 pb-2 border-b border-gray-800/50">
                 <i class="fa-solid fa-plus text-white bg-gray-800 p-1 rounded text-[10px] mt-0.5"></i>
                 <span class="font-bold text-white">包含 Trial 全部功能</span>
               </li>
@@ -272,37 +245,36 @@
               </li>
             </ul>
           </div>
-          <button class="w-full mt-8 py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors">
+          
+          <button class="w-full py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors mt-8">
             選擇方案
           </button>
         </div>
 
         <!-- Tier 3: Plus -->
-        <div class="glass-card rounded-3xl p-8 flex flex-col transition-all duration-300 hover:-translate-y-2 hover:border-gray-500 hover:shadow-xl relative overflow-hidden">
+        <div class="bg-gray-900/40 rounded-3xl p-8 border border-gray-800 flex flex-col h-full transition-all duration-300 hover:-translate-y-2 hover:border-gray-600 hover:shadow-xl relative">
           
-          <!-- Annual Promotion Badge (Hidden by default, toggled via JS) -->
-          <div class="annual-badge hidden absolute top-4 right-[-35px] bg-gradient-to-r from-molris-cyan to-blue-500 text-white text-[11px] font-bold py-1.5 px-10 transform rotate-45 shadow-[0_0_15px_rgba(0,229,255,0.5)] z-20 flex items-center gap-1">
+          <!-- Annual Gift Badge -->
+          <div class="annual-badge hidden absolute -top-4 -right-4 bg-gradient-to-r from-molris-cyan to-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-[0_0_15px_rgba(0,229,255,0.5)] flex items-center gap-1 z-20">
             <i class="fa-solid fa-gift"></i> 送 1 個月
           </div>
 
-          <div class="mb-6 border-b border-gray-800 pb-6">
-            <h3 class="text-xl font-bold text-white mb-2 text-center">Plus</h3>
-            <p class="text-xs text-gray-400 mb-6 h-4 text-center">進階需求與完整流程</p>
-            <div class="flex justify-center items-baseline gap-1">
-              <span class="text-4xl font-black text-white">$ 1,999</span>
-              <span class="text-gray-500 font-medium text-sm">/ 月</span>
-            </div>
-            <p class="text-molris-cyan text-sm mt-3 font-medium text-center">3,000 credits / 月</p>
+          <div class="text-center mb-8 h-36 flex flex-col justify-center">
+            <h3 class="text-xl font-bold text-white mb-2">Plus</h3>
+            <p class="text-sm text-gray-400 mb-4 opacity-0 hidden">佔位符</p> <!-- 隱藏但佔位以平衡高度 -->
+            <div class="text-3xl font-black text-white mb-2">$ 1,999 <span class="text-sm font-medium text-gray-500">/ 月</span></div>
+            <p class="text-molris-cyan text-sm font-medium">3,000 credits / 月</p>
           </div>
-          <div class="flex-grow">
+          
+          <div class="flex-grow border-t border-gray-800 pt-6">
             <ul class="space-y-4 text-sm text-gray-300">
-              <li class="flex items-start gap-3">
+              <li class="flex items-start gap-3 mb-2 pb-2 border-b border-gray-800/50">
                 <i class="fa-solid fa-plus text-white bg-gray-800 p-1 rounded text-[10px] mt-0.5"></i>
                 <span class="font-bold text-white">包含 Regular 全部功能</span>
               </li>
               <li class="flex items-start gap-3">
                 <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
-                <span>信用點使用 98 折</span>
+                <span>信用點使用98折</span>
               </li>
               <li class="flex items-start gap-3">
                 <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
@@ -330,46 +302,45 @@
               </li>
             </ul>
           </div>
-          <button class="w-full mt-8 py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors">
+          
+          <button class="w-full py-3 rounded-xl bg-molris-cyan text-[#0A1628] font-bold hover:bg-white transition-colors mt-8">
             選擇方案
           </button>
         </div>
 
         <!-- Tier 4: Pro (Highlighted) -->
-        <div class="bg-[#0A1628] rounded-3xl p-8 flex flex-col relative border border-molris-cyan/50 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-molris-cyan hover:shadow-[0_10px_30px_rgba(0,229,255,0.2)]">
+        <div class="bg-[#0A1628] rounded-3xl p-8 border border-molris-cyan/50 flex flex-col h-full relative transition-all duration-300 hover:-translate-y-2 hover:border-molris-cyan hover:shadow-[0_0_30px_rgba(0,229,255,0.2)] group">
+          
+          <!-- Annual Gift Badge -->
+          <div class="annual-badge hidden absolute -top-4 -right-4 bg-gradient-to-r from-molris-cyan to-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-[0_0_15px_rgba(0,229,255,0.5)] flex items-center gap-1 z-20">
+            <i class="fa-solid fa-gift"></i> 送 1 個月
+          </div>
           
           <!-- Most Popular Badge -->
-          <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-molris-cyan text-[#0A1628] px-4 py-1 rounded-full text-xs font-bold tracking-wide whitespace-nowrap shadow-md z-30">
+          <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg z-20 whitespace-nowrap">
             最受歡迎
           </div>
 
-          <!-- Annual Promotion Badge (Hidden by default, toggled via JS) -->
-          <div class="annual-badge hidden absolute top-4 right-[-35px] bg-gradient-to-r from-molris-cyan to-blue-500 text-white text-[11px] font-bold py-1.5 px-10 transform rotate-45 shadow-[0_0_15px_rgba(0,229,255,0.5)] z-20 flex items-center gap-1">
-            <i class="fa-solid fa-gift"></i> 送 1 個月
+          <div class="text-center mb-8 h-36 flex flex-col justify-center">
+            <h3 class="text-xl font-bold text-white mb-2">Pro</h3>
+            <p class="text-sm text-molris-cyan mb-4">深入進階研究</p>
+            <div class="text-3xl font-black text-white mb-2">$ 7,499 <span class="text-sm font-medium text-molris-cyan/70">/ 月</span></div>
+            <p class="text-molris-cyan text-sm font-medium">12,000 credits / 月</p>
           </div>
-
-          <div class="mb-6 border-b border-gray-700 pb-6">
-            <h3 class="text-xl font-bold text-white mb-2 text-center">Pro</h3>
-            <p class="text-xs text-gray-400 mb-6 h-4 text-center">深入進階研究</p>
-            <div class="flex justify-center items-baseline gap-1">
-              <span class="text-4xl font-black text-white">$ 7,499</span>
-              <span class="text-gray-500 font-medium text-sm">/ 月</span>
-            </div>
-            <p class="text-molris-cyan text-sm mt-3 font-medium text-center">12,000 credits / 月</p>
-          </div>
-          <div class="flex-grow">
-            <ul class="space-y-4 text-sm text-gray-300">
-              <li class="flex items-start gap-3">
-                <i class="fa-solid fa-plus text-white bg-molris-cyan/20 p-1 rounded text-[10px] mt-0.5 border border-molris-cyan/30"></i>
+          
+          <div class="flex-grow border-t border-molris-cyan/20 pt-6">
+            <ul class="space-y-4 text-sm text-gray-200">
+              <li class="flex items-start gap-3 mb-2 pb-2 border-b border-molris-cyan/20">
+                <i class="fa-solid fa-plus text-white bg-molris-cyan/30 p-1 rounded text-[10px] mt-0.5"></i>
                 <span class="font-bold text-white">包含 Plus 全部功能</span>
               </li>
               <li class="flex items-start gap-3">
                 <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
-                <span>信用點使用 95 折</span>
+                <span>信用點使用95折</span>
               </li>
               <li class="flex items-start gap-3">
                 <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
-                <span>無原子數上限</span>
+                <span class="font-bold text-white">無原子數上限</span>
               </li>
               <li class="flex items-start gap-3">
                 <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
@@ -385,7 +356,7 @@
               </li>
               <li class="flex items-start gap-3">
                 <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
-                <span>最高任務優先級</span>
+                <span class="font-bold text-white">最高任務優先級</span>
               </li>
               <li class="flex items-start gap-3">
                 <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
@@ -393,31 +364,41 @@
               </li>
             </ul>
           </div>
-          <button class="w-full mt-8 py-3 rounded-xl bg-molris-cyan hover:bg-white text-[#0A1628] font-bold transition-colors shadow-lg shadow-molris-cyan/20">
+          
+          <button class="w-full py-3 rounded-xl bg-molris-cyan text-[#0A1628] font-bold hover:bg-white transition-colors mt-8 shadow-lg">
             選擇方案
           </button>
         </div>
 
       </div>
+      
+      <!-- 備註說明：放置於四大網格的右下角 -->
+      <div class="text-right mt-3 mb-8 text-xs text-gray-500 font-medium">
+        *贈送優惠不得合併使用
+      </div>
 
       <!-- Pricing Grid - Bottom 2 Custom Tiers -->
-      <div class="flex flex-col gap-6 mb-16">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 mb-16">
         
         <!-- Tier 5: Special Edition -->
-        <div class="bg-gray-900/40 rounded-3xl p-8 border border-gray-800 flex flex-col lg:flex-row items-center gap-8 transition-all duration-300 hover:-translate-y-2 hover:bg-gray-900/60 hover:border-gray-600 hover:shadow-xl">
+        <div class="bg-gray-900/40 rounded-3xl p-8 border border-gray-800 flex flex-col h-full transition-all duration-300 hover:-translate-y-2 hover:bg-gray-900/60 hover:border-gray-600 hover:shadow-xl">
           
-          <!-- 左側資訊 -->
-          <div class="w-full lg:w-1/4 text-center lg:text-left border-b lg:border-b-0 lg:border-r border-gray-800 pb-6 lg:pb-0 lg:pr-8 shrink-0">
-            <h3 class="text-xl font-bold text-white mb-2">Special Edition</h3>
-            <p class="text-xs text-gray-400 mb-4">特定研究領域</p>
-            <div class="text-2xl font-black text-white mb-2">諮詢報價</div>
-            <p class="text-molris-cyan text-sm font-medium">客製化額度分配</p>
+          <!-- 頂部資訊列 (左右分佈) -->
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-800 pb-6 mb-6 gap-4">
+            <div>
+              <h3 class="text-xl font-bold text-white mb-2">Special Edition</h3>
+              <p class="text-xs text-gray-400">特定研究領域</p>
+            </div>
+            <div class="sm:text-right">
+              <div class="text-2xl font-black text-white mb-1">諮詢報價</div>
+              <p class="text-molris-cyan text-sm font-medium">客製化額度分配</p>
+            </div>
           </div>
           
           <!-- 中間清單 (雙欄網格) -->
-          <div class="w-full lg:w-2/4 flex-grow">
+          <div class="flex-grow mb-8">
             <ul class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-4 text-sm text-gray-300">
-              <li class="flex items-start gap-3 col-span-1 sm:col-span-2 mb-1">
+              <li class="flex items-start gap-3 col-span-1 sm:col-span-2 mb-2 pb-2 border-b border-gray-800/50">
                 <i class="fa-solid fa-plus text-white bg-gray-800 p-1 rounded text-[10px] mt-0.5"></i>
                 <span class="font-bold text-white">包含 Pro 全部功能</span>
               </li>
@@ -437,36 +418,38 @@
                 <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
                 <span>奈米粒子建模</span>
               </li>
-              <li class="flex items-start gap-3">
+              <li class="flex items-start gap-3 col-span-1 sm:col-span-2">
                 <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
                 <span>複雜三維結構</span>
               </li>
             </ul>
           </div>
           
-          <!-- 右側按鈕 -->
-          <div class="w-full lg:w-1/4 shrink-0 mt-4 lg:mt-0 flex justify-center lg:justify-end">
-            <button class="w-full lg:w-auto px-8 py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors">
-              聯絡專員
-            </button>
-          </div>
+          <!-- 底部按鈕 -->
+          <button class="w-full py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors mt-auto">
+            聯絡專員
+          </button>
         </div>
 
         <!-- Tier 6: Enterprise -->
-        <div class="bg-gray-900/40 rounded-3xl p-8 border border-gray-800 flex flex-col lg:flex-row items-center gap-8 transition-all duration-300 hover:-translate-y-2 hover:bg-gray-900/60 hover:border-gray-600 hover:shadow-xl">
+        <div class="bg-gray-900/40 rounded-3xl p-8 border border-gray-800 flex flex-col h-full transition-all duration-300 hover:-translate-y-2 hover:bg-gray-900/60 hover:border-gray-600 hover:shadow-xl">
           
-          <!-- 左側資訊 -->
-          <div class="w-full lg:w-1/4 text-center lg:text-left border-b lg:border-b-0 lg:border-r border-gray-800 pb-6 lg:pb-0 lg:pr-8 shrink-0">
-            <h3 class="text-xl font-bold text-white mb-2">Enterprise</h3>
-            <p class="text-xs text-gray-400 mb-4">規模化組織</p>
-            <div class="text-2xl font-black text-white mb-2">諮詢我們</div>
-            <p class="text-molris-cyan text-sm font-medium">獨立運作</p>
+          <!-- 頂部資訊列 (左右分佈) -->
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-800 pb-6 mb-6 gap-4">
+            <div>
+              <h3 class="text-xl font-bold text-white mb-2">Enterprise</h3>
+              <p class="text-xs text-gray-400">規模化組織</p>
+            </div>
+            <div class="sm:text-right">
+              <div class="text-2xl font-black text-white mb-1">諮詢我們</div>
+              <p class="text-molris-cyan text-sm font-medium">獨立運作</p>
+            </div>
           </div>
           
           <!-- 中間清單 (雙欄網格) -->
-          <div class="w-full lg:w-2/4 flex-grow">
+          <div class="flex-grow mb-8">
             <ul class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-4 text-sm text-gray-300">
-              <li class="flex items-start gap-3 col-span-1 sm:col-span-2 mb-1">
+              <li class="flex items-start gap-3 col-span-1 sm:col-span-2 mb-2 pb-2 border-b border-gray-800/50">
                 <i class="fa-solid fa-plus text-white bg-gray-800 p-1 rounded text-[10px] mt-0.5"></i>
                 <span class="font-bold text-white">包含 Pro 全部功能</span>
               </li>
@@ -489,12 +472,10 @@
             </ul>
           </div>
           
-          <!-- 右側按鈕 -->
-          <div class="w-full lg:w-1/4 shrink-0 mt-4 lg:mt-0 flex justify-center lg:justify-end">
-            <button class="w-full lg:w-auto px-8 py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors">
-              聯絡企業方案
-            </button>
-          </div>
+          <!-- 底部按鈕 -->
+          <button class="w-full py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors mt-auto">
+            聯絡企業方案
+          </button>
         </div>
 
       </div>
