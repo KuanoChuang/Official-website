@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>價格方案 | Molris 默瑞思</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans TC"', 'sans-serif'],
+          },
+          colors: {
+            molris: {
+              cyan: '#00E5FF',
+              cyanDark: '#00b7c3',
+              blue: '#0A2463',
+              dark: '#050B14',
+              gray: '#8A9BAE'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      background-color: #050B14;
+      color: #E2E8F0;
+    }
+    .glass-nav {
+      background: rgba(5, 11, 20, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+      animation: fadeIn 0.2s ease-in-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Toggle Switch Styles */
+    .toggle-checkbox:checked {
+      right: 0;
+      border-color: #00E5FF;
+    }
+    .toggle-checkbox:checked + .toggle-label {
+      background-color: rgba(0, 229, 255, 0.2);
+    }
+    .toggle-checkbox:checked + .toggle-label:after {
+      transform: translateX(100%);
+      background-color: #00E5FF;
+    }
+
+    /* Comparison Table Styles */
+    .comparison-table th {
+      position: sticky;
+      top: 80px; /* offset for fixed header */
+      z-index: 10;
+      background: #111827;
+    }
+    .comparison-table th, .comparison-table td {
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .comparison-table tr:hover {
+      background: rgba(255,255,255,0.02);
+    }
+  </style>
+</head>
+
+<body class="font-sans antialiased overflow-x-hidden selection:bg-molris-cyan selection:text-white">
+
+  <!-- ==================== Header ==================== -->
+  <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="index.html" class="text-2xl font-bold tracking-wider text-white flex items-center gap-2 group">
+        <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i>
+        Molris
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+        
+        <div class="relative group dropdown py-8">
+          <a href="index.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">關於Molris <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="index.html#vision" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心價值</a>
+            <a href="index.html#advantages" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心優勢</a>
+            <a href="index.html#tech" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心技術</a>
+            <a href="index.html#team" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">團隊架構</a>
+            <a href="index.html#story" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">品牌故事</a>
+          </div>
+        </div>
+
+        <div class="relative group dropdown py-8">
+          <a href="platform.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">技術平台 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-44 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="msa.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多序列比對</a>
+            <a href="platform.html#modeling" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多尺度建模</a>
+            <a href="platform.html#docking" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子對接</a>
+            <a href="platform.html#dynamics" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子動力學模擬</a>
+          </div>
+        </div>
+
+        <div class="relative group dropdown py-8">
+          <a href="project.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">專案介紹 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="project.html#biotech" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">生技與新藥開發</a>
+            <a href="project.html#materials" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">化學與材料科學</a>
+          </div>
+        </div>
+
+        <!-- 價格方案 -->
+        <div class="relative group dropdown py-8">
+          <a href="pricing.html" class="text-molris-cyan flex items-center gap-1">價格方案 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="pricing.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">價格</a>
+            <a href="pricing.html#modules" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">模組列表</a>
+          </div>
+        </div>
+
+        <div class="relative group dropdown py-8">
+          <a href="contact.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">聯絡我們 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="contact.html#info" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">聯絡資訊</a>
+            <a href="contact.html#joinus" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">加入我們</a>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pl-4 border-l border-gray-700">
+          <i class="fa-solid fa-globe text-gray-400"></i>
+          <span class="text-gray-300 hover:text-white cursor-pointer transition-colors">中文</span>
+        </div>
+      </nav>
+
+      <button class="md:hidden text-gray-300 hover:text-white">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="pt-32 pb-24 relative">
+    
+    <!-- Hero Background Effects -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-molris-cyan/10 blur-[150px] rounded-full pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+      
+      <div class="text-center mb-16">
+        <span class="inline-block py-1 px-3 rounded-full border border-molris-cyan/30 bg-molris-cyan/10 text-molris-cyan text-sm font-medium tracking-widest mb-4">
+          FLEXIBLE PLANS
+        </span>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-wide text-white">
+          簡單，透明的價格方案
+        </h1>
+        <p class="text-gray-400 text-lg max-w-2xl mx-auto mb-10">
+          無論是單次驗證、常規模擬或企業級大規模佈署，<br>Molris 提供彈性的計費模式，讓每一分研發預算都花在刀口上。
+        </p>
+
+        <!-- Toggle Switch (Monthly / Annual) -->
+        <div class="flex flex-col items-center justify-center gap-3 mb-6">
+          <div id="toggle-container" class="relative flex items-center bg-gray-900/80 border border-gray-700 rounded-full p-1 cursor-pointer w-64 shadow-inner">
+            <!-- Sliding Background -->
+            <div id="slide-bg" class="absolute left-1 top-1 w-[calc(50%-4px)] h-[calc(100%-8px)] bg-molris-cyan rounded-full transition-transform duration-300 ease-in-out shadow-md"></div>
+            
+            <!-- Buttons -->
+            <div id="btn-monthly" class="w-1/2 text-center py-2 text-[#0A1628] text-sm font-bold z-10 transition-colors duration-300">
+              月費制
+            </div>
+            <div id="btn-annual" class="w-1/2 text-center py-2 text-gray-400 text-sm font-bold z-10 transition-colors duration-300">
+              年費制
+            </div>
+            <input type="checkbox" id="billing-toggle" class="hidden" />
+          </div>
+          <p class="text-xs text-gray-500">*贈送優惠不得合併使用</p>
+        </div>
+
+      </div>
+
+      <!-- Pricing Grid - Top 4 Main Tiers -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+        
+        <!-- Tier 1: Trial -->
+        <div class="glass-card rounded-3xl p-8 flex flex-col transition-all duration-300 hover:-translate-y-2 hover:border-gray-500 hover:shadow-xl">
+          <div class="mb-6 border-b border-gray-800 pb-6">
+            <h3 class="text-xl font-bold text-white mb-2 text-center">Trial</h3>
+            <p class="text-xs text-gray-400 mb-6 h-4 text-center">首次接觸模擬技術</p>
+            <div class="flex justify-center items-baseline gap-1">
+              <span class="text-4xl font-black text-white">$ 100</span>
+              <span class="text-gray-500 font-medium text-sm">/ 次</span>
+            </div>
+            <p class="text-molris-cyan text-sm mt-3 font-medium text-center">100 credits / 次</p>
+          </div>
+          <div class="flex-grow">
+            <ul class="space-y-4 text-sm text-gray-300">
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>依模組使用信用點</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>單一模組任務</span>
+              </li>
+            </ul>
+          </div>
+          <button class="w-full mt-8 py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors">
+            開始體驗
+          </button>
+        </div>
+
+        <!-- Tier 2: Regular -->
+        <div class="glass-card rounded-3xl p-8 flex flex-col transition-all duration-300 hover:-translate-y-2 hover:border-gray-500 hover:shadow-xl">
+          <div class="mb-6 border-b border-gray-800 pb-6">
+            <h3 class="text-xl font-bold text-white mb-2 text-center">Regular</h3>
+            <p class="text-xs text-gray-400 mb-6 h-4 text-center">初階研究</p>
+            <div class="flex justify-center items-baseline gap-1">
+              <span class="text-4xl font-black text-white">$ 1,000</span>
+              <span class="text-gray-500 font-medium text-sm">/ 月</span>
+            </div>
+            <p class="text-molris-cyan text-sm mt-3 font-medium text-center">1,250 credits / 月</p>
+          </div>
+          <div class="flex-grow">
+            <ul class="space-y-4 text-sm text-gray-300">
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-plus text-white bg-gray-800 p-1 rounded text-[10px] mt-0.5"></i>
+                <span class="font-bold text-white">包含 Trial 全部功能</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>模組任務排程</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>限制輸入原子數</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>面板參數設定</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>蛋白質與小分子建模</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>位點搜尋與分子對接</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>構象分析與最佳排序</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>常規分子動力學</span>
+              </li>
+            </ul>
+          </div>
+          <button class="w-full mt-8 py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors">
+            選擇方案
+          </button>
+        </div>
+
+        <!-- Tier 3: Plus -->
+        <div class="glass-card rounded-3xl p-8 flex flex-col transition-all duration-300 hover:-translate-y-2 hover:border-gray-500 hover:shadow-xl relative overflow-hidden">
+          
+          <!-- Annual Promotion Badge (Hidden by default, toggled via JS) -->
+          <div class="annual-badge hidden absolute top-4 right-[-35px] bg-gradient-to-r from-molris-cyan to-blue-500 text-white text-[11px] font-bold py-1.5 px-10 transform rotate-45 shadow-[0_0_15px_rgba(0,229,255,0.5)] z-20 flex items-center gap-1">
+            <i class="fa-solid fa-gift"></i> 送 1 個月
+          </div>
+
+          <div class="mb-6 border-b border-gray-800 pb-6">
+            <h3 class="text-xl font-bold text-white mb-2 text-center">Plus</h3>
+            <p class="text-xs text-gray-400 mb-6 h-4 text-center">進階需求與完整流程</p>
+            <div class="flex justify-center items-baseline gap-1">
+              <span class="text-4xl font-black text-white">$ 1,999</span>
+              <span class="text-gray-500 font-medium text-sm">/ 月</span>
+            </div>
+            <p class="text-molris-cyan text-sm mt-3 font-medium text-center">3,000 credits / 月</p>
+          </div>
+          <div class="flex-grow">
+            <ul class="space-y-4 text-sm text-gray-300">
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-plus text-white bg-gray-800 p-1 rounded text-[10px] mt-0.5"></i>
+                <span class="font-bold text-white">包含 Regular 全部功能</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>信用點使用 98 折</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>完整工作流程</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>進階參數設定</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>支援平行運算</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>動態軌跡分析</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>學術發表許可</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>學術圖表與動態展示</span>
+              </li>
+            </ul>
+          </div>
+          <button class="w-full mt-8 py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors">
+            選擇方案
+          </button>
+        </div>
+
+        <!-- Tier 4: Pro (Highlighted) -->
+        <div class="bg-[#0A1628] rounded-3xl p-8 flex flex-col relative border border-molris-cyan/50 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-molris-cyan hover:shadow-[0_10px_30px_rgba(0,229,255,0.2)]">
+          
+          <!-- Most Popular Badge -->
+          <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-molris-cyan text-[#0A1628] px-4 py-1 rounded-full text-xs font-bold tracking-wide whitespace-nowrap shadow-md z-30">
+            最受歡迎
+          </div>
+
+          <!-- Annual Promotion Badge (Hidden by default, toggled via JS) -->
+          <div class="annual-badge hidden absolute top-4 right-[-35px] bg-gradient-to-r from-molris-cyan to-blue-500 text-white text-[11px] font-bold py-1.5 px-10 transform rotate-45 shadow-[0_0_15px_rgba(0,229,255,0.5)] z-20 flex items-center gap-1">
+            <i class="fa-solid fa-gift"></i> 送 1 個月
+          </div>
+
+          <div class="mb-6 border-b border-gray-700 pb-6">
+            <h3 class="text-xl font-bold text-white mb-2 text-center">Pro</h3>
+            <p class="text-xs text-gray-400 mb-6 h-4 text-center">深入進階研究</p>
+            <div class="flex justify-center items-baseline gap-1">
+              <span class="text-4xl font-black text-white">$ 7,499</span>
+              <span class="text-gray-500 font-medium text-sm">/ 月</span>
+            </div>
+            <p class="text-molris-cyan text-sm mt-3 font-medium text-center">12,000 credits / 月</p>
+          </div>
+          <div class="flex-grow">
+            <ul class="space-y-4 text-sm text-gray-300">
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-plus text-white bg-molris-cyan/20 p-1 rounded text-[10px] mt-0.5 border border-molris-cyan/30"></i>
+                <span class="font-bold text-white">包含 Plus 全部功能</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>信用點使用 95 折</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>無原子數上限</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>延伸參數設定</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>進階視覺效果</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>支援客制化分子</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>最高任務優先級</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>完整動態模擬分析</span>
+              </li>
+            </ul>
+          </div>
+          <button class="w-full mt-8 py-3 rounded-xl bg-molris-cyan hover:bg-white text-[#0A1628] font-bold transition-colors shadow-lg shadow-molris-cyan/20">
+            選擇方案
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Pricing Grid - Bottom 2 Custom Tiers -->
+      <div class="flex flex-col gap-6 mb-16">
+        
+        <!-- Tier 5: Special Edition -->
+        <div class="bg-gray-900/40 rounded-3xl p-8 border border-gray-800 flex flex-col lg:flex-row items-center gap-8 transition-all duration-300 hover:-translate-y-2 hover:bg-gray-900/60 hover:border-gray-600 hover:shadow-xl">
+          
+          <!-- 左側資訊 -->
+          <div class="w-full lg:w-1/4 text-center lg:text-left border-b lg:border-b-0 lg:border-r border-gray-800 pb-6 lg:pb-0 lg:pr-8 shrink-0">
+            <h3 class="text-xl font-bold text-white mb-2">Special Edition</h3>
+            <p class="text-xs text-gray-400 mb-4">特定研究領域</p>
+            <div class="text-2xl font-black text-white mb-2">諮詢報價</div>
+            <p class="text-molris-cyan text-sm font-medium">客製化額度分配</p>
+          </div>
+          
+          <!-- 中間清單 (雙欄網格) -->
+          <div class="w-full lg:w-2/4 flex-grow">
+            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-4 text-sm text-gray-300">
+              <li class="flex items-start gap-3 col-span-1 sm:col-span-2 mb-1">
+                <i class="fa-solid fa-plus text-white bg-gray-800 p-1 rounded text-[10px] mt-0.5"></i>
+                <span class="font-bold text-white">包含 Pro 全部功能</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>支援演算法優化</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>允許自定義</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>允許客制化分子</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>奈米粒子建模</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>複雜三維結構</span>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- 右側按鈕 -->
+          <div class="w-full lg:w-1/4 shrink-0 mt-4 lg:mt-0 flex justify-center lg:justify-end">
+            <button class="w-full lg:w-auto px-8 py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors">
+              聯絡專員
+            </button>
+          </div>
+        </div>
+
+        <!-- Tier 6: Enterprise -->
+        <div class="bg-gray-900/40 rounded-3xl p-8 border border-gray-800 flex flex-col lg:flex-row items-center gap-8 transition-all duration-300 hover:-translate-y-2 hover:bg-gray-900/60 hover:border-gray-600 hover:shadow-xl">
+          
+          <!-- 左側資訊 -->
+          <div class="w-full lg:w-1/4 text-center lg:text-left border-b lg:border-b-0 lg:border-r border-gray-800 pb-6 lg:pb-0 lg:pr-8 shrink-0">
+            <h3 class="text-xl font-bold text-white mb-2">Enterprise</h3>
+            <p class="text-xs text-gray-400 mb-4">規模化組織</p>
+            <div class="text-2xl font-black text-white mb-2">諮詢我們</div>
+            <p class="text-molris-cyan text-sm font-medium">獨立運作</p>
+          </div>
+          
+          <!-- 中間清單 (雙欄網格) -->
+          <div class="w-full lg:w-2/4 flex-grow">
+            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-4 text-sm text-gray-300">
+              <li class="flex items-start gap-3 col-span-1 sm:col-span-2 mb-1">
+                <i class="fa-solid fa-plus text-white bg-gray-800 p-1 rounded text-[10px] mt-0.5"></i>
+                <span class="font-bold text-white">包含 Pro 全部功能</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>商業使用許可</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>獨立硬體設備</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>教育訓練</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <span>專家諮詢</span>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- 右側按鈕 -->
+          <div class="w-full lg:w-1/4 shrink-0 mt-4 lg:mt-0 flex justify-center lg:justify-end">
+            <button class="w-full lg:w-auto px-8 py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors">
+              聯絡企業方案
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Promotional Banner -->
+      <div class="rounded-2xl bg-gradient-to-r from-blue-900/50 via-gray-900 to-molris-cyan/20 border border-molris-cyan/30 p-8 flex flex-col md:flex-row items-center justify-between gap-6 mb-24 shadow-[0_0_30px_rgba(0,229,255,0.1)]">
+        <div class="flex items-center gap-6">
+          <div class="w-16 h-16 rounded-full bg-molris-cyan/20 border-2 border-molris-cyan flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-graduation-cap text-2xl text-molris-cyan"></i>
+          </div>
+          <div>
+            <span class="text-molris-cyan text-sm font-bold tracking-widest uppercase mb-1 block">LIMITED OFFER</span>
+            <h3 class="text-2xl font-bold text-white mb-2">首年學術優惠</h3>
+            <p class="text-gray-300 text-sm">
+              預繳或累計滿 <strong class="text-white text-lg">$50,000</strong>，即一次性贈送 <strong class="text-molris-cyan text-lg">6個月信用點</strong>！<br class="hidden md:block">
+              <span class="text-xs text-gray-500 font-medium">(* 優惠可累贈，支援學術機構及研究室計畫經費核銷)</span>
+            </p>
+          </div>
+        </div>
+        <a href="contact.html" class="px-6 py-3 rounded-full bg-white text-gray-900 font-bold hover:bg-gray-200 transition-colors whitespace-nowrap shrink-0">
+          了解學術方案
+        </a>
+      </div>
+
+      <!-- Comparison Table -->
+      <div id="modules" class="scroll-mt-32">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl font-bold text-white mb-4">模組功能比較表</h2>
+          <p class="text-gray-400">深入了解各方案在運算規模、特徵設定與系統權限上的詳細差異。</p>
+        </div>
+        
+        <div class="overflow-x-auto rounded-xl border border-gray-800 bg-[#0A111A]">
+          <table class="w-full text-left text-sm comparison-table min-w-[900px]">
+            <thead>
+              <tr>
+                <th class="p-4 w-[25%] text-gray-300 font-bold border-b-2 border-gray-700">核心功能 / 模組</th>
+                <th class="p-4 text-center text-white font-bold border-b-2 border-gray-700">Regular</th>
+                <th class="p-4 text-center text-molris-cyan font-bold border-b-2 border-gray-700">Plus</th>
+                <th class="p-4 text-center text-molris-cyan font-bold border-b-2 border-molris-cyan bg-molris-cyan/10">Pro</th>
+                <th class="p-4 text-center text-white font-bold border-b-2 border-gray-700">Special Edition</th>
+                <th class="p-4 text-center text-white font-bold border-b-2 border-gray-700">Enterprise</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-400">
+              
+              <!-- Category Row 1 -->
+              <tr class="bg-gray-900/60">
+                <td colspan="6" class="p-3 font-bold text-gray-200">基本限制與運算資源</td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">信用點 (Credits)</td>
+                <td class="p-4 text-center">1,250 / 月</td>
+                <td class="p-4 text-center">3,000 / 月</td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-white font-bold">12,000 / 月</td>
+                <td class="p-4 text-center">客製化額度</td>
+                <td class="p-4 text-center">獨立資源 (無限制)</td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">點數消耗折扣</td>
+                <td class="p-4 text-center">-</td>
+                <td class="p-4 text-center">98 折</td>
+                <td class="p-4 text-center bg-molris-cyan/5">95 折</td>
+                <td class="p-4 text-center">專案報價</td>
+                <td class="p-4 text-center">專案報價</td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">輸入原子數上限</td>
+                <td class="p-4 text-center">限制 (小於 5k)</td>
+                <td class="p-4 text-center">限制 (小於 50k)</td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-infinity"></i> 無上限</td>
+                <td class="p-4 text-center"><i class="fa-solid fa-infinity"></i> 無上限</td>
+                <td class="p-4 text-center"><i class="fa-solid fa-infinity"></i> 無上限</td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">任務優先級</td>
+                <td class="p-4 text-center">標準</td>
+                <td class="p-4 text-center">高</td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan font-bold">最高優先級</td>
+                <td class="p-4 text-center">最高優先級</td>
+                <td class="p-4 text-center">專屬獨立硬體</td>
+              </tr>
+              
+              <!-- Category Row 2 -->
+              <tr class="bg-gray-900/60">
+                <td colspan="6" class="p-3 font-bold text-gray-200">建模與系統設定</td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">蛋白質與小分子建模</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">客制化分子與力場</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">奈米粒子建模</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-gray-600">-</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">複雜三維結構搭建</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-gray-600">-</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              </tr>
+
+              <!-- Category Row 3 -->
+              <tr class="bg-gray-900/60">
+                <td colspan="6" class="p-3 font-bold text-gray-200">模擬與運算模組</td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">位點搜尋與分子對接</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">常規分子動力學 (MD)</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">動態軌跡與力學分析</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i> 完整版</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i> 完整版</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i> 完整版</td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">平行運算支援</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">演算法客製化優化</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-gray-600">-</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              </tr>
+
+              <!-- Category Row 4 -->
+              <tr class="bg-gray-900/60">
+                <td colspan="6" class="p-3 font-bold text-gray-200">介面與圖表功能</td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">參數設定級別</td>
+                <td class="p-4 text-center">面板基礎設定</td>
+                <td class="p-4 text-center">進階設定</td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-white">延伸彈性設定</td>
+                <td class="p-4 text-center text-white">完全自定義</td>
+                <td class="p-4 text-center text-white">完全自定義</td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">視覺化與動態展示</td>
+                <td class="p-4 text-center">基本預覽</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i> 支援圖表</td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i> 進階渲染特效</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i> 進階渲染特效</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i> 進階渲染特效</td>
+              </tr>
+
+              <!-- Category Row 5 -->
+              <tr class="bg-gray-900/60">
+                <td colspan="6" class="p-3 font-bold text-gray-200">服務與授權</td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">學術發表許可</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">商業使用許可</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-gray-600">-</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300">教育訓練</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center bg-molris-cyan/5 text-gray-600">-</td>
+                <td class="p-4 text-center text-gray-600">-</td>
+                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              </tr>
+              <tr>
+                <td class="p-4 font-medium text-gray-300 border-b border-gray-800">專家專案諮詢</td>
+                <td class="p-4 text-center border-b border-gray-800 text-gray-600">-</td>
+                <td class="p-4 text-center border-b border-gray-800 text-gray-600">-</td>
+                <td class="p-4 text-center bg-molris-cyan/5 border-b border-molris-cyan/30 text-gray-600">-</td>
+                <td class="p-4 text-center border-b border-gray-800 text-molris-cyan"><i class="fa-solid fa-check"></i> (可加購)</td>
+                <td class="p-4 text-center border-b border-gray-800 text-molris-cyan"><i class="fa-solid fa-check"></i> 專屬顧問</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ==================== Footer ==================== -->
+  <footer class="bg-[#03060A] pt-16 pb-8 border-t border-gray-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-atom text-molris-cyan text-xl"></i>
+          <span class="text-xl font-bold tracking-widest text-white">Molris</span>
+        </div>
+        <div class="flex gap-6 text-sm text-gray-500">
+          <a href="#" class="hover:text-molris-cyan transition-colors">Privacy Policy</a>
+          <a href="#" class="hover:text-molris-cyan transition-colors">Terms of Service</a>
+        </div>
+      </div>
+      <div class="text-center text-gray-600 text-sm border-t border-gray-900 pt-8">
+        © 2026 Molris 默瑞思. All rights reserved. | 洞悉微觀規律，預見分子未來。
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive Script for Toggle -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const toggleContainer = document.getElementById("toggle-container");
+      const toggleInput = document.getElementById("billing-toggle");
+      const slideBg = document.getElementById("slide-bg");
+      const btnMonthly = document.getElementById("btn-monthly");
+      const btnAnnual = document.getElementById("btn-annual");
+      const annualBadges = document.querySelectorAll(".annual-badge");
+
+      // 安全機制：若找不到切換容器則不執行後續，避免報錯
+      if (!toggleContainer || !toggleInput) return;
+
+      // Set initial state
+      toggleInput.checked = false;
+
+      function updateToggleState() {
+        if (toggleInput.checked) {
+          // Switch to Annual
+          if (slideBg) slideBg.style.transform = "translateX(100%)";
+          
+          if (btnMonthly) {
+            btnMonthly.classList.remove("text-[#0A1628]");
+            btnMonthly.classList.add("text-gray-400");
+          }
+          if (btnAnnual) {
+            btnAnnual.classList.remove("text-gray-400");
+            btnAnnual.classList.add("text-[#0A1628]");
+          }
+          
+          annualBadges.forEach(badge => {
+            badge.classList.remove("hidden");
+            // Add a breathing glow effect
+            badge.classList.add("animate-[pulse_2s_ease-in-out_infinite]");
+          });
+        } else {
+          // Switch to Monthly
+          if (slideBg) slideBg.style.transform = "translateX(0)";
+          
+          if (btnMonthly) {
+            btnMonthly.classList.remove("text-gray-400");
+            btnMonthly.classList.add("text-[#0A1628]");
+          }
+          if (btnAnnual) {
+            btnAnnual.classList.remove("text-[#0A1628]");
+            btnAnnual.classList.add("text-gray-400");
+          }
+          
+          annualBadges.forEach(badge => {
+            badge.classList.add("hidden");
+            badge.classList.remove("animate-[pulse_2s_ease-in-out_infinite]");
+          });
+        }
+      }
+
+      toggleContainer.addEventListener("click", function() {
+        toggleInput.checked = !toggleInput.checked;
+        updateToggleState();
+      });
+    });
+  </script>
+</body>
+</html>
