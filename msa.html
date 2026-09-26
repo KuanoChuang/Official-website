@@ -433,8 +433,32 @@
       // 2. 更新表格高亮與淡化
       const allCells = document.querySelectorAll('.matrix-cell');
       const allHeaders = document.querySelectorAll('.matrix-header');
+      const axisSize = document.getElementById('axis-title-size');
+      const axisSim = document.getElementById('axis-title-sim');
       
       const { size, sim } = matrixState;
+      
+      // 更新 X/Y 軸總標題顏色
+      if (size && size !== 'unsure') {
+          if(axisSize) axisSize.classList.replace('text-white', 'text-molris-cyan');
+      } else {
+          if(axisSize) axisSize.classList.replace('text-molris-cyan', 'text-white');
+      }
+
+      if (sim && sim !== 'unsure') {
+          if(axisSim) axisSim.classList.replace('text-white', 'text-molris-cyan');
+      } else {
+          if(axisSim) axisSim.classList.replace('text-molris-cyan', 'text-white');
+      }
+
+      // 重置所有卡片的條件高亮 (青色) 與 點擊高亮 (柔和紫粉色)
+      const allCards = document.querySelectorAll('[data-algo-card]');
+      allCards.forEach(card => {
+         card.classList.remove('border-molris-cyan', 'bg-gray-800/80', 'shadow-[0_0_15px_rgba(0,229,255,0.15)]');
+         // 移除紫粉色的點擊高亮樣式
+         card.classList.remove('border-[#F000FF]/60', 'bg-[#F000FF]/5', 'shadow-[0_0_15px_rgba(240,0,255,0.1)]', '-translate-y-1');
+         card.classList.add('border-gray-800'); 
+      });
       
       if (!size && !sim) {
          // 全無選取時恢復預設狀態
@@ -446,6 +470,7 @@
       }
 
       // 內容儲存格判定
+      const activeAlgos = new Set();
       allCells.forEach(cell => {
          const cSize = cell.getAttribute('data-size');
          const cSim = cell.getAttribute('data-sim');
@@ -456,6 +481,9 @@
          if (matchSize && matchSim) {
              cell.classList.remove('opacity-20');
              cell.classList.add('bg-molris-cyan/10', 'ring-1', 'ring-molris-cyan');
+             // 收集亮起區塊內的演算法 (僅限主要實心標籤，排除帶括號的 algo-badge-outline)
+             const badges = cell.querySelectorAll('.algo-badge-solid[data-algo]');
+             badges.forEach(b => activeAlgos.add(b.getAttribute('data-algo')));
          } else {
              cell.classList.remove('bg-molris-cyan/10', 'ring-1', 'ring-molris-cyan');
              cell.classList.add('opacity-20');
@@ -487,6 +515,52 @@
              }
          }
       });
+
+      // 觸發下方卡片的「條件高亮 (青色)」
+      activeAlgos.forEach(algo => {
+         const card = document.querySelector(`[data-algo-card="${algo}"]`);
+         if(card) {
+             card.classList.remove('border-gray-800');
+             card.classList.add('border-molris-cyan', 'bg-gray-800/80', 'shadow-[0_0_15px_rgba(0,229,255,0.15)]');
+         }
+      });
+    }
+
+    // --- 演算法標籤點擊：平滑滾動與獨立高亮 ---
+    function scrollToAlgo(algo, event) {
+        if(event) event.preventDefault();
+        
+        // 1. 確保下方清單是展開的
+        const list = document.getElementById('algorithm-list-container');
+        const icon = document.getElementById('algorithm-list-icon');
+        if(list.classList.contains('hidden')) {
+            list.classList.remove('hidden');
+            list.classList.add('animate-slide-down');
+            icon.classList.add('rotate-180');
+        }
+        
+        // 2. 先利用 updateMatrixUI 重置全局狀態，確保 Selector 篩出的青色框不會消失
+        updateMatrixUI();
+        
+        // 3. 針對點擊的目標卡片，覆蓋上中度的「點擊高亮 (紫粉色)」
+        const targetCard = document.querySelector(`[data-algo-card="${algo}"]`);
+        if (targetCard) {
+            // 移除預設或青色的樣式，避免顏色衝突
+            targetCard.classList.remove('border-gray-800', 'border-molris-cyan', 'bg-gray-800/80', 'shadow-[0_0_15px_rgba(0,229,255,0.15)]');
+            
+            // 加上中度紫粉色標記 (柔和邊緣發光、微幅浮起)
+            targetCard.classList.add(
+                'border-[#F000FF]/60', 
+                'bg-[#F000FF]/5', 
+                'shadow-[0_0_15px_rgba(240,0,255,0.1)]', 
+                '-translate-y-1'
+            );
+            
+            // 4. 等待極短時間讓 DOM 展開，然後平滑滾動過去
+            setTimeout(() => {
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100); 
+        }
     }
 
     // --- 演算法詳細列表漸進式揭露 ---
