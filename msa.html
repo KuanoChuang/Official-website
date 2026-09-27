@@ -456,13 +456,13 @@
           if(axisSim) axisSim.classList.replace('text-molris-cyan', 'text-white');
       }
 
-      // 重置所有卡片的條件高亮 (青色) 與 點擊高亮 (深紫粉色)
+      // 重置所有卡片的條件高亮 (青色) 與 點擊高亮 (中度紫粉色)
       const allCards = document.querySelectorAll('[data-algo-card]');
       allCards.forEach(card => {
          // 移除青色
          card.classList.remove('border-molris-cyan', 'bg-gray-800/80', 'shadow-[0_0_15px_rgba(0,229,255,0.15)]');
-         // 移除深紫粉色 (標記效果)
-         card.classList.remove('border-[#B300C4]', 'bg-[#B300C4]/10', 'shadow-[0_4px_15px_rgba(179,0,196,0.2)]', '-translate-y-1');
+         // 移除中度紫粉色標記
+         card.classList.remove('border-[#D946EF]', 'bg-[#D946EF]/10', 'shadow-[0_0_20px_rgba(217,70,239,0.2)]', '-translate-y-1');
          // 恢復預設
          card.classList.add('border-gray-800'); 
       });
@@ -555,18 +555,19 @@
         // 2. 重置全局狀態 (重新上色青色條件)
         updateMatrixUI();
         
-        // 3. 針對目標覆蓋上深紫粉色高亮
+        // 3. 針對目標覆蓋上中度紫粉色高亮
         const targetCard = document.querySelector(`[data-algo-card="${algo}"]`);
         if (targetCard) {
-            // 暫時移除預設或青色，避免顏色衝突
-            targetCard.classList.remove('border-gray-800', 'border-molris-cyan', 'bg-gray-800/80', 'shadow-[0_0_15px_rgba(0,229,255,0.15)]');
+            // 暫時移除預設或青色，避免顏色衝突，並將動畫時間拉長至 700ms 營造漸進淡出感
+            targetCard.classList.remove('border-gray-800', 'border-molris-cyan', 'bg-gray-800/80', 'shadow-[0_0_15px_rgba(0,229,255,0.15)]', 'duration-300');
             
-            // 加上深且不刺眼的紫粉色標記
+            // 加上柔和且有質感的紫粉色標記 (Fuchsia 500)
             targetCard.classList.add(
-                'border-[#B300C4]', 
-                'bg-[#B300C4]/10', 
-                'shadow-[0_4px_15px_rgba(179,0,196,0.2)]', 
-                '-translate-y-1'
+                'border-[#D946EF]', 
+                'bg-[#D946EF]/10', 
+                'shadow-[0_0_20px_rgba(217,70,239,0.2)]', 
+                '-translate-y-1',
+                'duration-700'
             );
             
             // 等待極短時間讓 DOM 展開後平滑滾動
@@ -578,12 +579,18 @@
             const restoreHighlight = () => {
                 updateMatrixUI(); 
                 targetCard.removeEventListener('mouseenter', restoreHighlight);
+                
+                // 等待淡出動畫 (700ms) 結束後，將動畫速度恢復成預設的 300ms
+                setTimeout(() => {
+                    targetCard.classList.remove('duration-700');
+                    targetCard.classList.add('duration-300');
+                }, 700);
             };
 
-            // 設定：3秒後自動消退
+            // 設定：3秒後自動漸進消退
             highlightTimeout = setTimeout(restoreHighlight, 3000);
             
-            // 設定：滑鼠懸停 (Hover) 時立即消退
+            // 設定：滑鼠懸停 (Hover) 時立即觸發漸進消退
             currentHighlightedCard = targetCard;
             currentHoverHandler = restoreHighlight;
             targetCard.addEventListener('mouseenter', restoreHighlight);
