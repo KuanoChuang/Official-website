@@ -403,6 +403,11 @@
     }
     // === 演算法矩陣互動邏輯 ===
     let matrixState = { size: null, sim: null };
+    
+    // 用於追蹤紫色高亮的計時器與事件，避免多次點擊時互相衝突
+    let highlightTimeout = null;
+    let currentHighlightedCard = null;
+    let currentHoverHandler = null;
 
     function selectMatrix(type, value) {
       if (matrixState[type] === value) {
@@ -451,12 +456,14 @@
           if(axisSim) axisSim.classList.replace('text-molris-cyan', 'text-white');
       }
 
-      // 重置所有卡片的條件高亮 (青色) 與 點擊高亮 (柔和紫粉色)
+      // 重置所有卡片的條件高亮 (青色) 與 點擊高亮 (深紫粉色)
       const allCards = document.querySelectorAll('[data-algo-card]');
       allCards.forEach(card => {
+         // 移除青色
          card.classList.remove('border-molris-cyan', 'bg-gray-800/80', 'shadow-[0_0_15px_rgba(0,229,255,0.15)]');
-         // 移除紫粉色的點擊高亮樣式
-         card.classList.remove('border-[#B300C4]', 'bg-[#B300C4]/10', 'shadow-[0_0_15px_rgba(240,0,255,0.1)]', '-translate-y-1');
+         // 移除深紫粉色 (標記效果)
+         card.classList.remove('border-[#B300C4]', 'bg-[#B300C4]/10', 'shadow-[0_4px_15px_rgba(179,0,196,0.2)]', '-translate-y-1');
+         // 恢復預設
          card.classList.add('border-gray-800'); 
       });
       
@@ -481,7 +488,7 @@
          if (matchSize && matchSim) {
              cell.classList.remove('opacity-20');
              cell.classList.add('bg-molris-cyan/10', 'ring-1', 'ring-molris-cyan');
-             // 收集亮起區塊內的演算法 (僅限主要實心標籤，排除帶括號的 algo-badge-outline)
+             // 收集亮起區塊內的演算法 (僅限主要實心標籤，排除帶括號的)
              const badges = cell.querySelectorAll('.algo-badge-solid[data-algo]');
              badges.forEach(b => activeAlgos.add(b.getAttribute('data-algo')));
          } else {
@@ -539,27 +546,47 @@
             icon.classList.add('rotate-180');
         }
         
-        // 2. 先利用 updateMatrixUI 重置全局狀態，確保 Selector 篩出的青色框不會消失
+        // 清除舊的計時器與懸停事件，確保連續點擊不會衝突
+        if (highlightTimeout) clearTimeout(highlightTimeout);
+        if (currentHighlightedCard && currentHoverHandler) {
+            currentHighlightedCard.removeEventListener('mouseenter', currentHoverHandler);
+        }
+        
+        // 2. 重置全局狀態 (重新上色青色條件)
         updateMatrixUI();
         
-        // 3. 針對點擊的目標卡片，覆蓋上中度的「點擊高亮 (紫粉色)」
+        // 3. 針對目標覆蓋上深紫粉色高亮
         const targetCard = document.querySelector(`[data-algo-card="${algo}"]`);
         if (targetCard) {
-            // 移除預設或青色的樣式，避免顏色衝突
+            // 暫時移除預設或青色，避免顏色衝突
             targetCard.classList.remove('border-gray-800', 'border-molris-cyan', 'bg-gray-800/80', 'shadow-[0_0_15px_rgba(0,229,255,0.15)]');
             
-            // 加上中度紫粉色標記 (柔和邊緣發光、微幅浮起)
+            // 加上深且不刺眼的紫粉色標記
             targetCard.classList.add(
                 'border-[#B300C4]', 
                 'bg-[#B300C4]/10', 
-                'shadow-[0_0_15px_rgba(240,0,255,0.1)]', 
+                'shadow-[0_4px_15px_rgba(179,0,196,0.2)]', 
                 '-translate-y-1'
             );
             
-            // 4. 等待極短時間讓 DOM 展開，然後平滑滾動過去
+            // 等待極短時間讓 DOM 展開後平滑滾動
             setTimeout(() => {
                 targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 100); 
+
+            // 4. 定義消除紫光的復原函式 (透過呼叫 updateMatrixUI 重算原本該有的顏色)
+            const restoreHighlight = () => {
+                updateMatrixUI(); 
+                targetCard.removeEventListener('mouseenter', restoreHighlight);
+            };
+
+            // 設定：3秒後自動消退
+            highlightTimeout = setTimeout(restoreHighlight, 3000);
+            
+            // 設定：滑鼠懸停 (Hover) 時立即消退
+            currentHighlightedCard = targetCard;
+            currentHoverHandler = restoreHighlight;
+            targetCard.addEventListener('mouseenter', restoreHighlight);
         }
     }
 
