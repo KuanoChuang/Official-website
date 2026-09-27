@@ -1421,35 +1421,35 @@
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 bg-[#03060A]/80 p-8 rounded-2xl border border-gray-800/80 shadow-inner">
               <div class="border-l-2 border-molris-cyan/50 pl-4">
                 <h4 class="text-white font-bold text-lg mb-1">動態規劃</h4>
-                <p class="text-[16px] text-gray-500 text-justify">透過計算不同序列排列方式的得分，尋找全局或局部的最佳序列比對路徑。</p>
+                <p class="text-[16px] text-gray-500 text-justify">透過計算不同序列排列方式的得分，尋找全局或局部的最佳比對路徑。</p>
               </div>
               <div class="border-l-2 border-molris-cyan/50 pl-4">
                 <h4 class="text-white font-bold text-lg mb-1">漸進式比對</h4>
-                <p class="text-[16px] text-gray-500 text-justify">先計算兩兩相似度建立導引樹，再依循樹狀結構逐步將序列合併比對。</p>
+                <p class="text-[16px] text-gray-500 text-justify">先計算兩兩序列相似度建立導引樹，再依循樹狀結構逐步合併比對。</p>
               </div>
               <div class="border-l-2 border-molris-cyan/50 pl-4">
                 <h4 class="text-white font-bold text-lg mb-1">迭代式最佳化</h4>
-                <p class="text-[16px] text-gray-500 text-justify">先產生初始快速比對，再反覆將序列拆解與重新比對，修正早期誤差。</p>
+                <p class="text-[16px] text-gray-500 text-justify">先產生初始快速比對，再反覆拆解與重新比對，逐步修正早期誤差。</p>
               </div>
               <div class="border-l-2 border-molris-cyan/50 pl-4">
                 <h4 class="text-white font-bold text-lg mb-1">一致性方法</h4>
-                <p class="text-[16px] text-gray-500 text-justify">整合多對序列的比對資訊庫，使局部與整體關係能相互驗證。</p>
+                <p class="text-[16px] text-gray-500 text-justify">整合多組序列的比對資訊，使局部與整體關係能相互驗證，提高可靠性。</p>
               </div>
               <div class="border-l-2 border-gray-700 pl-4">
                 <h4 class="text-white font-bold text-lg mb-1">隱馬可夫模型</h4>
-                <p class="text-[16px] text-gray-500 text-justify">以機率模型描述不同位置狀態(匹配、插入、缺失)，有效辨識微弱同源特徵。</p>
+                <p class="text-[16px] text-gray-500 text-justify">以機率模型描述匹配、插入與缺失狀態，有效辨識微弱同源序列特徵。</p>
               </div>
               <div class="border-l-2 border-gray-700 pl-4">
                 <h4 class="text-white font-bold text-lg mb-1">系統發育方法</h4>
-                <p class="text-[16px] text-gray-500 text-justify">將演化資訊納入計算，嚴謹區分插入與缺失，精準還原演化關係。</p>
+                <p class="text-[16px] text-gray-500 text-justify">將演化資訊納入計算，分析序列間的演化關係，精確處理插入與缺失。</p>
               </div>
               <div class="border-l-2 border-gray-700 pl-4">
                 <h4 class="text-white font-bold text-lg mb-1">片段 / 模體比對</h4>
-                <p class="text-[16px] text-gray-500 text-justify">優先對齊高度相似的局部片段，適合處理長度差異大或局部同源的資料。</p>
+                <p class="text-[16px] text-gray-500 text-justify">優先對齊高度相似的局部片段，適合處理長度差異大或局部同源資料。</p>
               </div>
               <div class="border-l-2 border-gray-700 pl-4">
                 <h4 class="text-white font-bold text-lg mb-1">結構輔助比對</h4>
-                <p class="text-[16px] text-gray-500 text-justify">引入三維結構資訊，以空間摺疊特徵引導一維比對，確保關鍵位點精準對齊。</p>
+                <p class="text-[16px] text-gray-500 text-justify">引入三維結構資訊，以空間摺疊特徵輔助比對，精準對齊關鍵位點。</p>
               </div>
             </div>
           </div>
