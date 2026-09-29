@@ -1199,12 +1199,12 @@
               <tr class="bg-gray-800/80 border-b border-gray-700">
                 <!-- 左上角：Y 軸標題 (向下合併 2 列) -->
                 <th rowspan="2" class="p-4 w-[16%] border-r border-gray-700 align-middle">
-                  <div class="text-white font-bold text-[15px] tracking-wider flex items-center gap-2">
-                    <i class="text-gray-500 text-sm"></i> 資料規模
+                  <div class="text-white font-bold text-[16px] tracking-wider flex items-center gap-2">
+                    <i class="text-gray-500 text-[16px]"></i> 資料規模
                   </div>
                 </th>
                 <!-- 頂部層級：X 軸總標題 (橫跨 3 欄) -->
-                <th colspan="3" class="py-2.5 text-center text-molris-cyan font-bold tracking-widest text-[15px] bg-molris-cyan/5 relative">
+                <th colspan="3" class="py-2.5 text-center text-molris-cyan font-bold tracking-widest text-[16px] bg-molris-cyan/5 relative">
                   <span class="flex items-center justify-center gap-2">
                     序列相似度 <i class="text-sm opacity-70"></i>
                   </span>
@@ -1216,12 +1216,12 @@
               <tr class="bg-gray-800/50">
                 <th data-sim="high" class="matrix-header transition-all duration-300 p-3 font-bold text-center w-[28%] text-gray-300 border-r border-gray-700/50">&gt; 70%</th>
                 <th data-sim="medium" class="matrix-header transition-all duration-300 p-3 font-bold text-center w-[28%] text-gray-300 border-r border-gray-700/50">30–70%</th>
-                <th data-sim="low" class="matrix-header transition-all duration-300 p-3 font-bold text-center w-[28%] text-gray-300">&lt; 30%</th>
+                <th data-sim="low" class="matrix-header transition-all duration-300 p-3 font-bold text-center w-[28%] text-gray-300 border-r border-gray-700/50">&lt; 30%</th>
               </tr>
             </thead>
-            <tbody class="bg-gray-900/40 text-sm">
+            <tbody class="bg-gray-900/40 text-[16px]">
               <tr class="hover:bg-gray-800/30 transition-colors">
-                <td data-size="small" class="matrix-header transition-all duration-300 p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">小型資料集</strong><span class="text-gray-500 text-xs">&lt; 100 條序列</span></td>
+                <td data-size="small" class="matrix-header transition-all duration-300 p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">小型資料集</strong><span class="text-gray-500 text-sm">&lt; 100 條序列</span></td>
                 <td data-size="small" data-sim="high" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5 mb-1.5">
                     <span class="algo-badge algo-badge-solid cursor-pointer hover:scale-105" data-algo="mafft" onclick="scrollToAlgo('mafft', event)">MAFFT</span>
@@ -1252,7 +1252,7 @@
                 </td>
               </tr>
               <tr class="hover:bg-gray-800/30 transition-colors">
-                <td data-size="medium" class="matrix-header transition-all duration-300 p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">中型資料集</strong><span class="text-gray-500 text-xs">&lt; 1k 條序列</span></td>
+                <td data-size="medium" class="matrix-header transition-all duration-300 p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">中型資料集</strong><span class="text-gray-500 text-sm">&lt; 1k 條序列</span></td>
                 <td data-size="medium" data-sim="high" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5 mb-1.5">
                     <span class="algo-badge algo-badge-solid cursor-pointer hover:scale-105" data-algo="mafft" onclick="scrollToAlgo('mafft', event)">MAFFT</span>
@@ -1284,7 +1284,7 @@
                 </td>
               </tr>
               <tr class="hover:bg-gray-800/30 transition-colors">
-                <td data-size="large" class="matrix-header transition-all duration-300 p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">大型資料集</strong><span class="text-gray-500 text-xs">&lt; 10k 條序列</span></td>
+                <td data-size="large" class="matrix-header transition-all duration-300 p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">大型資料集</strong><span class="text-gray-500 text-sm">&lt; 10k 條序列</span></td>
                 <td data-size="large" data-sim="high" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-solid cursor-pointer hover:scale-105" data-algo="mafft" onclick="scrollToAlgo('mafft', event)">MAFFT</span>
@@ -1309,7 +1309,7 @@
                 </td>
               </tr>
               <tr class="hover:bg-gray-800/30 transition-colors">
-                <td data-size="xlarge" class="matrix-header transition-all duration-300 p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">超大型資料</strong><span class="text-gray-500 text-xs">10k – 1M 條序列</span></td>
+                <td data-size="xlarge" class="matrix-header transition-all duration-300 p-4 border-t border-gray-800 border-r border-gray-700"><strong class="text-white block">超大型資料</strong><span class="text-gray-500 text-sm">10k – 1M 條序列</span></td>
                 <td data-size="xlarge" data-sim="high" class="matrix-cell transition-all duration-300 p-4 border-t border-gray-800 text-center">
                   <div class="flex flex-wrap justify-center gap-1.5">
                     <span class="algo-badge algo-badge-solid cursor-pointer hover:scale-105" data-algo="mafft" onclick="scrollToAlgo('mafft', event)">MAFFT</span>
