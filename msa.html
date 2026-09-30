@@ -116,11 +116,16 @@
         // --- 特效: 隱形掃描雷達 ---
         const scanner = document.createElement('div');
         scanner.className = 'absolute top-0 bottom-0 w-[2px] z-20 pointer-events-none';
-        scanner.style.background = 'linear-gradient(to bottom, transparent, #00E5FF, transparent)';
+        // 1. 恢復純色背景與原本的強烈發光
+        scanner.style.background = '#00E5FF';
         scanner.style.boxShadow = '0 0 15px #00E5FF, 0 0 30px #00E5FF';
+        
+        // 2. 利用 Mask (遮罩) 讓主體與發光同時在上下兩端完美淡出，解決岔開問題
+        scanner.style.webkitMaskImage = 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)';
+        scanner.style.maskImage = 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)';
+        
         scanner.style.animation = `scanSweep ${SCAN_DURATION}s linear forwards`;
         container.appendChild(scanner);
-
         // 建立 10 條水平序列容器
         const rowDivs = [];
         for (let i = 0; i < numRows; i++) {
