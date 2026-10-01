@@ -326,12 +326,14 @@
               let bgClass = '';
               if (state === 'mutated') bgClass = 'glitch-dot z-20'; 
               else if (state === 'faded') bgClass = 'bg-white shadow-[0_0_8px_#ffffff] opacity-50'; 
-              else bgClass = col.color === 'cyan' ? 'bg-white shadow-[0_0_10px_#00E5FF] z-20' : 'bg-white shadow-[0_0_10px_#F000FF] z-20';
+              else bgClass = col.color === 'cyan' 
+                ? 'bg-[#80F2FF] border border-molris-cyan shadow-[0_0_8px_#00E5FF] z-20'  // 淺青色核心 + 青色邊框
+                : 'bg-[#F880FF] border border-[#F000FF] shadow-[0_0_8px_#F000FF] z-20'; // 淺紫粉核心 + 紫粉邊框
               
-              // 像素級置中校正
-              block.className += ` absolute w-[6px] h-[6px] rounded-full ${bgClass}`;
-              block.style.left = `calc(${col.left}% - 2px)`;
-              block.style.top = `-0.5px`;
+              // 像素級置中校正 (稍微加大至 7px，並精準推移確保與 2px 光線完美置中)
+              block.className += ` absolute w-[7px] h-[7px] rounded-full ${bgClass}`;
+              block.style.left = `calc(${col.left}% - 2.5px)`;
+              block.style.top = `-1px`;
             }
             
             // HUD 標籤生成 
