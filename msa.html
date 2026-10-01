@@ -212,7 +212,7 @@
 
             const svgContainer = document.createElement('div');
             svgContainer.className = 'absolute inset-0 w-full h-full z-0 reveal-item pointer-events-none opacity-60';
-            svgContainer.style.animationDelay = `${(startX / 100) * SCAN_DURATION}s`;
+            svgContainer.style.animationDelay = `${(startX / 100) * 0.95 * SCAN_DURATION}s`;
             
             svgContainer.innerHTML = `
               <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="w-full h-full">
@@ -251,7 +251,7 @@
 
         // 處理光柱/雷射與其附屬特徵
         cols.forEach(col => {
-          const animDelay = (col.left / 100) * SCAN_DURATION;
+          const animDelay = (col.left / 100) * 0.95 * SCAN_DURATION;
           
           const guide = document.createElement('div');
           if (col.type === 'wide') {
@@ -392,6 +392,7 @@
         frag.className = `absolute rounded-sm ${heightClass} ${bgClass} z-10`;
         frag.style.left = `${current}%`;
         frag.style.width = `${width}%`;
+        frag.style.animationDelay = `${(current / 100) * 0.95 * SCAN_DURATION}s`;
         parent.appendChild(frag);
         
         current += width;
@@ -699,7 +700,7 @@
     
     .reveal-item {
       opacity: 0; 
-      animation: featureReveal 0.5s ease-out forwards;
+      animation: featureReveal 0.5s ease-out both;
     }
 
     /* 橘色突變點純粹明暗閃爍 (純粹呼吸與擴散) */
