@@ -753,26 +753,28 @@
 
     /* 1. 交叉驗證：統一的 6 秒雷射解碼掃描 ( Node 1 & Node 4 ) */
     @keyframes scanSweep {
-      0%, 10% { left: 0%; opacity: 0; }
-      13.5% { left: 0%; opacity: 1; }
-      68% { left: 100%; opacity: 1; }
-      70%, 85% { left: 100%; opacity: 0; }
-      85%, 100% { left: 100%; opacity: 0; }
+      0%, 5% { left: 0%; opacity: 0; }
+      10% { left: 0%; opacity: 1; }
+      70% { left: 100%; opacity: 1; }
+      75%, 100% { left: 100%; opacity: 0; }
     }
+
     
     @keyframes sweepInset1 {
       0%, 13.5% { clip-path: inset(0 100% 0 0); opacity: 1; }
       68%, 85% { clip-path: inset(0 0 0 0); opacity: 1; }
-      85%, 95% { clip-path: inset(0 0 0 0); opacity: 0; }
+      95% { clip-path: inset(0 0 0 0); opacity: 0; }
       96%, 100% { clip-path: inset(0 100% 0 0); opacity: 0; }
     }
+
 
     @keyframes sweepInset4 {
       0%, 13.5% { clip-path: inset(0 100% 0 0); opacity: 1; }
       68%, 85% { clip-path: inset(0 0 0 0); opacity: 1; }
-      85%, 95% { clip-path: inset(0 0 0 0); opacity: 0; }
+      95% { clip-path: inset(0 0 0 0); opacity: 0; }
       96%, 100% { clip-path: inset(0 100% 0 0); opacity: 0; }
     }
+
     
     .anim-scanner { animation: scanSweep 6s linear infinite; }
     .anim-mass-scan-4 { animation: scanSweep 6s linear infinite; } /* 共用掃描光束時間 */
