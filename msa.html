@@ -751,62 +751,73 @@
        大型視覺化動畫 (Large-Scale Keyframes)
     ======================================================== */
 
-    /* 1. 交叉驗證：長青色共識區與連續短片段的高變異區 (掃描後亮起) */
+    /* 1. 交叉驗證：統一的 6 秒雷射解碼掃描 ( Node 1 & Node 4 ) */
     @keyframes scanSweep {
-      0%, 5% { left: 0%; opacity: 0; }
-      10% { left: 0%; opacity: 1; }
-      70% { left: 100%; opacity: 1; }
-      75%, 100% { left: 100%; opacity: 0; }
+      0%, 10% { left: 0%; opacity: 0; }
+      13.5% { left: 0%; opacity: 1; }
+      68% { left: 100%; opacity: 1; }
+      70%, 85% { left: 100%; opacity: 0; }
+      85%, 100% { left: 100%; opacity: 0; }
     }
     
     @keyframes sweepInset1 {
       0%, 13.5% { clip-path: inset(0 100% 0 0); opacity: 1; }
       68%, 85% { clip-path: inset(0 0 0 0); opacity: 1; }
-      95% { clip-path: inset(0 0 0 0); opacity: 0; }
+      85%, 95% { clip-path: inset(0 0 0 0); opacity: 0; }
+      96%, 100% { clip-path: inset(0 100% 0 0); opacity: 0; }
+    }
+
+    @keyframes sweepInset4 {
+      0%, 13.5% { clip-path: inset(0 100% 0 0); opacity: 1; }
+      68%, 85% { clip-path: inset(0 0 0 0); opacity: 1; }
+      85%, 95% { clip-path: inset(0 0 0 0); opacity: 0; }
       96%, 100% { clip-path: inset(0 100% 0 0); opacity: 0; }
     }
     
     .anim-scanner { animation: scanSweep 6s linear infinite; }
+    .anim-mass-scan-4 { animation: scanSweep 6s linear infinite; } /* 共用掃描光束時間 */
+    
     .anim-sweep-inset-1 { animation: sweepInset1 6s linear infinite; }
+    .anim-sweep-inset-4 { animation: sweepInset4 6s linear infinite; }
 
-    /* 2. 結構輔助：1D 序列映射 3D 表面模型 (3段式循序亮起) */
+    /* 2. 結構輔助：1D 序列映射 3D 表面模型 (3段式循序持續亮起) */
     @keyframes seqMap1 {
-      0%, 10%, 95%, 100% { fill: #374151; filter: drop-shadow(0 0 0px transparent); }
-      20%, 85% { fill: #D946EF; filter: drop-shadow(0 0 6px #D946EF); }
+      0%, 10%, 85%, 95%, 100% { fill: #374151; filter: drop-shadow(0 0 0px transparent); }
+      20%, 70%, 85% { fill: #D946EF; filter: drop-shadow(0 0 6px #D946EF); }
     }
     @keyframes seqMap2 {
-      0%, 30%, 95%, 100% { fill: #374151; filter: drop-shadow(0 0 0px transparent); }
-      40%, 85% { fill: #00E5FF; filter: drop-shadow(0 0 6px #00E5FF); }
+      0%, 30%, 85%, 95%, 100% { fill: #374151; filter: drop-shadow(0 0 0px transparent); }
+      40%, 70%, 85% { fill: #00E5FF; filter: drop-shadow(0 0 6px #00E5FF); }
     }
     @keyframes seqMap3 {
-      0%, 50%, 95%, 100% { fill: #374151; filter: drop-shadow(0 0 0px transparent); }
-      60%, 85% { fill: #10B981; filter: drop-shadow(0 0 6px #10B981); }
+      0%, 50%, 85%, 95%, 100% { fill: #374151; filter: drop-shadow(0 0 0px transparent); }
+      60%, 70%, 85% { fill: #10B981; filter: drop-shadow(0 0 6px #10B981); }
     }
     
     @keyframes mapLink1 {
-      0%, 10%, 95%, 100% { opacity: 0; stroke-dashoffset: 0; }
-      20%, 85% { opacity: 0.8; stroke-dashoffset: -20; }
+      0%, 10%, 85%, 95%, 100% { opacity: 0; stroke-dashoffset: 0; }
+      20%, 70%, 85% { opacity: 0.8; stroke-dashoffset: -20; }
     }
     @keyframes mapLink2 {
-      0%, 30%, 95%, 100% { opacity: 0; stroke-dashoffset: 0; }
-      40%, 85% { opacity: 0.8; stroke-dashoffset: -20; }
+      0%, 30%, 85%, 95%, 100% { opacity: 0; stroke-dashoffset: 0; }
+      40%, 70%, 85% { opacity: 0.8; stroke-dashoffset: -20; }
     }
     @keyframes mapLink3 {
-      0%, 50%, 95%, 100% { opacity: 0; stroke-dashoffset: 0; }
-      60%, 85% { opacity: 0.8; stroke-dashoffset: -20; }
+      0%, 50%, 85%, 95%, 100% { opacity: 0; stroke-dashoffset: 0; }
+      60%, 70%, 85% { opacity: 0.8; stroke-dashoffset: -20; }
     }
     
     @keyframes pulseZone1 {
-      0%, 10%, 95%, 100% { filter: grayscale(1) brightness(0.6); opacity: 0.9; }
-      20%, 85% { filter: grayscale(0) brightness(1.2) drop-shadow(0 0 8px rgba(217, 70, 239, 0.6)); opacity: 1; }
+      0%, 10%, 85%, 95%, 100% { filter: grayscale(1) brightness(0.6); opacity: 0.9; }
+      20%, 70%, 85% { filter: grayscale(0) brightness(1.2) drop-shadow(0 0 8px rgba(217, 70, 239, 0.6)); opacity: 1; }
     }
     @keyframes pulseZone2 {
-      0%, 30%, 95%, 100% { filter: grayscale(1) brightness(0.6); opacity: 0.9; }
-      40%, 85% { filter: grayscale(0) brightness(1.2) drop-shadow(0 0 8px rgba(0, 229, 255, 0.6)); opacity: 1; }
+      0%, 30%, 85%, 95%, 100% { filter: grayscale(1) brightness(0.6); opacity: 0.9; }
+      40%, 70%, 85% { filter: grayscale(0) brightness(1.2) drop-shadow(0 0 8px rgba(0, 229, 255, 0.6)); opacity: 1; }
     }
     @keyframes pulseZone3 {
-      0%, 50%, 95%, 100% { filter: grayscale(1) brightness(0.6); opacity: 0.9; }
-      60%, 85% { filter: grayscale(0) brightness(1.2) drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)); opacity: 1; }
+      0%, 50%, 85%, 95%, 100% { filter: grayscale(1) brightness(0.6); opacity: 0.9; }
+      60%, 70%, 85% { filter: grayscale(0) brightness(1.2) drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)); opacity: 1; }
     }
 
     .map-seq-1 { animation: seqMap1 6s infinite; }
@@ -819,22 +830,22 @@
     .map-zone-2 { animation: pulseZone2 6s infinite; }
     .map-zone-3 { animation: pulseZone3 6s infinite; }
 
-    /* 3. 演化評估：四層分支與多色突變序列映射 */
-    @keyframes stg0P { 0%, 5%, 95%, 100% { stroke: #4B5563; filter: none; } 10%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
-    @keyframes stg0N { 0%, 5%, 95%, 100% { fill: #374151; filter: none; } 10%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
-    @keyframes stg0B { 0%, 5%, 95%, 100% { background-color: #374151; box-shadow: none; } 10%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
+    /* 3. 演化評估：五層分支與多色突變序列映射 (沉穩漸進式亮起) */
+    @keyframes stg0P { 0%, 10%, 85%, 95%, 100% { stroke: #4B5563; filter: none; } 15%, 70%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
+    @keyframes stg0N { 0%, 10%, 85%, 95%, 100% { fill: #374151; filter: none; } 15%, 70%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
+    @keyframes stg0B { 0%, 10%, 85%, 95%, 100% { background-color: #374151; box-shadow: none; } 15%, 70%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
 
-    @keyframes stg1P { 0%, 20%, 95%, 100% { stroke: #4B5563; filter: none; } 30%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
-    @keyframes stg1N { 0%, 20%, 95%, 100% { fill: #374151; filter: none; } 30%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
-    @keyframes stg1B { 0%, 20%, 95%, 100% { background-color: #374151; box-shadow: none; } 30%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
+    @keyframes stg1P { 0%, 30%, 85%, 95%, 100% { stroke: #4B5563; filter: none; } 35%, 70%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
+    @keyframes stg1N { 0%, 30%, 85%, 95%, 100% { fill: #374151; filter: none; } 35%, 70%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
+    @keyframes stg1B { 0%, 30%, 85%, 95%, 100% { background-color: #374151; box-shadow: none; } 35%, 70%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
 
-    @keyframes stg2P { 0%, 40%, 95%, 100% { stroke: #4B5563; filter: none; } 50%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
-    @keyframes stg2N { 0%, 40%, 95%, 100% { fill: #374151; filter: none; } 50%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
-    @keyframes stg2B { 0%, 40%, 95%, 100% { background-color: #374151; box-shadow: none; } 50%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
+    @keyframes stg2P { 0%, 50%, 85%, 95%, 100% { stroke: #4B5563; filter: none; } 55%, 70%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
+    @keyframes stg2N { 0%, 50%, 85%, 95%, 100% { fill: #374151; filter: none; } 55%, 70%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
+    @keyframes stg2B { 0%, 50%, 85%, 95%, 100% { background-color: #374151; box-shadow: none; } 55%, 70%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
 
-    @keyframes stg3P { 0%, 60%, 95%, 100% { stroke: #4B5563; filter: none; } 70%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
-    @keyframes stg3N { 0%, 60%, 95%, 100% { fill: #374151; filter: none; } 70%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
-    @keyframes stg3B { 0%, 60%, 95%, 100% { background-color: #374151; box-shadow: none; } 70%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
+    @keyframes stg3P { 0%, 70%, 85%, 95%, 100% { stroke: #4B5563; filter: none; } 75%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
+    @keyframes stg3N { 0%, 70%, 85%, 95%, 100% { fill: #374151; filter: none; } 75%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
+    @keyframes stg3B { 0%, 70%, 85%, 95%, 100% { background-color: #374151; box-shadow: none; } 75%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
 
     .anim-s0-p { animation: stg0P 6s infinite; }
     .anim-s0-n { animation: stg0N 6s infinite; }
@@ -849,35 +860,11 @@
     .anim-s3-n { animation: stg3N 6s infinite; }
     .anim-s3-b { animation: stg3B 6s infinite; }
 
-    /* 4. 專家覆核：多序列掃描與動態柱狀圖 (配合掃描後顯示與固定高度) */
-    @keyframes fastScan4 {
-      0%, 5% { left: 0%; opacity: 0; }
-      10% { left: 0%; opacity: 1; }
-      70% { left: 100%; opacity: 1; }
-      75%, 100% { left: 100%; opacity: 0; }
-    }
-    
-    @keyframes revealSeq4_1 { 0%, 20% { fill: #374151; filter: none; } 25%, 85% { fill: var(--tc); } 95%, 100% { fill: #374151; } }
-    @keyframes revealSeq4_2 { 0%, 40% { fill: #374151; filter: none; } 45%, 85% { fill: var(--tc); } 95%, 100% { fill: #374151; } }
-    @keyframes revealSeq4_3 { 0%, 60% { fill: #374151; filter: none; } 65%, 85% { fill: var(--tc); } 95%, 100% { fill: #374151; } }
-
-    @keyframes revealBar {
-      0%, 45% { opacity: 0; transform: scaleY(0); }
-      50%, 85% { opacity: 1; transform: scaleY(1); }
-      95%, 100% { opacity: 0; transform: scaleY(0); }
-    }
-
-    .anim-mass-scan-4 { animation: fastScan4 6s linear infinite; }
-    .seq4-c1 { animation: revealSeq4_1 6s infinite; }
-    .seq4-c2 { animation: revealSeq4_2 6s infinite; }
-    .seq4-c3 { animation: revealSeq4_3 6s infinite; }
-    .bar-reveal { animation: revealBar 6s infinite; transform-origin: bottom; }
-    
     /* 控制卡片懸停展開高度 */
     .expand-container { grid-template-rows: 0fr; transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
     .group:hover .expand-container { grid-template-rows: 1fr; }
 
-    /* 5. 中央核心光纖與共振波紋 */
+    /* 5. 中央核心與四色光纖傳輸 */
     @keyframes particleFlow {
       from { stroke-dashoffset: 0; }
       to { stroke-dashoffset: -64; }
@@ -887,8 +874,8 @@
     @keyframes coreRipple {
       0% { transform: scale(1); opacity: 0; filter: drop-shadow(0 0 0px #00E5FF); border-width: 4px; }
       1% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 10px #00E5FF) drop-shadow(0 0 20px #00E5FF); border-width: 4px; }
-      20% { transform: scale(4); opacity: 0; filter: drop-shadow(0 0 20px #00E5FF); border-width: 1px; }
-      21%, 100% { transform: scale(1); opacity: 0; }
+      10% { transform: scale(4); opacity: 0; filter: drop-shadow(0 0 20px #00E5FF); border-width: 1px; }
+      11%, 100% { transform: scale(1); opacity: 0; }
     }
     .anim-core-ripple { animation: coreRipple 6s cubic-bezier(0.1, 0.8, 0.3, 1) infinite; }
 
@@ -1835,20 +1822,39 @@
           </div>
         </div>
 
-        <!-- 驗證機制 (Quality Control) -->
+        <!-- ==================== 驗證機制 (Quality Control) ==================== -->
         <div class="mt-24 pt-16 border-t border-gray-800">
           <div class="text-center mb-12">
             <h2 class="text-3xl font-bold text-white mb-4">多重驗證，Molris為您把關品質</h2>
             <p class="text-gray-400 max-w-3xl mx-auto text-lg text-justify md:text-center">Molris 在交付分析數據前，會針對比對結果進行嚴格的交叉驗證與品質把關：</p>
           </div>
 
-          <!-- ========================================================= -->
           <!-- 1. 手機 / 平板版：隱藏大型動畫，顯示原本便於閱讀的靜態卡片 -->
-          <!-- ========================================================= -->
           <div class="grid md:grid-cols-2 lg:hidden gap-6">
             <!-- QC 1 -->
             <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
-<!-- ... existing code ... -->
+              <div class="text-molris-cyan mb-4"><i class="fa-solid fa-code-compare text-2xl group-hover:scale-110 transition-transform"></i></div>
+              <h4 class="text-white font-bold mb-2 text-lg">多演算法交叉驗證</h4>
+              <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                平行執行多種演算法，交叉檢視不同方法間的結果一致性，確認關鍵缺口與保守區域不受單一演算法偏差影響。
+              </p>
+            </div>
+            <!-- QC 2 -->
+            <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
+              <div class="text-molris-cyan mb-4"><i class="fa-solid fa-cubes text-2xl group-hover:scale-110 transition-transform"></i></div>
+              <h4 class="text-white font-bold mb-2 text-lg">結構輔助驗證</h4>
+              <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                將一維序列中的保守區域映射至已知三維蛋白質結構，檢視其與結構核心、功能區域的對應關係，並針對關鍵位點進行覆核。
+              </p>
+            </div>
+            <!-- QC 3 -->
+            <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
+              <div class="text-molris-cyan mb-4"><i class="fa-solid fa-network-wired text-2xl group-hover:scale-110 transition-transform"></i></div>
+              <h4 class="text-white font-bold mb-2 text-lg">演化合理性評估</h4>
+              <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                針對包含不同物種或變異株的序列資料，建立初步系統發育樹，檢視序列分群與已知物種或變異關係的一致性，作為比對結果的輔助驗證。
+              </p>
+            </div>
             <!-- QC 4 -->
             <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
               <div class="text-molris-cyan mb-4"><i class="fa-solid fa-calculator text-2xl group-hover:scale-110 transition-transform"></i></div>
@@ -1859,9 +1865,7 @@
             </div>
           </div>
 
-          <!-- ========================================================= -->
           <!-- 2. 桌面大螢幕版：隱藏卡片，顯示大型動態連動儀表板 -->
-          <!-- ========================================================= -->
           <div class="hidden lg:flex relative w-full max-w-7xl mx-auto min-h-[600px] items-center justify-center mt-12">
             
             <!-- 背景連線 (資料封包流粒子) -->
@@ -1902,7 +1906,7 @@
                 <!-- 節點 1: 交叉驗證 -->
                 <div class="bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform -translate-x-4 group hover:bg-gray-800 hover:border-molris-cyan transition-all duration-300 relative z-20 cursor-default shadow-xl">
                   <div class="flex items-center gap-3 mb-3">
-                    <i class="fa-solid fa-align-left text-xl text-molris-cyan"></i>
+                    <i class="fa-solid fa-code-compare text-xl text-molris-cyan"></i>
                     <h4 class="text-white font-bold text-lg group-hover:text-molris-cyan transition-colors">多演算法交叉驗證</h4>
                   </div>
                   
@@ -2149,21 +2153,20 @@
                   <div class="w-full h-[160px] bg-[#050A10] rounded-lg relative overflow-hidden border border-gray-800 p-3 flex items-center gap-3">
                     <svg width="55%" height="130" viewBox="0 0 100 130" class="overflow-visible">
                       <path d="M 0,85 L 20,85" fill="none" stroke-width="2.5" class="anim-s0-p" style="--tc: #00E5FF;" stroke-linecap="round" />
-                      <circle cx="20" cy="85" r="4.5" class="anim-s0-n" style="--tc: #00E5FF;" />
-                      
                       <path d="M 20,85 L 20,115 L 90,115" fill="none" stroke-width="2.5" class="anim-s1-p" style="--tc: #EF4444;" stroke-linejoin="round" />
-                      <circle cx="90" cy="115" r="4.5" class="anim-s1-n" style="--tc: #EF4444;" />
                       <path d="M 20,85 L 20,50 L 45,50" fill="none" stroke-width="2.5" class="anim-s1-p" style="--tc: #EAB308;" stroke-linejoin="round" />
-                      <circle cx="45" cy="50" r="4.5" class="anim-s1-n" style="--tc: #EAB308;" />
-
                       <path d="M 45,50 L 45,80 L 90,80" fill="none" stroke-width="2.5" class="anim-s2-p" style="--tc: #D946EF;" stroke-linejoin="round" />
-                      <circle cx="90" cy="80" r="4.5" class="anim-s2-n" style="--tc: #D946EF;" />
                       <path d="M 45,50 L 45,30 L 70,30" fill="none" stroke-width="2.5" class="anim-s2-p" style="--tc: #3B82F6;" stroke-linejoin="round" />
-                      <circle cx="70" cy="30" r="4.5" class="anim-s2-n" style="--tc: #3B82F6;" />
-
                       <path d="M 70,30 L 70,45 L 90,45" fill="none" stroke-width="2.5" class="anim-s3-p" style="--tc: #F97316;" stroke-linejoin="round" />
-                      <circle cx="90" cy="45" r="4.5" class="anim-s3-n" style="--tc: #F97316;" />
                       <path d="M 70,30 L 70,15 L 90,15" fill="none" stroke-width="2.5" class="anim-s3-p" style="--tc: #10B981;" stroke-linejoin="round" />
+                      
+                      <!-- 節點置於路徑之後，確保疊加在最上層 -->
+                      <circle cx="20" cy="85" r="4.5" class="anim-s0-n" style="--tc: #00E5FF;" />
+                      <circle cx="90" cy="115" r="4.5" class="anim-s1-n" style="--tc: #EF4444;" />
+                      <circle cx="45" cy="50" r="4.5" class="anim-s1-n" style="--tc: #EAB308;" />
+                      <circle cx="90" cy="80" r="4.5" class="anim-s2-n" style="--tc: #D946EF;" />
+                      <circle cx="70" cy="30" r="4.5" class="anim-s2-n" style="--tc: #3B82F6;" />
+                      <circle cx="90" cy="45" r="4.5" class="anim-s3-n" style="--tc: #F97316;" />
                       <circle cx="90" cy="15" r="4.5" class="anim-s3-n" style="--tc: #10B981;" />
                     </svg>
                           
@@ -2208,18 +2211,6 @@
                 <!-- 節點 4: 統計與數學評分 -->
                 <div class="bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform translate-x-4 group hover:bg-gray-800 hover:border-molris-orange transition-all duration-300 relative z-20 cursor-default shadow-xl mt-auto mb-0">
                   
-                  <style>
-                    /* 專屬於 Node 4 的遮罩掃描動畫，完美貼合光束時間軸 */
-                    /* 修正時間軸：光束穿越 Padding 後於 13.5% 接觸第一個位點，於 68% 離開最後一個位點 */
-                    @keyframes sweepInset4 {
-                      0%, 13.5% { clip-path: inset(0 100% 0 0); opacity: 1; }
-                      68%, 85% { clip-path: inset(0 0 0 0); opacity: 1; }
-                      95% { clip-path: inset(0 0 0 0); opacity: 0; }
-                      96%, 100% { clip-path: inset(0 100% 0 0); opacity: 0; }
-                    }
-                    .anim-sweep-inset-4 { animation: sweepInset4 6s linear infinite; }
-                  </style>
-
                   <div class="grid expand-container mb-2">
                     <div class="overflow-hidden">
                       <div class="pb-4 border-b border-gray-700">
@@ -2229,7 +2220,7 @@
                   </div>
 
                   <div class="flex items-center gap-3 mb-3">
-                    <i class="fa-solid fa-chart-column text-xl text-molris-orange"></i>
+                    <i class="fa-solid fa-calculator text-xl text-molris-orange"></i>
                     <h4 class="text-white font-bold text-lg group-hover:text-molris-orange transition-colors">統計與數學評分</h4>
                   </div>
                   
@@ -2454,6 +2445,10 @@
 
               </div>
             </div>
+          </div>
+        </div>
+
+      </div>
     </section>
 
     <!-- ==================== 7. CTA: 為什麼交給 Molris ==================== -->
