@@ -740,6 +740,158 @@
     .group:hover .hover-animate-bounce {
       animation: subtleBounce 1s ease-in-out infinite;
     }
+
+    @keyframes radarSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .radar-spin { animation: radarSpin 4s linear infinite; }
+
+    /* ========================================================
+       大型視覺化動畫 (Large-Scale Keyframes)
+    ======================================================== */
+
+    /* 1. 交叉驗證：長青色共識區與連續短片段的高變異區 (掃描後亮起) */
+    @keyframes scanSweep {
+      0%, 5% { left: 0%; opacity: 0; }
+      10% { left: 0%; opacity: 1; }
+      70% { left: 100%; opacity: 1; }
+      75%, 100% { left: 100%; opacity: 0; }
+    }
+    
+    @keyframes sweepInset1 {
+      0%, 13.5% { clip-path: inset(0 100% 0 0); opacity: 1; }
+      68%, 85% { clip-path: inset(0 0 0 0); opacity: 1; }
+      95% { clip-path: inset(0 0 0 0); opacity: 0; }
+      96%, 100% { clip-path: inset(0 100% 0 0); opacity: 0; }
+    }
+    
+    .anim-scanner { animation: scanSweep 6s linear infinite; }
+    .anim-sweep-inset-1 { animation: sweepInset1 6s linear infinite; }
+
+    /* 2. 結構輔助：1D 序列映射 3D 表面模型 (3段式循序亮起) */
+    @keyframes seqMap1 {
+      0%, 10%, 95%, 100% { fill: #374151; filter: drop-shadow(0 0 0px transparent); }
+      20%, 85% { fill: #D946EF; filter: drop-shadow(0 0 6px #D946EF); }
+    }
+    @keyframes seqMap2 {
+      0%, 30%, 95%, 100% { fill: #374151; filter: drop-shadow(0 0 0px transparent); }
+      40%, 85% { fill: #00E5FF; filter: drop-shadow(0 0 6px #00E5FF); }
+    }
+    @keyframes seqMap3 {
+      0%, 50%, 95%, 100% { fill: #374151; filter: drop-shadow(0 0 0px transparent); }
+      60%, 85% { fill: #10B981; filter: drop-shadow(0 0 6px #10B981); }
+    }
+    
+    @keyframes mapLink1 {
+      0%, 10%, 95%, 100% { opacity: 0; stroke-dashoffset: 0; }
+      20%, 85% { opacity: 0.8; stroke-dashoffset: -20; }
+    }
+    @keyframes mapLink2 {
+      0%, 30%, 95%, 100% { opacity: 0; stroke-dashoffset: 0; }
+      40%, 85% { opacity: 0.8; stroke-dashoffset: -20; }
+    }
+    @keyframes mapLink3 {
+      0%, 50%, 95%, 100% { opacity: 0; stroke-dashoffset: 0; }
+      60%, 85% { opacity: 0.8; stroke-dashoffset: -20; }
+    }
+    
+    @keyframes pulseZone1 {
+      0%, 10%, 95%, 100% { filter: grayscale(1) brightness(0.6); opacity: 0.9; }
+      20%, 85% { filter: grayscale(0) brightness(1.2) drop-shadow(0 0 8px rgba(217, 70, 239, 0.6)); opacity: 1; }
+    }
+    @keyframes pulseZone2 {
+      0%, 30%, 95%, 100% { filter: grayscale(1) brightness(0.6); opacity: 0.9; }
+      40%, 85% { filter: grayscale(0) brightness(1.2) drop-shadow(0 0 8px rgba(0, 229, 255, 0.6)); opacity: 1; }
+    }
+    @keyframes pulseZone3 {
+      0%, 50%, 95%, 100% { filter: grayscale(1) brightness(0.6); opacity: 0.9; }
+      60%, 85% { filter: grayscale(0) brightness(1.2) drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)); opacity: 1; }
+    }
+
+    .map-seq-1 { animation: seqMap1 6s infinite; }
+    .map-seq-2 { animation: seqMap2 6s infinite; }
+    .map-seq-3 { animation: seqMap3 6s infinite; }
+    .map-link-1 { animation: mapLink1 6s linear infinite; stroke-dasharray: 4 4; }
+    .map-link-2 { animation: mapLink2 6s linear infinite; stroke-dasharray: 4 4; }
+    .map-link-3 { animation: mapLink3 6s linear infinite; stroke-dasharray: 4 4; }
+    .map-zone-1 { animation: pulseZone1 6s infinite; }
+    .map-zone-2 { animation: pulseZone2 6s infinite; }
+    .map-zone-3 { animation: pulseZone3 6s infinite; }
+
+    /* 3. 演化評估：四層分支與多色突變序列映射 */
+    @keyframes stg0P { 0%, 5%, 95%, 100% { stroke: #4B5563; filter: none; } 10%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
+    @keyframes stg0N { 0%, 5%, 95%, 100% { fill: #374151; filter: none; } 10%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
+    @keyframes stg0B { 0%, 5%, 95%, 100% { background-color: #374151; box-shadow: none; } 10%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
+
+    @keyframes stg1P { 0%, 20%, 95%, 100% { stroke: #4B5563; filter: none; } 30%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
+    @keyframes stg1N { 0%, 20%, 95%, 100% { fill: #374151; filter: none; } 30%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
+    @keyframes stg1B { 0%, 20%, 95%, 100% { background-color: #374151; box-shadow: none; } 30%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
+
+    @keyframes stg2P { 0%, 40%, 95%, 100% { stroke: #4B5563; filter: none; } 50%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
+    @keyframes stg2N { 0%, 40%, 95%, 100% { fill: #374151; filter: none; } 50%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
+    @keyframes stg2B { 0%, 40%, 95%, 100% { background-color: #374151; box-shadow: none; } 50%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
+
+    @keyframes stg3P { 0%, 60%, 95%, 100% { stroke: #4B5563; filter: none; } 70%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
+    @keyframes stg3N { 0%, 60%, 95%, 100% { fill: #374151; filter: none; } 70%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
+    @keyframes stg3B { 0%, 60%, 95%, 100% { background-color: #374151; box-shadow: none; } 70%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
+
+    .anim-s0-p { animation: stg0P 6s infinite; }
+    .anim-s0-n { animation: stg0N 6s infinite; }
+    .anim-s0-b { animation: stg0B 6s infinite; }
+    .anim-s1-p { animation: stg1P 6s infinite; }
+    .anim-s1-n { animation: stg1N 6s infinite; }
+    .anim-s1-b { animation: stg1B 6s infinite; }
+    .anim-s2-p { animation: stg2P 6s infinite; }
+    .anim-s2-n { animation: stg2N 6s infinite; }
+    .anim-s2-b { animation: stg2B 6s infinite; }
+    .anim-s3-p { animation: stg3P 6s infinite; }
+    .anim-s3-n { animation: stg3N 6s infinite; }
+    .anim-s3-b { animation: stg3B 6s infinite; }
+
+    /* 4. 專家覆核：多序列掃描與動態柱狀圖 (配合掃描後顯示與固定高度) */
+    @keyframes fastScan4 {
+      0%, 5% { left: 0%; opacity: 0; }
+      10% { left: 0%; opacity: 1; }
+      70% { left: 100%; opacity: 1; }
+      75%, 100% { left: 100%; opacity: 0; }
+    }
+    
+    @keyframes revealSeq4_1 { 0%, 20% { fill: #374151; filter: none; } 25%, 85% { fill: var(--tc); } 95%, 100% { fill: #374151; } }
+    @keyframes revealSeq4_2 { 0%, 40% { fill: #374151; filter: none; } 45%, 85% { fill: var(--tc); } 95%, 100% { fill: #374151; } }
+    @keyframes revealSeq4_3 { 0%, 60% { fill: #374151; filter: none; } 65%, 85% { fill: var(--tc); } 95%, 100% { fill: #374151; } }
+
+    @keyframes revealBar {
+      0%, 45% { opacity: 0; transform: scaleY(0); }
+      50%, 85% { opacity: 1; transform: scaleY(1); }
+      95%, 100% { opacity: 0; transform: scaleY(0); }
+    }
+
+    .anim-mass-scan-4 { animation: fastScan4 6s linear infinite; }
+    .seq4-c1 { animation: revealSeq4_1 6s infinite; }
+    .seq4-c2 { animation: revealSeq4_2 6s infinite; }
+    .seq4-c3 { animation: revealSeq4_3 6s infinite; }
+    .bar-reveal { animation: revealBar 6s infinite; transform-origin: bottom; }
+    
+    /* 控制卡片懸停展開高度 */
+    .expand-container { grid-template-rows: 0fr; transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    .group:hover .expand-container { grid-template-rows: 1fr; }
+
+    /* 5. 中央核心光纖與共振波紋 */
+    @keyframes particleFlow {
+      from { stroke-dashoffset: 0; }
+      to { stroke-dashoffset: -64; }
+    }
+    .anim-particle-flow { animation: particleFlow 1.5s linear infinite; }
+
+    @keyframes coreRipple {
+      0% { transform: scale(1); opacity: 0; filter: drop-shadow(0 0 0px #00E5FF); border-width: 4px; }
+      1% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 10px #00E5FF) drop-shadow(0 0 20px #00E5FF); border-width: 4px; }
+      20% { transform: scale(4); opacity: 0; filter: drop-shadow(0 0 20px #00E5FF); border-width: 1px; }
+      21%, 100% { transform: scale(1); opacity: 0; }
+    }
+    .anim-core-ripple { animation: coreRipple 6s cubic-bezier(0.1, 0.8, 0.3, 1) infinite; }
+
   </style>
 </head>
 
@@ -1690,31 +1842,13 @@
             <p class="text-gray-400 max-w-3xl mx-auto text-lg text-justify md:text-center">Molris 在交付分析數據前，會針對比對結果進行嚴格的交叉驗證與品質把關：</p>
           </div>
 
-          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- ========================================================= -->
+          <!-- 1. 手機 / 平板版：隱藏大型動畫，顯示原本便於閱讀的靜態卡片 -->
+          <!-- ========================================================= -->
+          <div class="grid md:grid-cols-2 lg:hidden gap-6">
             <!-- QC 1 -->
             <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
-              <div class="text-molris-cyan mb-4"><i class="fa-solid fa-code-compare text-2xl group-hover:scale-110 transition-transform"></i></div>
-              <h4 class="text-white font-bold mb-2 text-lg">多演算法交叉驗證</h4>
-              <p class="text-sm text-gray-400 leading-relaxed text-justify">
-                平行執行多種演算法，交叉檢視不同方法間的結果一致性，確認關鍵缺口與保守區域不受單一演算法偏差影響。
-              </p>
-            </div>
-            <!-- QC 2 -->
-            <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
-              <div class="text-molris-cyan mb-4"><i class="fa-solid fa-cubes text-2xl group-hover:scale-110 transition-transform"></i></div>
-              <h4 class="text-white font-bold mb-2 text-lg">結構輔助驗證</h4>
-              <p class="text-sm text-gray-400 leading-relaxed text-justify">
-                將一維序列中的保守區域映射至已知三維蛋白質結構，檢視其與結構核心、功能區域的對應關係，並針對關鍵位點進行覆核。
-              </p>
-            </div>
-            <!-- QC 3 -->
-            <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
-              <div class="text-molris-cyan mb-4"><i class="fa-solid fa-network-wired text-2xl group-hover:scale-110 transition-transform"></i></div>
-              <h4 class="text-white font-bold mb-2 text-lg">演化合理性評估</h4>
-              <p class="text-sm text-gray-400 leading-relaxed text-justify">
-                針對包含不同物種或變異株的序列資料，建立初步系統發育樹，檢視序列分群與已知物種或變異關係的一致性，作為比對結果的輔助驗證。
-              </p>
-            </div>
+<!-- ... existing code ... -->
             <!-- QC 4 -->
             <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
               <div class="text-molris-cyan mb-4"><i class="fa-solid fa-calculator text-2xl group-hover:scale-110 transition-transform"></i></div>
@@ -1724,9 +1858,602 @@
               </p>
             </div>
           </div>
-        </div>
 
-      </div>
+          <!-- ========================================================= -->
+          <!-- 2. 桌面大螢幕版：隱藏卡片，顯示大型動態連動儀表板 -->
+          <!-- ========================================================= -->
+          <div class="hidden lg:flex relative w-full max-w-7xl mx-auto min-h-[600px] items-center justify-center mt-12">
+            
+            <!-- 背景連線 (資料封包流粒子) -->
+            <svg class="absolute inset-0 w-full h-full z-0 opacity-80 pointer-events-none" preserveAspectRatio="xMidYMid meet">
+              <!-- 基礎極細透明軌道 -->
+              <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="#00E5FF" stroke-width="1" opacity="0.15" />
+              <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="#D946EF" stroke-width="1" opacity="0.15" />
+              <line x1="50%" y1="50%" x2="20%" y2="80%" stroke="#10B981" stroke-width="1" opacity="0.15" />
+              <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#F97316" stroke-width="1" opacity="0.15" />
+              
+              <!-- 動態發光粒子封包 (膠囊形狀，間距60px) -->
+              <!-- 左上: 青色 -->
+              <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="#00E5FF" stroke-width="4" stroke-linecap="round" stroke-dasharray="4 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 6px #00E5FF);" />
+              <!-- 右上: 紫色 -->
+              <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="#D946EF" stroke-width="4" stroke-linecap="round" stroke-dasharray="4 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 6px #D946EF);" />
+              <!-- 左下: 綠色 -->
+              <line x1="50%" y1="50%" x2="20%" y2="80%" stroke="#10B981" stroke-width="4" stroke-linecap="round" stroke-dasharray="4 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 6px #10B981);" />
+              <!-- 右下: 橘色 -->
+              <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#F97316" stroke-width="4" stroke-linecap="round" stroke-dasharray="4 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 6px #F97316);" />
+            </svg>
+
+            <!-- 中央防禦核心 -->
+            <div class="absolute z-20 w-36 h-36 rounded-full bg-[#03060A] border border-molris-cyan/50 shadow-[0_0_40px_rgba(0,229,255,0.15)] flex flex-col items-center justify-center group">
+              <!-- 核心共振波紋 -->
+              <div class="absolute inset-0 rounded-full border-molris-cyan anim-core-ripple pointer-events-none"></div>
+              
+              <div class="absolute inset-2 border-t-2 border-molris-cyan rounded-full radar-spin opacity-50"></div>
+              <i class="fa-solid fa-shield-virus text-4xl text-molris-cyan mb-2"></i>
+              <span class="text-xs text-white font-bold tracking-widest uppercase">Molris QC</span>
+            </div>
+
+            <!-- 四周節點 -->
+            <div class="absolute inset-0 z-10 w-full max-w-6xl mx-auto h-full flex flex-col justify-between">
+              
+              <!-- ==================== 上半部 ==================== -->
+              <div class="flex items-start justify-between w-full pt-4">
+                
+                <!-- 節點 1: 交叉驗證 -->
+                <div class="bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform -translate-x-4 group hover:bg-gray-800 hover:border-molris-cyan transition-all duration-300 relative z-20 cursor-default shadow-xl">
+                  <div class="flex items-center gap-3 mb-3">
+                    <i class="fa-solid fa-align-left text-xl text-molris-cyan"></i>
+                    <h4 class="text-white font-bold text-lg group-hover:text-molris-cyan transition-colors">多演算法交叉驗證</h4>
+                  </div>
+                  
+                  <div class="w-full h-[140px] bg-[#050A10] rounded-lg relative overflow-hidden border border-gray-800 p-2 flex flex-col justify-center gap-2">
+                    <div class="absolute top-[10%] bottom-[10%] w-[2px] bg-[#00E5FF] z-10 anim-scanner shadow-[0_0_12px_3px_rgba(0,229,255,0.8)] rounded-full"></div>
+                    <svg width="100%" height="90" viewBox="0 0 300 90">
+                      
+                      <!-- 背景層：灰色基底與缺口虛線 -->
+                      <g fill="#374151">
+                        <!-- Alg 1: 缺口在變異區之間 -->
+                        <g transform="translate(0, 15)">
+                          <rect x="10" y="0" width="60" height="12" rx="2" />
+                          <line x1="72" y1="6" x2="83" y2="6" stroke="#4B5563" stroke-width="2" stroke-dasharray="2 2" />
+                          <rect x="85" y="0" width="15" height="12" rx="2" />
+                          <rect x="102" y="0" width="12" height="12" rx="2" />
+                          <rect x="116" y="0" width="18" height="12" rx="2" />
+                          <line x1="136" y1="6" x2="147" y2="6" stroke="#4B5563" stroke-width="2" stroke-dasharray="2 2" />
+                          <rect x="149" y="0" width="12" height="12" rx="2" />
+                          <rect x="163" y="0" width="50" height="12" rx="2" />
+                          <line x1="215" y1="6" x2="226" y2="6" stroke="#4B5563" stroke-width="2" stroke-dasharray="2 2" />
+                          <rect x="228" y="0" width="15" height="12" rx="2" />
+                          <rect x="245" y="0" width="45" height="12" rx="2" />
+                        </g>
+                        <!-- Alg 2: 缺口位置延後，產生不同的對齊結果 -->
+                        <g transform="translate(0, 40)">
+                          <rect x="10" y="0" width="60" height="12" rx="2" />
+                          <rect x="72" y="0" width="15" height="12" rx="2" />
+                          <line x1="89" y1="6" x2="100" y2="6" stroke="#4B5563" stroke-width="2" stroke-dasharray="2 2" />
+                          <rect x="102" y="0" width="12" height="12" rx="2" />
+                          <rect x="116" y="0" width="18" height="12" rx="2" />
+                          <rect x="136" y="0" width="12" height="12" rx="2" />
+                          <line x1="150" y1="6" x2="161" y2="6" stroke="#4B5563" stroke-width="2" stroke-dasharray="2 2" />
+                          <rect x="163" y="0" width="50" height="12" rx="2" />
+                          <rect x="215" y="0" width="15" height="12" rx="2" />
+                          <line x1="232" y1="6" x2="243" y2="6" stroke="#4B5563" stroke-width="2" stroke-dasharray="2 2" />
+                          <rect x="245" y="0" width="45" height="12" rx="2" />
+                        </g>
+                        <!-- Alg 3: 缺口出現在青色保守區內部 -->
+                        <g transform="translate(0, 65)">
+                          <rect x="10" y="0" width="45" height="12" rx="2" />
+                          <line x1="57" y1="6" x2="68" y2="6" stroke="#4B5563" stroke-width="2" stroke-dasharray="2 2" />
+                          <rect x="70" y="0" width="15" height="12" rx="2" />
+                          <rect x="87" y="0" width="15" height="12" rx="2" />
+                          <rect x="104" y="0" width="12" height="12" rx="2" />
+                          <rect x="118" y="0" width="18" height="12" rx="2" />
+                          <rect x="138" y="0" width="12" height="12" rx="2" />
+                          <rect x="152" y="0" width="50" height="12" rx="2" />
+                          <line x1="204" y1="6" x2="215" y2="6" stroke="#4B5563" stroke-width="2" stroke-dasharray="2 2" />
+                          <rect x="217" y="0" width="15" height="12" rx="2" />
+                          <rect x="234" y="0" width="56" height="12" rx="2" />
+                        </g>
+                      </g>
+
+                      <!-- 動畫層：隨光束遮罩漸進填色與發光 -->
+                      <g class="anim-sweep-inset-1">
+                        <!-- Alg 1 -->
+                        <g transform="translate(0, 15)">
+                          <rect x="10" y="0" width="60" height="12" rx="2" fill="#00E5FF" style="filter: drop-shadow(0 0 4px #00E5FF);" />
+                          <rect x="85" y="0" width="15" height="12" rx="2" fill="#F97316" style="filter: drop-shadow(0 0 4px #F97316);" />
+                          <rect x="102" y="0" width="12" height="12" rx="2" fill="#D946EF" style="filter: drop-shadow(0 0 4px #D946EF);" />
+                          <rect x="116" y="0" width="18" height="12" rx="2" fill="#10B981" style="filter: drop-shadow(0 0 4px #10B981);" />
+                          <rect x="149" y="0" width="12" height="12" rx="2" fill="#EF4444" style="filter: drop-shadow(0 0 4px #EF4444);" />
+                          <rect x="163" y="0" width="50" height="12" rx="2" fill="#00E5FF" style="filter: drop-shadow(0 0 4px #00E5FF);" />
+                          <rect x="228" y="0" width="15" height="12" rx="2" fill="#EAB308" style="filter: drop-shadow(0 0 4px #EAB308);" />
+                          <rect x="245" y="0" width="45" height="12" rx="2" fill="#00E5FF" style="filter: drop-shadow(0 0 4px #00E5FF);" />
+                        </g>
+                        <!-- Alg 2 -->
+                        <g transform="translate(0, 40)">
+                          <rect x="10" y="0" width="60" height="12" rx="2" fill="#00E5FF" style="filter: drop-shadow(0 0 4px #00E5FF);" />
+                          <rect x="72" y="0" width="15" height="12" rx="2" fill="#F97316" style="filter: drop-shadow(0 0 4px #F97316);" />
+                          <rect x="102" y="0" width="12" height="12" rx="2" fill="#D946EF" style="filter: drop-shadow(0 0 4px #D946EF);" />
+                          <rect x="116" y="0" width="18" height="12" rx="2" fill="#10B981" style="filter: drop-shadow(0 0 4px #10B981);" />
+                          <rect x="136" y="0" width="12" height="12" rx="2" fill="#EF4444" style="filter: drop-shadow(0 0 4px #EF4444);" />
+                          <rect x="163" y="0" width="50" height="12" rx="2" fill="#00E5FF" style="filter: drop-shadow(0 0 4px #00E5FF);" />
+                          <rect x="215" y="0" width="15" height="12" rx="2" fill="#EAB308" style="filter: drop-shadow(0 0 4px #EAB308);" />
+                          <rect x="245" y="0" width="45" height="12" rx="2" fill="#00E5FF" style="filter: drop-shadow(0 0 4px #00E5FF);" />
+                        </g>
+                        <!-- Alg 3 -->
+                        <g transform="translate(0, 65)">
+                          <rect x="10" y="0" width="45" height="12" rx="2" fill="#00E5FF" style="filter: drop-shadow(0 0 4px #00E5FF);" />
+                          <rect x="70" y="0" width="15" height="12" rx="2" fill="#00E5FF" style="filter: drop-shadow(0 0 4px #00E5FF);" />
+                          <rect x="87" y="0" width="15" height="12" rx="2" fill="#F97316" style="filter: drop-shadow(0 0 4px #F97316);" />
+                          <rect x="104" y="0" width="12" height="12" rx="2" fill="#D946EF" style="filter: drop-shadow(0 0 4px #D946EF);" />
+                          <rect x="118" y="0" width="18" height="12" rx="2" fill="#10B981" style="filter: drop-shadow(0 0 4px #10B981);" />
+                          <rect x="138" y="0" width="12" height="12" rx="2" fill="#EF4444" style="filter: drop-shadow(0 0 4px #EF4444);" />
+                          <rect x="152" y="0" width="50" height="12" rx="2" fill="#00E5FF" style="filter: drop-shadow(0 0 4px #00E5FF);" />
+                          <rect x="217" y="0" width="15" height="12" rx="2" fill="#EAB308" style="filter: drop-shadow(0 0 4px #EAB308);" />
+                          <rect x="234" y="0" width="56" height="12" rx="2" fill="#00E5FF" style="filter: drop-shadow(0 0 4px #00E5FF);" />
+                        </g>
+                      </g>
+                    </svg>
+                  </div>
+
+                  <div class="grid expand-container">
+                    <div class="overflow-hidden">
+                      <div class="pt-3 mt-3 border-t border-gray-700">
+                        <p class="text-sm text-gray-400">平行執行多種演算法，交叉檢視不同方法間的結果一致性，確認關鍵缺口與保守區域不受單一演算法偏差影響。</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 節點 2: 結構輔助 -->
+                <div class="bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform translate-x-4 group hover:bg-gray-800 hover:border-[#D946EF] transition-all duration-300 relative z-20 cursor-default shadow-xl">
+                  <div class="flex items-center gap-3 mb-3">
+                    <i class="fa-solid fa-cubes text-xl text-[#D946EF]"></i>
+                    <h4 class="text-white font-bold text-lg group-hover:text-[#D946EF] transition-colors">立體結構空間映射</h4>
+                  </div>
+                  
+                  <div class="w-full h-[150px] bg-[#050A10] rounded-lg relative overflow-hidden border border-gray-800 p-3 flex flex-col items-center justify-between">
+                    <svg width="100%" height="20" viewBox="0 0 300 20">
+                      <rect x="10" y="5" width="280" height="10" fill="#1F2937" rx="5" />
+                      <rect x="15" y="5" width="20" height="10" fill="#2D3748" rx="2" />
+                      <rect x="40" y="5" width="30" height="10" rx="3" class="map-seq-1" />
+                      <rect x="75" y="5" width="40" height="10" fill="#2D3748" rx="2" />
+                      <rect x="120" y="5" width="40" height="10" rx="3" class="map-seq-2" />
+                      <rect x="165" y="5" width="55" height="10" fill="#2D3748" rx="2" />
+                      <rect x="225" y="5" width="40" height="10" rx="3" class="map-seq-3" />
+                      <rect x="270" y="5" width="15" height="10" fill="#2D3748" rx="2" />
+                    </svg>
+                          
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 300 150">
+                      <path d="M 55 15 C 55 45, 115 45, 115 68" fill="none" stroke="#D946EF" stroke-width="1.5" class="map-link-1" />
+                      <path d="M 140 15 C 140 50, 190 55, 190 93" fill="none" stroke="#00E5FF" stroke-width="1.5" class="map-link-2" />
+                      <path d="M 245 15 C 245 60, 165 70, 165 123" fill="none" stroke="#10B981" stroke-width="1.5" class="map-link-3" />
+                    </svg>
+
+                    <svg width="140" height="100" viewBox="0 0 140 100">
+                      <defs>
+                        <radialGradient id="grad-base" cx="35%" cy="35%" r="65%">
+                          <stop offset="0%" stop-color="#4B5563"/>
+                          <stop offset="100%" stop-color="#111827"/>
+                        </radialGradient>
+                        <radialGradient id="grad-z1" cx="35%" cy="35%" r="65%">
+                          <stop offset="0%" stop-color="#E879F9"/>
+                          <stop offset="100%" stop-color="#701A75"/>
+                        </radialGradient>
+                        <radialGradient id="grad-z2" cx="35%" cy="35%" r="65%">
+                          <stop offset="0%" stop-color="#22D3EE"/>
+                          <stop offset="100%" stop-color="#164E63"/>
+                        </radialGradient>
+                        <radialGradient id="grad-z3" cx="35%" cy="35%" r="65%">
+                          <stop offset="0%" stop-color="#34D399"/>
+                          <stop offset="100%" stop-color="#064E3B"/>
+                        </radialGradient>
+                      </defs>
+
+                      <g fill="url(#grad-base)">
+                        <circle cx="70" cy="40" r="10" />
+                        <circle cx="80" cy="45" r="12" />
+                        <circle cx="65" cy="55" r="11" />
+                        <circle cx="90" cy="35" r="9" />
+                        <circle cx="100" cy="30" r="8" />
+                        <circle cx="108" cy="28" r="6" />
+                        <circle cx="95" cy="22" r="7" />
+                        <circle cx="112" cy="35" r="6" />
+                        <circle cx="85" cy="25" r="8" />
+                        <circle cx="55" cy="65" r="10" />
+                        <circle cx="45" cy="70" r="8" />
+                        <circle cx="35" cy="75" r="7" />
+                        <circle cx="28" cy="82" r="5" />
+                        <circle cx="40" cy="85" r="6" />
+                        <circle cx="50" cy="80" r="8" />
+                        <circle cx="60" cy="75" r="9" />
+                        <circle cx="75" cy="60" r="11" />
+                        <circle cx="88" cy="55" r="9" />
+                        <circle cx="60" cy="45" r="8" />
+                      </g>
+
+                      <g class="map-zone-1">
+                        <circle cx="50" cy="30" r="9" fill="url(#grad-z1)" />
+                        <circle cx="40" cy="25" r="7" fill="url(#grad-z1)" />
+                        <circle cx="30" cy="22" r="6" fill="url(#grad-z1)" />
+                        <circle cx="22" cy="28" r="5" fill="url(#grad-z1)" />
+                        <circle cx="32" cy="35" r="7" fill="url(#grad-z1)" />
+                        <circle cx="42" cy="40" r="8" fill="url(#grad-z1)" />
+                        <circle cx="25" cy="38" r="5" fill="url(#grad-z1)" />
+                        <circle cx="38" cy="18" r="5" fill="url(#grad-z1)" />
+                        <circle cx="48" cy="20" r="6" fill="url(#grad-z1)" />
+                      </g>
+
+                      <g class="map-zone-2">
+                        <circle cx="95" cy="50" r="8" fill="url(#grad-z2)" />
+                        <circle cx="105" cy="45" r="7" fill="url(#grad-z2)" />
+                        <circle cx="115" cy="48" r="6" fill="url(#grad-z2)" />
+                        <circle cx="125" cy="55" r="5" fill="url(#grad-z2)" />
+                        <circle cx="120" cy="65" r="6" fill="url(#grad-z2)" />
+                        <circle cx="110" cy="60" r="8" fill="url(#grad-z2)" />
+                        <circle cx="98" cy="65" r="7" fill="url(#grad-z2)" />
+                        <circle cx="108" cy="72" r="6" fill="url(#grad-z2)" />
+                        <circle cx="128" cy="60" r="4" fill="url(#grad-z2)" />
+                      </g>
+
+                      <g class="map-zone-3">
+                        <circle cx="75" cy="75" r="9" fill="url(#grad-z3)" />
+                        <circle cx="85" cy="80" r="7" fill="url(#grad-z3)" />
+                        <circle cx="95" cy="75" r="6" fill="url(#grad-z3)" />
+                        <circle cx="102" cy="82" r="5" fill="url(#grad-z3)" />
+                        <circle cx="90" cy="88" r="6" fill="url(#grad-z3)" />
+                        <circle cx="78" cy="92" r="6" fill="url(#grad-z3)" />
+                        <circle cx="68" cy="88" r="7" fill="url(#grad-z3)" />
+                        <circle cx="82" cy="96" r="4" fill="url(#grad-z3)" />
+                        <circle cx="72" cy="82" r="5" fill="url(#grad-z3)" />
+                      </g>
+
+                      <g fill="url(#grad-base)">
+                        <circle cx="60" cy="35" r="6" />
+                        <circle cx="85" cy="65" r="7" />
+                        <circle cx="65" cy="75" r="6" />
+                        <circle cx="92" cy="45" r="5" />
+                      </g>
+                    </svg>
+                  </div>
+
+                  <div class="grid expand-container">
+                    <div class="overflow-hidden">
+                      <div class="pt-3 mt-3 border-t border-gray-700">
+                        <p class="text-sm text-gray-400">將一維序列中的保守區域映射至已知三維蛋白質結構，檢視其與結構核心、功能區域的對應關係，並針對關鍵位點進行覆核。</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- ==================== 下半部 ==================== -->
+              <div class="flex items-end justify-between w-full pb-4">
+
+                <!-- 節點 3: 演化評估 -->
+                <div class="bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform -translate-x-4 group hover:bg-gray-800 hover:border-[#10B981] transition-all duration-300 relative z-20 cursor-default shadow-xl mt-auto mb-0">
+                  
+                  <div class="grid expand-container mb-2">
+                    <div class="overflow-hidden">
+                      <div class="pb-4 border-b border-gray-700">
+                        <p class="text-sm text-gray-400">針對包含不同物種或變異株的序列資料，建立初步系統發育樹，檢視序列分群與已知物種或變異關係的一致性，作為比對結果的輔助驗證。</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3 mb-3">
+                    <i class="fa-solid fa-network-wired text-xl text-[#10B981]"></i>
+                    <h4 class="text-white font-bold text-lg group-hover:text-[#10B981] transition-colors">演化合理性評估</h4>
+                  </div>
+                  
+                  <div class="w-full h-[160px] bg-[#050A10] rounded-lg relative overflow-hidden border border-gray-800 p-3 flex items-center gap-3">
+                    <svg width="55%" height="130" viewBox="0 0 100 130" class="overflow-visible">
+                      <path d="M 0,85 L 20,85" fill="none" stroke-width="2.5" class="anim-s0-p" style="--tc: #00E5FF;" stroke-linecap="round" />
+                      <circle cx="20" cy="85" r="4.5" class="anim-s0-n" style="--tc: #00E5FF;" />
+                      
+                      <path d="M 20,85 L 20,115 L 90,115" fill="none" stroke-width="2.5" class="anim-s1-p" style="--tc: #EF4444;" stroke-linejoin="round" />
+                      <circle cx="90" cy="115" r="4.5" class="anim-s1-n" style="--tc: #EF4444;" />
+                      <path d="M 20,85 L 20,50 L 45,50" fill="none" stroke-width="2.5" class="anim-s1-p" style="--tc: #EAB308;" stroke-linejoin="round" />
+                      <circle cx="45" cy="50" r="4.5" class="anim-s1-n" style="--tc: #EAB308;" />
+
+                      <path d="M 45,50 L 45,80 L 90,80" fill="none" stroke-width="2.5" class="anim-s2-p" style="--tc: #D946EF;" stroke-linejoin="round" />
+                      <circle cx="90" cy="80" r="4.5" class="anim-s2-n" style="--tc: #D946EF;" />
+                      <path d="M 45,50 L 45,30 L 70,30" fill="none" stroke-width="2.5" class="anim-s2-p" style="--tc: #3B82F6;" stroke-linejoin="round" />
+                      <circle cx="70" cy="30" r="4.5" class="anim-s2-n" style="--tc: #3B82F6;" />
+
+                      <path d="M 70,30 L 70,45 L 90,45" fill="none" stroke-width="2.5" class="anim-s3-p" style="--tc: #F97316;" stroke-linejoin="round" />
+                      <circle cx="90" cy="45" r="4.5" class="anim-s3-n" style="--tc: #F97316;" />
+                      <path d="M 70,30 L 70,15 L 90,15" fill="none" stroke-width="2.5" class="anim-s3-p" style="--tc: #10B981;" stroke-linejoin="round" />
+                      <circle cx="90" cy="15" r="4.5" class="anim-s3-n" style="--tc: #10B981;" />
+                    </svg>
+                          
+                    <div class="w-[45%] h-[120px] flex flex-col justify-between py-1">
+                      <div class="w-full h-[22px] bg-[#1F2937] rounded flex items-center px-1 gap-[3px]">
+                        <div class="h-2 w-[25%] rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                        <div class="h-2 w-[6%] rounded-sm anim-s1-b" style="--tc: #EAB308;"></div>
+                        <div class="h-2 w-[10%] rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                        <div class="h-2 w-[4%] rounded-sm anim-s2-b" style="--tc: #3B82F6;"></div>
+                        <div class="h-2 w-[10%] rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                        <div class="h-2 w-[8%] rounded-sm anim-s3-b" style="--tc: #10B981;"></div>
+                        <div class="h-2 flex-grow rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                      </div>
+                      
+                      <div class="w-full h-[22px] bg-[#1F2937] rounded flex items-center px-1 gap-[3px]">
+                        <div class="h-2 w-[25%] rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                        <div class="h-2 w-[6%] rounded-sm anim-s1-b" style="--tc: #EAB308;"></div>
+                        <div class="h-2 w-[10%] rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                        <div class="h-2 w-[4%] rounded-sm anim-s2-b" style="--tc: #3B82F6;"></div>
+                        <div class="h-2 w-[10%] rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                        <div class="h-2 w-[8%] rounded-sm anim-s3-b" style="--tc: #F97316;"></div>
+                        <div class="h-2 flex-grow rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                      </div>
+
+                      <div class="w-full h-[22px] bg-[#1F2937] rounded flex items-center px-1 gap-[3px]">
+                        <div class="h-2 w-[25%] rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                        <div class="h-2 w-[6%] rounded-sm anim-s1-b" style="--tc: #EAB308;"></div>
+                        <div class="h-2 w-[10%] rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                        <div class="h-2 w-[4%] rounded-sm anim-s2-b" style="--tc: #D946EF;"></div>
+                        <div class="h-2 flex-grow rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                      </div>
+
+                      <div class="w-full h-[22px] bg-[#1F2937] rounded flex items-center px-1 gap-[3px]">
+                        <div class="h-2 w-[25%] rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                        <div class="h-2 w-[6%] rounded-sm anim-s1-b" style="--tc: #EF4444;"></div>
+                        <div class="h-2 flex-grow rounded-sm anim-s0-b" style="--tc: #00E5FF;"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 節點 4: 統計與數學評分 -->
+                <div class="bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform translate-x-4 group hover:bg-gray-800 hover:border-molris-orange transition-all duration-300 relative z-20 cursor-default shadow-xl mt-auto mb-0">
+                  
+                  <style>
+                    /* 專屬於 Node 4 的遮罩掃描動畫，完美貼合光束時間軸 */
+                    /* 修正時間軸：光束穿越 Padding 後於 13.5% 接觸第一個位點，於 68% 離開最後一個位點 */
+                    @keyframes sweepInset4 {
+                      0%, 13.5% { clip-path: inset(0 100% 0 0); opacity: 1; }
+                      68%, 85% { clip-path: inset(0 0 0 0); opacity: 1; }
+                      95% { clip-path: inset(0 0 0 0); opacity: 0; }
+                      96%, 100% { clip-path: inset(0 100% 0 0); opacity: 0; }
+                    }
+                    .anim-sweep-inset-4 { animation: sweepInset4 6s linear infinite; }
+                  </style>
+
+                  <div class="grid expand-container mb-2">
+                    <div class="overflow-hidden">
+                      <div class="pb-4 border-b border-gray-700">
+                        <p class="text-sm text-gray-400">導入統計與數學評分指標進行量化評估，並針對關鍵區域與重要位點進行視覺化檢視與結果確認。</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3 mb-3">
+                    <i class="fa-solid fa-chart-column text-xl text-molris-orange"></i>
+                    <h4 class="text-white font-bold text-lg group-hover:text-molris-orange transition-colors">統計與數學評分</h4>
+                  </div>
+                  
+                  <div class="w-full h-[160px] bg-[#050A10] rounded-lg relative overflow-hidden border border-gray-800 p-2 flex flex-col justify-between">
+                    
+                    <!-- 掃描光束 -->
+                    <div class="absolute top-[8%] bottom-[8%] w-[2px] bg-[#00E5FF] z-10 anim-mass-scan-4 shadow-[0_0_12px_3px_rgba(0,229,255,0.8)] rounded-full pointer-events-none"></div>
+                    
+                    <!-- 上方：多條序列片段 (5條) -->
+                    <div class="w-full h-[70px] relative mt-1">
+                      <svg width="100%" height="100%" viewBox="0 0 300 70" preserveAspectRatio="none">
+                        
+                        <!-- 背景層：未掃描前的純灰色基底，靜態顯示 -->
+                        <g fill="#374151">
+                          <g transform="translate(0, 5)">
+                            <rect x="10" y="0" width="72" height="6" rx="1.5" />
+                            <rect x="88" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="106" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="124" y="0" width="18" height="6" rx="1.5" />
+                            <rect x="148" y="0" width="12" height="6" rx="1.5" />
+                            <line x1="166" y1="3" x2="178" y2="3" stroke="#4B5563" stroke-width="1.5" stroke-dasharray="2 2" />
+                            <rect x="184" y="0" width="48" height="6" rx="1.5" />
+                            <rect x="238" y="0" width="18" height="6" rx="1.5" />
+                            <rect x="262" y="0" width="36" height="6" rx="1.5" />
+                          </g>
+                          <g transform="translate(0, 17)">
+                            <rect x="10" y="0" width="72" height="6" rx="1.5" />
+                            <line x1="88" y1="3" x2="100" y2="3" stroke="#4B5563" stroke-width="1.5" stroke-dasharray="2 2" />
+                            <rect x="106" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="124" y="0" width="18" height="6" rx="1.5" />
+                            <rect x="148" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="166" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="184" y="0" width="48" height="6" rx="1.5" />
+                            <rect x="238" y="0" width="18" height="6" rx="1.5" />
+                            <rect x="262" y="0" width="36" height="6" rx="1.5" />
+                          </g>
+                          <g transform="translate(0, 29)">
+                            <rect x="10" y="0" width="72" height="6" rx="1.5" />
+                            <rect x="88" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="106" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="124" y="0" width="18" height="6" rx="1.5" />
+                            <line x1="148" y1="3" x2="160" y2="3" stroke="#4B5563" stroke-width="1.5" stroke-dasharray="2 2" />
+                            <rect x="166" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="184" y="0" width="48" height="6" rx="1.5" />
+                            <line x1="238" y1="3" x2="256" y2="3" stroke="#4B5563" stroke-width="1.5" stroke-dasharray="2 2" />
+                            <rect x="262" y="0" width="36" height="6" rx="1.5" />
+                          </g>
+                          <g transform="translate(0, 41)">
+                            <rect x="10" y="0" width="72" height="6" rx="1.5" />
+                            <rect x="88" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="106" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="124" y="0" width="18" height="6" rx="1.5" />
+                            <rect x="148" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="166" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="184" y="0" width="48" height="6" rx="1.5" />
+                            <rect x="238" y="0" width="18" height="6" rx="1.5" />
+                            <rect x="262" y="0" width="36" height="6" rx="1.5" />
+                          </g>
+                          <g transform="translate(0, 53)">
+                            <rect x="10" y="0" width="72" height="6" rx="1.5" />
+                            <rect x="88" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="106" y="0" width="12" height="6" rx="1.5" />
+                            <line x1="124" y1="3" x2="142" y2="3" stroke="#4B5563" stroke-width="1.5" stroke-dasharray="2 2" />
+                            <rect x="148" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="166" y="0" width="12" height="6" rx="1.5" />
+                            <rect x="184" y="0" width="48" height="6" rx="1.5" />
+                            <rect x="238" y="0" width="18" height="6" rx="1.5" />
+                            <rect x="262" y="0" width="36" height="6" rx="1.5" />
+                          </g>
+                        </g>
+
+                        <!-- 動畫層：由左至右隨光束逐漸解除遮罩填色 -->
+                        <g class="anim-sweep-inset-4">
+                          <g transform="translate(0, 5)">
+                            <rect x="10" y="0" width="72" height="6" rx="1.5" fill="#00E5FF" />
+                            <rect x="88" y="0" width="12" height="6" rx="1.5" fill="#EF4444" />
+                            <rect x="106" y="0" width="12" height="6" rx="1.5" fill="#10B981" />
+                            <rect x="124" y="0" width="18" height="6" rx="1.5" fill="#D946EF" />
+                            <rect x="148" y="0" width="12" height="6" rx="1.5" fill="#3B82F6" />
+                            <rect x="184" y="0" width="48" height="6" rx="1.5" fill="#00E5FF" />
+                            <rect x="238" y="0" width="18" height="6" rx="1.5" fill="#F97316" />
+                            <rect x="262" y="0" width="36" height="6" rx="1.5" fill="#00E5FF" />
+                          </g>
+                          <g transform="translate(0, 17)">
+                            <rect x="10" y="0" width="72" height="6" rx="1.5" fill="#00E5FF" />
+                            <rect x="106" y="0" width="12" height="6" rx="1.5" fill="#D946EF" />
+                            <rect x="124" y="0" width="18" height="6" rx="1.5" fill="#F97316" />
+                            <rect x="148" y="0" width="12" height="6" rx="1.5" fill="#EAB308" />
+                            <rect x="166" y="0" width="12" height="6" rx="1.5" fill="#EF4444" />
+                            <rect x="184" y="0" width="48" height="6" rx="1.5" fill="#00E5FF" />
+                            <rect x="238" y="0" width="18" height="6" rx="1.5" fill="#3B82F6" />
+                            <rect x="262" y="0" width="36" height="6" rx="1.5" fill="#00E5FF" />
+                          </g>
+                          <g transform="translate(0, 29)">
+                            <rect x="10" y="0" width="72" height="6" rx="1.5" fill="#00E5FF" />
+                            <rect x="88" y="0" width="12" height="6" rx="1.5" fill="#10B981" />
+                            <rect x="106" y="0" width="12" height="6" rx="1.5" fill="#10B981" />
+                            <rect x="124" y="0" width="18" height="6" rx="1.5" fill="#10B981" />
+                            <rect x="166" y="0" width="12" height="6" rx="1.5" fill="#D946EF" />
+                            <rect x="184" y="0" width="48" height="6" rx="1.5" fill="#00E5FF" />
+                            <rect x="262" y="0" width="36" height="6" rx="1.5" fill="#00E5FF" />
+                          </g>
+                          <g transform="translate(0, 41)">
+                            <rect x="10" y="0" width="72" height="6" rx="1.5" fill="#00E5FF" />
+                            <rect x="88" y="0" width="12" height="6" rx="1.5" fill="#3B82F6" />
+                            <rect x="106" y="0" width="12" height="6" rx="1.5" fill="#EF4444" />
+                            <rect x="124" y="0" width="18" height="6" rx="1.5" fill="#F97316" />
+                            <rect x="148" y="0" width="12" height="6" rx="1.5" fill="#10B981" />
+                            <rect x="166" y="0" width="12" height="6" rx="1.5" fill="#3B82F6" />
+                            <rect x="184" y="0" width="48" height="6" rx="1.5" fill="#00E5FF" />
+                            <rect x="238" y="0" width="18" height="6" rx="1.5" fill="#D946EF" />
+                            <rect x="262" y="0" width="36" height="6" rx="1.5" fill="#00E5FF" />
+                          </g>
+                          <g transform="translate(0, 53)">
+                            <rect x="10" y="0" width="72" height="6" rx="1.5" fill="#00E5FF" />
+                            <rect x="88" y="0" width="12" height="6" rx="1.5" fill="#F97316" />
+                            <rect x="106" y="0" width="12" height="6" rx="1.5" fill="#D946EF" />
+                            <rect x="148" y="0" width="12" height="6" rx="1.5" fill="#EF4444" />
+                            <rect x="166" y="0" width="12" height="6" rx="1.5" fill="#10B981" />
+                            <rect x="184" y="0" width="48" height="6" rx="1.5" fill="#00E5FF" />
+                            <rect x="238" y="0" width="18" height="6" rx="1.5" fill="#F97316" />
+                            <rect x="262" y="0" width="36" height="6" rx="1.5" fill="#00E5FF" />
+                          </g>
+                        </g>
+                      </svg>
+                    </div>
+
+                    <!-- 下方：與上方完全對齊的評分柱狀圖 -->
+                    <div class="w-full h-[65px] border-b-2 border-gray-700 flex items-end pb-[1px] relative">
+                      
+                      <div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10 py-2">
+                        <div class="w-full h-[1px] bg-gray-300"></div>
+                        <div class="w-full h-[1px] bg-gray-300"></div>
+                        <div class="w-full h-[1px] bg-gray-300"></div>
+                      </div>
+
+                      <svg width="100%" height="100%" viewBox="0 0 300 65" preserveAspectRatio="none" class="relative z-10">
+                        
+                        <defs>
+                          <!-- 調整底部暗沉少一點，讓柱狀輪廓更明顯 -->
+                          <linearGradient id="grad-high" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#00E5FF" stop-opacity="1" />
+                            <stop offset="60%" stop-color="#00E5FF" stop-opacity="0.8" />
+                            <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.3" />
+                          </linearGradient>
+                          <linearGradient id="grad-mid" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#F97316" stop-opacity="1" />
+                            <stop offset="60%" stop-color="#F97316" stop-opacity="0.8" />
+                            <stop offset="100%" stop-color="#F97316" stop-opacity="0.3" />
+                          </linearGradient>
+                          <linearGradient id="grad-low" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#EF4444" stop-opacity="1" />
+                            <stop offset="60%" stop-color="#EF4444" stop-opacity="0.8" />
+                            <stop offset="100%" stop-color="#EF4444" stop-opacity="0.3" />
+                          </linearGradient>
+                        </defs>
+
+                        <!-- 動畫層：完全移除原本的靜態灰色，使用遮罩隨光束一根根展開 -->
+                        <g class="anim-sweep-inset-4">
+                          <!-- 保守共識區 1 (12個位點) -->
+                          <rect x="11.5" y="10" width="3" height="55" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="17.5" y="15" width="3" height="50" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="23.5" y="8" width="3" height="57" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="29.5" y="12" width="3" height="53" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="35.5" y="5" width="3" height="60" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="41.5" y="9" width="3" height="56" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="47.5" y="14" width="3" height="51" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="53.5" y="11" width="3" height="54" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="59.5" y="7" width="3" height="58" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="65.5" y="16" width="3" height="49" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="71.5" y="10" width="3" height="55" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="77.5" y="13" width="3" height="52" rx="1.5" fill="url(#grad-high)" />
+                          
+                          <!-- 變異區 1 (2個位點) -->
+                          <rect x="89.5" y="53" width="3" height="12" rx="1.5" fill="url(#grad-low)" />
+                          <rect x="95.5" y="47" width="3" height="18" rx="1.5" fill="url(#grad-low)" />
+                          
+                          <!-- 變異區 2 (2個位點) -->
+                          <rect x="107.5" y="45" width="3" height="20" rx="1.5" fill="url(#grad-mid)" />
+                          <rect x="113.5" y="50" width="3" height="15" rx="1.5" fill="url(#grad-low)" />
+                          
+                          <!-- 變異區 3 (3個位點) -->
+                          <rect x="125.5" y="51" width="3" height="14" rx="1.5" fill="url(#grad-low)" />
+                          <rect x="131.5" y="43" width="3" height="22" rx="1.5" fill="url(#grad-mid)" />
+                          <rect x="137.5" y="49" width="3" height="16" rx="1.5" fill="url(#grad-low)" />
+                          
+                          <!-- 變異區 4 (2個位點) -->
+                          <rect x="149.5" y="47" width="3" height="18" rx="1.5" fill="url(#grad-low)" />
+                          <rect x="155.5" y="53" width="3" height="12" rx="1.5" fill="url(#grad-low)" />
+                          
+                          <!-- 變異區 5 (2個位點) -->
+                          <rect x="167.5" y="40" width="3" height="25" rx="1.5" fill="url(#grad-mid)" />
+                          <rect x="173.5" y="46" width="3" height="19" rx="1.5" fill="url(#grad-low)" />
+                          
+                          <!-- 保守共識區 2 (8個位點) -->
+                          <rect x="185.5" y="15" width="3" height="50" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="191.5" y="9" width="3" height="56" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="197.5" y="12" width="3" height="53" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="203.5" y="6" width="3" height="59" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="209.5" y="14" width="3" height="51" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="215.5" y="10" width="3" height="55" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="221.5" y="17" width="3" height="48" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="227.5" y="8" width="3" height="57" rx="1.5" fill="url(#grad-high)" />
+                          
+                          <!-- 孤立變異區 2 (3個位點) -->
+                          <rect x="239.5" y="44" width="3" height="21" rx="1.5" fill="url(#grad-mid)" />
+                          <rect x="245.5" y="52" width="3" height="13" rx="1.5" fill="url(#grad-low)" />
+                          <rect x="251.5" y="38" width="3" height="27" rx="1.5" fill="url(#grad-mid)" />
+                          
+                          <!-- 末端保守區 (6個位點) -->
+                          <rect x="263.5" y="11" width="3" height="54" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="269.5" y="16" width="3" height="49" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="275.5" y="7" width="3" height="58" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="281.5" y="14" width="3" height="51" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="287.5" y="9" width="3" height="56" rx="1.5" fill="url(#grad-high)" />
+                          <rect x="293.5" y="18" width="3" height="47" rx="1.5" fill="url(#grad-high)" />
+                        </g>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
     </section>
 
     <!-- ==================== 7. CTA: 為什麼交給 Molris ==================== -->
