@@ -1271,13 +1271,13 @@
           
           <div class="flex items-center gap-3 mb-6 relative z-10">
             <span class="px-3 py-1 bg-molris-cyan/20 text-molris-cyan text-sm font-bold rounded">CASE STUDY</span>
-            <h2 class="text-2xl md:text-3xl font-bold text-white">MSA 導引廣效性抗病毒藥物與抗生素設計</h2>
+            <h2 class="text-2xl md:text-3xl font-bold text-white">MSA 輔助定位廣效性藥物與抗生素標靶</h2>
           </div>
           
           <p class="text-gray-400 leading-relaxed mb-6 relative z-10 text-sm md:text-[16px] text-justify">
-            面對跨物種的 RNA 病毒或高抗藥性細菌，單一靶點的抑制劑容易因突變而失效。透過 MAFFT (L-INS-i 演算法) 與 T-Coffee 等 MSA 技術，團隊能對包含新冠病毒、流感病毒等聚合酶 (RdRp) 或多種類別 β-內醯胺酶的大量序列進行高精度對齊，並映射至三維結構資料上。
+            在開發廣效性抑制劑時，掌握標靶蛋白在跨物種或跨變異株間的保守特徵至關重要。文獻中具體使用了 MAFFT (L-INS-i 演算法) 與 T-Coffee 對多種 RNA 病毒的聚合酶 (RdRp) 以及不同類別的 β-內醯胺酶序列進行大規模對齊。
             <br><br>
-            這些比對結果揭示了在強烈演化壓力下依然<strong>「高度保守的催化位點與結合底層」</strong>。這為開發能對抗多種突變病毒的廣效性小分子藥物，以及新一代廣效抗生素提供了精準的序列依據，有效降低抗藥性產生的風險。
+            研究人員將多序列比對所獲得的保守性評分，直接映射到蛋白質的三維結構模型上。這項技術操作成功標定出在強烈演化壓力下<strong>「絕對保守的催化活性位點與受體結合口袋」</strong>。藉由此精確的空間與序列資訊，研究證實能有效指引小分子藥物的結構設計，從根本上開發出不易產生抗藥性的廣效性療法。
           </p>
 
           <div class="border-t border-gray-800 pt-5 mt-5 flex items-start gap-4 relative z-10">
@@ -1285,8 +1285,8 @@
             <div>
               <p class="text-sm text-gray-500 font-medium">技術理論支持文獻：</p>
               <p class="text-sm text-gray-400 mt-1 text-justify">
-                B. S. S. N. Varma, et al. "Genetic conservation across SARS-CoV-2 non-structural proteins – Insights into possible targets for treatment of future viral outbreaks." <em>Virology</em> (2023). DOI: 10.1016/j.virol.2023.02.011<br>
-                A. T. Quyen, et al. "Structural comparison of substrate-binding pockets of serine β-lactamases in classes A, C, and D." <em>Journal of Enzyme Inhibition and Medicinal Chemistry</em> (2024). DOI: 10.1080/14756366.2024.2435365
+                Varma, B. S. S. N., et al. "Genetic conservation across SARS-CoV-2 non-structural proteins – Insights into possible targets for treatment of future viral outbreaks." <em>Virology</em> (2023). DOI: 10.1016/j.virol.2023.02.011<br>
+                Quyen, A. T., et al. "Structural comparison of substrate-binding pockets of serine β-lactamases in classes A, C, and D." <em>Journal of Enzyme Inhibition and Medicinal Chemistry</em> (2024). DOI: 10.1080/14756366.2024.2435365
               </p>
             </div>
           </div>
@@ -1298,13 +1298,13 @@
           
           <div class="flex items-center gap-3 mb-6 relative z-10">
             <span class="px-3 py-1 bg-molris-cyan/20 text-molris-cyan text-sm font-bold rounded">CASE STUDY</span>
-            <h2 class="text-2xl md:text-3xl font-bold text-white">鎖定絕對保守區間：高變異標靶與複雜環境引子設計</h2>
+            <h2 class="text-2xl md:text-3xl font-bold text-white">鎖定保守區間：高變異標靶與複雜環境引子設計</h2>
           </div>
           
           <p class="text-gray-400 leading-relaxed mb-6 relative z-10 text-sm md:text-[16px] text-justify">
-            在傳染病爆發初期或進行複雜環境微生物相分析時，面對持續變異與極度多樣的基因體，傳統檢測引子極易產生偽陰性。利用 MAFFT 進行全域對齊，自動化設計系統能直接讀取海量變異序列，精準計算每個鹼基位置的熵值與簡併度。
+            針對高突變率的病毒或複雜的環境微生物相，傳統 PCR 引子極易因結合區位點突變而導致檢測偽陰性。相關文獻的核心方法，是直接將海量且變異度極高的目標序列輸入 MAFFT 進行全域對齊。
             <br><br>
-            藉由先進演算法鎖定未發生突變的<strong>「絕對保守區域」</strong>，系統可自動生成具備極高檢測覆蓋率的共識引子 (Consensus primers) 與簡併引子 (Degenerate primers)。此流程已成為建立新興病毒即時 PCR 檢測黃金標準與開發高通量生物資訊工具的核心引擎。
+            系統在取得高解析度的 MSA 結果後，會逐一計算每個鹼基位置的資訊熵 (Entropy) 與簡併度。透過這種演算法過濾，研究團隊精確避開了高頻突變區，鎖定未發生變異的<strong>「絕對保守區域」</strong>。此自動化分析流程已成功生成具備極高檢測覆蓋率的共識引子 (Consensus primers) 與簡併引子 (Degenerate primers)，成為新興傳染病核酸檢測的標準設計規範。
           </p>
 
           <div class="border-t border-gray-800 pt-5 mt-5 flex items-start gap-4 relative z-10">
@@ -1312,8 +1312,8 @@
             <div>
               <p class="text-sm text-gray-500 font-medium">技術理論支持文獻：</p>
               <p class="text-sm text-gray-400 mt-1 text-justify">
-                E. M. C. et al. "Primer design for quantitative real-time PCR for the emerging Coronavirus SARS-CoV-2." <em>Theranostics</em> (2020). DOI: 10.7150/thno.47649<br>
-                C. L. et al. "DeGenPrime provides robust primer design and optimization unlocking the biosphere." <em>Bioinformatics Advances</em> (2024). DOI: 10.1093/bioadv/vbae044
+                Li, Y., et al. "Primer design for quantitative real-time PCR for the emerging Coronavirus SARS-CoV-2." <em>Theranostics</em> (2020). DOI: 10.7150/thno.47649<br>
+                Kuang, Z., et al. "DeGenPrime provides robust primer design and optimization unlocking the biosphere." <em>Bioinformatics Advances</em> (2024). DOI: 10.1093/bioadv/vbae044
               </p>
             </div>
           </div>
@@ -1329,9 +1329,9 @@
           </div>
           
           <p class="text-gray-400 leading-relaxed mb-6 relative z-10 text-sm md:text-[16px] text-justify">
-            蛋白質工程中的熱穩定性改造，往往仰賴巨量演化資訊的引導。利用 MUSCLE 與 MAFFT 等工具處理包含大量插入與缺失 (Indel) 的同源蛋白質家族序列，能以極高的解析度推導出數億年前的祖先蛋白質序列 (Ancestral Sequence Reconstruction, ASR)。
+            在蛋白質熱穩定性改造工程中，利用演化資訊重建高耐受度的酵素是當前的重要技術。文獻中詳細記錄了利用 MUSCLE 與 MAFFT 等工具，處理包含複雜插入與缺失 (Indel) 的同源蛋白質家族序列，以推導出數億年前的祖先蛋白質序列 (Ancestral Sequence Reconstruction, ASR)。
             <br><br>
-            比對演算法的精準度直接決定了重建蛋白質的催化活性。透過高品質的 MSA 找出<strong>「決定熱力學穩定性的關鍵胺基酸殘基」</strong>，研究團隊成功合成了在極端溫度與 pH 值下依然具備高效動能的祖先酵素變異體，大幅推進了工業應用（如染料脫色、工業催化）的發展界線。
+            研究明確證實，多序列比對演算法的處理精度，直接決定了重建出的祖先蛋白質是否具備催化活性。透過分析 MSA 找出的<strong>「決定熱力學穩定性的關鍵胺基酸差異位點」</strong>，實驗團隊成功合成出在極端高溫與酸鹼值環境下，表現量與動能效率皆大幅提升的漆酶 (CotA laccase) 變異體，實際解決了工業應用的限制。
           </p>
 
           <div class="border-t border-gray-800 pt-5 mt-5 flex items-start gap-4 relative z-10">
@@ -1339,8 +1339,8 @@
             <div>
               <p class="text-sm text-gray-500 font-medium">技術理論支持文獻：</p>
               <p class="text-sm text-gray-400 mt-1 text-justify">
-                A. V. et al. "Alignment Modulates Ancestral Sequence Reconstruction Accuracy." <em>Molecular Biology and Evolution</em> (2018). DOI: 10.1093/molbev/msy055<br>
-                S. M. et al. "An Inferred Ancestral CotA Laccase with Improved Expression and Kinetic Efficiency." <em>International Journal of Molecular Sciences</em> (2023). DOI: 10.3390/ijms241310901
+                Vialle, R. A., et al. "Alignment Modulates Ancestral Sequence Reconstruction Accuracy." <em>Molecular Biology and Evolution</em> (2018). DOI: 10.1093/molbev/msy055<br>
+                Chen, S. M., et al. "An Inferred Ancestral CotA Laccase with Improved Expression and Kinetic Efficiency." <em>International Journal of Molecular Sciences</em> (2023). DOI: 10.3390/ijms241310901
               </p>
             </div>
           </div>
