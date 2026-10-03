@@ -1826,13 +1826,7 @@
 
         <!-- ==================== 驗證機制 (Quality Control) ==================== -->
         <div class="mt-24 pt-16 border-t border-gray-800">
-          <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-white mb-4">多重驗證，Molris為您把關品質</h2>
-            <p class="text-gray-400 max-w-3xl mx-auto text-lg text-justify md:text-center">Molris 在交付分析數據前，會針對比對結果進行嚴格的交叉驗證與品質把關：</p>
-          </div>
-
-          <!-- 1. 手機 / 平板版：隱藏大型動畫，顯示原本便於閱讀的靜態卡片 -->
-          <div class="grid md:grid-cols-2 lg:hidden gap-6">
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- QC 1 -->
             <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
               <div class="text-molris-cyan mb-4"><i class="fa-solid fa-code-compare text-2xl group-hover:scale-110 transition-transform"></i></div>
@@ -1870,29 +1864,50 @@
           <!-- 2. 桌面大螢幕版：隱藏卡片，顯示大型動態連動儀表板 -->
           <div class="hidden lg:flex relative w-full max-w-7xl mx-auto min-h-[600px] items-center justify-center mt-12">
             
-            <!-- 背景連線 (資料封包流粒子) -->
-            <svg class="absolute inset-0 w-full h-full z-0 opacity-80 pointer-events-none" preserveAspectRatio="xMidYMid meet">
-              <!-- 基礎極細透明軌道 -->
-              <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="#00E5FF" stroke-width="1" opacity="0.15" />
-              <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="#D946EF" stroke-width="1" opacity="0.15" />
-              <line x1="50%" y1="50%" x2="20%" y2="80%" stroke="#10B981" stroke-width="1" opacity="0.15" />
-              <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#F97316" stroke-width="1" opacity="0.15" />
+            <!-- 全局時間差引擎 (利用負秒數達到完美無縫接力) -->
+            <style>
+              .node-1, .node-1 * { animation-delay: 0s !important; }
+              .node-2, .node-2 * { animation-delay: -4.5s !important; }
+              .node-3, .node-3 * { animation-delay: -3.0s !important; }
+              .node-4, .node-4 * { animation-delay: -1.5s !important; }
+            </style>
+
+            <!-- 六角蜂巢網格背景 (降低透明度避免干擾) -->
+            <div class="absolute inset-0 z-0 pointer-events-none" style="
+              opacity: 0.12;
+              background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='103.92' viewBox='0 0 60 103.92' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z' fill-opacity='0' stroke='%2300E5FF' stroke-width='1.5'/%3E%3Cpath d='M30 103.92l25.98-15v-30L30 43.92 4.02 58.92v30z' fill-opacity='0' stroke='%2300E5FF' stroke-width='1.5'/%3E%3C/svg%3E&quot;);
+              background-size: 60px 103.92px;
+              background-position: center;
+              mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 65%);
+              -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 65%);
+            "></div>
+
+            <!-- 背景連線 (資料封包流粒子 - 加粗與雙重發光) -->
+            <svg class="absolute inset-0 w-full h-full z-0 pointer-events-none" preserveAspectRatio="xMidYMid meet">
+              <!-- 基礎實體軌道 (加粗、提高透明度) -->
+              <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="#00E5FF" stroke-width="2" opacity="0.35" />
+              <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="#D946EF" stroke-width="2" opacity="0.35" />
+              <line x1="50%" y1="50%" x2="20%" y2="80%" stroke="#10B981" stroke-width="2" opacity="0.35" />
+              <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#F97316" stroke-width="2" opacity="0.35" />
               
-              <!-- 動態發光粒子封包 (膠囊形狀，間距60px) -->
+              <!-- 動態發光粒子封包 (加粗至 6px，增強雙重光暈) -->
               <!-- 左上: 青色 -->
-              <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="#00E5FF" stroke-width="4" stroke-linecap="round" stroke-dasharray="4 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 6px #00E5FF);" />
+              <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="#00E5FF" stroke-width="6" stroke-linecap="round" stroke-dasharray="6 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 10px #00E5FF) drop-shadow(0 0 20px #00E5FF);" />
               <!-- 右上: 紫色 -->
-              <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="#D946EF" stroke-width="4" stroke-linecap="round" stroke-dasharray="4 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 6px #D946EF);" />
+              <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="#D946EF" stroke-width="6" stroke-linecap="round" stroke-dasharray="6 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 10px #D946EF) drop-shadow(0 0 20px #D946EF);" />
               <!-- 左下: 綠色 -->
-              <line x1="50%" y1="50%" x2="20%" y2="80%" stroke="#10B981" stroke-width="4" stroke-linecap="round" stroke-dasharray="4 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 6px #10B981);" />
+              <line x1="50%" y1="50%" x2="20%" y2="80%" stroke="#10B981" stroke-width="6" stroke-linecap="round" stroke-dasharray="6 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 10px #10B981) drop-shadow(0 0 20px #10B981);" />
               <!-- 右下: 橘色 -->
-              <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#F97316" stroke-width="4" stroke-linecap="round" stroke-dasharray="4 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 6px #F97316);" />
+              <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#F97316" stroke-width="6" stroke-linecap="round" stroke-dasharray="6 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 10px #F97316) drop-shadow(0 0 20px #F97316);" />
             </svg>
 
             <!-- 中央防禦核心 -->
             <div class="absolute z-20 w-36 h-36 rounded-full bg-[#03060A] border border-molris-cyan/50 shadow-[0_0_40px_rgba(0,229,255,0.15)] flex flex-col items-center justify-center group">
-              <!-- 核心共振波紋 -->
-              <div class="absolute inset-0 rounded-full border-molris-cyan anim-core-ripple pointer-events-none"></div>
+              <!-- 對應時間軸的四色爆發波紋 -->
+              <div class="absolute inset-0 rounded-full border-molris-cyan anim-core-ripple pointer-events-none" style="animation-delay: 0s;"></div>
+              <div class="absolute inset-0 rounded-full border-[#D946EF] anim-core-ripple pointer-events-none" style="animation-delay: -4.5s;"></div>
+              <div class="absolute inset-0 rounded-full border-[#10B981] anim-core-ripple pointer-events-none" style="animation-delay: -3.0s;"></div>
+              <div class="absolute inset-0 rounded-full border-[#F97316] anim-core-ripple pointer-events-none" style="animation-delay: -1.5s;"></div>
               
               <div class="absolute inset-2 border-t-2 border-molris-cyan rounded-full radar-spin opacity-50"></div>
               <i class="fa-solid fa-shield-virus text-4xl text-molris-cyan mb-2"></i>
@@ -1906,7 +1921,7 @@
               <div class="flex items-start justify-between w-full pt-4">
                 
                 <!-- 節點 1: 交叉驗證 -->
-                <div class="bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform -translate-x-4 group hover:bg-gray-800 hover:border-molris-cyan transition-all duration-300 relative z-20 cursor-default shadow-xl">
+                <div class="node-1 bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform -translate-x-4 group hover:bg-gray-800 hover:border-molris-cyan transition-all duration-300 relative z-20 cursor-default shadow-xl">
                   <div class="flex items-center gap-3 mb-3">
                     <i class="fa-solid fa-code-compare text-xl text-molris-cyan"></i>
                     <h4 class="text-white font-bold text-lg group-hover:text-molris-cyan transition-colors">多演算法交叉驗證</h4>
@@ -1915,7 +1930,6 @@
                   <div class="w-full h-[140px] bg-[#050A10] rounded-lg relative overflow-hidden border border-gray-800 p-2 flex flex-col justify-center gap-2">
                     <div class="absolute top-[10%] bottom-[10%] w-[2px] bg-[#00E5FF] z-10 anim-scanner shadow-[0_0_12px_3px_rgba(0,229,255,0.8)] rounded-full"></div>
                     <svg width="100%" height="90" viewBox="0 0 300 90">
-                      
                       <!-- 背景層：灰色基底與缺口虛線 -->
                       <g fill="#374151">
                         <!-- Alg 1: 缺口在變異區之間 -->
@@ -2012,7 +2026,7 @@
                 </div>
 
                 <!-- 節點 2: 結構輔助 -->
-                <div class="bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform translate-x-4 group hover:bg-gray-800 hover:border-[#D946EF] transition-all duration-300 relative z-20 cursor-default shadow-xl">
+                <div class="node-2 bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform translate-x-4 group hover:bg-gray-800 hover:border-[#D946EF] transition-all duration-300 relative z-20 cursor-default shadow-xl">
                   <div class="flex items-center gap-3 mb-3">
                     <i class="fa-solid fa-cubes text-xl text-[#D946EF]"></i>
                     <h4 class="text-white font-bold text-lg group-hover:text-[#D946EF] transition-colors">立體結構空間映射</h4>
@@ -2131,13 +2145,14 @@
                     </div>
                   </div>
                 </div>
+
               </div>
               
               <!-- ==================== 下半部 ==================== -->
               <div class="flex items-end justify-between w-full pb-4">
 
                 <!-- 節點 3: 演化評估 -->
-                <div class="bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform -translate-x-4 group hover:bg-gray-800 hover:border-[#10B981] transition-all duration-300 relative z-20 cursor-default shadow-xl mt-auto mb-0">
+                <div class="node-3 bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform -translate-x-4 group hover:bg-gray-800 hover:border-[#10B981] transition-all duration-300 relative z-20 cursor-default shadow-xl mt-auto mb-0">
                   
                   <div class="grid expand-container mb-2">
                     <div class="overflow-hidden">
@@ -2211,7 +2226,7 @@
                 </div>
 
                 <!-- 節點 4: 統計與數學評分 -->
-                <div class="bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform translate-x-4 group hover:bg-gray-800 hover:border-molris-orange transition-all duration-300 relative z-20 cursor-default shadow-xl mt-auto mb-0">
+                <div class="node-4 bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform translate-x-4 group hover:bg-gray-800 hover:border-molris-orange transition-all duration-300 relative z-20 cursor-default shadow-xl mt-auto mb-0">
                   
                   <div class="grid expand-container mb-2">
                     <div class="overflow-hidden">
@@ -2234,7 +2249,6 @@
                     <!-- 上方：多條序列片段 (5條) -->
                     <div class="w-full h-[70px] relative mt-1">
                       <svg width="100%" height="100%" viewBox="0 0 300 70" preserveAspectRatio="none">
-                        
                         <!-- 背景層：未掃描前的純灰色基底，靜態顯示 -->
                         <g fill="#374151">
                           <g transform="translate(0, 5)">
@@ -2360,9 +2374,7 @@
                       </div>
 
                       <svg width="100%" height="100%" viewBox="0 0 300 65" preserveAspectRatio="none" class="relative z-10">
-                        
                         <defs>
-                          <!-- 調整底部暗沉少一點，讓柱狀輪廓更明顯 -->
                           <linearGradient id="grad-high" x1="0%" y1="0%" x2="0%" y2="100%">
                             <stop offset="0%" stop-color="#00E5FF" stop-opacity="1" />
                             <stop offset="60%" stop-color="#00E5FF" stop-opacity="0.8" />
@@ -2380,7 +2392,7 @@
                           </linearGradient>
                         </defs>
 
-                        <!-- 動畫層：完全移除原本的靜態灰色，使用遮罩隨光束一根根展開 -->
+                        <!-- 動畫層：隨光束一根根展開 -->
                         <g class="anim-sweep-inset-4">
                           <!-- 保守共識區 1 (12個位點) -->
                           <rect x="11.5" y="10" width="3" height="55" rx="1.5" fill="url(#grad-high)" />
