@@ -1854,11 +1854,17 @@
                     <strong class="text-gray-300 text-sm tracking-wide">演化資訊</strong>
                   </div>
                   <div class="flex flex-wrap gap-2 pl-4">
-                    <span class="flex-auto max-w-[80px] px-2 py-1 text-xs text-gray-400 border border-gray-700 rounded bg-gray-800/50 text-center truncate">JTT</span>
-                    <span class="flex-auto max-w-[80px] px-2 py-1 text-xs text-gray-400 border border-gray-700 rounded bg-gray-800/50 text-center truncate">WAG</span>
-                    <span class="flex-auto max-w-[80px] px-2 py-1 text-xs text-gray-400 border border-gray-700 rounded bg-gray-800/50 text-center truncate">LG</span>
-                    <span class="flex-auto max-w-[80px] px-2 py-1 text-xs text-gray-400 border border-gray-700 rounded bg-gray-800/50 text-center truncate">mtREV</span>
-                    <span class="flex-auto max-w-[80px] px-2 py-1 text-xs text-gray-400 border border-gray-700 rounded bg-gray-800/50 text-center truncate">cpREV</span>
+                    <!-- 前 3 個獨立標籤 -->
+                    <span class="px-2.5 py-1 text-xs text-gray-400 border border-gray-700 rounded bg-gray-800/50 whitespace-nowrap">JTT</span>
+                    <span class="px-2.5 py-1 text-xs text-gray-400 border border-gray-700 rounded bg-gray-800/50 whitespace-nowrap">WAG</span>
+                    <span class="px-2.5 py-1 text-xs text-gray-400 border border-gray-700 rounded bg-gray-800/50 whitespace-nowrap">LG</span>
+                    
+                    <!-- 第 4 與第 5 個標籤打包在同一個 flex 容器中 -->
+                    <!-- 這樣它們就會「同進退」，空間不夠時會兩個一起掉到下一行，完美形成 3/2 -->
+                    <div class="flex gap-2">
+                      <span class="px-2.5 py-1 text-xs text-gray-400 border border-gray-700 rounded bg-gray-800/50 whitespace-nowrap">mtREV</span>
+                      <span class="px-2.5 py-1 text-xs text-gray-400 border border-gray-700 rounded bg-gray-800/50 whitespace-nowrap">cpREV</span>
+                    </div>
                   </div>
                 </div>
 
