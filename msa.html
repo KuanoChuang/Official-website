@@ -996,21 +996,93 @@
     
     <!-- 側邊欄連結列表 -->
     <div class="flex-1 overflow-y-auto py-8 px-6 flex flex-col gap-6 text-[16px]">
-      <a href="index.html" class="text-gray-300 hover:text-molris-cyan transition-colors flex items-center justify-between group">
-        關於 Molris <i class="fa-solid fa-chevron-right text-xs opacity-30 group-hover:opacity-100 group-hover:text-molris-cyan transition-all"></i>
-      </a>
-      <a href="platform.html" class="text-molris-cyan font-bold transition-colors flex items-center justify-between group">
-        技術平台 <i class="fa-solid fa-chevron-right text-xs opacity-100 text-molris-cyan transition-all"></i>
-      </a>
-      <a href="project.html" class="text-gray-300 hover:text-molris-cyan transition-colors flex items-center justify-between group">
-        專案介紹 <i class="fa-solid fa-chevron-right text-xs opacity-30 group-hover:opacity-100 group-hover:text-molris-cyan transition-all"></i>
-      </a>
-      <a href="pricing.html" class="text-gray-300 hover:text-molris-cyan transition-colors flex items-center justify-between group">
-        方案介紹 <i class="fa-solid fa-chevron-right text-xs opacity-30 group-hover:opacity-100 group-hover:text-molris-cyan transition-all"></i>
-      </a>
-      <a href="contact.html" class="text-gray-300 hover:text-molris-cyan transition-colors flex items-center justify-between group">
-        聯絡我們 <i class="fa-solid fa-chevron-right text-xs opacity-30 group-hover:opacity-100 group-hover:text-molris-cyan transition-all"></i>
-      </a>
+      
+      <!-- 關於 Molris -->
+      <div data-open="false" class="group">
+        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+          <span>關於 Molris</span>
+          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+        </button>
+        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div class="overflow-hidden">
+            <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
+              <a href="index.html#vision" class="text-sm text-gray-400 hover:text-molris-cyan">核心價值</a>
+              <a href="index.html#advantages" class="text-sm text-gray-400 hover:text-molris-cyan">核心優勢</a>
+              <a href="index.html#tech" class="text-sm text-gray-400 hover:text-molris-cyan">核心技術</a>
+              <a href="index.html#team" class="text-sm text-gray-400 hover:text-molris-cyan">團隊架構</a>
+              <a href="index.html#story" class="text-sm text-gray-400 hover:text-molris-cyan">品牌故事</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 技術平台 (預設展開 - 提示目前頁面位置) -->
+      <div data-open="true" class="group">
+        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-molris-cyan font-bold transition-colors">
+          <span>技術平台</span>
+          <i class="fa-solid fa-chevron-down text-xs opacity-100 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+        </button>
+        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div class="overflow-hidden">
+            <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-molris-cyan/30">
+              <a href="msa.html" class="text-sm text-molris-cyan font-medium flex items-center gap-2"><i class="fa-solid fa-caret-right text-xs"></i> 多序列比對 (目前位置)</a>
+              <a href="modeling.html" class="text-sm text-gray-400 hover:text-molris-cyan">多尺度建模</a>
+              <a href="target.html" class="text-sm text-gray-400 hover:text-molris-cyan">靶點探索</a>
+              <a href="docking.html" class="text-sm text-gray-400 hover:text-molris-cyan">分子對接</a>
+              <a href="dynamics.html" class="text-sm text-gray-400 hover:text-molris-cyan">分子動力學</a>
+              <a href="optimize.html" class="text-sm text-gray-400 hover:text-molris-cyan">分子結構設計</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 專案介紹 -->
+      <div data-open="false" class="group">
+        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+          <span>專案介紹</span>
+          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+        </button>
+        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div class="overflow-hidden">
+            <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
+              <a href="biotech.html" class="text-sm text-gray-400 hover:text-molris-cyan">生技與新藥開發</a>
+              <a href="materials.html" class="text-sm text-gray-400 hover:text-molris-cyan">化學與材料科學</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 方案介紹 -->
+      <div data-open="false" class="group">
+        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+          <span>方案介紹</span>
+          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+        </button>
+        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div class="overflow-hidden">
+            <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
+              <a href="pricing.html" class="text-sm text-gray-400 hover:text-molris-cyan">方案價格</a>
+              <a href="modules.html" class="text-sm text-gray-400 hover:text-molris-cyan">功能模組</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 聯絡我們 -->
+      <div data-open="false" class="group">
+        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+          <span>聯絡我們</span>
+          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+        </button>
+        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div class="overflow-hidden">
+            <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
+              <a href="contact.html#info" class="text-sm text-gray-400 hover:text-molris-cyan">聯絡資訊</a>
+              <a href="contact.html#joinus" class="text-sm text-gray-400 hover:text-molris-cyan">加入我們</a>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <!-- 語言切換底部 -->
       <div class="border-t border-gray-800/80 pt-6 mt-2 flex items-center justify-between text-gray-300 shrink-0">
