@@ -619,6 +619,25 @@
            icon.classList.remove('rotate-180');
        }
     }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const backdrop = document.getElementById('mobile-menu-backdrop');
+      
+      // 判斷選單是否在隱藏狀態 (包含 translate-x-full 類別)
+      if (menu.classList.contains('translate-x-full')) {
+        // 展開選單
+        menu.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // 鎖定背景滾動
+      } else {
+        // 收合選單
+        menu.classList.add('translate-x-full');
+        backdrop.classList.add('hidden');
+        document.body.style.overflow = ''; // 恢復背景滾動
+      }
+    }
+
     window.onload = () => {
       resetAutoPlay();
       generateMSABackground();
