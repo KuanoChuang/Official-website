@@ -596,7 +596,7 @@
             };
 
             // 設定：3秒後自動漸進消退
-            highlightTimeout = setTimeout(restoreHighlight, 3000);
+            highlightTimeout = setTimeout(restoreHighlight, 1500);
             
             // 設定：滑鼠懸停 (Hover) 時立即觸發漸進消退
             currentHighlightedCard = targetCard;
@@ -1826,7 +1826,13 @@
 
         <!-- ==================== 驗證機制 (Quality Control) ==================== -->
         <div class="mt-24 pt-16 border-t border-gray-800">
-          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-white mb-4">多重驗證，Molris為您把關品質</h2>
+            <p class="text-gray-400 max-w-3xl mx-auto text-lg text-justify md:text-center">Molris 在交付分析數據前，會針對比對結果進行嚴格的交叉驗證與品質把關：</p>
+          </div>
+
+          <!-- 1. 手機 / 平板版：隱藏大型動畫，顯示原本便於閱讀的靜態卡片 -->
+          <div class="grid md:grid-cols-2 lg:hidden gap-6">
             <!-- QC 1 -->
             <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
               <div class="text-molris-cyan mb-4"><i class="fa-solid fa-code-compare text-2xl group-hover:scale-110 transition-transform"></i></div>
@@ -1911,7 +1917,7 @@
               
               <div class="absolute inset-2 border-t-2 border-molris-cyan rounded-full radar-spin opacity-50"></div>
               <i class="fa-solid fa-shield-virus text-4xl text-molris-cyan mb-2"></i>
-              <span class="text-xs text-white font-bold tracking-widest uppercase">Molris QC</span>
+              <span class="text-xs text-white font-bold tracking-widest">Molris</span>
             </div>
 
             <!-- 四周節點 -->
