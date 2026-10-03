@@ -1927,12 +1927,29 @@
           <!-- 2. 桌面大螢幕版：隱藏卡片，顯示大型動態連動儀表板 -->
           <div class="hidden lg:flex relative w-full max-w-7xl mx-auto min-h-[600px] items-center justify-center mt-12">
             
-            <!-- 全局時間差引擎 (利用負秒數達到完美無縫接力) -->
+            <!-- 全局時間差引擎 -->
             <style>
-              .node-1, .node-1 * { animation-delay: 0s !important; }
-              .node-2, .node-2 * { animation-delay: -18.0s !important; }
-              .node-3, .node-3 * { animation-delay: -12.0s !important; }
-              .node-4, .node-4 * { animation-delay: -6.0s !important; }
+              /* 定義 24 秒輪值動畫：前 6 秒保持高亮，剩下的時間只有「內部動畫區塊」變暗退居幕後，保持外層文字清晰 */
+              @keyframes animFocus {
+                0%, 22% { 
+                  opacity: 1; 
+                  filter: grayscale(0%); 
+                }
+                28%, 99% { /* 將 94% 改為 99%，確保在內部動畫完全重置隱藏後，才瞬間甦醒點亮 */
+                  opacity: 0.60; 
+                  filter: grayscale(60%); 
+                }
+                100% { 
+                  opacity: 1; 
+                  filter: grayscale(0%); 
+                }
+              }
+              
+              /* 利用屬性選擇器，精準只對卡片內部的黑色動畫容器施加明暗變化，絕不干擾文字與邊框 */
+              .node-1 div[class*="bg-[#050A10]"] { animation: animFocus 24s infinite; animation-delay: 0s; }
+              .node-2 div[class*="bg-[#050A10]"] { animation: animFocus 24s infinite; animation-delay: -18.0s; }
+              .node-3 div[class*="bg-[#050A10]"] { animation: animFocus 24s infinite; animation-delay: -12.0s; }
+              .node-4 div[class*="bg-[#050A10]"] { animation: animFocus 24s infinite; animation-delay: -6.0s; }
             </style>
 
             <!-- 六角蜂巢網格背景 (降低透明度避免干擾) -->
