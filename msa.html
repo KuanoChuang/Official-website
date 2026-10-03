@@ -975,14 +975,17 @@
       <button onclick="toggleMobileMenu()" class="md:hidden text-gray-300 hover:text-white z-50 relative p-2">
         <i class="fa-solid fa-bars text-2xl"></i>
       </button>
-      <div id="mobile-menu-backdrop" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity md:hidden"></div>
-    </div>
+    </div> <!-- 補上關閉 max-w-7xl 的 div -->
   </header>
-    <!-- 2. 右側滑出面板 -->
-  <div id="mobile-menu" class="fixed top-0 right-0 h-full w-[260px] bg-[#0A111A] border-l border-gray-800 transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col md:hidden shadow-[0_0_40px_rgba(0,0,0,0.8)]">
-      
+
+  <!-- 將手機側邊欄移出 header 外面，避免被 backdrop-filter 困住高度 -->
+  <div id="mobile-menu-backdrop" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden transition-opacity md:hidden"></div>
+
+  <!-- 2. 右側滑出面板 (修改高度為 100dvh 並提升層級 z-[70] 覆蓋全螢幕) -->
+  <div id="mobile-menu" class="fixed top-0 right-0 h-[100dvh] w-[260px] bg-[#0A111A] border-l border-gray-800 transform translate-x-full transition-transform duration-300 ease-in-out z-[70] flex flex-col md:hidden shadow-[[-20px_0_40px_rgba(0,0,0,0.8)]]">
+    
     <!-- 側邊欄頭部：Logo 與關閉按鈕 -->
-    <div class="h-20 flex items-center justify-between px-6 border-b border-gray-800/80">
+    <div class="h-20 flex items-center justify-between px-6 border-b border-gray-800/80 shrink-0">
       <span class="text-lg font-bold tracking-wider text-white flex items-center gap-2">
         <i class="fa-solid fa-atom text-molris-cyan"></i> Molris
       </span>
@@ -990,7 +993,7 @@
         <i class="fa-solid fa-xmark text-xl"></i>
       </button>
     </div>
-      
+    
     <!-- 側邊欄連結列表 -->
     <div class="flex-1 overflow-y-auto py-8 px-6 flex flex-col gap-6 text-[16px]">
       <a href="index.html" class="text-gray-300 hover:text-molris-cyan transition-colors flex items-center justify-between group">
@@ -1008,9 +1011,9 @@
       <a href="contact.html" class="text-gray-300 hover:text-molris-cyan transition-colors flex items-center justify-between group">
         聯絡我們 <i class="fa-solid fa-chevron-right text-xs opacity-30 group-hover:opacity-100 group-hover:text-molris-cyan transition-all"></i>
       </a>
-        
+      
       <!-- 語言切換底部 -->
-      <div class="border-t border-gray-800/80 pt-6 mt-2 flex items-center justify-between text-gray-300">
+      <div class="border-t border-gray-800/80 pt-6 mt-2 flex items-center justify-between text-gray-300 shrink-0">
         <span class="flex items-center gap-2"><i class="fa-solid fa-globe text-gray-500"></i> 語言設定</span>
         <span class="text-molris-cyan text-sm font-bold">中文</span>
       </div>
