@@ -784,16 +784,16 @@
 
     /* 2. 結構輔助：1D 序列映射 3D 表面模型 (3段式循序持續亮起) */
     @keyframes seqMap1 {
-      0%, 10%, 85%, 95%, 100% { fill: #374151; filter: drop-shadow(0 0 0px transparent); }
-      20%, 70%, 85% { fill: #D946EF; filter: drop-shadow(0 0 6px #D946EF); }
+      0%, 10%, 85%, 95%, 100% { fill: #374151; }
+      20%, 70%, 85% { fill: #D946EF; }
     }
     @keyframes seqMap2 {
-      0%, 30%, 85%, 95%, 100% { fill: #374151; filter: drop-shadow(0 0 0px transparent); }
-      40%, 70%, 85% { fill: #00E5FF; filter: drop-shadow(0 0 6px #00E5FF); }
+      0%, 30%, 85%, 95%, 100% { fill: #374151; }
+      40%, 70%, 85% { fill: #00E5FF; }
     }
     @keyframes seqMap3 {
-      0%, 50%, 85%, 95%, 100% { fill: #374151; filter: drop-shadow(0 0 0px transparent); }
-      60%, 70%, 85% { fill: #10B981; filter: drop-shadow(0 0 6px #10B981); }
+      0%, 50%, 85%, 95%, 100% { fill: #374151; }
+      60%, 70%, 85% { fill: #10B981; }
     }
     
     @keyframes mapLink1 {
@@ -833,21 +833,21 @@
     .map-zone-3 { animation: pulseZone3 6s infinite; }
 
     /* 3. 演化評估：五層分支與多色突變序列映射 (沉穩漸進式亮起) */
-    @keyframes stg0P { 0%, 10%, 85%, 95%, 100% { stroke: #4B5563; filter: none; } 15%, 70%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
-    @keyframes stg0N { 0%, 10%, 85%, 95%, 100% { fill: #374151; filter: none; } 15%, 70%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
-    @keyframes stg0B { 0%, 10%, 85%, 95%, 100% { background-color: #374151; box-shadow: none; } 15%, 70%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
+    @keyframes stg0P { 0%, 10%, 85%, 95%, 100% { stroke: #4B5563; filter: none; } 15%, 70%, 85% { stroke: var(--tc); } }
+    @keyframes stg0N { 0%, 10%, 85%, 95%, 100% { fill: #374151; filter: none; } 15%, 70%, 85% { fill: var(--tc); filter: } }
+    @keyframes stg0B { 0%, 10%, 85%, 95%, 100% { background-color: #374151; box-shadow: none; } 15%, 70%, 85% { background-color: var(--tc); } }
 
-    @keyframes stg1P { 0%, 30%, 85%, 95%, 100% { stroke: #4B5563; filter: none; } 35%, 70%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
-    @keyframes stg1N { 0%, 30%, 85%, 95%, 100% { fill: #374151; filter: none; } 35%, 70%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
-    @keyframes stg1B { 0%, 30%, 85%, 95%, 100% { background-color: #374151; box-shadow: none; } 35%, 70%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
+    @keyframes stg1P { 0%, 30%, 85%, 95%, 100% { stroke: #4B5563; filter: none; } 35%, 70%, 85% { stroke: var(--tc); } }
+    @keyframes stg1N { 0%, 30%, 85%, 95%, 100% { fill: #374151; filter: none; } 35%, 70%, 85% { fill: var(--tc); } }
+    @keyframes stg1B { 0%, 30%, 85%, 95%, 100% { background-color: #374151; box-shadow: none; } 35%, 70%, 85% { background-color: var(--tc); } }
 
-    @keyframes stg2P { 0%, 50%, 85%, 95%, 100% { stroke: #4B5563; filter: none; } 55%, 70%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
-    @keyframes stg2N { 0%, 50%, 85%, 95%, 100% { fill: #374151; filter: none; } 55%, 70%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
-    @keyframes stg2B { 0%, 50%, 85%, 95%, 100% { background-color: #374151; box-shadow: none; } 55%, 70%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
+    @keyframes stg2P { 0%, 50%, 85%, 95%, 100% { stroke: #4B5563; filter: none; } 55%, 70%, 85% { stroke: var(--tc); } }
+    @keyframes stg2N { 0%, 50%, 85%, 95%, 100% { fill: #374151; filter: none; } 55%, 70%, 85% { fill: var(--tc); } }
+    @keyframes stg2B { 0%, 50%, 85%, 95%, 100% { background-color: #374151; box-shadow: none; } 55%, 70%, 85% { background-color: var(--tc); } }
 
-    @keyframes stg3P { 0%, 70%, 85%, 95%, 100% { stroke: #4B5563; filter: none; } 75%, 85% { stroke: var(--tc); filter: drop-shadow(0 0 4px var(--tc)); } }
-    @keyframes stg3N { 0%, 70%, 85%, 95%, 100% { fill: #374151; filter: none; } 75%, 85% { fill: var(--tc); filter: drop-shadow(0 0 5px var(--tc)); } }
-    @keyframes stg3B { 0%, 70%, 85%, 95%, 100% { background-color: #374151; box-shadow: none; } 75%, 85% { background-color: var(--tc); box-shadow: 0 0 6px var(--tc); } }
+    @keyframes stg3P { 0%, 70%, 85%, 95%, 100% { stroke: #4B5563; filter: none; } 75%, 85% { stroke: var(--tc); } }
+    @keyframes stg3N { 0%, 70%, 85%, 95%, 100% { fill: #374151; filter: none; } 75%, 85% { fill: var(--tc); } }
+    @keyframes stg3B { 0%, 70%, 85%, 95%, 100% { background-color: #374151; box-shadow: none; } 75%, 85% { background-color: var(--tc); } }
 
     .anim-s0-p { animation: stg0P 6s infinite; }
     .anim-s0-n { animation: stg0N 6s infinite; }
