@@ -637,7 +637,15 @@
         document.body.style.overflow = ''; // 恢復背景滾動
       }
     }
-
+    // 監聽視窗縮放：如果放大到桌面尺寸(1024px以上)且側邊欄還開著，自動關閉並解鎖畫面
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 1024) {
+        const sidebar = document.getElementById('mobileSidebar');
+        if (sidebar && sidebar.classList.contains('translate-x-0')) {
+          toggleMobileMenu();
+        }
+      }
+    });
     window.onload = () => {
       resetAutoPlay();
       generateMSABackground();
