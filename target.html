@@ -82,6 +82,7 @@
     // ==========================================
     function Phase2_DistanceField({ mockData }) {
       const planeRef = useRef();
+      const materialRef = useRef(); // 新增 materialRef 來動態更新 Shader 變數
       
       // 將原子座標傳遞給 Shader，補齊到 50 顆以符合 Shader 固定陣列長度限制
       const uniforms = useMemo(() => {
@@ -93,30 +94,56 @@
         }
         return {
           atoms: { value: paddedAtoms },
-          numAtoms: { value: mockData.atoms.length }
+          numAtoms: { value: mockData.atoms.length },
+          uAxis: { value: 1 } // 新增 uAxis: 0=X, 1=Y, 2=Z，用於 Shader 切換格線
         };
       }, [mockData]);
 
-      // 動畫：掃描切面上下移動
+      // 動畫：依序沿著 X, Y, Z 三個方向循環掃描
       useFrame((state) => {
-        if (planeRef.current) {
-          planeRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 4 + 2;
+        if (planeRef.current && materialRef.current) {
+          const t = state.clock.elapsedTime;
+          // 設定每 12 秒一個完整循環 (X, Y, Z 軸各 4 秒)
+          const cycle = t % 12;
+          const phaseDuration = 4;
+          const progress = cycle % phaseDuration;
+          
+          // 讓切面在 -7 到 7 的範圍內來回平滑掃描
+          const offset = Math.sin((progress / phaseDuration) * Math.PI * 2) * 7;
+
+          if (cycle < 4) {
+            // X 軸方向掃描
+            planeRef.current.rotation.set(0, Math.PI / 2, 0);
+            planeRef.current.position.set(offset, 2.5, 0); // 蛋白質中心 Y=2.5
+            materialRef.current.uniforms.uAxis.value = 0;
+          } else if (cycle < 8) {
+            // Y 軸方向掃描
+            planeRef.current.rotation.set(-Math.PI / 2, 0, 0);
+            planeRef.current.position.set(0, 2.5 + offset, 0);
+            materialRef.current.uniforms.uAxis.value = 1;
+          } else {
+            // Z 軸方向掃描
+            planeRef.current.rotation.set(0, 0, 0);
+            planeRef.current.position.set(0, 2.5, offset);
+            materialRef.current.uniforms.uAxis.value = 2;
+          }
         }
       });
 
       return (
         <group>
-          {/* 幽靈蛋白質 (半透明背景參考) */}
+          {/* 幽靈蛋白質 (調高不透明度，讓背景蛋白質更清楚) */}
           {mockData.atoms.map((pos, i) => (
             <Sphere key={`ghost-${i}`} args={[1.5, 16, 16]} position={pos}>
-              <meshBasicMaterial color="#333" wireframe transparent opacity={0.15} />
+              <meshBasicMaterial color="#555" wireframe transparent opacity={0.25} />
             </Sphere>
           ))}
           
           {/* 動態距離場熱力圖平面 */}
-          <mesh ref={planeRef} rotation={[-Math.PI / 2, 0, 0]}>
-            <planeGeometry args={[16, 16, 64, 64]} />
+          <mesh ref={planeRef}>
+            <planeGeometry args={[18, 18, 64, 64]} />
             <shaderMaterial
+              ref={materialRef}
               uniforms={uniforms}
               transparent={true}
               side={THREE.DoubleSide}
@@ -131,10 +158,11 @@
               fragmentShader={`
                 uniform vec3 atoms[50];
                 uniform int numAtoms;
+                uniform int uAxis;
                 varying vec3 vWorldPosition;
                 void main() {
                   float minDist = 999.0;
-                  // 計算平面上每個像素到最近原子的距離 (重現 EDT 距離場邏輯)
+                  // 計算平面上每個像素到最近原子的距離
                   for(int i = 0; i < 50; i++) {
                     if(i >= numAtoms) break;
                     float d = distance(vWorldPosition, atoms[i]);
@@ -143,19 +171,27 @@
                   
                   // 熱力圖上色邏輯
                   vec3 color = vec3(0.0);
-                  float alpha = 0.8;
+                  float alpha = 0.85;
                   if (minDist <= 1.8) {
                     color = vec3(1.0, 0.2, 0.3); // 內部碰撞區 (紅)
                   } else if (minDist <= 3.5) {
                     color = vec3(1.0, 0.8, 0.0); // 表面口袋區 (黃)
                   } else {
                     color = vec3(0.0, 0.3, 0.8); // 外部空腔 (藍)
-                    alpha = 0.2;
+                    alpha = 0.25;
                   }
                   
-                  // 繪製科技感格線
-                  float grid = mod(vWorldPosition.x, 1.0) < 0.05 || mod(vWorldPosition.z, 1.0) < 0.05 ? 1.0 : 0.0;
-                  gl_FragColor = vec4(color + grid * 0.2, alpha);
+                  // 繪製科技感格線 (依據掃描軸向動態切換垂直於切面的網格)
+                  float grid = 0.0;
+                  if (uAxis == 0) {
+                    grid = mod(vWorldPosition.y, 1.0) < 0.05 || mod(vWorldPosition.z, 1.0) < 0.05 ? 1.0 : 0.0;
+                  } else if (uAxis == 1) {
+                    grid = mod(vWorldPosition.x, 1.0) < 0.05 || mod(vWorldPosition.z, 1.0) < 0.05 ? 1.0 : 0.0;
+                  } else {
+                    grid = mod(vWorldPosition.x, 1.0) < 0.05 || mod(vWorldPosition.y, 1.0) < 0.05 ? 1.0 : 0.0;
+                  }
+                  
+                  gl_FragColor = vec4(color + grid * 0.3, alpha);
                 }
               `}
             />
@@ -172,9 +208,9 @@
       const probeRef = useRef();
       const dummy = useMemo(() => new THREE.Object3D(), []);
 
-      // 定義顏色庫
-      const C_PROTEIN = new THREE.Color("#111116"); // 隱藏狀態的蛋白質
-      const C_POCKET_BASE = new THREE.Color("#0a2a4a"); // Phase 3 掃描底色
+      // 提升顏色明度，解決黑色背景下看不清楚的問題
+      const C_PROTEIN = new THREE.Color("#4a5568"); // 隱藏狀態的蛋白質改為石板灰 (原本太黑)
+      const C_POCKET_BASE = new THREE.Color("#2b6cb0"); // Phase 3 掃描底色改為亮藍色
       const C_POCKET_ACTIVE = new THREE.Color("#00f0ff"); // Phase 3 掃描亮點 (青藍)
       const C_POCKET_FINAL = new THREE.Color("#ffdd00");  // Phase 4 最終口袋 (金色)
 
@@ -227,10 +263,10 @@
               <meshStandardMaterial color="#00f0ff" transparent opacity={0.6} emissive="#00f0ff" emissiveIntensity={0.5} />
             </mesh>
           )}
-          {/* Voxel 陣列 */}
+          {/* Voxel 陣列：改用 meshStandardMaterial 並加入粗糙度與金屬感，以反映光照 */}
           <instancedMesh ref={meshRef} args={[null, null, mockData.voxels.length]}>
             <boxGeometry args={[0.75, 0.75, 0.75]} />
-            <meshBasicMaterial toneMapped={false} transparent opacity={0.9} />
+            <meshStandardMaterial roughness={0.3} metalness={0.2} transparent opacity={0.85} />
           </instancedMesh>
         </group>
       );
@@ -283,8 +319,11 @@
 
           <Canvas camera={{ position: [16, 14, 16], fov: 45 }}>
             <color attach="background" args={['#050510']} />
-            <ambientLight intensity={0.6} />
-            <directionalLight position={[10, 15, 10]} intensity={1.5} />
+            
+            {/* 提升環境光與平行光亮度，並加入點光源點綴邊緣，確保深色幾何體清晰可見 */}
+            <ambientLight intensity={1.5} />
+            <directionalLight position={[10, 20, 10]} intensity={2.5} />
+            <pointLight position={[-10, -10, -10]} intensity={1.0} color="#00f0ff" />
             
             {/* 根據按鈕動態切換場景 */}
             {phase === 1 && <Phase1_ProteinAndGrid mockData={data} />}
