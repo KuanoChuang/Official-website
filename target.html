@@ -1,90 +1,126 @@
-import React, { useRef, useMemo, useState, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import * as THREE from 'three';
-import mockData from './mock_scan.json'; // 載入剛才產生的 JSON
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D 演算法動畫展示</title>
+  <style>
+    body { margin: 0; overflow: hidden; background-color: #000; }
+    #root { width: 100vw; height: 100vh; }
+  </style>
 
-// 預先建立顏色物件避免記憶體洩漏
-const COLOR_BASE = new THREE.Color("#1a1a2e"); // 尚未掃描到的暗色
-const COLOR_ACTIVE = new THREE.Color("#00f0ff"); // 探針掃描到的霓虹藍色
-const dummy = new THREE.Object3D();
+  <!-- 1. 定義套件來源 (使用 esm.sh CDN) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "three": "https://esm.sh/three@0.160.0",
+        "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.15.12",
+        "@react-three/drei": "https://esm.sh/@react-three/drei@9.96.1"
+      }
+    }
+  </script>
 
-function AlgorithmScanner() {
-  const meshRef = useRef();
-  const probeRef = useRef();
-  const numVoxels = mockData.voxels.length;
-  
-  // 動畫狀態控制
-  const [currentFrame, setCurrentFrame] = useState(0);
+  <!-- 2. 載入 Babel 以便在瀏覽器中即時編譯 JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
 
-  // 初始化所有 Voxel 的位置與預設顏色
-  useEffect(() => {
-    if (!meshRef.current) return;
-    
-    mockData.voxels.forEach((pos, i) => {
-      dummy.position.set(pos[0], pos[1], pos[2]);
-      dummy.updateMatrix();
-      meshRef.current.setMatrixAt(i, dummy.matrix);
-      meshRef.current.setColorAt(i, COLOR_BASE);
-    });
-    
-    meshRef.current.instanceMatrix.needsUpdate = true;
-    meshRef.current.instanceColor.needsUpdate = true;
-  }, []);
+  <!-- 3. 撰寫 React 程式碼 (注意 type="text/babel") -->
+  <script type="text/babel" data-type="module">
+    import React, { useRef, useState, useEffect, useMemo } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import { Canvas, useFrame } from '@react-three/fiber';
+    import { OrbitControls } from '@react-three/drei';
+    import * as THREE from 'three';
 
-  // 播放動畫迴圈
-  useFrame((state, delta) => {
-    if (!meshRef.current || !probeRef.current) return;
+    const COLOR_BASE = new THREE.Color("#1a1a2e");
+    const COLOR_ACTIVE = new THREE.Color("#00f0ff");
+    const dummy = new THREE.Object3D();
 
-    // 控制播放速度，每秒約推進 20 幀
-    const nextFrame = Math.floor(state.clock.elapsedTime * 20) % mockData.frames.length;
-    if (nextFrame === currentFrame) return;
+    function AlgorithmScanner({ mockData }) {
+      const meshRef = useRef();
+      const probeRef = useRef();
+      const [currentFrame, setCurrentFrame] = useState(0);
+      const numVoxels = mockData.voxels.length;
 
-    const frameData = mockData.frames[nextFrame];
+      // 初始化 Voxel 矩陣
+      useEffect(() => {
+        if (!meshRef.current) return;
+        mockData.voxels.forEach((pos, i) => {
+          dummy.position.set(pos[0], pos[1], pos[2]);
+          dummy.updateMatrix();
+          meshRef.current.setMatrixAt(i, dummy.matrix);
+          meshRef.current.setColorAt(i, COLOR_BASE);
+        });
+        meshRef.current.instanceMatrix.needsUpdate = true;
+        meshRef.current.instanceColor.needsUpdate = true;
+      }, [mockData]);
 
-    // 1. 更新探針球體位置
-    probeRef.current.position.set(...frameData.probe_pos);
+      // 動畫播放迴圈
+      useFrame((state) => {
+        if (!meshRef.current || !probeRef.current) return;
 
-    // 2. 重置所有 Voxel 為暗色
-    for (let i = 0; i < numVoxels; i++) {
-      meshRef.current.setColorAt(i, COLOR_BASE);
+        const nextFrame = Math.floor(state.clock.elapsedTime * 20) % mockData.frames.length;
+        if (nextFrame === currentFrame) return;
+
+        const frameData = mockData.frames[nextFrame];
+        
+        // 更新探針位置
+        probeRef.current.position.set(...frameData.probe_pos);
+
+        // 重置顏色並點亮目標
+        for (let i = 0; i < numVoxels; i++) {
+          meshRef.current.setColorAt(i, COLOR_BASE);
+        }
+        frameData.active_indices.forEach(index => {
+          meshRef.current.setColorAt(index, COLOR_ACTIVE);
+        });
+
+        meshRef.current.instanceColor.needsUpdate = true;
+        setCurrentFrame(nextFrame);
+      });
+
+      return (
+        <group>
+          <mesh ref={probeRef}>
+            <sphereGeometry args={[2.5, 32, 32]} />
+            <meshStandardMaterial color="#ff0055" transparent opacity={0.6} />
+          </mesh>
+          <instancedMesh ref={meshRef} args={[null, null, numVoxels]}>
+            <boxGeometry args={[0.8, 0.8, 0.8]} />
+            <meshBasicMaterial toneMapped={false} />
+          </instancedMesh>
+        </group>
+      );
     }
 
-    // 3. 將目前被掃描到的 Voxel 亮起
-    frameData.active_indices.forEach(index => {
-      meshRef.current.setColorAt(index, COLOR_ACTIVE);
-    });
+    function App() {
+      const [data, setData] = useState(null);
 
-    // 4. 通知 Three.js 核心更新顏色渲染
-    meshRef.current.instanceColor.needsUpdate = true;
-    setCurrentFrame(nextFrame);
-  });
+      // 非同步載入 JSON 檔案
+      useEffect(() => {
+        fetch('./mock_scan.json')
+          .then(res => res.json())
+          .then(setData)
+          .catch(err => console.error("載入 JSON 失敗:", err));
+      }, []);
 
-  return (
-    <group>
-      {/* 探針實體 */}
-      <mesh ref={probeRef}>
-        <sphereGeometry args={[2.5, 32, 32]} />
-        <meshStandardMaterial color="#ff0055" transparent opacity={0.6} />
-      </mesh>
+      if (!data) return <div style={{ color: 'white', padding: '20px' }}>載入動畫資料中...</div>;
 
-      {/* Voxel 陣列：使用 InstancedMesh 高效渲染 */}
-      <instancedMesh ref={meshRef} args={[null, null, numVoxels]}>
-        <boxGeometry args={[0.8, 0.8, 0.8]} />
-        <meshBasicMaterial toneMapped={false} />
-      </instancedMesh>
-    </group>
-  );
-}
+      return (
+        <Canvas camera={{ position: [20, 15, 20], fov: 45 }}>
+          <ambientLight intensity={0.5} />
+          <AlgorithmScanner mockData={data} />
+          <OrbitControls autoRotate autoRotateSpeed={1.0} />
+        </Canvas>
+      );
+    }
 
-export default function App() {
-  return (
-    <div style={{ width: '100vw', height: '100vh', background: '#000' }}>
-      <Canvas camera={{ position: [20, 15, 20], fov: 45 }}>
-        <ambientLight intensity={0.5} />
-        <AlgorithmScanner />
-        <OrbitControls autoRotate autoRotateSpeed={1.0} />
-      </Canvas>
-    </div>
-  );
-}
+    const root = createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
