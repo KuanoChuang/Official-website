@@ -58,7 +58,7 @@
     /* Comparison Table Styles */
     .comparison-table th {
       position: sticky;
-      top: 80px; /* offset for fixed header */
+      top: 80px; 
       z-index: 10;
       background: #111827;
     }
@@ -67,6 +67,51 @@
     }
     .comparison-table tr:hover {
       background: rgba(255,255,255,0.02);
+    }
+
+    /* ================= 價格切換動畫 ================= */
+    
+    /* 1. 雷射光束 */
+    .laser-beam {
+      position: absolute;
+      left: -5%;
+      top: 50%;
+      width: 0;
+      height: 3px;
+      background: #F000FF;
+      box-shadow: 0 0 10px #F000FF, 0 0 20px #F000FF;
+      border-radius: 2px;
+      transform: translateY(-50%) rotate(-3deg);
+      animation: laserStrike 0.4s ease-out forwards;
+      z-index: 10;
+    }
+    @keyframes laserStrike {
+      0% { width: 0; opacity: 1; }
+      50% { width: 110%; opacity: 1; }
+      100% { width: 110%; opacity: 0; }
+    }
+
+    /* 2. 文字錯位熔毀下墜 */
+    .text-melt {
+      display: inline-block;
+      animation: textMelt 0.5s ease-in forwards;
+      animation-delay: 0.15s;
+    }
+    @keyframes textMelt {
+      0% { transform: skewX(0); filter: blur(0); opacity: 1; color: white; }
+      30% { transform: skewX(-15deg); filter: blur(2px); color: #F87171; }
+      100% { transform: translateY(15px) skewX(-20deg) scale(0.9); filter: blur(8px); opacity: 0; }
+    }
+
+    /* 3. 量子躍遷彈出 */
+    .cyber-pop {
+      display: inline-block;
+      animation: cyberPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes cyberPop {
+      0% { opacity: 0; transform: translateY(-15px) scale(1.1); text-shadow: 0 0 20px #00E5FF; color: #00E5FF; }
+      70% { opacity: 1; transform: translateY(0) scale(1); text-shadow: 0 0 10px rgba(0,229,255,0.5); color: white; }
+      100% { opacity: 1; transform: translateY(0) scale(1); text-shadow: none; color: white; }
     }
   </style>
 </head>
@@ -274,7 +319,7 @@
       </div>
 
       <!-- Toggle Switch (Monthly / Annual) - iOS Segmented Control -->
-      <div class="flex justify-center mb-12">
+      <div class="flex justify-center mb-16">
         <div id="toggle-container" class="relative flex items-center p-1 bg-gray-900 rounded-full border border-gray-700 cursor-pointer w-64 h-12 shadow-inner">
           <input type="checkbox" id="billing-toggle" class="sr-only">
           <!-- 膠囊滑塊背景 -->
@@ -294,8 +339,8 @@
           <div class="text-center mb-8 h-36 flex flex-col justify-center">
             <h3 class="text-xl font-bold text-white mb-2">Trial</h3>
             <p class="text-sm text-gray-400 mb-4">首次接觸模擬技術</p>
-            <div class="text-3xl font-black text-white mb-2">$ 100 <span class="text-sm font-medium text-gray-500">/ 次</span></div>
-            <p class="text-molris-cyan text-sm font-medium">100 credits / 次</p>
+            <div class="text-3xl font-black text-white mb-2 h-10 flex items-center justify-center">$ 100 <span class="text-sm font-medium text-gray-500 ml-1">/ 次</span></div>
+            <p class="text-molris-cyan text-sm font-medium mt-2">100 credits / 次</p>
           </div>
           
           <div class="flex-grow border-t border-gray-800 pt-6">
@@ -321,8 +366,8 @@
           <div class="text-center mb-8 h-36 flex flex-col justify-center">
             <h3 class="text-xl font-bold text-white mb-2">Regular</h3>
             <p class="text-sm text-gray-400 mb-4">初階研究</p>
-            <div class="text-3xl font-black text-white mb-2">$ 1,000 <span class="text-sm font-medium text-gray-500">/ 月</span></div>
-            <p class="text-molris-cyan text-sm font-medium">1,250 credits / 月</p>
+            <div class="text-3xl font-black text-white mb-2 h-10 flex items-center justify-center">$ 1,000 <span class="text-sm font-medium text-gray-500 ml-1">/ 月</span></div>
+            <p class="text-molris-cyan text-sm font-medium mt-2">1,250 credits / 月</p>
           </div>
           
           <div class="flex-grow border-t border-gray-800 pt-6">
@@ -372,14 +417,17 @@
           
           <!-- Annual Gift Badge (漸層) -->
           <div class="annual-badge hidden absolute -top-4 -right-4 bg-gradient-to-r from-molris-cyan to-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-[0_0_15px_rgba(0,229,255,0.5)] flex items-center gap-1 z-20">
-            <i class="fa-solid fa-gift"></i> 送 1 個月
+            <i class="fa-solid fa-gift"></i> 送 3000 點
           </div>
 
           <div class="text-center mb-8 h-36 flex flex-col justify-center">
             <h3 class="text-xl font-bold text-white mb-2">Plus</h3>
             <p class="text-sm text-gray-400 mb-4 opacity-0 hidden">佔位符</p> <!-- 隱藏但佔位以平衡高度 -->
-            <div id="plus-price" class="text-3xl font-black text-white mb-2">$ 1,999 <span class="text-sm font-medium text-gray-500">/ 月</span></div>
-            <p class="text-molris-cyan text-sm font-medium">3,000 credits / 月</p>
+            <div id="plus-price" class="text-3xl font-black text-white mb-2 h-10 flex items-center justify-center">
+              <span class="text-white">$ 1,999</span> 
+              <span class="text-sm font-medium text-gray-500 ml-1">/ 月</span>
+            </div>
+            <p class="text-molris-cyan text-sm font-medium mt-2">3,000 credits / 月</p>
           </div>
           
           <div class="flex-grow border-t border-gray-800 pt-6">
@@ -429,7 +477,7 @@
           
           <!-- Annual Gift Badge (漸層) -->
           <div class="annual-badge hidden absolute -top-4 -right-4 bg-gradient-to-r from-molris-cyan to-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-[0_0_15px_rgba(0,229,255,0.5)] flex items-center gap-1 z-20">
-            <i class="fa-solid fa-gift"></i> 送 1 個月
+            <i class="fa-solid fa-gift"></i> 送 12000 點
           </div>
           
           <!-- Most Popular Badge (青色) -->
@@ -439,8 +487,11 @@
 
           <div class="text-center mb-8 h-36 flex flex-col justify-center">
             <h3 class="text-xl font-bold text-white mb-2">Pro</h3>
-            <div id="pro-price" class="text-3xl font-black text-white mb-2">$ 7,699 <span class="text-sm font-medium text-molris-cyan/70">/ 月</span></div>
-            <p class="text-molris-cyan text-sm font-medium">12,000 credits / 月</p>
+            <div id="pro-price" class="text-3xl font-black text-white mb-2 h-10 flex items-center justify-center">
+              <span class="text-white">$ 7,699</span> 
+              <span class="text-sm font-medium text-molris-cyan/70 ml-1">/ 月</span>
+            </div>
+            <p class="text-molris-cyan text-sm font-medium mt-2">12,000 credits / 月</p>
           </div>
           
           <div class="flex-grow border-t border-molris-cyan/20 pt-6">
@@ -493,19 +544,19 @@
       </div>
 
       <!-- Pricing Grid - Bottom 2 Custom Tiers -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-16">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 mb-16">
         
         <!-- Tier 5: Special Edition -->
-        <div class="bg-gray-900/40 rounded-3xl border border-gray-800 transition-all duration-300 hover:-translate-y-2 hover:bg-gray-900/60 hover:border-gray-600 hover:shadow-xl flex flex-col sm:flex-row overflow-hidden">
+        <div class="bg-gray-900/40 rounded-3xl border border-gray-800 transition-all duration-300 hover:-translate-y-2 hover:bg-gray-900/60 hover:border-gray-600 hover:shadow-xl flex flex-col md:flex-row overflow-hidden">
           
           <!-- 左側：標題、價格與按鈕 -->
-          <div class="sm:w-2/5 p-8 flex flex-col justify-between relative">
+          <div class="md:w-2/5 p-8 flex flex-col justify-between relative">
             <div>
               <h3 class="text-2xl font-bold text-white mb-2">Special Edition</h3>
               <p class="text-sm text-gray-400">特定研究領域</p>
             </div>
             
-            <div class="mt-8 mb-8 sm:mb-0">
+            <div class="mt-8 mb-8 md:mb-0">
               <div class="text-2xl font-black text-white mb-1">諮詢報價</div>
               <p class="text-molris-cyan text-sm font-medium">客製化額度分配</p>
             </div>
@@ -516,30 +567,30 @@
           </div>
           
           <!-- 右側：清單 (帶有左邊框分隔線) -->
-          <div class="sm:w-3/5 p-8 bg-black/20 sm:border-l border-t sm:border-t-0 border-gray-800/80">
-            <ul class="grid grid-cols-1 gap-y-4 text-sm text-gray-300">
-              <li class="flex items-start gap-3 mb-2 pb-2 border-b border-gray-800/50">
+          <div class="md:w-3/5 p-8 bg-black/20 md:border-l border-t md:border-t-0 border-gray-800/80">
+            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4 text-sm text-gray-300">
+              <li class="col-span-1 sm:col-span-2 flex items-start gap-3 mb-2 pb-2 border-b border-gray-800/50">
                 <i class="fa-solid fa-plus text-white bg-gray-800 p-1 rounded text-[10px] mt-0.5"></i>
                 <span class="font-bold text-white">包含 Pro 全部功能</span>
               </li>
               <li class="flex items-start gap-3">
-                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <i class="fa-solid fa-check text-molris-cyan mt-1 shrink-0"></i>
                 <span>支援演算法優化</span>
               </li>
               <li class="flex items-start gap-3">
-                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <i class="fa-solid fa-check text-molris-cyan mt-1 shrink-0"></i>
                 <span>允許自定義</span>
               </li>
               <li class="flex items-start gap-3">
-                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <i class="fa-solid fa-check text-molris-cyan mt-1 shrink-0"></i>
                 <span>允許客制化分子</span>
               </li>
               <li class="flex items-start gap-3">
-                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <i class="fa-solid fa-check text-molris-cyan mt-1 shrink-0"></i>
                 <span>奈米粒子建模</span>
               </li>
               <li class="flex items-start gap-3">
-                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <i class="fa-solid fa-check text-molris-cyan mt-1 shrink-0"></i>
                 <span>複雜三維結構</span>
               </li>
             </ul>
@@ -547,16 +598,16 @@
         </div>
 
         <!-- Tier 6: Enterprise -->
-        <div class="bg-gray-900/40 rounded-3xl border border-gray-800 transition-all duration-300 hover:-translate-y-2 hover:bg-gray-900/60 hover:border-gray-600 hover:shadow-xl flex flex-col sm:flex-row overflow-hidden">
+        <div class="bg-gray-900/40 rounded-3xl border border-gray-800 transition-all duration-300 hover:-translate-y-2 hover:bg-gray-900/60 hover:border-gray-600 hover:shadow-xl flex flex-col md:flex-row overflow-hidden">
           
           <!-- 左側：標題、價格與按鈕 -->
-          <div class="sm:w-2/5 p-8 flex flex-col justify-between relative">
+          <div class="md:w-2/5 p-8 flex flex-col justify-between relative">
             <div>
               <h3 class="text-2xl font-bold text-white mb-2">Enterprise</h3>
               <p class="text-sm text-gray-400">規模化組織</p>
             </div>
             
-            <div class="mt-8 mb-8 sm:mb-0">
+            <div class="mt-8 mb-8 md:mb-0">
               <div class="text-2xl font-black text-white mb-1">諮詢我們</div>
               <p class="text-molris-cyan text-sm font-medium">獨立運作</p>
             </div>
@@ -567,26 +618,26 @@
           </div>
           
           <!-- 右側：清單 (帶有左邊框分隔線) -->
-          <div class="sm:w-3/5 p-8 bg-black/20 sm:border-l border-t sm:border-t-0 border-gray-800/80">
-            <ul class="grid grid-cols-1 gap-y-4 text-sm text-gray-300">
-              <li class="flex items-start gap-3 mb-2 pb-2 border-b border-gray-800/50">
+          <div class="md:w-3/5 p-8 bg-black/20 md:border-l border-t md:border-t-0 border-gray-800/80">
+            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4 text-sm text-gray-300">
+              <li class="col-span-1 sm:col-span-2 flex items-start gap-3 mb-2 pb-2 border-b border-gray-800/50">
                 <i class="fa-solid fa-plus text-white bg-gray-800 p-1 rounded text-[10px] mt-0.5"></i>
                 <span class="font-bold text-white">包含 Pro 全部功能</span>
               </li>
               <li class="flex items-start gap-3">
-                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <i class="fa-solid fa-check text-molris-cyan mt-1 shrink-0"></i>
                 <span>商業使用許可</span>
               </li>
               <li class="flex items-start gap-3">
-                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <i class="fa-solid fa-check text-molris-cyan mt-1 shrink-0"></i>
                 <span>獨立硬體設備</span>
               </li>
               <li class="flex items-start gap-3">
-                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <i class="fa-solid fa-check text-molris-cyan mt-1 shrink-0"></i>
                 <span>教育訓練</span>
               </li>
               <li class="flex items-start gap-3">
-                <i class="fa-solid fa-check text-molris-cyan mt-1"></i>
+                <i class="fa-solid fa-check text-molris-cyan mt-1 shrink-0"></i>
                 <span>專家諮詢</span>
               </li>
             </ul>
@@ -839,7 +890,7 @@
     </div>
   </footer>
 
-  <!-- Interactive Script for Toggle -->
+  <!-- Interactive Script for Toggle and Animations -->
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const toggleContainer = document.getElementById("toggle-container");
@@ -849,19 +900,81 @@
       const btnAnnual = document.getElementById("btn-annual");
       const annualBadges = document.querySelectorAll(".annual-badge");
       
-      // 抓取價格元素
       const plusPrice = document.getElementById("plus-price");
       const proPrice = document.getElementById("pro-price");
 
-      // 安全機制：若找不到切換容器則不執行後續，避免報錯
       if (!toggleContainer || !toggleInput) return;
 
-      // Set initial state
-      toggleInput.checked = false;
+      // ================= 動畫 1：雷射下殺 (月轉年) =================
+      function animatePriceDown(element, newPrice, suffixColorClass) {
+        if (!element) return;
+        if (element.animationId) cancelAnimationFrame(element.animationId);
+
+        let currentPrice = element.innerText.split('/')[0].trim();
+        if (currentPrice === newPrice) return;
+
+        // 階段 1：生成雷射光束與準備熔毀的文字
+        element.innerHTML = `
+          <div class="relative inline-block">
+            <span class="text-melt text-white">${currentPrice}</span>
+            <div class="laser-beam"></div>
+          </div>
+          <span class="text-sm font-medium ${suffixColorClass} ml-1">/ 月</span>
+        `;
+
+        // 階段 2：等待 550 毫秒(舊字體燒毀後)，替換為新價格並觸發量子躍遷動畫
+        setTimeout(() => {
+          element.innerHTML = `
+            <span class="cyber-pop text-white">${newPrice}</span> 
+            <span class="text-sm font-medium ${suffixColorClass} ml-1">/ 月</span>
+          `;
+        }, 550);
+      }
+
+      // ================= 動畫 2：里程表滾動上升 (年轉月) =================
+      function animatePriceUp(element, startPriceStr, endPriceStr, suffixColorClass) {
+        if (!element) return;
+        if (element.animationId) cancelAnimationFrame(element.animationId);
+
+        const startVal = parseInt(startPriceStr.replace(/[^0-9]/g, ''));
+        const endVal = parseInt(endPriceStr.replace(/[^0-9]/g, ''));
+        
+        const duration = 1500; 
+        let startTime = null;
+        
+        // 緩動演算法 (Ease Out Quint) 
+        const easeOutQuint = (t) => 1 - Math.pow(1 - t, 5);
+
+        const step = (currentTime) => {
+          if (!startTime) startTime = currentTime;
+          const progress = Math.min((currentTime - startTime) / duration, 1);
+          
+          const currentVal = Math.floor(startVal + (endVal - startVal) * easeOutQuint(progress));
+          const formattedVal = "$ " + currentVal.toLocaleString('en-US');
+          
+          element.innerHTML = `
+            <span class="text-white">${formattedVal}</span> 
+            <span class="text-sm font-medium ${suffixColorClass} ml-1">/ 月</span>
+          `;
+          
+          if (progress < 1) {
+            element.animationId = window.requestAnimationFrame(step);
+          } else {
+            element.innerHTML = `
+              <span class="text-white">${endPriceStr}</span> 
+              <span class="text-sm font-medium ${suffixColorClass} ml-1">/ 月</span>
+            `;
+          }
+        };
+        
+        element.animationId = window.requestAnimationFrame(step);
+      }
+
+      toggleInput.checked = false; // Initialize
 
       function updateToggleState() {
         if (toggleInput.checked) {
-          // Switch to Annual
+          // ================= 切換為【年費制】 =================
           if (slideBg) slideBg.style.transform = "translateX(100%)";
           
           if (btnMonthly) {
@@ -878,13 +991,13 @@
             // Add a breathing glow effect
             badge.classList.add("animate-[pulse_2s_ease-in-out_infinite]");
           });
-          
-          // 切換為年費制價格 (優惠價)
-          if (plusPrice) plusPrice.innerHTML = '$ 1,899 <span class="text-sm font-medium text-gray-500">/ 月</span>';
-          if (proPrice) proPrice.innerHTML = '$ 6,999 <span class="text-sm font-medium text-molris-cyan/70">/ 月</span>';
+
+          // 觸發價格【下殺】雷射動畫
+          animatePriceDown(plusPrice, "$ 1,899", "text-gray-500");
+          animatePriceDown(proPrice, "$ 6,999", "text-molris-cyan/70");
 
         } else {
-          // Switch to Monthly
+          // ================= 切換為【月費制】 =================
           if (slideBg) slideBg.style.transform = "translateX(0)";
           
           if (btnMonthly) {
@@ -900,10 +1013,10 @@
             badge.classList.add("hidden");
             badge.classList.remove("animate-[pulse_2s_ease-in-out_infinite]");
           });
-          
-          // 切換回月費制價格 (原價)
-          if (plusPrice) plusPrice.innerHTML = '$ 1,999 <span class="text-sm font-medium text-gray-500">/ 月</span>';
-          if (proPrice) proPrice.innerHTML = '$ 7,699 <span class="text-sm font-medium text-molris-cyan/70">/ 月</span>';
+
+          // 觸發價格【滾動上升】動畫
+          animatePriceUp(plusPrice, "$ 1,899", "$ 1,999", "text-gray-500");
+          animatePriceUp(proPrice, "$ 6,999", "$ 7,699", "text-molris-cyan/70");
         }
       }
 
