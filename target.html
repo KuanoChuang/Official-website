@@ -3,171 +3,293 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D 演算法動畫展示 - 外部 JSON 擷取版</title>
+  <title>3D 演算法動畫展示 - 四階段完整版</title>
   <style>
-    body { margin: 0; overflow: hidden; background-color: #000; }
+    body { margin: 0; overflow: hidden; background-color: #050510; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     #root { width: 100vw; height: 100vh; }
-    #info { 
-      position: absolute; 
-      bottom: 20px; 
-      left: 20px; 
-      color: white; 
-      font-family: sans-serif; 
-      background: rgba(0,0,0,0.7); 
-      padding: 15px; 
-      border-radius: 8px; 
-      border: 1px solid #333; 
-      z-index: 10;
-      line-height: 1.5;
+    
+    /* UI 控制面板樣式 */
+    .ui-panel {
+      position: absolute; top: 20px; right: 20px; z-index: 10;
+      display: flex; flex-direction: column; gap: 10px;
+      background: rgba(10, 15, 30, 0.85); padding: 20px; border-radius: 12px;
+      border: 1px solid #1a2a40; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(5px);
+    }
+    .ui-panel h2 { color: #fff; margin: 0 0 15px 0; font-size: 18px; text-transform: uppercase; letter-spacing: 1px;}
+    .phase-btn {
+      background: #111; color: #888; border: 1px solid #333;
+      padding: 12px 15px; border-radius: 6px; cursor: pointer;
+      font-weight: bold; text-align: left; transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    .phase-btn:hover { background: #1a2a40; color: #00f0ff; border-color: #00f0ff; }
+    .phase-btn.active { background: #00f0ff; color: #000; border-color: #00f0ff; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+    
+    .loading {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      color: #00f0ff; font-size: 24px; font-weight: bold; letter-spacing: 2px;
     }
   </style>
 
-  <!-- 1. 定義套件來源 (使用 esm.sh CDN) -->
+  <!-- 鎖定 Three.js 版本以確保相容性 -->
   <script type="importmap">
     {
       "imports": {
         "react": "https://esm.sh/react@18.2.0",
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
         "three": "https://esm.sh/three@0.150.0",
-        "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.13.0?external=react,react-dom,three",
-        "@react-three/drei": "https://esm.sh/@react-three/drei@9.70.0?external=react,react-dom,three,@react-three/fiber"
+        "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.13.0?deps=three@0.150.0",
+        "@react-three/drei": "https://esm.sh/@react-three/drei@9.70.0?deps=three@0.150.0,@react-three/fiber@8.13.0"
       }
     }
   </script>
-
-  <!-- 2. 載入 Babel 以便在瀏覽器中即時編譯 JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-  <div id="info">
-    <b>3D 網格掃描法 (Grid Scanning)</b><br/>
-    正在讀取同一目錄下的 <code>mock_scan.json</code><br/>
-    <small style="color:#aaa;">可拖曳滑鼠旋轉視角，滾輪縮放。</small>
-  </div>
   <div id="root"></div>
 
-  <!-- 3. 撰寫 React 程式碼 (注意 type="text/babel") -->
   <script type="text/babel" data-type="module">
-    import React, { useRef, useState, useEffect } from 'react';
+    import React, { useRef, useState, useEffect, useMemo } from 'react';
     import { createRoot } from 'react-dom/client';
     import { Canvas, useFrame } from '@react-three/fiber';
-    import { OrbitControls } from '@react-three/drei';
+    import { OrbitControls, Box, Sphere } from '@react-three/drei';
     import * as THREE from 'three';
 
-    // 預先宣告顏色與佔位用 3D 物件，避免迴圈內重複建立浪費記憶體
-    const COLOR_BASE = new THREE.Color("#1a1a2e"); // 未掃描的暗色
-    const COLOR_ACTIVE = new THREE.Color("#00f0ff"); // 掃描到的霓虹色
-    const dummy = new THREE.Object3D();
+    // ==========================================
+    // Phase 0 & 1: 蛋白質實體與網格化
+    // ==========================================
+    function Phase1_ProteinAndGrid({ mockData, showGrid }) {
+      return (
+        <group>
+          {/* 渲染蛋白質原子 */}
+          {mockData.atoms.map((pos, i) => (
+            <Sphere key={i} args={[1.5, 32, 32]} position={pos}>
+              <meshStandardMaterial color={showGrid ? "#3a4a60" : "#ff3366"} transparent opacity={0.8} roughness={0.2} />
+            </Sphere>
+          ))}
+          
+          {/* 顯示 Spatial Hashing 的外框網格 */}
+          {showGrid && (
+            <Box args={[14, 14, 14]} position={[0, 1.5, 0]}>
+              <meshBasicMaterial color="#00f0ff" wireframe transparent opacity={0.3} />
+            </Box>
+          )}
+        </group>
+      );
+    }
 
-    function AlgorithmScanner({ mockData }) {
+    // ==========================================
+    // Phase 2: 距離場切面 (利用 GLSL Shader 呈現熱力圖)
+    // ==========================================
+    function Phase2_DistanceField({ mockData }) {
+      const planeRef = useRef();
+      
+      // 將原子座標傳遞給 Shader
+      const uniforms = useMemo(() => {
+        const MAX_ATOMS = 50;
+        const paddedAtoms = [];
+        // 補齊陣列長度以符合 Shader 嚴格要求
+        for (let i = 0; i < MAX_ATOMS; i++) {
+          if (i < mockData.atoms.length) paddedAtoms.push(new THREE.Vector3(...mockData.atoms[i]));
+          else paddedAtoms.push(new THREE.Vector3(999, 999, 999));
+        }
+        return {
+          atoms: { value: paddedAtoms },
+          numAtoms: { value: mockData.atoms.length }
+        };
+      }, [mockData]);
+
+      // 動畫：掃描切面上下移動
+      useFrame((state) => {
+        if (planeRef.current) {
+          planeRef.current.position.y = Math.sin(state.clock.elapsedTime) * 4 + 2;
+        }
+      });
+
+      return (
+        <group>
+          {/* 半透明的背景蛋白質，作為參考 */}
+          {mockData.atoms.map((pos, i) => (
+            <Sphere key={`ghost-${i}`} args={[1.5, 16, 16]} position={pos}>
+              <meshBasicMaterial color="#222" wireframe transparent opacity={0.1} />
+            </Sphere>
+          ))}
+          
+          {/* 動態距離場熱力圖平面 */}
+          <mesh ref={planeRef} rotation={[-Math.PI / 2, 0, 0]}>
+            <planeGeometry args={[16, 16, 64, 64]} />
+            <shaderMaterial
+              uniforms={uniforms}
+              transparent={true}
+              side={THREE.DoubleSide}
+              vertexShader={`
+                varying vec3 vWorldPosition;
+                void main() {
+                  vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                  vWorldPosition = worldPosition.xyz;
+                  gl_Position = projectionMatrix * viewMatrix * worldPosition;
+                }
+              `}
+              fragmentShader={`
+                uniform vec3 atoms[50];
+                uniform int numAtoms;
+                varying vec3 vWorldPosition;
+                void main() {
+                  float minDist = 999.0;
+                  // 計算平面上每個像素到最近原子的距離
+                  for(int i = 0; i < 50; i++) {
+                    if(i >= numAtoms) break;
+                    float d = distance(vWorldPosition, atoms[i]);
+                    if(d < minDist) minDist = d;
+                  }
+                  
+                  // 根據距離場(Distance Field)上色
+                  vec3 color = vec3(0.0);
+                  float alpha = 0.8;
+                  if (minDist <= 1.8) {
+                    color = vec3(1.0, 0.2, 0.3); // 碰撞區 (紅)
+                  } else if (minDist <= 3.5) {
+                    color = vec3(1.0, 0.8, 0.0); // 表面/口袋區 (黃)
+                  } else {
+                    color = vec3(0.0, 0.3, 0.8); // 外部空腔 (藍)
+                    alpha = 0.3;
+                  }
+                  
+                  // 繪製格線效果
+                  float grid = mod(vWorldPosition.x, 1.0) < 0.05 || mod(vWorldPosition.z, 1.0) < 0.05 ? 1.0 : 0.0;
+                  gl_FragColor = vec4(color + grid * 0.2, alpha);
+                }
+              `}
+            />
+          </mesh>
+        </group>
+      );
+    }
+
+    // ==========================================
+    // Phase 3 & 4 共用引擎: Voxel 渲染器
+    // ==========================================
+    function Phase34_VoxelEngine({ mockData, phase }) {
       const meshRef = useRef();
       const probeRef = useRef();
       const [currentFrame, setCurrentFrame] = useState(0);
-      const numVoxels = mockData.voxels.length;
+      const dummy = useMemo(() => new THREE.Object3D(), []);
 
-      // 初始化：將所有 Voxel 放到對應位置並設定預設顏色
+      const C_PROTEIN = new THREE.Color("#111116");
+      const C_POCKET_BASE = new THREE.Color("#0a2a4a");
+      const C_POCKET_ACTIVE = new THREE.Color("#00f0ff"); // Phase 3 掃描亮點
+      const C_POCKET_FINAL = new THREE.Color("#ffdd00");  // Phase 4 最終萃取結果
+
       useEffect(() => {
         if (!meshRef.current) return;
         
         mockData.voxels.forEach((pos, i) => {
-          dummy.position.set(pos[0], pos[1], pos[2]);
+          dummy.position.set(...pos);
           dummy.updateMatrix();
           meshRef.current.setMatrixAt(i, dummy.matrix);
-          meshRef.current.setColorAt(i, COLOR_BASE);
+          
+          // 初始化基準顏色
+          let color = new THREE.Color("#000"); // 預設全黑隱藏
+          if (mockData.protein_voxels.includes(i)) color = C_PROTEIN;
+          else if (mockData.pocket_voxels.includes(i)) {
+            color = phase === 4 ? C_POCKET_FINAL : C_POCKET_BASE;
+          }
+          meshRef.current.setColorAt(i, color);
         });
         
         meshRef.current.instanceMatrix.needsUpdate = true;
         meshRef.current.instanceColor.needsUpdate = true;
-      }, [mockData]);
+      }, [mockData, phase, dummy]);
 
-      // 動畫迴圈：根據 JSON 的幀數更新狀態
       useFrame((state) => {
-        if (!meshRef.current || !probeRef.current) return;
-
-        // 計算目前應該播放哪一幀 (每秒推進約 15 幀)
+        // 只有 Phase 3 需要執行 Rolling Probe 掃描動畫
+        if (phase !== 3 || !meshRef.current || !probeRef.current) return;
+        
         const nextFrame = Math.floor(state.clock.elapsedTime * 15) % mockData.frames.length;
         if (nextFrame === currentFrame) return;
 
         const frameData = mockData.frames[nextFrame];
-        
-        // 1. 更新探針球體位置
-        probeRef.current.position.set(
-          frameData.probe_pos[0], 
-          frameData.probe_pos[1], 
-          frameData.probe_pos[2]
-        );
+        probeRef.current.position.set(...frameData.probe_pos);
 
-        // 2. 重置所有 Voxel 的顏色為暗色
-        for (let i = 0; i < numVoxels; i++) {
-          meshRef.current.setColorAt(i, COLOR_BASE);
-        }
+        // 重置口袋區為底色，並點亮被探針掃到的 Voxel
+        mockData.pocket_voxels.forEach(idx => meshRef.current.setColorAt(idx, C_POCKET_BASE));
+        frameData.active_indices.forEach(idx => meshRef.current.setColorAt(idx, C_POCKET_ACTIVE));
         
-        // 3. 點亮這一幀被探針掃描到的 Voxel
-        frameData.active_indices.forEach(index => {
-          meshRef.current.setColorAt(index, COLOR_ACTIVE);
-        });
-
-        // 4. 標記需要更新渲染
         meshRef.current.instanceColor.needsUpdate = true;
         setCurrentFrame(nextFrame);
       });
 
       return (
         <group>
-          {/* 探針實體 */}
-          <mesh ref={probeRef}>
-            <sphereGeometry args={[2.5, 32, 32]} />
-            <meshStandardMaterial color="#ff0055" transparent opacity={0.8} emissive="#ff0055" emissiveIntensity={0.5} />
-          </mesh>
-
-          {/* Voxel 陣列：使用 InstancedMesh 高效渲染 */}
-          <instancedMesh ref={meshRef} args={[null, null, numVoxels]}>
+          {phase === 3 && (
+            <mesh ref={probeRef}>
+              <sphereGeometry args={[2.0, 32, 32]} />
+              <meshStandardMaterial color="#00f0ff" transparent opacity={0.6} emissive="#00f0ff" emissiveIntensity={0.5} />
+            </mesh>
+          )}
+          <instancedMesh ref={meshRef} args={[null, null, mockData.voxels.length]}>
             <boxGeometry args={[0.7, 0.7, 0.7]} />
-            <meshBasicMaterial toneMapped={false} transparent opacity={0.9} />
+            <meshBasicMaterial toneMapped={false} />
           </instancedMesh>
         </group>
       );
     }
 
+    // ==========================================
+    // 主應用程式與 UI
+    // ==========================================
     function App() {
       const [data, setData] = useState(null);
-      const [error, setError] = useState(null);
+      const [phase, setPhase] = useState(0);
 
-      // 載入 JSON 資料
       useEffect(() => {
-        // 嘗試抓取外部的 mock_scan.json
-        fetch('./mock_scan.json')
-          .then(res => {
-            if (!res.ok) throw new Error("HTTP 狀態碼: " + res.status);
-            return res.json();
-          })
+        // 注意：如果你改了 JSON 的名字，請在這裡一併修改
+        fetch('./mock_protein.json')
+          .then(res => res.json())
           .then(setData)
-          .catch(err => {
-            console.error("載入 JSON 失敗:", err);
-            setError("無法載入 mock_scan.json。請確保檔案名稱正確並存在！");
-          });
+          .catch(err => console.error("載入 JSON 失敗:", err));
       }, []);
 
-      if (error) {
-        return <div style={{ color: '#ff3366', padding: '20px', fontFamily: 'sans-serif', position: 'absolute', zIndex: 99 }}>{error}</div>;
-      }
+      if (!data) return <div className="loading">讀取演算法軌跡資料中...</div>;
 
-      // 將載入畫面交給 React 管理，避免 DOM 衝突
-      if (!data) {
-        return (
-          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: '#00f0ff', fontFamily: 'sans-serif', fontSize: '24px', fontWeight: 'bold', letterSpacing: '2px', zIndex: 10 }}>
-            讀取 JSON 軌跡資料中...
-          </div>
-        );
-      }
+      const phases = [
+        { id: 0, name: "0. 蛋白質外觀 (Protein Structure)" },
+        { id: 1, name: "1. 網格化與雜湊 (Spatial Hashing)" },
+        { id: 2, name: "2. 距離場熱力切面 (Distance Field)" },
+        { id: 3, name: "3. 滾動探針掃描 (Grid Scanning)" },
+        { id: 4, name: "4. 萃取結合口袋 (Pocket Extraction)" }
+      ];
 
-      // 渲染 3D 畫面
       return (
-        <Canvas camera={{ position: [20, 15, 20], fov: 45 }}>
-          <ambientLight intensity={0.5} />
-          <AlgorithmScanner mockData={data} />
-          <OrbitControls autoRotate autoRotateSpeed={1.5} />
-        </Canvas>
+        <>
+          <div className="ui-panel">
+            <h2>Algorithm Stages</h2>
+            {phases.map(p => (
+              <button 
+                key={p.id} 
+                className={`phase-btn ${phase === p.id ? 'active' : ''}`}
+                onClick={() => setPhase(p.id)}
+              >
+                {p.name}
+              </button>
+            ))}
+          </div>
+
+          <Canvas camera={{ position: [15, 12, 15], fov: 45 }}>
+            <color attach="background" args={['#050510']} />
+            <ambientLight intensity={0.6} />
+            <directionalLight position={[10, 10, 5]} intensity={1} />
+            
+            {/* 根據選擇的階段切換渲染組件 */}
+            {phase === 0 && <Phase1_ProteinAndGrid mockData={data} showGrid={false} />}
+            {phase === 1 && <Phase1_ProteinAndGrid mockData={data} showGrid={true} />}
+            {phase === 2 && <Phase2_DistanceField mockData={data} />}
+            {(phase === 3 || phase === 4) && <Phase34_VoxelEngine mockData={data} phase={phase} />}
+            
+            <OrbitControls autoRotate={phase === 0} autoRotateSpeed={1.0} target={[0, 2, 0]} />
+          </Canvas>
+        </>
       );
     }
 
