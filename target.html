@@ -205,40 +205,65 @@
     // ==========================================
     function Phase34_VoxelEngine({ mockData, phase }) {
       const meshRef = useRef();
+      const wireframeRef = useRef(); // 新增 wireframeRef 來處理空心線框
       const probeRef = useRef();
       const dummy = useMemo(() => new THREE.Object3D(), []);
 
       // 提升顏色明度，解決黑色背景下看不清楚的問題
-      const C_PROTEIN = new THREE.Color("#4a5568"); // 隱藏狀態的蛋白質改為石板灰 (原本太黑)
+      const C_PROTEIN = new THREE.Color("#4a5568"); // 隱藏狀態的蛋白質改為石板灰
       const C_POCKET_BASE = new THREE.Color("#2b6cb0"); // Phase 3 掃描底色改為亮藍色
       const C_POCKET_ACTIVE = new THREE.Color("#00f0ff"); // Phase 3 掃描亮點 (青藍)
       const C_POCKET_FINAL = new THREE.Color("#ffdd00");  // Phase 4 最終口袋 (金色)
 
-      // 當切換 Phase 時，重新初始化所有 Voxel 的基準顏色
+      // 當切換 Phase 時，重新初始化所有 Voxel 的基準顏色與顯示狀態
       useEffect(() => {
-        if (!meshRef.current) return;
+        if (!meshRef.current || !wireframeRef.current) return;
         
         mockData.voxels.forEach((pos, i) => {
           dummy.position.set(...pos);
           dummy.updateMatrix();
-          meshRef.current.setMatrixAt(i, dummy.matrix);
           
+          // Phase 4 顯示實體方塊，Phase 3 顯示空心線框
+          if (phase === 4) {
+             meshRef.current.setMatrixAt(i, dummy.matrix);
+             wireframeRef.current.setMatrixAt(i, new THREE.Matrix4().makeScale(0,0,0)); // 隱藏線框
+          } else {
+             wireframeRef.current.setMatrixAt(i, dummy.matrix);
+             meshRef.current.setMatrixAt(i, new THREE.Matrix4().makeScale(0,0,0)); // 隱藏實體方塊
+          }
+
           let color = new THREE.Color("#000000"); // 預設黑
+          let isVisible = false; // 是否顯示這個網格
+          
           if (mockData.protein_voxels.includes(i)) {
             color = C_PROTEIN;
+            isVisible = true;
           } else if (mockData.pocket_voxels.includes(i)) {
             color = phase === 4 ? C_POCKET_FINAL : C_POCKET_BASE;
+            isVisible = true;
           }
-          meshRef.current.setColorAt(i, color);
+          
+          // 如果不屬於蛋白質或口袋，或者在 Phase 3 的蛋白質實體，我們可以選擇性隱藏以增加通透度
+          // 這裡我們讓不相關的網格完全消失 (縮放為0)
+          if(!isVisible) {
+              const hiddenMatrix = new THREE.Matrix4().makeScale(0,0,0);
+              meshRef.current.setMatrixAt(i, hiddenMatrix);
+              wireframeRef.current.setMatrixAt(i, hiddenMatrix);
+          } else {
+              meshRef.current.setColorAt(i, color);
+              wireframeRef.current.setColorAt(i, color);
+          }
         });
         
         meshRef.current.instanceMatrix.needsUpdate = true;
         meshRef.current.instanceColor.needsUpdate = true;
+        wireframeRef.current.instanceMatrix.needsUpdate = true;
+        wireframeRef.current.instanceColor.needsUpdate = true;
       }, [mockData, phase, dummy]);
 
       // 動畫：處理 Phase 3 的探針掃描與動態點亮
       useFrame((state) => {
-        if (phase !== 3 || !meshRef.current || !probeRef.current) return;
+        if (phase !== 3 || !wireframeRef.current || !probeRef.current) return;
         
         const nextFrame = Math.floor(state.clock.elapsedTime * 15) % mockData.frames.length;
         const frameData = mockData.frames[nextFrame];
@@ -246,12 +271,13 @@
         // 移動探針
         probeRef.current.position.set(...frameData.probe_pos);
 
-        // 每幀重置口袋區為底色
-        mockData.pocket_voxels.forEach(idx => meshRef.current.setColorAt(idx, C_POCKET_BASE));
-        // 點亮被掃描到的區域
-        frameData.active_indices.forEach(idx => meshRef.current.setColorAt(idx, C_POCKET_ACTIVE));
+        // 每幀重置口袋區為底色 (注意：Phase 3 是更新 wireframeRef)
+        mockData.pocket_voxels.forEach(idx => wireframeRef.current.setColorAt(idx, C_POCKET_BASE));
         
-        meshRef.current.instanceColor.needsUpdate = true;
+        // 點亮被掃描到的區域
+        frameData.active_indices.forEach(idx => wireframeRef.current.setColorAt(idx, C_POCKET_ACTIVE));
+        
+        wireframeRef.current.instanceColor.needsUpdate = true;
       });
 
       return (
@@ -263,10 +289,17 @@
               <meshStandardMaterial color="#00f0ff" transparent opacity={0.6} emissive="#00f0ff" emissiveIntensity={0.5} />
             </mesh>
           )}
-          {/* Voxel 陣列：改用 meshStandardMaterial 並加入粗糙度與金屬感，以反映光照 */}
+          
+          {/* Voxel 陣列 1：Phase 4 萃取口袋使用的實體方塊 */}
           <instancedMesh ref={meshRef} args={[null, null, mockData.voxels.length]}>
             <boxGeometry args={[0.75, 0.75, 0.75]} />
             <meshStandardMaterial roughness={0.3} metalness={0.2} transparent opacity={0.85} />
+          </instancedMesh>
+          
+          {/* Voxel 陣列 2：Phase 3 探針掃描使用的空心網格線 (Wireframe) */}
+          <instancedMesh ref={wireframeRef} args={[null, null, mockData.voxels.length]}>
+            <boxGeometry args={[0.75, 0.75, 0.75]} />
+            <meshBasicMaterial wireframe={true} transparent opacity={0.4} />
           </instancedMesh>
         </group>
       );
