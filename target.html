@@ -28,19 +28,19 @@
     
     .loading {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      color: #00f0ff; font-size: 24px; font-weight: bold; letter-spacing: 2px;
+      color: #00f0ff; font-size: 24px; font-weight: bold; letter-spacing: 2px; text-align: center;
     }
   </style>
 
-  <!-- 鎖定 Three.js 版本以確保相容性 -->
+  <!-- 嚴格鎖定 Three.js 與 React 的相依性，避免 CDN 下載重複實例導致黑屏 -->
   <script type="importmap">
     {
       "imports": {
         "react": "https://esm.sh/react@18.2.0",
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
         "three": "https://esm.sh/three@0.150.0",
-        "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.13.0?deps=three@0.150.0",
-        "@react-three/drei": "https://esm.sh/@react-three/drei@9.70.0?deps=three@0.150.0,@react-three/fiber@8.13.0"
+        "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.13.0?external=react,react-dom,three",
+        "@react-three/drei": "https://esm.sh/@react-three/drei@9.70.0?external=react,react-dom,three,@react-three/fiber"
       }
     }
   </script>
@@ -57,24 +57,22 @@
     import * as THREE from 'three';
 
     // ==========================================
-    // Phase 0 & 1: 蛋白質實體與網格化
+    // Phase 1: 蛋白質實體與網格化 (Spatial Hashing)
     // ==========================================
-    function Phase1_ProteinAndGrid({ mockData, showGrid }) {
+    function Phase1_ProteinAndGrid({ mockData }) {
       return (
         <group>
-          {/* 渲染蛋白質原子 */}
+          {/* 渲染蛋白質原子 (粉紅色) */}
           {mockData.atoms.map((pos, i) => (
             <Sphere key={i} args={[1.5, 32, 32]} position={pos}>
-              <meshStandardMaterial color={showGrid ? "#3a4a60" : "#ff3366"} transparent opacity={0.8} roughness={0.2} />
+              <meshStandardMaterial color="#ff3366" transparent opacity={0.9} roughness={0.2} />
             </Sphere>
           ))}
           
           {/* 顯示 Spatial Hashing 的外框網格 */}
-          {showGrid && (
-            <Box args={[14, 14, 14]} position={[0, 1.5, 0]}>
-              <meshBasicMaterial color="#00f0ff" wireframe transparent opacity={0.3} />
-            </Box>
-          )}
+          <Box args={[15, 12, 15]} position={[0, 1.5, 0]}>
+            <meshBasicMaterial color="#00f0ff" wireframe transparent opacity={0.4} />
+          </Box>
         </group>
       );
     }
@@ -85,11 +83,10 @@
     function Phase2_DistanceField({ mockData }) {
       const planeRef = useRef();
       
-      // 將原子座標傳遞給 Shader
+      // 將原子座標傳遞給 Shader，補齊到 50 顆以符合 Shader 固定陣列長度限制
       const uniforms = useMemo(() => {
         const MAX_ATOMS = 50;
         const paddedAtoms = [];
-        // 補齊陣列長度以符合 Shader 嚴格要求
         for (let i = 0; i < MAX_ATOMS; i++) {
           if (i < mockData.atoms.length) paddedAtoms.push(new THREE.Vector3(...mockData.atoms[i]));
           else paddedAtoms.push(new THREE.Vector3(999, 999, 999));
@@ -103,16 +100,16 @@
       // 動畫：掃描切面上下移動
       useFrame((state) => {
         if (planeRef.current) {
-          planeRef.current.position.y = Math.sin(state.clock.elapsedTime) * 4 + 2;
+          planeRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 4 + 2;
         }
       });
 
       return (
         <group>
-          {/* 半透明的背景蛋白質，作為參考 */}
+          {/* 幽靈蛋白質 (半透明背景參考) */}
           {mockData.atoms.map((pos, i) => (
             <Sphere key={`ghost-${i}`} args={[1.5, 16, 16]} position={pos}>
-              <meshBasicMaterial color="#222" wireframe transparent opacity={0.1} />
+              <meshBasicMaterial color="#333" wireframe transparent opacity={0.15} />
             </Sphere>
           ))}
           
@@ -137,26 +134,26 @@
                 varying vec3 vWorldPosition;
                 void main() {
                   float minDist = 999.0;
-                  // 計算平面上每個像素到最近原子的距離
+                  // 計算平面上每個像素到最近原子的距離 (重現 EDT 距離場邏輯)
                   for(int i = 0; i < 50; i++) {
                     if(i >= numAtoms) break;
                     float d = distance(vWorldPosition, atoms[i]);
                     if(d < minDist) minDist = d;
                   }
                   
-                  // 根據距離場(Distance Field)上色
+                  // 熱力圖上色邏輯
                   vec3 color = vec3(0.0);
                   float alpha = 0.8;
                   if (minDist <= 1.8) {
-                    color = vec3(1.0, 0.2, 0.3); // 碰撞區 (紅)
+                    color = vec3(1.0, 0.2, 0.3); // 內部碰撞區 (紅)
                   } else if (minDist <= 3.5) {
-                    color = vec3(1.0, 0.8, 0.0); // 表面/口袋區 (黃)
+                    color = vec3(1.0, 0.8, 0.0); // 表面口袋區 (黃)
                   } else {
                     color = vec3(0.0, 0.3, 0.8); // 外部空腔 (藍)
-                    alpha = 0.3;
+                    alpha = 0.2;
                   }
                   
-                  // 繪製格線效果
+                  // 繪製科技感格線
                   float grid = mod(vWorldPosition.x, 1.0) < 0.05 || mod(vWorldPosition.z, 1.0) < 0.05 ? 1.0 : 0.0;
                   gl_FragColor = vec4(color + grid * 0.2, alpha);
                 }
@@ -173,14 +170,15 @@
     function Phase34_VoxelEngine({ mockData, phase }) {
       const meshRef = useRef();
       const probeRef = useRef();
-      const [currentFrame, setCurrentFrame] = useState(0);
       const dummy = useMemo(() => new THREE.Object3D(), []);
 
-      const C_PROTEIN = new THREE.Color("#111116");
-      const C_POCKET_BASE = new THREE.Color("#0a2a4a");
-      const C_POCKET_ACTIVE = new THREE.Color("#00f0ff"); // Phase 3 掃描亮點
-      const C_POCKET_FINAL = new THREE.Color("#ffdd00");  // Phase 4 最終萃取結果
+      // 定義顏色庫
+      const C_PROTEIN = new THREE.Color("#111116"); // 隱藏狀態的蛋白質
+      const C_POCKET_BASE = new THREE.Color("#0a2a4a"); // Phase 3 掃描底色
+      const C_POCKET_ACTIVE = new THREE.Color("#00f0ff"); // Phase 3 掃描亮點 (青藍)
+      const C_POCKET_FINAL = new THREE.Color("#ffdd00");  // Phase 4 最終口袋 (金色)
 
+      // 當切換 Phase 時，重新初始化所有 Voxel 的基準顏色
       useEffect(() => {
         if (!meshRef.current) return;
         
@@ -189,10 +187,10 @@
           dummy.updateMatrix();
           meshRef.current.setMatrixAt(i, dummy.matrix);
           
-          // 初始化基準顏色
-          let color = new THREE.Color("#000"); // 預設全黑隱藏
-          if (mockData.protein_voxels.includes(i)) color = C_PROTEIN;
-          else if (mockData.pocket_voxels.includes(i)) {
+          let color = new THREE.Color("#000000"); // 預設黑
+          if (mockData.protein_voxels.includes(i)) {
+            color = C_PROTEIN;
+          } else if (mockData.pocket_voxels.includes(i)) {
             color = phase === 4 ? C_POCKET_FINAL : C_POCKET_BASE;
           }
           meshRef.current.setColorAt(i, color);
@@ -202,35 +200,37 @@
         meshRef.current.instanceColor.needsUpdate = true;
       }, [mockData, phase, dummy]);
 
+      // 動畫：處理 Phase 3 的探針掃描與動態點亮
       useFrame((state) => {
-        // 只有 Phase 3 需要執行 Rolling Probe 掃描動畫
         if (phase !== 3 || !meshRef.current || !probeRef.current) return;
         
         const nextFrame = Math.floor(state.clock.elapsedTime * 15) % mockData.frames.length;
-        if (nextFrame === currentFrame) return;
-
         const frameData = mockData.frames[nextFrame];
+        
+        // 移動探針
         probeRef.current.position.set(...frameData.probe_pos);
 
-        // 重置口袋區為底色，並點亮被探針掃到的 Voxel
+        // 每幀重置口袋區為底色
         mockData.pocket_voxels.forEach(idx => meshRef.current.setColorAt(idx, C_POCKET_BASE));
+        // 點亮被掃描到的區域
         frameData.active_indices.forEach(idx => meshRef.current.setColorAt(idx, C_POCKET_ACTIVE));
         
         meshRef.current.instanceColor.needsUpdate = true;
-        setCurrentFrame(nextFrame);
       });
 
       return (
         <group>
+          {/* Phase 3 的發光探針 */}
           {phase === 3 && (
             <mesh ref={probeRef}>
               <sphereGeometry args={[2.0, 32, 32]} />
               <meshStandardMaterial color="#00f0ff" transparent opacity={0.6} emissive="#00f0ff" emissiveIntensity={0.5} />
             </mesh>
           )}
+          {/* Voxel 陣列 */}
           <instancedMesh ref={meshRef} args={[null, null, mockData.voxels.length]}>
-            <boxGeometry args={[0.7, 0.7, 0.7]} />
-            <meshBasicMaterial toneMapped={false} />
+            <boxGeometry args={[0.75, 0.75, 0.75]} />
+            <meshBasicMaterial toneMapped={false} transparent opacity={0.9} />
           </instancedMesh>
         </group>
       );
@@ -241,24 +241,29 @@
     // ==========================================
     function App() {
       const [data, setData] = useState(null);
-      const [phase, setPhase] = useState(0);
+      const [error, setError] = useState(null);
+      const [phase, setPhase] = useState(1); // 預設停在 Phase 1
 
       useEffect(() => {
-        // 注意：如果你改了 JSON 的名字，請在這裡一併修改
+        // 從 GitHub 伺服器抓取剛才產生的 JSON
         fetch('./mock_protein.json')
-          .then(res => res.json())
+          .then(res => {
+            if (!res.ok) throw new Error(`找不到檔案 (HTTP ${res.status})，請確認 mock_protein.json 是否已上傳至同一個資料夾。`);
+            return res.json();
+          })
           .then(setData)
-          .catch(err => console.error("載入 JSON 失敗:", err));
+          .catch(err => setError(err.toString()));
       }, []);
 
+      // 錯誤與載入狀態畫面
+      if (error) return <div className="loading" style={{color: '#ff3366'}}>載入失敗！<br/><span style={{fontSize: '16px'}}>{error}</span></div>;
       if (!data) return <div className="loading">讀取演算法軌跡資料中...</div>;
 
       const phases = [
-        { id: 0, name: "0. 蛋白質外觀 (Protein Structure)" },
-        { id: 1, name: "1. 網格化與雜湊 (Spatial Hashing)" },
-        { id: 2, name: "2. 距離場熱力切面 (Distance Field)" },
-        { id: 3, name: "3. 滾動探針掃描 (Grid Scanning)" },
-        { id: 4, name: "4. 萃取結合口袋 (Pocket Extraction)" }
+        { id: 1, name: "Phase 1: 蛋白質實體與網格化" },
+        { id: 2, name: "Phase 2: 距離場切面" },
+        { id: 3, name: "Phase 3: 2.5D 切片滾動探針" },
+        { id: 4, name: "Phase 4: 萃取結合口袋" }
       ];
 
       return (
@@ -276,18 +281,18 @@
             ))}
           </div>
 
-          <Canvas camera={{ position: [15, 12, 15], fov: 45 }}>
+          <Canvas camera={{ position: [16, 14, 16], fov: 45 }}>
             <color attach="background" args={['#050510']} />
             <ambientLight intensity={0.6} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
+            <directionalLight position={[10, 15, 10]} intensity={1.5} />
             
-            {/* 根據選擇的階段切換渲染組件 */}
-            {phase === 0 && <Phase1_ProteinAndGrid mockData={data} showGrid={false} />}
-            {phase === 1 && <Phase1_ProteinAndGrid mockData={data} showGrid={true} />}
+            {/* 根據按鈕動態切換場景 */}
+            {phase === 1 && <Phase1_ProteinAndGrid mockData={data} />}
             {phase === 2 && <Phase2_DistanceField mockData={data} />}
             {(phase === 3 || phase === 4) && <Phase34_VoxelEngine mockData={data} phase={phase} />}
             
-            <OrbitControls autoRotate={phase === 0} autoRotateSpeed={1.0} target={[0, 2, 0]} />
+            {/* Phase 1 讓畫面自動旋轉 */}
+            <OrbitControls autoRotate={phase === 1} autoRotateSpeed={1.0} target={[0, 2, 0]} />
           </Canvas>
         </>
       );
