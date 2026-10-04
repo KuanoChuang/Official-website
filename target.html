@@ -7,17 +7,6 @@
   <style>
     body { margin: 0; overflow: hidden; background-color: #000; }
     #root { width: 100vw; height: 100vh; }
-    #loading { 
-      position: absolute; 
-      top: 50%; left: 50%; 
-      transform: translate(-50%, -50%); 
-      color: #00f0ff; 
-      font-family: sans-serif; 
-      font-size: 24px; 
-      font-weight: bold; 
-      letter-spacing: 2px; 
-      z-index: 10;
-    }
     #info { 
       position: absolute; 
       bottom: 20px; 
@@ -40,8 +29,8 @@
         "react": "https://esm.sh/react@18.2.0",
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
         "three": "https://esm.sh/three@0.150.0",
-        "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.13.0?deps=three@0.150.0,react@18.2.0",
-        "@react-three/drei": "https://esm.sh/@react-three/drei@9.70.0?deps=three@0.150.0,react@18.2.0,@react-three/fiber@8.13.0"
+        "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.13.0?external=react,react-dom,three",
+        "@react-three/drei": "https://esm.sh/@react-three/drei@9.70.0?external=react,react-dom,three,@react-three/fiber"
       }
     }
   </script>
@@ -55,9 +44,7 @@
     正在讀取同一目錄下的 <code>mock_scan.json</code><br/>
     <small style="color:#aaa;">可拖曳滑鼠旋轉視角，滾輪縮放。</small>
   </div>
-  <div id="root">
-    <div id="loading">讀取 JSON 軌跡資料中...</div>
-  </div>
+  <div id="root"></div>
 
   <!-- 3. 撰寫 React 程式碼 (注意 type="text/babel") -->
   <script type="text/babel" data-type="module">
@@ -157,7 +144,7 @@
           .then(setData)
           .catch(err => {
             console.error("載入 JSON 失敗:", err);
-            setError("無法載入 mock_scan.json。請確保檔案存在且您正在使用本地伺服器 (Local Server) 執行！");
+            setError("無法載入 mock_scan.json。請確保檔案名稱正確並存在！");
           });
       }, []);
 
@@ -165,12 +152,14 @@
         return <div style={{ color: '#ff3366', padding: '20px', fontFamily: 'sans-serif', position: 'absolute', zIndex: 99 }}>{error}</div>;
       }
 
+      // 將載入畫面交給 React 管理，避免 DOM 衝突
       if (!data) {
-        return null; // 讓原生的 #loading 畫面顯示
+        return (
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: '#00f0ff', fontFamily: 'sans-serif', fontSize: '24px', fontWeight: 'bold', letterSpacing: '2px', zIndex: 10 }}>
+            讀取 JSON 軌跡資料中...
+          </div>
+        );
       }
-
-      // 資料載入完成，隱藏原生 HTML 的 loading 文字
-      document.getElementById('loading').style.display = 'none';
 
       // 渲染 3D 畫面
       return (
