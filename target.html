@@ -10,26 +10,41 @@
     
     .ui-panel {
       position: absolute; top: 20px; right: 20px; z-index: 10;
-      display: flex; flex-direction: column; gap: 10px; width: 280px;
-      background: rgba(10, 15, 30, 0.7); padding: 25px; border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-      backdrop-filter: blur(10px);
+      display: flex; flex-direction: column; gap: 8px; width: 320px;
+      background: rgba(10, 15, 30, 0.85); padding: 25px; border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      backdrop-filter: blur(12px);
     }
-    .ui-panel h2 { color: #fff; margin: 0 0 15px 0; font-size: 16px; letter-spacing: 2px; }
+    .ui-panel h2 { color: #fff; margin: 0 0 10px 0; font-size: 15px; letter-spacing: 2px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px;}
     .phase-btn {
       background: rgba(255,255,255,0.05); color: #aaa; border: 1px solid rgba(255,255,255,0.1);
-      padding: 14px 15px; border-radius: 8px; cursor: pointer;
-      font-weight: 500; text-align: left; transition: all 0.2s; font-size: 14px;
+      padding: 12px 15px; border-radius: 8px; cursor: pointer;
+      font-weight: 500; text-align: left; transition: all 0.2s; font-size: 13px;
     }
     .phase-btn:hover { background: rgba(0, 240, 255, 0.1); color: #fff; border-color: #00f0ff; }
     .phase-btn.active { 
       background: #00f0ff; color: #000; border-color: #00f0ff; 
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.5); font-weight: bold;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); font-weight: bold;
     }
+    
+    .sub-options { display: flex; gap: 10px; margin-top: 5px; margin-bottom: 5px; }
+    .sub-btn { 
+      flex: 1; padding: 6px; font-size: 11px; background: rgba(255,255,255,0.1); 
+      border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 4px; cursor: pointer;
+    }
+    .sub-btn.active { background: #ff0077; border-color: #ff0077; font-weight: bold;}
+    
     .loading {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       color: #00f0ff; font-size: 20px; font-weight: 300; letter-spacing: 1px;
     }
+    
+    .legend {
+      position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.7);
+      padding: 15px; border-radius: 10px; color: #fff; font-size: 12px; display: flex; flex-direction: column; gap: 5px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 10px; }
+    .color-box { width: 15px; height: 15px; border-radius: 3px; }
   </style>
 
   <!-- 引入 React 與 Three.js -->
@@ -97,14 +112,14 @@
             atom.type === 'S' ? '#dddd00' : '#888888'
           );
           meshRef.current.setColorAt(i, color);
-        });
-        meshRef.current.instanceMatrix.needsUpdate = true;
-        meshRef.current.instanceColor.needsUpdate = true;
-      }, [atoms]);
+      });
+      meshRef.current.instanceMatrix.needsUpdate = true;
+      meshRef.current.instanceColor.needsUpdate = true;
+    }, [atoms, visible]);
 
-      if (!visible) return null;
+    if (!visible) return null;
 
-      return (
+    return (
         <instancedMesh ref={meshRef} args={[null, null, atoms.length]}>
           <sphereGeometry args={[1, 16, 16]} />
           {/* 原子材質設定 */}
@@ -116,16 +131,12 @@
       );
     }
 
-    function SESView({ visible, mode }) {
-      // 讀取我們產生的 GLB 模型 (React Three Fiber 會自動快取)
+    function SESView({ visible }) {
       const { nodes } = useGLTF('./protein_ses.glb');
-      
       const geometry = useMemo(() => {
         if (!nodes) return null;
-        // 自動尋找檔案中的立體網格 (Mesh)
         const mesh = Object.values(nodes).find(n => n.isMesh);
         if (mesh && mesh.geometry) {
-          // 非常重要：重新計算頂點法線！Trimesh 匯出的 GLB 可能缺乏法線，會導致反光材質全黑與背景融合
           mesh.geometry.computeVertexNormals();
           return mesh.geometry;
         }
@@ -136,30 +147,209 @@
 
       return (
         <mesh geometry={geometry}>
-          {mode === 'solid' ? (
-            <meshStandardMaterial color="#e0e5ec" roughness={0.5} metalness={0.1} />
-          ) : (
-            <meshPhysicalMaterial 
-              color="#ffffff" 
-              transmission={0.8} 
-              opacity={1} 
-              transparent={true}
-              roughness={0.1} 
-              thickness={2.0} 
-              ior={1.4} 
-              clearcoat={1.0} 
-              clearcoatRoughness={0.1} 
-              side={THREE.DoubleSide}
-            />
-          )}
+          <meshPhysicalMaterial 
+            color="#ffffff" transmission={0.9} opacity={1} transparent={true}
+            roughness={0.1} thickness={2.0} ior={1.4} clearcoat={1.0} 
+            side={THREE.DoubleSide}
+          />
         </mesh>
       );
     }
 
-    function PocketVoxels({ voxels, visible, isGlowing }) {
-      const meshRef = useRef();
+    // 負責 Phase 3, 4, 5 的核心動畫掃描器
+    function AlgorithmScanner({ algoData, phase }) {
+      const { grid, voxels } = algoData;
+      const { protein, solvent, cavity, probe } = voxels;
+      
+      const pRef = useRef(); const sRef = useRef(); 
+      const cRef = useRef(); const prRef = useRef();
       const dummy = useMemo(() => new THREE.Object3D(), []);
       
+      // 動畫狀態記錄
+      const timeRef = useRef(0);
+      
+      useEffect(() => {
+        // 初始化位置矩陣，預設全隱藏 (scale=0)
+        const initInstanced = (ref, pts, baseColor) => {
+          if (!ref.current) return;
+          const color = new THREE.Color(baseColor);
+          pts.forEach((pt, i) => {
+            dummy.position.set(...pt);
+            dummy.scale.setScalar(0);
+            dummy.updateMatrix();
+            ref.current.setMatrixAt(i, dummy.matrix);
+            ref.current.setColorAt(i, color);
+          });
+          ref.current.instanceMatrix.needsUpdate = true;
+          if (ref.current.instanceColor) ref.current.instanceColor.needsUpdate = true;
+        };
+        initInstanced(pRef, protein, '#888888'); // 蛋白質區域: 灰色
+        initInstanced(sRef, solvent, '#0055ff'); // 溶劑區域: 藍色
+        initInstanced(cRef, cavity, '#ffaa00');  // 空腔區域: 橘黃
+        initInstanced(prRef, probe, '#00ff00');  // 探針可行: 螢光綠
+      }, [protein, solvent, cavity, probe]);
+
+      useFrame((state, delta) => {
+        if (phase < 3 || phase > 5) return;
+        timeRef.current += delta;
+        
+        const half = grid.size / 2;
+        const scanSpeed = 6.0; 
+        
+        // Phase 3: X -> Y -> Z 依序掃描
+        if (phase === 3) {
+          const cycle = (timeRef.current * scanSpeed) % (grid.size * 3);
+          let axis = 0; let scanPos = -half;
+          if (cycle < grid.size) { axis = 0; scanPos = -half + cycle; }
+          else if (cycle < grid.size * 2) { axis = 1; scanPos = -half + (cycle - grid.size); }
+          else { axis = 2; scanPos = -half + (cycle - grid.size * 2); }
+          
+          const updateScan = (ref, pts) => {
+             if (!ref.current) return;
+             pts.forEach((pt, i) => {
+               const dist = Math.abs(pt[axis] - scanPos);
+               // 掃描切面範圍內的點顯示出來
+               const s = dist < grid.spacing ? 0.8 : 0.0;
+               dummy.position.set(...pt);
+               dummy.scale.setScalar(s);
+               dummy.updateMatrix();
+               ref.current.setMatrixAt(i, dummy.matrix);
+             });
+             ref.current.instanceMatrix.needsUpdate = true;
+          };
+          updateScan(pRef, protein); updateScan(sRef, solvent); updateScan(cRef, cavity);
+          // 隱藏 probe
+          if(prRef.current) {
+            probe.forEach((_, i) => { dummy.scale.setScalar(0); dummy.updateMatrix(); prRef.current.setMatrixAt(i, dummy.matrix); });
+            prRef.current.instanceMatrix.needsUpdate = true;
+          }
+        }
+        
+        // Phase 4: Z 軸探針掃描 (有殘影淡化)
+        if (phase === 4) {
+          const cycle = (timeRef.current * scanSpeed) % grid.size;
+          const scanZ = -half + cycle;
+          
+          // 隱藏 p, s
+          [pRef, sRef].forEach(r => {
+             if(r.current && r.current.instanceMatrix) {
+               r.current.count = 0; // 快速隱藏
+             }
+          });
+          if(cRef.current) cRef.current.count = cavity.length;
+          if(prRef.current) prRef.current.count = probe.length;
+          
+          // 空腔與探針掃描邏輯
+          const updateFadeScan = (ref, pts, isProbe) => {
+             if (!ref.current) return;
+             pts.forEach((pt, i) => {
+               const dz = scanZ - pt[2];
+               let s = 0;
+               // 如果探針層已經掃過 (dz > 0)，顯示殘影；如果是當前層，高亮發光
+               if (dz > 0 && dz < 4.0) {
+                 s = isProbe ? 0.8 : 0.4; // 探針可行區較大
+               } else if (Math.abs(dz) <= grid.spacing) {
+                 s = 1.0; // 當前切面最大
+               }
+               dummy.position.set(...pt);
+               dummy.scale.setScalar(s);
+               dummy.updateMatrix();
+               ref.current.setMatrixAt(i, dummy.matrix);
+               
+               // 淡化顏色
+               if (ref.current.instanceColor) {
+                  const baseColor = isProbe ? new THREE.Color('#00ff00') : new THREE.Color('#ffaa00');
+                  const fade = Math.max(0.1, 1.0 - (dz / 4.0));
+                  ref.current.setColorAt(i, dz > grid.spacing ? baseColor.multiplyScalar(fade) : baseColor);
+               }
+             });
+             ref.current.instanceMatrix.needsUpdate = true;
+             if (ref.current.instanceColor) ref.current.instanceColor.needsUpdate = true;
+          };
+          updateFadeScan(cRef, cavity, false);
+          updateFadeScan(prRef, probe, true);
+        }
+        
+        // Phase 5: 聯集探針可行區 (全亮)
+        if (phase === 5) {
+          [pRef, sRef, cRef].forEach(r => { if(r.current) r.current.count = 0; });
+          if(prRef.current) {
+            prRef.current.count = probe.length;
+            const color = new THREE.Color('#00ff00');
+            probe.forEach((pt, i) => {
+               dummy.position.set(...pt);
+               dummy.scale.setScalar(0.9);
+               dummy.updateMatrix();
+               prRef.current.setMatrixAt(i, dummy.matrix);
+               prRef.current.setColorAt(i, color);
+            });
+            prRef.current.instanceMatrix.needsUpdate = true;
+            prRef.current.instanceColor.needsUpdate = true;
+          }
+        }
+      });
+      
+      const geo = <boxGeometry args={[grid.spacing, grid.spacing, grid.spacing]} />;
+      const mat = <meshBasicMaterial transparent opacity={0.7} />;
+      
+      return (
+        <group visible={phase >= 3 && phase <= 5}>
+          <instancedMesh ref={pRef} args={[null, null, protein.length]}>{geo}{mat}</instancedMesh>
+          <instancedMesh ref={sRef} args={[null, null, solvent.length]}>{geo}{mat}</instancedMesh>
+          <instancedMesh ref={cRef} args={[null, null, cavity.length]}>{geo}{mat}</instancedMesh>
+          <instancedMesh ref={prRef} args={[null, null, probe.length]}>
+            {geo}<meshBasicMaterial transparent opacity={0.9} />
+          </instancedMesh>
+        </group>
+      );
+    }
+
+    // Phase 6: 口袋平滑 Mesh
+    function PocketMesh({ meshData, visible }) {
+      const geometry = useMemo(() => {
+        if (!meshData || !meshData.vertices) return null;
+        const geo = new THREE.BufferGeometry();
+        const verts = new Float32Array(meshData.vertices.flat());
+        const indices = new Uint16Array(meshData.faces.flat());
+        geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+        geo.setIndex(new THREE.BufferAttribute(indices, 1));
+        geo.computeVertexNormals(); // 計算平滑光影
+        return geo;
+      }, [meshData]);
+
+      if (!visible || !geometry) return null;
+
+      return (
+        <mesh geometry={geometry}>
+          <meshPhysicalMaterial 
+            color="#00ffcc" transmission={0.6} opacity={1} transparent={true}
+            roughness={0.2} thickness={1.5} emissive="#004433" side={THREE.DoubleSide}
+          />
+        </mesh>
+      );
+    }
+
+    // Phase 2: 網格線框架
+    function GridWireframe({ algoData, visible }) {
+      if (!visible || !algoData) return null;
+      const size = algoData.grid.size;
+      const spacing = algoData.grid.spacing;
+      return (
+        <group>
+          <boxHelper args={[new THREE.Mesh(new THREE.BoxGeometry(size, size, size))]} color="#00f0ff" />
+          <gridHelper args={[size, size/spacing, 0x444444, 0x222222]} position={[0, -size/2, 0]} />
+          <gridHelper args={[size, size/spacing, 0x444444, 0x222222]} position={[0, 0, -size/2]} rotation={[Math.PI/2, 0, 0]} />
+        </group>
+      );
+    }
+
+    function App() {
+      const [data, setData] = useState(null);
+      const [error, setError] = useState(null);
+      
+      const [phase, setPhase] = useState(1);
+      const [phase1Opts, setPhase1Opts] = useState({ vdw: true, ses: true });
+
       useEffect(() => {
         if (!meshRef.current || !voxels) return;
         voxels.forEach((pos, i) => {
@@ -210,53 +400,71 @@
       return (
         <ErrorBoundary>
           <div className="ui-panel">
-            <h2>RENDER PIPELINE</h2>
+            <h2>POCKET ALGORITHM PIPELINE</h2>
+            
             <button className={`phase-btn ${phase === 1 ? 'active' : ''}`} onClick={() => setPhase(1)}>
-              1. Atoms & SES (雙模式)
+              Phase 1: 結構視覺化
             </button>
+            {phase === 1 && (
+              <div className="sub-options">
+                <button className={`sub-btn ${phase1Opts.vdw ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({...p, vdw: !p.vdw}))}>VDW 原子</button>
+                <button className={`sub-btn ${phase1Opts.ses ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({...p, ses: !p.ses}))}>SES 表面</button>
+              </div>
+            )}
+            
             <button className={`phase-btn ${phase === 2 ? 'active' : ''}`} onClick={() => setPhase(2)}>
-              2. SES Surface (實體表面)
+              Phase 2: 空間網格化 (Voxelization)
             </button>
             <button className={`phase-btn ${phase === 3 ? 'active' : ''}`} onClick={() => setPhase(3)}>
-              3. MRC Voxels (空腔掃描)
+              Phase 3: 距離場切面掃描 (X, Y, Z)
             </button>
             <button className={`phase-btn ${phase === 4 ? 'active' : ''}`} onClick={() => setPhase(4)}>
-              4. Final Rendering (透視疊加)
+              Phase 4: 探針球侵蝕掃描
+            </button>
+            <button className={`phase-btn ${phase === 5 ? 'active' : ''}`} onClick={() => setPhase(5)}>
+              Phase 5: 聯集探針可行區
+            </button>
+            <button className={`phase-btn ${phase === 6 ? 'active' : ''}`} onClick={() => setPhase(6)}>
+              Phase 6: 表面平滑化 (Pocket Mesh)
             </button>
           </div>
+          
+          {phase >= 3 && phase <= 5 && (
+             <div className="legend">
+               <div className="legend-item"><div className="color-box" style={{background: '#0055ff'}}></div> 溶劑區 (Solvent)</div>
+               <div className="legend-item"><div className="color-box" style={{background: '#888888'}}></div> 蛋白區 (Protein)</div>
+               <div className="legend-item"><div className="color-box" style={{background: '#ffaa00'}}></div> 空腔區 (Cavity)</div>
+               {phase >= 4 && <div className="legend-item"><div className="color-box" style={{background: '#00ff00', boxShadow: '0 0 10px #00ff00'}}></div> 探針區 (Probe Valid)</div>}
+             </div>
+          )}
 
           {/* 啟動高畫質反鋸齒與陰影 */}
-          <Canvas camera={{ position: [0, 0, 45], fov: 40 }} shadows>
+          <Canvas camera={{ position: [0, 0, 25], fov: 45 }} shadows>
             <color attach="background" args={['#030508']} />
+            <OrbitControls autoRotate={phase === 6 || phase === 1} autoRotateSpeed={0.5} makeDefault />
             
-            {/* 攝影機控制器 */}
-            <OrbitControls autoRotate={phase === 4} autoRotateSpeed={0.5} makeDefault />
-            
-            {/* 專業燈光設定 (Key, Fill, Back) - 強化光源以彌補缺乏 HDR 環境光的反光 */}
-            <ambientLight intensity={1.2} />
-            <directionalLight position={[20, 20, 20]} intensity={2.0} castShadow />
+            <ambientLight intensity={1.5} />
+            <directionalLight position={[20, 20, 20]} intensity={2.5} castShadow />
             <directionalLight position={[-20, -10, -20]} intensity={1.5} color="#00f0ff" />
-            <pointLight position={[0, 20, 0]} intensity={1.5} color="#ffffff" />
-            <pointLight position={[0, -20, 0]} intensity={1.5} color="#ff00ff" />
+            <pointLight position={[0, 20, 0]} intensity={2.0} color="#ffffff" />
             
-            {/* 加入 Html 與明確的 Suspense fallback，顯示載入進度 */}
-            <Suspense fallback={<Html center><div style={{ color: '#00f0ff', fontSize: '18px', whiteSpace: 'nowrap', backgroundColor: 'rgba(0,0,0,0.5)', padding: '10px 20px', borderRadius: '8px' }}>載入 3D 模型與環境光中...</div></Html>}>
-              
+            <Suspense fallback={<Html center><div style={{ color: '#00f0ff', fontSize: '18px' }}>載入 3D 模型...</div></Html>}>
               <group position={[0,0,0]}>
-                {/* Phase 1: VDW 原子 + 玻璃態 SES 表面 (雙模式) */}
-                <AtomView atoms={data.atoms} visible={phase === 1} />
-                <SESView visible={phase === 1} mode="glass" />
                 
-                {/* Phase 2: 僅顯示實體 SES (GLB) */}
-                <SESView visible={phase === 2} mode="solid" />
+                {/* Phase 1: 結構視覺化 (支援單複選) */}
+                <AtomView atoms={data.atoms} visible={(phase === 1 && phase1Opts.vdw) || phase === 2} opacity={phase === 2 ? 0.2 : 1.0} />
+                <SESView visible={phase === 1 && phase1Opts.ses} />
                 
-                {/* Phase 3: 幽靈原子 + 掃描體素線框 */}
-                <AtomView atoms={data.atoms} visible={phase === 3} opacity={0.15} />
-                <PocketVoxels voxels={data.pocket_voxels} visible={phase === 3} isGlowing={false} />
+                {/* Phase 2: 網格化外框 */}
+                <GridWireframe algoData={data.algo_data} visible={phase === 2} />
                 
-                {/* Phase 4: 終極組合 - 玻璃態 SES 包覆發光體素 */}
-                <SESView visible={phase === 4} mode="glass" />
-                <PocketVoxels voxels={data.pocket_voxels} visible={phase === 4} isGlowing={true} />
+                {/* Phase 3, 4, 5: 高效能切面與探針動畫掃描器 */}
+                <AlgorithmScanner algoData={data.algo_data} phase={phase} />
+                
+                {/* Phase 6: Python 算好的平滑口袋 Mesh */}
+                <PocketMesh meshData={data.algo_data.pocket_mesh} visible={phase === 6} />
+                <SESView visible={phase === 6} /> {/* 加上 SES 當作背景襯托 */}
+                
               </group>
             </Suspense>
 
