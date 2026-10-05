@@ -148,14 +148,15 @@
       return (
         <mesh geometry={geometry}>
           <meshPhysicalMaterial 
-            color="#99eebb" 
-            transmission={0.8}    /* 增強透光度 */
-            opacity={0.35}        /* 降低不透明度使其更像半透明薄膜 */
+            color="#aaccff"       /* 調整為帶有一點點淡藍色的薄膜 */
+            transmission={0.95}   /* 極高透光度，讓內部原子一覽無遺 */
+            opacity={1.0}         /* 物理玻璃模式下，opacity 應設為 1，依賴 transmission */
             transparent={true}
-            roughness={0.2} 
-            thickness={1.5} 
-            ior={1.4} 
-            clearcoat={1.0}       /* 玻璃表面反光塗層 */
+            roughness={0.1}       /* 讓表面更光滑，反光更清晰 */
+            thickness={2.0}       /* 增加一點厚度來產生邊緣折射效果 */
+            ior={1.33}            /* 接近水/蛋白質環境的折射率 */
+            clearcoat={1.0}       /* 玻璃表面高光塗層 */
+            depthWrite={false}    /* 🚀 關鍵：關閉深度寫入，解決半透明外殼遮蔽內部原子的 Bug */
             side={THREE.DoubleSide}
           />
         </mesh>
