@@ -60,18 +60,24 @@
     // Phase 1: 蛋白質實體與網格化 (Spatial Hashing)
     // ==========================================
     function Phase1_ProteinAndGrid({ mockData }) {
+      // 從 metadata 取得動態網格物理尺寸
+      const boxSize = mockData.metadata.box_size || 16;
       return (
         <group>
-          {/* 渲染蛋白質原子 (粉紅色) */}
-          {mockData.atoms.map((pos, i) => (
-            <Sphere key={i} args={[1.5, 32, 32]} position={pos}>
-              <meshStandardMaterial color="#ff3366" transparent opacity={0.9} roughness={0.2} />
-            </Sphere>
-          ))}
+          {/* 渲染蛋白質原子，現在支援動態讀取半徑與元素類型來上色 */}
+          {mockData.atoms.map((atom, i) => {
+            // 根據不同的元素類型給予不同的顏色 (Carbon: 灰黑, Nitrogen: 藍, Oxygen: 紅)
+            const color = atom.type === 'O' ? '#ff3333' : atom.type === 'N' ? '#3366ff' : '#666666';
+            return (
+              <Sphere key={i} args={[atom.radius, 32, 32]} position={atom.pos}>
+                <meshStandardMaterial color={color} transparent opacity={0.9} roughness={0.2} metalness={0.1} />
+              </Sphere>
+            );
+          })}
           
-          {/* 顯示 Spatial Hashing 的外框網格 */}
-          <Box args={[15, 12, 15]} position={[0, 1.5, 0]}>
-            <meshBasicMaterial color="#00f0ff" wireframe transparent opacity={0.4} />
+          {/* 顯示 Spatial Hashing 的外框網格 (動態尺寸) */}
+          <Box args={[boxSize, boxSize, boxSize]} position={[0, 0, 0]}>
+            <meshBasicMaterial color="#00f0ff" wireframe transparent opacity={0.3} />
           </Box>
         </group>
       );
@@ -82,49 +88,54 @@
     // ==========================================
     function Phase2_DistanceField({ mockData }) {
       const planeRef = useRef();
-      const materialRef = useRef(); // 新增 materialRef 來動態更新 Shader 變數
+      const materialRef = useRef(); 
+      const boxSize = mockData.metadata.box_size || 18;
       
-      // 將原子座標傳遞給 Shader，補齊到 50 顆以符合 Shader 固定陣列長度限制
+      // 動態決定 Shader 能接收的最大原子數量 (避免真實分子上千原子撐爆 WebGL Uniforms)
+      const MAX_ATOMS = useMemo(() => Math.min(mockData.atoms.length, 300), [mockData]);
+      
+      // 將原子座標傳遞給 Shader (若原子過多，我們透過降採樣/跳躍取樣來繪製熱力圖輪廓)
       const uniforms = useMemo(() => {
-        const MAX_ATOMS = 50;
         const paddedAtoms = [];
+        const step = Math.max(1, Math.floor(mockData.atoms.length / MAX_ATOMS));
+        
         for (let i = 0; i < MAX_ATOMS; i++) {
-          if (i < mockData.atoms.length) paddedAtoms.push(new THREE.Vector3(...mockData.atoms[i]));
-          else paddedAtoms.push(new THREE.Vector3(999, 999, 999));
+          const srcIdx = i * step;
+          if (srcIdx < mockData.atoms.length) {
+            paddedAtoms.push(new THREE.Vector3(...mockData.atoms[srcIdx].pos));
+          } else {
+            paddedAtoms.push(new THREE.Vector3(999, 999, 999));
+          }
         }
         return {
           atoms: { value: paddedAtoms },
-          numAtoms: { value: mockData.atoms.length },
-          uAxis: { value: 1 } // 新增 uAxis: 0=X, 1=Y, 2=Z，用於 Shader 切換格線
+          numAtoms: { value: Math.min(mockData.atoms.length, MAX_ATOMS) },
+          uAxis: { value: 1 } 
         };
-      }, [mockData]);
+      }, [mockData, MAX_ATOMS]);
 
       // 動畫：依序沿著 X, Y, Z 三個方向循環掃描
       useFrame((state) => {
         if (planeRef.current && materialRef.current) {
           const t = state.clock.elapsedTime;
-          // 設定每 12 秒一個完整循環 (X, Y, Z 軸各 4 秒)
           const cycle = t % 12;
           const phaseDuration = 4;
           const progress = cycle % phaseDuration;
           
-          // 讓切面在 -7 到 7 的範圍內來回平滑掃描
-          const offset = Math.sin((progress / phaseDuration) * Math.PI * 2) * 7;
+          // 掃描範圍涵蓋整個動態邊界框
+          const offset = Math.sin((progress / phaseDuration) * Math.PI * 2) * (boxSize / 2.2);
 
           if (cycle < 4) {
-            // X 軸方向掃描
             planeRef.current.rotation.set(0, Math.PI / 2, 0);
-            planeRef.current.position.set(offset, 2.5, 0); // 蛋白質中心 Y=2.5
+            planeRef.current.position.set(offset, 0, 0); 
             materialRef.current.uniforms.uAxis.value = 0;
           } else if (cycle < 8) {
-            // Y 軸方向掃描
             planeRef.current.rotation.set(-Math.PI / 2, 0, 0);
-            planeRef.current.position.set(0, 2.5 + offset, 0);
+            planeRef.current.position.set(0, offset, 0);
             materialRef.current.uniforms.uAxis.value = 1;
           } else {
-            // Z 軸方向掃描
             planeRef.current.rotation.set(0, 0, 0);
-            planeRef.current.position.set(0, 2.5, offset);
+            planeRef.current.position.set(0, 0, offset);
             materialRef.current.uniforms.uAxis.value = 2;
           }
         }
@@ -132,16 +143,16 @@
 
       return (
         <group>
-          {/* 幽靈蛋白質 (調高不透明度，讓背景蛋白質更清楚) */}
-          {mockData.atoms.map((pos, i) => (
-            <Sphere key={`ghost-${i}`} args={[1.5, 16, 16]} position={pos}>
-              <meshBasicMaterial color="#555" wireframe transparent opacity={0.25} />
+          {/* 幽靈蛋白質 (真實分子時可能會有 1000 顆，渲染依然流暢) */}
+          {mockData.atoms.map((atom, i) => (
+            <Sphere key={`ghost-${i}`} args={[atom.radius, 16, 16]} position={atom.pos}>
+              <meshBasicMaterial color="#555" wireframe transparent opacity={0.15} />
             </Sphere>
           ))}
           
-          {/* 動態距離場熱力圖平面 */}
+          {/* 動態距離場熱力圖平面 (放大平面尺寸) */}
           <mesh ref={planeRef}>
-            <planeGeometry args={[18, 18, 64, 64]} />
+            <planeGeometry args={[boxSize * 1.2, boxSize * 1.2, 128, 128]} />
             <shaderMaterial
               ref={materialRef}
               uniforms={uniforms}
@@ -155,33 +166,32 @@
                   gl_Position = projectionMatrix * viewMatrix * worldPosition;
                 }
               `}
+              // 動態注入陣列大小，解決 WebGL 限制
               fragmentShader={`
-                uniform vec3 atoms[50];
+                uniform vec3 atoms[${MAX_ATOMS}];
                 uniform int numAtoms;
                 uniform int uAxis;
                 varying vec3 vWorldPosition;
                 void main() {
                   float minDist = 999.0;
-                  // 計算平面上每個像素到最近原子的距離
-                  for(int i = 0; i < 50; i++) {
+                  for(int i = 0; i < ${MAX_ATOMS}; i++) {
                     if(i >= numAtoms) break;
                     float d = distance(vWorldPosition, atoms[i]);
                     if(d < minDist) minDist = d;
                   }
                   
-                  // 熱力圖上色邏輯
+                  // 熱力圖上色邏輯調整以匹配新的結構
                   vec3 color = vec3(0.0);
                   float alpha = 0.85;
                   if (minDist <= 1.8) {
-                    color = vec3(1.0, 0.2, 0.3); // 內部碰撞區 (紅)
-                  } else if (minDist <= 3.5) {
-                    color = vec3(1.0, 0.8, 0.0); // 表面口袋區 (黃)
+                    color = vec3(1.0, 0.2, 0.3); // 內部實體區
+                  } else if (minDist <= 3.2) {
+                    color = vec3(1.0, 0.8, 0.0); // 表面口袋邊緣
                   } else {
-                    color = vec3(0.0, 0.3, 0.8); // 外部空腔 (藍)
+                    color = vec3(0.0, 0.3, 0.8); // 外部空間
                     alpha = 0.25;
                   }
                   
-                  // 繪製科技感格線 (依據掃描軸向動態切換垂直於切面的網格)
                   float grid = 0.0;
                   if (uAxis == 0) {
                     grid = mod(vWorldPosition.y, 1.0) < 0.05 || mod(vWorldPosition.z, 1.0) < 0.05 ? 1.0 : 0.0;
@@ -208,6 +218,10 @@
       const wireframeRef = useRef(); // 新增 wireframeRef 來處理空心線框
       const probeRef = useRef();
       const dummy = useMemo(() => new THREE.Object3D(), []);
+
+      // 動態取得網格大小 (預設 0.75)
+      const boxSize = mockData.metadata.grid_spacing || 0.75;
+      const renderSize = boxSize * 0.9; // 稍微留點縫隙
 
       // 提升顏色明度，解決黑色背景下看不清楚的問題
       const C_PROTEIN = new THREE.Color("#4a5568"); // 隱藏狀態的蛋白質改為石板灰
@@ -292,13 +306,13 @@
           
           {/* Voxel 陣列 1：Phase 4 萃取口袋使用的實體方塊 */}
           <instancedMesh ref={meshRef} args={[null, null, mockData.voxels.length]}>
-            <boxGeometry args={[0.75, 0.75, 0.75]} />
+            <boxGeometry args={[renderSize, renderSize, renderSize]} />
             <meshStandardMaterial roughness={0.3} metalness={0.2} transparent opacity={0.85} />
           </instancedMesh>
           
           {/* Voxel 陣列 2：Phase 3 探針掃描使用的空心網格線 (Wireframe) */}
           <instancedMesh ref={wireframeRef} args={[null, null, mockData.voxels.length]}>
-            <boxGeometry args={[0.75, 0.75, 0.75]} />
+            <boxGeometry args={[renderSize, renderSize, renderSize]} />
             <meshBasicMaterial wireframe={true} transparent opacity={0.4} />
           </instancedMesh>
         </group>
@@ -335,6 +349,9 @@
         { id: 4, name: "Phase 4: 萃取結合口袋" }
       ];
 
+      // 根據蛋白質大小決定攝影機距離 (動態縮放視角)
+      const camDist = data.metadata.box_size ? data.metadata.box_size * 1.5 : 30;
+
       return (
         <>
           <div className="ui-panel">
@@ -350,7 +367,7 @@
             ))}
           </div>
 
-          <Canvas camera={{ position: [16, 14, 16], fov: 45 }}>
+          <Canvas camera={{ position: [camDist*0.7, camDist*0.6, camDist*0.7], fov: 45 }}>
             <color attach="background" args={['#050510']} />
             
             {/* 提升環境光與平行光亮度，並加入點光源點綴邊緣，確保深色幾何體清晰可見 */}
