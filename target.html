@@ -183,7 +183,7 @@
           <div className="ui-panel">
             <h2>RENDER PIPELINE</h2>
             <button className={`phase-btn ${phase === 1 ? 'active' : ''}`} onClick={() => setPhase(1)}>
-              1. Atoms (分子球棒模型)
+              1. Atoms & SES (雙模式)
             </button>
             <button className={`phase-btn ${phase === 2 ? 'active' : ''}`} onClick={() => setPhase(2)}>
               2. SES Surface (實體表面)
@@ -215,8 +215,9 @@
             {}
             <Suspense fallback={null}>
               <group position={[0,0,0]}>
-                {/* Phase 1: 僅顯示實體原子 */}
+                {/* Phase 1: VDW 原子 + 玻璃態 SES 表面 (雙模式) */}
                 <AtomView atoms={data.atoms} visible={phase === 1} />
+                <SESView visible={phase === 1} mode="glass" />
                 
                 {/* Phase 2: 僅顯示實體 SES (GLB) */}
                 <SESView visible={phase === 2} mode="solid" />
