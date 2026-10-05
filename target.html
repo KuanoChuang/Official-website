@@ -50,10 +50,10 @@
   <div id="root"></div>
 
   <script type="text/babel" data-type="module">
-    import React, { useRef, useState, useEffect, useMemo } from 'react';
+    import React, { useRef, useState, useEffect, useMemo, Suspense } from 'react';
     import { createRoot } from 'react-dom/client';
     import { Canvas, useFrame } from '@react-three/fiber';
-    import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
+    import { OrbitControls, Environment, ContactShadows, useGLTF } from '@react-three/drei';
     import * as THREE from 'three';
 
     function AtomView({ atoms, visible, opacity = 1.0 }) {
@@ -94,28 +94,21 @@
       );
     }
 
-    function SESView({ sesData, visible, mode }) {
+    function SESView({ visible, mode }) {
+      // 讀取我們產生的 GLB 模型 (React Three Fiber 會自動快取)
+      const { nodes } = useGLTF('./protein_ses.glb');
+      
       const geometry = useMemo(() => {
-        if (!sesData || !sesData.vertices || sesData.vertices.length === 0) return null;
-        const geo = new THREE.BufferGeometry();
-        // 將 Float32 陣列傳入
-        geo.setAttribute('position', new THREE.Float32BufferAttribute(sesData.vertices, 3));
-        if (sesData.faces && sesData.faces.length > 0) {
-            geo.setIndex(sesData.faces);
-        }
-        geo.computeVertexNormals(); // 讓 Three.js 自動計算光影法線
-        return geo;
-      }, [sesData]);
+        if (!nodes) return null;
+        // 自動尋找檔案中的立體網格 (Mesh)
+        const mesh = Object.values(nodes).find(n => n.isMesh);
+        return mesh ? mesh.geometry : null;
+      }, [nodes]);
 
       if (!visible || !geometry) return null;
 
       return (
         <mesh geometry={geometry}>
-          {/* 
-            根據 Mode 切換材質：
-            Solid: 實體霧面
-            Glass: 高質感毛玻璃透視 (MeshPhysicalMaterial)
-          */}
           {mode === 'solid' ? (
             <meshStandardMaterial color="#e0e5ec" roughness={0.5} metalness={0.1} />
           ) : (
@@ -123,6 +116,7 @@
               color="#ffffff" 
               transmission={0.8} // 玻璃透視感
               opacity={1} 
+              transparent={true}
               roughness={0.2} 
               thickness={2.0} // 玻璃厚度折射
               ior={1.4} // 折射率
@@ -218,21 +212,24 @@
             {/* 環境反射光 (提供 SES 玻璃材質折射的依據) */}
             <Environment preset="city" />
 
-            <group position={[0,0,0]}>
-              {/* Phase 1: 僅顯示實體原子 */}
-              <AtomView atoms={data.atoms} visible={phase === 1} />
-              
-              {/* Phase 2: 僅顯示實體 SES */}
-              <SESView sesData={data.ses} visible={phase === 2} mode="solid" />
-              
-              {/* Phase 3: 幽靈原子 + 掃描體素線框 */}
-              <AtomView atoms={data.atoms} visible={phase === 3} opacity={0.15} />
-              <PocketVoxels voxels={data.pocket_voxels} visible={phase === 3} isGlowing={false} />
-              
-              {/* Phase 4: 終極組合 - 玻璃態 SES 包覆發光體素 */}
-              <SESView sesData={data.ses} visible={phase === 4} mode="glass" />
-              <PocketVoxels voxels={data.pocket_voxels} visible={phase === 4} isGlowing={true} />
-            </group>
+            {}
+            <Suspense fallback={null}>
+              <group position={[0,0,0]}>
+                {/* Phase 1: 僅顯示實體原子 */}
+                <AtomView atoms={data.atoms} visible={phase === 1} />
+                
+                {/* Phase 2: 僅顯示實體 SES (GLB) */}
+                <SESView visible={phase === 2} mode="solid" />
+                
+                {/* Phase 3: 幽靈原子 + 掃描體素線框 */}
+                <AtomView atoms={data.atoms} visible={phase === 3} opacity={0.15} />
+                <PocketVoxels voxels={data.pocket_voxels} visible={phase === 3} isGlowing={false} />
+                
+                {/* Phase 4: 終極組合 - 玻璃態 SES 包覆發光體素 */}
+                <SESView visible={phase === 4} mode="glass" />
+                <PocketVoxels voxels={data.pocket_voxels} visible={phase === 4} isGlowing={true} />
+              </group>
+            </Suspense>
 
           </Canvas>
         </>
