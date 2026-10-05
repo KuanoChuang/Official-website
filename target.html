@@ -37,12 +37,37 @@
     import { createRoot } from 'react-dom/client';
     import * as THREE from 'three';
     import { Canvas, useFrame } from '@react-three/fiber';
-    import { OrbitControls, useGLTF } from '@react-three/drei';
+    import { OrbitControls, useGLTF, Html } from '@react-three/drei';
+
+    // 這個錯誤捕捉器將會在渲染失敗時，顯示具體錯誤，而不是死機黑屏
+    class ErrorBoundary extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = { hasError: false, error: null };
+        }
+        static getDerivedStateFromError(error) {
+            return { hasError: true, error };
+        }
+        render() {
+            if (this.state.hasError) {
+                return (
+                    <div className="flex h-screen w-screen items-center justify-center bg-red-900/80">
+                        <div className="p-8 rounded-xl bg-red-950 text-red-200 border border-red-500 max-w-2xl shadow-2xl">
+                            <h2 className="text-2xl font-bold mb-4">網頁渲染發生錯誤</h2>
+                            <p className="mb-4 text-gray-300">防黑屏機制啟動，錯誤原因如下：</p>
+                            <pre className="text-sm bg-black/50 p-4 rounded overflow-auto whitespace-pre-wrap">{this.state.error.toString()}</pre>
+                        </div>
+                    </div>
+                );
+            }
+            return this.props.children;
+        }
+    }
 
     function AtomGroup({ type, atoms, color }) {
         const meshRef = useRef();
         useEffect(() => {
-            if (!meshRef.current || !atoms) return;
+            if (!meshRef.current || !atoms || atoms.length === 0) return;
             const dummy = new THREE.Object3D();
             atoms.forEach((a, i) => {
                 dummy.position.set(a.pos[0], a.pos[1], a.pos[2]);
@@ -53,6 +78,9 @@
             meshRef.current.instanceMatrix.needsUpdate = true;
         }, [atoms]);
 
+        // 防護網：避免 WebGL 因為 0 個實例而崩潰
+        if (!atoms || atoms.length === 0) return null;
+
         return (
             <instancedMesh ref={meshRef} args={[null, null, atoms.length]}>
                 <sphereGeometry args={[1, 32, 32]} />
@@ -62,7 +90,7 @@
     }
 
     function InstancedAtoms({ atoms, visible }) {
-        if (!visible || !atoms) return null;
+        if (!visible || !atoms || atoms.length === 0) return null;
         const groups = useMemo(() => {
             const grp = {};
             atoms.forEach(a => {
@@ -73,7 +101,6 @@
             return grp;
         }, [atoms]);
 
-        // 化學元素標準配色
         const colorMap = { C: '#aaaaaa', N: '#3333ff', O: '#ff3333', S: '#ffff33', P: '#ffa500', H: '#ffffff' };
 
         return (
@@ -86,52 +113,57 @@
     }
 
     function SESView({ visible }) {
-        const gltf = useGLTF('./protein_ses.glb');
+        // 使用 try-catch 的概念，若找不到 SES 模型不會當機
+        const { scene } = useGLTF('./protein_ses.glb', true, true, (loader) => {
+            loader.manager.onError = (url) => {
+                console.error("找不到模型:", url);
+            };
+        });
         
         useMemo(() => {
-            gltf.scene.traverse((child) => {
+            if(!scene) return;
+            scene.traverse((child) => {
                 if (child.isMesh) {
-                    // 自動生成法線以支援光影
-                    child.geometry.computeVertexNormals();
-                    // 套用高級玻璃材質
+                    if (!child.geometry.attributes.normal) {
+                        child.geometry.computeVertexNormals();
+                    }
                     child.material = new THREE.MeshPhysicalMaterial({
                         color: '#aaddff',
-                        transmission: 0.9,     // 玻璃透光度
+                        transmission: 0.9,     
                         opacity: 1,
                         metalness: 0.1,
                         roughness: 0.1,
-                        clearcoat: 1.0,        // 表面烤漆反光
+                        clearcoat: 1.0,        
                         clearcoatRoughness: 0.1,
-                        ior: 1.4,              // 折射率
+                        ior: 1.4,              
                         transparent: true,
                         side: THREE.DoubleSide
                     });
                 }
             });
-        }, [gltf]);
+        }, [scene]);
 
         if (!visible) return null;
-        return <primitive object={gltf.scene} />;
+        return <primitive object={scene} />;
     }
 
     function GridWireframe({ algoData, visible }) {
-        if (!visible || !algoData) return null;
+        if (!visible || !algoData || !algoData.grid) return null;
         const { sizeX, sizeY, sizeZ } = algoData.grid;
         
         return (
-            <group>
-                <mesh>
-                    <boxGeometry args={[sizeX, sizeY, sizeZ]} />
-                    <meshBasicMaterial color="#00ffcc" wireframe={true} transparent opacity={0.2} />
-                </mesh>
-            </group>
+            <mesh>
+                <boxGeometry args={[sizeX, sizeY, sizeZ]} />
+                <meshBasicMaterial color="#00ffcc" wireframe={true} transparent opacity={0.2} />
+            </mesh>
         );
     }
 
     function VoxelGroup({ positions, color, spacing, clipPlane, opacity = 1, visible }) {
         const meshRef = useRef();
+        
         useEffect(() => {
-            if (!meshRef.current || !positions) return;
+            if (!meshRef.current || !positions || positions.length === 0) return;
             const dummy = new THREE.Object3D();
             positions.forEach((pos, i) => {
                 dummy.position.set(pos[0], pos[1], pos[2]);
@@ -141,10 +173,10 @@
             meshRef.current.instanceMatrix.needsUpdate = true;
         }, [positions]);
 
-        if (!visible) return null;
+        if (!visible || !positions || positions.length === 0) return null;
 
         return (
-            <instancedMesh ref={meshRef} args={[null, null, positions ? positions.length : 0]}>
+            <instancedMesh ref={meshRef} args={[null, null, positions.length]}>
                 <boxGeometry args={[spacing * 0.85, spacing * 0.85, spacing * 0.85]} />
                 <meshLambertMaterial 
                     color={color} 
@@ -152,37 +184,33 @@
                     opacity={opacity} 
                     clippingPlanes={[clipPlane]} 
                     clipShadows={true} 
+                    side={THREE.DoubleSide}
                 />
             </instancedMesh>
         );
     }
 
     function VoxelScanner({ algoData, visible }) {
-        // 設定一個裁切平面，法線向右 (-X)，用來遮蔽大於 Constant 的點
         const clipPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0), []);
         
         useFrame(({ clock }) => {
-            if (!visible || !algoData) return;
-            const max = algoData.grid.sizeX / 2 + 5;
+            if (!visible || !algoData || !algoData.grid) return;
+            const max = algoData.grid.sizeX / 2 + 2; // 使用真實長度計算掃描距離
             const min = -max;
-            const duration = 4; // 掃描一輪需 4 秒
+            const duration = 5; 
             const progress = (clock.getElapsedTime() % duration) / duration;
-            // 更新裁切面的位置
             clipPlane.constant = min + progress * (max - min);
         });
 
-        if (!visible || !algoData) return null;
+        if (!visible || !algoData || !algoData.voxels) return null;
 
         const { solvent, protein, cavity } = algoData.voxels;
         const { spacing } = algoData.grid;
 
         return (
             <group>
-                {/* 溶劑區 (SES外部) - 淡藍色透明 */}
                 <VoxelGroup positions={solvent} color="#0088ff" spacing={spacing} clipPlane={clipPlane} opacity={0.15} visible={true} />
-                {/* 蛋白質實體 - 白色半透明 */}
                 <VoxelGroup positions={protein} color="#ffffff" spacing={spacing} clipPlane={clipPlane} opacity={0.3} visible={true} />
-                {/* 核心空腔區 (口袋) - 發光亮粉紅 */}
                 <VoxelGroup positions={cavity} color="#ff0077" spacing={spacing} clipPlane={clipPlane} opacity={1.0} visible={true} />
             </group>
         );
@@ -206,37 +234,35 @@
 
         if (error) {
             return (
-                <div className="flex h-screen items-center justify-center bg-red-900/50">
-                    <div className="p-8 rounded-xl bg-red-950 text-red-200 border border-red-500">
+                <div className="flex h-screen w-screen items-center justify-center bg-red-900/50">
+                    <div className="p-8 rounded-xl bg-red-950 text-red-200 border border-red-500 shadow-2xl">
                         <h2 className="text-2xl font-bold mb-4">資料載入失敗</h2>
                         <p>{error}</p>
-                        <p className="mt-4 text-sm text-red-300">請確認 Python 腳本已執行，且檔案放在同一個伺服器目錄中。</p>
+                        <p className="mt-4 text-sm text-red-300">請確認 Python 腳本已執行，且檔案放在伺服器同一個目錄中。</p>
                     </div>
                 </div>
             );
         }
 
         if (!data) {
-            return <div className="flex h-screen items-center justify-center text-xl animate-pulse">載入 JSON 與 3D 模型資料中...</div>;
+            return <div className="flex h-screen items-center justify-center text-xl animate-pulse">載入 JSON 數據中...</div>;
         }
 
-        // 邏輯判斷：何時顯示什麼
         const showAtoms = (phase === 1 && phase1Opts.vdw) || phase === 2 || phase === 3;
         const showSES = (phase === 1 && phase1Opts.ses);
         const showGrid = phase === 2;
         const showScanner = phase === 3;
 
         return (
-            <>
-                {/* 3D 畫布 (開啟 localClippingEnabled 以支援裁切掃描特效) */}
+            <ErrorBoundary>
                 <Canvas gl={{ localClippingEnabled: true, antialias: true }} camera={{ position: [0, 0, 40], fov: 45 }}>
                     <color attach="background" args={['#0d1117']} />
                     
                     <ambientLight intensity={1.5} />
                     <directionalLight position={[10, 20, 10]} intensity={2.0} />
-                    <pointLight position={[-10, -10, -10]} intensity={1.0} color="#0055ff" />
+                    <pointLight position={[-10, -10, -10]} intensity={1.0} color="#ffffff" />
 
-                    <Suspense fallback={null}>
+                    <Suspense fallback={<Html center><div className="text-blue-400 font-bold w-48 text-center bg-black/60 p-3 rounded">模型載入中...</div></Html>}>
                         <InstancedAtoms atoms={data.atoms} visible={showAtoms} />
                         <SESView visible={showSES} />
                         <GridWireframe algoData={data.algo_data} visible={showGrid} />
@@ -246,7 +272,7 @@
                     <OrbitControls makeDefault autoRotate={phase === 1} autoRotateSpeed={0.5} enableDamping />
                 </Canvas>
 
-                {/* UI 介面 */}
+                {/* 按鈕介面 */}
                 <div className="absolute top-6 left-1/2 transform -translate-x-1/2 flex gap-3 p-2 glass-panel rounded-full z-10 shadow-2xl">
                     {[1, 2, 3].map(p => (
                         <button
@@ -269,7 +295,7 @@
                                 checked={phase1Opts.vdw}
                                 onChange={(e) => setPhase1Opts({...phase1Opts, vdw: e.target.checked})}
                             />
-                            VDW 原子模型
+                            VDW 實心原子
                         </label>
                         <label className="flex items-center gap-3 cursor-pointer text-lg">
                             <input 
@@ -283,20 +309,20 @@
                     </div>
                 )}
 
-                {/* 說明浮窗 */}
-                <div className="absolute bottom-6 right-6 p-6 glass-panel rounded-xl max-w-sm border border-gray-700">
+                {/* 說明面板 */}
+                <div className="absolute bottom-6 right-6 p-6 glass-panel rounded-xl max-w-sm border border-gray-700 pointer-events-none">
                     <h3 className="text-xl font-bold mb-2 text-white">
                         {phase === 1 && "受體結構與表面"}
-                        {phase === 2 && "空間網格化 (Voxelization)"}
-                        {phase === 3 && "空腔探測掃描 (Ray-casting)"}
+                        {phase === 2 && "長方體空間網格化 (Voxelization)"}
+                        {phase === 3 && "空腔切面掃描 (Ray-casting)"}
                     </h3>
                     <p className="text-sm text-gray-300 leading-relaxed">
-                        {phase === 1 && "展示蛋白質原子 (VDW Sphere) 以及溶劑排除表面 (SES)。利用透明塗層材質模擬真實的光學折射感。"}
-                        {phase === 2 && "將空間包圍盒切分為高密度的 3D 網格陣列，長方體邊界由真實 MRC 檔案數據生成。"}
-                        {phase === 3 && "使用距離場裁切面掃描。淡藍色：溶劑區。白色：蛋白質實體。高亮粉紅色：被保護的內部空腔 (口袋)。"}
+                        {phase === 1 && "展示蛋白質原子 (VDW) 以及高度透光的溶劑排除表面 (SES)。"}
+                        {phase === 2 && "基於真實 MRC 計算尺寸，生成緊密包覆蛋白質實體的長方體網格空間。"}
+                        {phase === 3 && "保留底層原子，以距離場裁切面從左至右掃描。淡藍色：溶劑區。白色：蛋白質。發光粉紅：空腔口袋區。"}
                     </p>
                 </div>
-            </>
+            </ErrorBoundary>
         );
     }
 
