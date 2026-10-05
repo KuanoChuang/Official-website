@@ -53,8 +53,30 @@
     import React, { useRef, useState, useEffect, useMemo, Suspense } from 'react';
     import { createRoot } from 'react-dom/client';
     import { Canvas, useFrame } from '@react-three/fiber';
-    import { OrbitControls, Environment, ContactShadows, useGLTF } from '@react-three/drei';
+    import { OrbitControls, Environment, ContactShadows, useGLTF, Html } from '@react-three/drei';
     import * as THREE from 'three';
+
+    // 新增：錯誤捕捉邊界，避免當掉時變成全黑
+    class ErrorBoundary extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+      }
+      static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+      }
+      render() {
+        if (this.state.hasError) {
+          return (
+            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: '#ff4444', backgroundColor: 'rgba(0,0,0,0.8)', padding: '30px', borderRadius: '10px', zIndex: 100 }}>
+              <h3>渲染崩潰 (Crash)</h3>
+              <pre>{this.state.error.message}</pre>
+            </div>
+          );
+        }
+        return this.props.children;
+      }
+    }
 
     function AtomView({ atoms, visible, opacity = 1.0 }) {
       const meshRef = useRef();
@@ -102,7 +124,12 @@
         if (!nodes) return null;
         // 自動尋找檔案中的立體網格 (Mesh)
         const mesh = Object.values(nodes).find(n => n.isMesh);
-        return mesh ? mesh.geometry : null;
+        if (mesh && mesh.geometry) {
+          // 非常重要：重新計算頂點法線！Trimesh 匯出的 GLB 可能缺乏法線，會導致反光材質全黑與背景融合
+          mesh.geometry.computeVertexNormals();
+          return mesh.geometry;
+        }
+        return null;
       }, [nodes]);
 
       if (!visible || !geometry) return null;
@@ -179,7 +206,7 @@
       if (!data) return <div className="loading">載入預先計算資產中... (Loading JSON)</div>;
 
       return (
-        <>
+        <ErrorBoundary>
           <div className="ui-panel">
             <h2>RENDER PIPELINE</h2>
             <button className={`phase-btn ${phase === 1 ? 'active' : ''}`} onClick={() => setPhase(1)}>
@@ -209,11 +236,12 @@
             <directionalLight position={[-20, 0, -20]} intensity={0.5} color="#00f0ff" />
             <pointLight position={[0, -20, 0]} intensity={1.0} color="#ff00ff" />
             
-            {/* 環境反射光 (提供 SES 玻璃材質折射的依據) */}
-            <Environment preset="city" />
+            {/* 加入 Html 與明確的 Suspense fallback，顯示載入進度 */}
+            <Suspense fallback={<Html center><div style={{ color: '#00f0ff', fontSize: '18px', whiteSpace: 'nowrap', backgroundColor: 'rgba(0,0,0,0.5)', padding: '10px 20px', borderRadius: '8px' }}>載入 3D 模型與環境光中...</div></Html>}>
+              
+              {/* 環境反射光移入 Suspense，避免加載 HDR 時造成畫面阻塞 */}
+              <Environment preset="city" />
 
-            {}
-            <Suspense fallback={null}>
               <group position={[0,0,0]}>
                 {/* Phase 1: VDW 原子 + 玻璃態 SES 表面 (雙模式) */}
                 <AtomView atoms={data.atoms} visible={phase === 1} />
@@ -233,7 +261,7 @@
             </Suspense>
 
           </Canvas>
-        </>
+        </ErrorBoundary>
       );
     }
 
