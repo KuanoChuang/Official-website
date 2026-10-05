@@ -330,7 +330,7 @@
     }
 
     // Phase 2: 網格線框架
-    function GridWireframe({ algoData, visible }) {
+   function GridWireframe({ algoData, visible }) {
       if (!visible || !algoData) return null;
       const size = algoData.grid.size;
       const spacing = algoData.grid.spacing;
@@ -346,42 +346,8 @@
     function App() {
       const [data, setData] = useState(null);
       const [error, setError] = useState(null);
-      
       const [phase, setPhase] = useState(1);
       const [phase1Opts, setPhase1Opts] = useState({ vdw: true, ses: true });
-
-      useEffect(() => {
-        if (!meshRef.current || !voxels) return;
-        voxels.forEach((pos, i) => {
-          dummy.position.set(...pos);
-          dummy.updateMatrix();
-          meshRef.current.setMatrixAt(i, dummy.matrix);
-        });
-        meshRef.current.instanceMatrix.needsUpdate = true;
-      }, [voxels]);
-
-      if (!visible) return null;
-
-      // 體素間距通常與 MRC voxel size 一致，這裡預設 1.0 作為方塊大小
-      return (
-        <instancedMesh ref={meshRef} args={[null, null, voxels.length]}>
-          <boxGeometry args={[0.8, 0.8, 0.8]} />
-          {isGlowing ? (
-            <meshStandardMaterial 
-              color="#00f0ff" emissive="#0088ff" emissiveIntensity={1.5} 
-              transparent opacity={0.8}
-            />
-          ) : (
-            <meshBasicMaterial color="#ffcc00" wireframe={true} transparent opacity={0.3} />
-          )}
-        </instancedMesh>
-      );
-    }
-
-    function App() {
-      const [data, setData] = useState(null);
-      const [error, setError] = useState(null);
-      const [phase, setPhase] = useState(1);
 
       useEffect(() => {
         // 載入我們 Python 轉檔好的單一檔案
