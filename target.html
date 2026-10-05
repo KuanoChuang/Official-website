@@ -141,12 +141,14 @@
           ) : (
             <meshPhysicalMaterial 
               color="#ffffff" 
-              transmission={0.8} // 玻璃透視感
+              transmission={0.8} 
               opacity={1} 
               transparent={true}
-              roughness={0.2} 
-              thickness={2.0} // 玻璃厚度折射
-              ior={1.4} // 折射率
+              roughness={0.1} 
+              thickness={2.0} 
+              ior={1.4} 
+              clearcoat={1.0} 
+              clearcoatRoughness={0.1} 
               side={THREE.DoubleSide}
             />
           )}
@@ -230,18 +232,16 @@
             {/* 攝影機控制器 */}
             <OrbitControls autoRotate={phase === 4} autoRotateSpeed={0.5} makeDefault />
             
-            {/* 專業燈光設定 (Key, Fill, Back) */}
-            <ambientLight intensity={0.5} />
-            <directionalLight position={[20, 20, 20]} intensity={1.5} castShadow />
-            <directionalLight position={[-20, 0, -20]} intensity={0.5} color="#00f0ff" />
-            <pointLight position={[0, -20, 0]} intensity={1.0} color="#ff00ff" />
+            {/* 專業燈光設定 (Key, Fill, Back) - 強化光源以彌補缺乏 HDR 環境光的反光 */}
+            <ambientLight intensity={1.2} />
+            <directionalLight position={[20, 20, 20]} intensity={2.0} castShadow />
+            <directionalLight position={[-20, -10, -20]} intensity={1.5} color="#00f0ff" />
+            <pointLight position={[0, 20, 0]} intensity={1.5} color="#ffffff" />
+            <pointLight position={[0, -20, 0]} intensity={1.5} color="#ff00ff" />
             
             {/* 加入 Html 與明確的 Suspense fallback，顯示載入進度 */}
             <Suspense fallback={<Html center><div style={{ color: '#00f0ff', fontSize: '18px', whiteSpace: 'nowrap', backgroundColor: 'rgba(0,0,0,0.5)', padding: '10px 20px', borderRadius: '8px' }}>載入 3D 模型與環境光中...</div></Html>}>
               
-              {/* 環境反射光移入 Suspense，避免加載 HDR 時造成畫面阻塞 */}
-              <Environment preset="city" />
-
               <group position={[0,0,0]}>
                 {/* Phase 1: VDW 原子 + 玻璃態 SES 表面 (雙模式) */}
                 <AtomView atoms={data.atoms} visible={phase === 1} />
