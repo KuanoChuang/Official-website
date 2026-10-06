@@ -154,7 +154,7 @@
             specular="#444444" 
             transparent={opacity < 1.0} 
             opacity={opacity} 
-            depthWrite={opacity === 1.0}
+            depthWrite={true} 
           />
         </instancedMesh>
       );
@@ -254,13 +254,12 @@
         <group position={[bounds.cx, bounds.cy, bounds.cz]}>
           <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#00ffff" />
           <lineSegments geometry={geometry}>
-            {/* 使用加法混色與極低透明度，製造出科幻且不干擾原子的全息網格感 */}
+            {}
             <lineBasicMaterial 
-              color="#0088ff" 
+              color="#5588aa" 
               transparent 
-              opacity={0.15} 
+              opacity={0.3} 
               depthWrite={false} 
-              blending={THREE.AdditiveBlending} 
             />
           </lineSegments>
         </group>
