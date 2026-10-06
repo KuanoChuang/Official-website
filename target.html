@@ -148,11 +148,13 @@
       return (
         <instancedMesh ref={meshRef} args={[null, null, atoms.length]}>
           <sphereGeometry args={[1, 16, 16]} />
-          {/* 【降低高光反射】將 specular 改為暗灰色，避免球體表面產生刺眼的白色反光點 */}
+          {}
           <meshPhongMaterial 
             shininess={30} 
             specular="#444444" 
-            transparent={true} opacity={opacity} depthWrite={opacity === 1.0}
+            transparent={opacity < 1.0} 
+            opacity={opacity} 
+            depthWrite={opacity === 1.0}
           />
         </instancedMesh>
       );
