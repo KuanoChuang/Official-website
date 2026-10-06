@@ -417,7 +417,7 @@
             <bufferGeometry ref={proteinGeoRef}>
               <bufferAttribute attach="attributes-position" count={proteinFiltered.count} array={proteinFiltered.array} itemSize={3} />
             </bufferGeometry>
-            <pointsMaterial color="#aaaaaa" size={0.5} transparent={true} opacity={0.5} toneMapped={false} depthWrite={false} />
+            <pointsMaterial color="#aaaaaa" size={0.5} transparent={true} opacity={0.0} toneMapped={false} depthWrite={false} />
           </points>
 
           {/* 3. 結合口袋區 (Cavity) - 改為高亮的青色 (Cyan) */}
