@@ -463,10 +463,17 @@
             <color attach="background" args={['#030508']} />
             <OrbitControls autoRotate={phase === 6 || phase === 1} autoRotateSpeed={0.5} makeDefault />
             
-            <ambientLight intensity={2.0} />
-            <directionalLight position={[20, 20, 20]} intensity={3.0} />
-            <directionalLight position={[-20, -10, -20]} intensity={1.5} color="#00f0ff" />
-            <pointLight position={[0, 20, 0]} intensity={2.5} color="#ffffff" />
+            {/* 1. 大幅降低環境光 (由 2.0 降至 0.6) - 恢復原子的陰影與鮮豔色彩 */}
+            <ambientLight intensity={0.6} />
+            
+            {/* 2. 主光源 (由 3.0 降至 1.5) - 提供立體感，不會將表面照到發白 */}
+            <directionalLight position={[20, 20, 20]} intensity={1.5} />
+            
+            {/* 3. 背面輪廓光 (由 1.5 降至 0.8) - 專門勾勒 SES 邊緣的漂亮藍光 */}
+            <directionalLight position={[-20, -10, -20]} intensity={0.8} color="#00f0ff" />
+            
+            {/* 4. 頂部輔助光 (由 2.5 降至 0.8) - 柔和提亮整體 */}
+            <pointLight position={[0, 20, 0]} intensity={0.8} color="#ffffff" />
             
             <Suspense fallback={null}>
               <group position={[0,0,0]}>
