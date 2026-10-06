@@ -54,7 +54,14 @@
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
-
+    /* 隱藏捲軸但保留滾動功能*/
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
     /* Comparison Table Styles */
     .comparison-table th {
       position: sticky;
@@ -729,193 +736,242 @@
       <!-- Comparison Table -->
       <div id="modules" class="scroll-mt-32">
         <div class="text-center mb-10">
-          <h2 class="text-3xl font-bold text-white mb-4">模組功能比較表</h2>
+          <h2 class="text-3xl font-bold text-white mb-4">方案功能比較表</h2>
           <p class="text-gray-400">深入了解各方案在運算規模、特徵設定與系統權限上的詳細差異。</p>
         </div>
         
-        <div class="overflow-x-auto rounded-xl border border-gray-800 bg-[#0A111A]">
-          <table class="w-full text-left text-sm comparison-table min-w-[900px]">
-            <thead>
-              <tr>
-                <th class="p-4 w-[25%] text-gray-300 font-bold border-b-2 border-gray-700">核心功能 / 模組</th>
-                <th class="p-4 text-center text-white font-bold border-b-2 border-gray-700">Regular</th>
-                <th class="p-4 text-center text-molris-cyan font-bold border-b-2 border-gray-700">Plus</th>
-                <th class="p-4 text-center text-molris-cyan font-bold border-b-2 border-molris-cyan bg-molris-cyan/10">Pro</th>
-                <th class="p-4 text-center text-white font-bold border-b-2 border-gray-700">Special Edition</th>
-                <th class="p-4 text-center text-white font-bold border-b-2 border-gray-700">Enterprise</th>
+        <!-- 表格容器：加入 hide-scrollbar 隱藏捲軸 -->
+        <div class="overflow-auto max-h-[75vh] rounded-xl border border-gray-800 bg-[#0A111A] shadow-2xl hide-scrollbar">
+          <table class="w-full text-center text-sm comparison-table min-w-[1000px] border-collapse relative">
+            <thead class="bg-gray-900">
+              <tr class="text-white font-bold">
+                <th class="p-4 border-b-2 border-gray-700 w-[16%] !sticky !top-0 bg-gray-950 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.3)]">方案</th>
+                <th class="p-4 border-b-2 border-gray-700 w-[16%] !sticky !top-0 bg-gray-950 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.3)] text-molris-cyan">Regular</th>
+                <th class="p-4 border-b-2 border-gray-700 w-[16%] !sticky !top-0 bg-gray-950 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.3)] text-molris-cyan">Plus</th>
+                <th class="p-4 border-b-2 border-gray-700 w-[16%] !sticky !top-0 bg-gray-950 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.3)] text-molris-cyan">Pro</th>
+                <th class="p-4 border-b-2 border-gray-700 w-[16%] !sticky !top-0 bg-gray-950 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.3)] text-molris-cyan">Special Edition</th>
+                <th class="p-4 border-b-2 border-gray-700 w-[16%] !sticky !top-0 bg-gray-950 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.3)] text-molris-cyan">Enterprise</th>
               </tr>
             </thead>
-            <tbody class="text-gray-400">
-              <tr class="bg-gray-900/60">
-                <td colspan="6" class="p-3 font-bold text-gray-200">基本限制與運算資源</td>
+            <tbody class="text-gray-300">
+              
+              <!-- ================= 區塊 1: 運算資源與限制 ================= -->
+              <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleTableSection(this, 'sec-resource')">
+                <td colspan="6" class="p-4 text-left font-bold text-molris-cyan tracking-widest border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                  <div class="flex items-center justify-between">
+                    <span>運算資源與限制</span>
+                    <i class="fa-solid fa-chevron-up toggle-icon transition-transform duration-300"></i>
+                  </div>
+                </td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">信用點 (Credits)</td>
-                <td class="p-4 text-center">1,250 / 月</td>
-                <td class="p-4 text-center">3,000 / 月</td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-white font-bold">12,000 / 月</td>
-                <td class="p-4 text-center">客製化額度</td>
-                <td class="p-4 text-center">獨立資源 (無限制)</td>
+              
+              <tr class="sec-resource bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">信用點</td>
+                <td class="p-4 border-b border-gray-800/50">1250點 / 月</td>
+                <td class="p-4 border-b border-gray-800/50">3000 點 / 月</td>
+                <td class="p-4 border-b border-gray-800/50">12000 點 / 月</td>
+                <td class="p-4 border-b border-gray-800/50">客製化額度分配</td>
+                <td class="p-4 border-b border-gray-800/50">獨立額度</td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">點數消耗折扣</td>
-                <td class="p-4 text-center">-</td>
-                <td class="p-4 text-center">98 折</td>
-                <td class="p-4 text-center bg-molris-cyan/5">95 折</td>
-                <td class="p-4 text-center">專案報價</td>
-                <td class="p-4 text-center">專案報價</td>
+              <tr class="sec-resource hover:bg-gray-800/30 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">信用點折扣</td>
+                <td class="p-4 border-b border-gray-800/50">無折扣</td>
+                <td class="p-4 border-b border-gray-800/50">98折</td>
+                <td class="p-4 border-b border-gray-800/50">95折</td>
+                <td class="p-4 border-b border-gray-800/50">依客製需求</td>
+                <td class="p-4 border-b border-gray-800/50">獨立運作</td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">輸入原子數上限</td>
-                <td class="p-4 text-center">限制 (小於 5k)</td>
-                <td class="p-4 text-center">限制 (小於 50k)</td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-infinity"></i> 無上限</td>
-                <td class="p-4 text-center"><i class="fa-solid fa-infinity"></i> 無上限</td>
-                <td class="p-4 text-center"><i class="fa-solid fa-infinity"></i> 無上限</td>
+              <tr class="sec-resource bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">原子輸入上限</td>
+                <td class="p-4 border-b border-gray-800/50">5000</td>
+                <td class="p-4 border-b border-gray-800/50">10000</td>
+                <td class="p-4 border-b border-gray-800/50">無上限</td>
+                <td class="p-4 border-b border-gray-800/50">無上限</td>
+                <td class="p-4 border-b border-gray-800/50">無上限</td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">任務優先級</td>
-                <td class="p-4 text-center">標準</td>
-                <td class="p-4 text-center">高</td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan font-bold">最高優先級</td>
-                <td class="p-4 text-center">最高優先級</td>
-                <td class="p-4 text-center">專屬獨立硬體</td>
+              <tr class="sec-resource hover:bg-gray-800/30 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">殘基輸入上限</td>
+                <td class="p-4 border-b border-gray-800/50">1000</td>
+                <td class="p-4 border-b border-gray-800/50">2000</td>
+                <td class="p-4 border-b border-gray-800/50">無上限</td>
+                <td class="p-4 border-b border-gray-800/50">無上限</td>
+                <td class="p-4 border-b border-gray-800/50">無上限</td>
               </tr>
-              <tr class="bg-gray-900/60">
-                <td colspan="6" class="p-3 font-bold text-gray-200">建模與系統設定</td>
+              <tr class="sec-resource bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">結構大小限制</td>
+                <td class="p-4 border-b border-gray-800/50">20 MB</td>
+                <td class="p-4 border-b border-gray-800/50">35 MB</td>
+                <td class="p-4 border-b border-gray-800/50">50 MB</td>
+                <td class="p-4 border-b border-gray-800/50">50 MB</td>
+                <td class="p-4 border-b border-gray-800/50">無上限</td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">蛋白質與小分子建模</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              <tr class="sec-resource hover:bg-gray-800/30 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">平行運算</td>
+                <td class="p-4 border-b border-gray-800/50">1</td>
+                <td class="p-4 border-b border-gray-800/50">5</td>
+                <td class="p-4 border-b border-gray-800/50">10</td>
+                <td class="p-4 border-b border-gray-800/50">10</td>
+                <td class="p-4 border-b border-gray-800/50">無上限</td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">客製化分子與力場</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+
+              <!-- ================= 區塊 2: 專案管理與儲存 ================= -->
+              <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleTableSection(this, 'sec-management')">
+                <td colspan="6" class="p-4 text-left font-bold text-molris-cyan tracking-wider border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                  <div class="flex items-center justify-between">
+                    <span>專案管理與儲存</span>
+                    <i class="fa-solid fa-chevron-up toggle-icon transition-transform duration-300"></i>
+                  </div>
+                </td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">奈米粒子建模</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-gray-600">-</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              
+              <tr class="sec-management bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">工作流程</td>
+                <td class="p-4 border-b border-gray-800/50">單一任務</td>
+                <td class="p-4 border-b border-gray-800/50">完整工作流程</td>
+                <td class="p-4 border-b border-gray-800/50">完整工作流程</td>
+                <td class="p-4 border-b border-gray-800/50">完整工作流程</td>
+                <td class="p-4 border-b border-gray-800/50">完整工作流程</td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">複雜三維結構搭建</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-gray-600">-</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              <tr class="sec-management hover:bg-gray-800/30 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">儲存空間</td>
+                <td class="p-4 border-b border-gray-800/50">單一任務存取</td>
+                <td class="p-4 border-b border-gray-800/50">1TB</td>
+                <td class="p-4 border-b border-gray-800/50">2TB</td>
+                <td class="p-4 border-b border-gray-800/50">客製化</td>
+                <td class="p-4 border-b border-gray-800/50">獨立存取</td>
               </tr>
-              <tr class="bg-gray-900/60">
-                <td colspan="6" class="p-3 font-bold text-gray-200">模擬與運算模組</td>
+              <tr class="sec-management bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">保存期限</td>
+                <td class="p-4 border-b border-gray-800/50">保存至交付數據</td>
+                <td class="p-4 border-b border-gray-800/50">交付後一個月</td>
+                <td class="p-4 border-b border-gray-800/50">交付後三個月</td>
+                <td class="p-4 border-b border-gray-800/50">交付後三個月</td>
+                <td class="p-4 border-b border-gray-800/50">交付後六個月</td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">位點搜尋與分子對接</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              <tr class="sec-management hover:bg-gray-800/30 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">任務順序</td>
+                <td class="p-4 border-b border-gray-800/50">依照交付日</td>
+                <td class="p-4 border-b border-gray-800/50">依照任務排序</td>
+                <td class="p-4 border-b border-gray-800/50">最高優先級 <i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50">依客製需求</td>
+                <td class="p-4 border-b border-gray-800/50">獨立運作</td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">常規分子動力學 (MD)</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              <tr class="sec-management bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">加急服務</td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-xmark text-red-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50">升級服務 <i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50">最高優先級 <i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50">依客製需求</td>
+                <td class="p-4 border-b border-gray-800/50">獨立運作</td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">動態軌跡與力學分析</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i> 完整版</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i> 完整版</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i> 完整版</td>
+
+              <!-- ================= 區塊 3: 系統規格與產出 ================= -->
+              <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleTableSection(this, 'sec-system')">
+                <td colspan="6" class="p-4 text-left font-bold text-molris-cyan tracking-wider border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                  <div class="flex items-center justify-between">
+                    <span>系統規格與產出</span>
+                    <i class="fa-solid fa-chevron-up toggle-icon transition-transform duration-300"></i>
+                  </div>
+                </td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">平行運算支援</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+
+              <tr class="sec-system bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">參數設定</td>
+                <td class="p-4 border-b border-gray-800/50">面板參數</td>
+                <td class="p-4 border-b border-gray-800/50">專家模式</td>
+                <td class="p-4 border-b border-gray-800/50">延伸設定</td>
+                <td class="p-4 border-b border-gray-800/50">自定義</td>
+                <td class="p-4 border-b border-gray-800/50">所有設定</td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">演算法客製化優化</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-gray-600">-</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              <tr class="sec-system hover:bg-gray-800/30 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">客製分子</td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-xmark text-red-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-xmark text-red-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50">客製分子 <i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50">客製分子 <i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
               </tr>
-              <tr class="bg-gray-900/60">
-                <td colspan="6" class="p-3 font-bold text-gray-200">介面與圖表功能</td>
+              <tr class="sec-system bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">CPU</td>
+                <td class="p-4 border-b border-gray-800/50">一般版</td>
+                <td class="p-4 border-b border-gray-800/50">專業版</td>
+                <td class="p-4 border-b border-gray-800/50">平行與分散型</td>
+                <td class="p-4 border-b border-gray-800/50">客製平行與分散型</td>
+                <td class="p-4 border-b border-gray-800/50">客製平行與分散型</td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">參數設定級別</td>
-                <td class="p-4 text-center">面板基礎設定</td>
-                <td class="p-4 text-center">進階設定</td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-white">延伸彈性設定</td>
-                <td class="p-4 text-center text-white">完全自定義</td>
-                <td class="p-4 text-center text-white">完全自定義</td>
+              <tr class="sec-system hover:bg-gray-800/30 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">GPU</td>
+                <td class="p-4 border-b border-gray-800/50">RTX 4070同階以上</td>
+                <td class="p-4 border-b border-gray-800/50">RTX 5070 同階以上</td>
+                <td class="p-4 border-b border-gray-800/50">RTX 4090同階以上</td>
+                <td class="p-4 border-b border-gray-800/50">RTX 4090同階以上</td>
+                <td class="p-4 border-b border-gray-800/50">RTX 4090同階以上</td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">視覺化與動態展示</td>
-                <td class="p-4 text-center">基本預覽</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i> 支援圖表</td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i> 進階渲染特效</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i> 進階渲染特效</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i> 進階渲染特效</td>
+              <tr class="sec-system bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">數據精度</td>
+                <td class="p-4 border-b border-gray-800/50">單精度</td>
+                <td class="p-4 border-b border-gray-800/50">單精度</td>
+                <td class="p-4 border-b border-gray-800/50">單/雙精度</td>
+                <td class="p-4 border-b border-gray-800/50">單/雙精度</td>
+                <td class="p-4 border-b border-gray-800/50">單/雙精度</td>
               </tr>
-              <tr class="bg-gray-900/60">
-                <td colspan="6" class="p-3 font-bold text-gray-200">服務與授權</td>
+              <tr class="sec-system hover:bg-gray-800/30 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">學術圖表</td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-xmark text-red-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">學術發表許可</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              <tr class="sec-system bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">動態結構</td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-xmark text-red-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">商業使用許可</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-gray-600">-</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
+              <tr class="sec-system hover:bg-gray-800/30 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">用途許可</td>
+                <td class="p-4 border-b border-gray-800/50"><i class="fa-solid fa-xmark text-red-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50">學術發表 <i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50">學術發表 <i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50">學術發表 <i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
+                <td class="p-4 border-b border-gray-800/50">學術發表 <i class="fa-solid fa-check text-green-500 font-bold text-lg"></i> 商業運用 <i class="fa-solid fa-check text-green-500 font-bold text-lg"></i></td>
               </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300">教育訓練</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center bg-molris-cyan/5 text-gray-600">-</td>
-                <td class="p-4 text-center text-gray-600">-</td>
-                <td class="p-4 text-center text-molris-cyan"><i class="fa-solid fa-check"></i></td>
-              </tr>
-              <tr>
-                <td class="p-4 font-medium text-gray-300 border-b border-gray-800">專家專案諮詢</td>
-                <td class="p-4 text-center border-b border-gray-800 text-gray-600">-</td>
-                <td class="p-4 text-center border-b border-gray-800 text-gray-600">-</td>
-                <td class="p-4 text-center bg-molris-cyan/5 border-b border-molris-cyan/30 text-gray-600">-</td>
-                <td class="p-4 text-center border-b border-gray-800 text-molris-cyan"><i class="fa-solid fa-check"></i> (可加購)</td>
-                <td class="p-4 text-center border-b border-gray-800 text-molris-cyan"><i class="fa-solid fa-check"></i> 專屬顧問</td>
+              <tr class="sec-system bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+                <td class="p-4 border-b border-gray-800/50 font-bold text-white">使用期限</td>
+                <td class="p-4 border-b border-gray-800/50">12個月</td>
+                <td class="p-4 border-b border-gray-800/50">12個月</td>
+                <td class="p-4 border-b border-gray-800/50">12個月</td>
+                <td class="p-4 border-b border-gray-800/50">12個月</td>
+                <td class="p-4 border-b border-gray-800/50">12個月</td>
               </tr>
             </tbody>
           </table>
         </div>
+        
+        <!-- 表格收合腳本 -->
+        <script>
+          function toggleTableSection(headerElement, sectionClass) {
+            const rows = document.querySelectorAll('.' + sectionClass);
+            const icon = headerElement.querySelector('.toggle-icon');
+            
+            let isHidden = false;
+            rows.forEach(row => {
+              row.classList.toggle('hidden');
+              if (row.classList.contains('hidden')) {
+                isHidden = true;
+              }
+            });
+            
+            if (isHidden) {
+              icon.classList.add('rotate-180');
+            } else {
+              icon.classList.remove('rotate-180');
+            }
+          }
+        </script>
       </div>
 
     </div>
