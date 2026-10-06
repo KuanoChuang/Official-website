@@ -977,42 +977,87 @@
       <div class="mt-28 mb-10 border-t border-gray-800/60 pt-20">
         <div class="text-center mb-12">
           <h2 class="text-3xl font-bold text-white mb-4">信用點如何使用？</h2>
-          <p class="text-gray-400">依據您的專案規模與研究需求，靈活運用信用點，最大化算力效益。</p>
+          <p class="text-gray-400 mb-8">依據您的專案規模與研究需求，靈活運用信用點，最大化算力效益。</p>
+          
+          <!-- 統一的計算公式 -->
+          <div class="inline-flex flex-col sm:flex-row items-center justify-center gap-3 bg-gray-900/50 border border-gray-700/80 rounded-xl px-6 py-3 shadow-lg">
+            <span class="text-sm text-gray-400 font-medium">基本計算公式：</span>
+            <div class="text-base font-bold text-molris-cyan flex items-center gap-2">
+              分析模組 <i class="fa-solid fa-xmark text-xs text-gray-500"></i> 
+              執行時間 <i class="fa-solid fa-xmark text-xs text-gray-500"></i> 
+              運算資源
+            </div>
+          </div>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          <!-- 套裝組合包 -->
-          <div class="glass-card p-8 rounded-3xl border border-gray-800 hover:border-molris-cyan/40 transition-all duration-300 relative overflow-hidden group bg-gray-900/20">
+        <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-8">
+          <!-- 專案分析方案 -->
+          <div class="glass-card p-8 rounded-3xl border border-gray-800 hover:border-molris-cyan/40 transition-all duration-300 relative overflow-hidden group bg-gray-900/20 flex flex-col">
             <div class="absolute -right-10 -top-10 w-40 h-40 bg-molris-cyan/5 rounded-full blur-3xl group-hover:bg-molris-cyan/10 transition-colors"></div>
-            <div class="w-14 h-14 bg-[#0A1628] rounded-xl border border-gray-700 flex items-center justify-center text-molris-cyan mb-6 shadow-lg group-hover:border-molris-cyan/50 transition-colors">
-              <i class="fa-solid fa-boxes-stacked text-2xl"></i>
+            
+            <!-- 圖示與標題 (水平並排) -->
+            <div class="flex items-center gap-4 mb-6 relative z-10">
+              <div class="w-14 h-14 bg-[#0A1628] rounded-xl border border-gray-700 flex items-center justify-center text-molris-cyan shadow-lg group-hover:border-molris-cyan/50 transition-colors shrink-0">
+                <i class="fa-solid fa-boxes-stacked text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-white">專案分析方案</h3>
+                <span class="text-xs font-medium text-gray-500 tracking-wider">Project Workflow</span>
+              </div>
             </div>
-            <h3 class="text-xl font-bold text-white mb-3">套裝組合包 <span class="text-xs font-medium text-gray-500 ml-2">Workflow</span></h3>
-            <p class="text-sm text-gray-400 leading-relaxed text-justify mb-4 min-h-[80px]">
-              由 Molris 專家提供一套分析流程，根據分析流程<strong class="text-white">實際使用的模組與分析資源</strong>進行信用點的消耗，適合需要完整解決方案或跨領域整合的深度研究。
+            
+            <p class="text-sm text-gray-400 leading-relaxed text-justify mb-6">
+              由 Molris 專家規劃分析流程，協助優化參數設定，減少前期測試成本。
             </p>
-            <ul class="space-y-2 text-xs text-gray-500 mt-auto border-t border-gray-800/60 pt-4">
-              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-molris-cyan/70 mt-0.5"></i> 專家諮詢與流程規劃設計</li>
-              <li class="flex items-start gap-2"><i class="fa-solid fa-check text-molris-cyan/70 mt-0.5"></i> 確保各分析階段數據無縫銜接</li>
-            </ul>
+            
+            <div class="flex flex-wrap gap-2 mb-8">
+              <span class="px-2.5 py-1 bg-gray-900 border border-gray-700 rounded text-xs text-gray-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-molris-cyan"></i> 專案規劃</span>
+              <span class="px-2.5 py-1 bg-gray-900 border border-gray-700 rounded text-xs text-gray-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-molris-cyan"></i> 參數優化</span>
+              <span class="px-2.5 py-1 bg-gray-900 border border-gray-700 rounded text-xs text-gray-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-molris-cyan"></i> 流程整合</span>
+            </div>
+            
+            <div class="mt-auto border-t border-gray-800/60 pt-4">
+              <p class="text-xs text-gray-400"><strong class="text-white">適合：</strong>完整解決方案與跨模組研究。</p>
+            </div>
           </div>
 
-          <!-- 單一模組使用 -->
-          <div class="glass-card p-8 rounded-3xl border border-gray-800 hover:border-molris-cyan/40 transition-all duration-300 relative overflow-hidden group bg-gray-900/20">
+          <!-- 彈性分析方案 -->
+          <div class="glass-card p-8 rounded-3xl border border-gray-800 hover:border-molris-cyan/40 transition-all duration-300 relative overflow-hidden group bg-gray-900/20 flex flex-col">
             <div class="absolute -right-10 -top-10 w-40 h-40 bg-molris-cyan/5 rounded-full blur-3xl group-hover:bg-molris-cyan/10 transition-colors"></div>
-            <div class="w-14 h-14 bg-[#0A1628] rounded-xl border border-gray-700 flex items-center justify-center text-molris-cyan mb-6 shadow-lg group-hover:border-molris-cyan/50 transition-colors">
-              <i class="fa-solid fa-puzzle-piece text-2xl"></i>
+            
+            <!-- 圖示與標題 (水平並排) -->
+            <div class="flex items-center gap-4 mb-6 relative z-10">
+              <div class="w-14 h-14 bg-[#0A1628] rounded-xl border border-gray-700 flex items-center justify-center text-molris-cyan shadow-lg group-hover:border-molris-cyan/50 transition-colors shrink-0">
+                <i class="fa-solid fa-puzzle-piece text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-white">彈性分析方案</h3>
+                <span class="text-xs font-medium text-gray-500 tracking-wider">Stand-alone</span>
+              </div>
             </div>
-            <h3 class="text-xl font-bold text-white mb-3">單一模組使用 <span class="text-xs font-medium text-gray-500 ml-2">Stand-alone</span></h3>
-            <p class="text-sm text-gray-400 leading-relaxed text-justify mb-4 min-h-[80px]">
-              您可以<strong class="text-white">自行指定模組與參數設定</strong>，系統將依據該任務的<strong class="text-white">使用時長與運算資源</strong>進行信用點消耗，為具備背景知識的研究者提供最高自由度的操控。
+            
+            <p class="text-sm text-gray-400 leading-relaxed text-justify mb-6">
+              自行選擇分析模組與參數設定，依需求自由執行分析。
             </p>
-            <div class="mt-auto pt-4 border-t border-gray-800/60">
-              <a href="modules.html" class="inline-flex items-center gap-2 text-sm text-molris-cyan hover:text-white transition-colors group/link">
-                模組所需信用點，請參考功能模組頁面 <i class="fa-solid fa-arrow-right transform group-hover/link:translate-x-1 transition-transform"></i>
-              </a>
+            
+            <div class="flex flex-wrap gap-2 mb-8">
+              <span class="px-2.5 py-1 bg-gray-900 border border-gray-700 rounded text-xs text-gray-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-molris-cyan"></i> 自主選擇</span>
+              <span class="px-2.5 py-1 bg-gray-900 border border-gray-700 rounded text-xs text-gray-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-molris-cyan"></i> 參數自訂</span>
+              <span class="px-2.5 py-1 bg-gray-900 border border-gray-700 rounded text-xs text-gray-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-molris-cyan"></i> 彈性使用</span>
+            </div>
+            
+            <div class="mt-auto border-t border-gray-800/60 pt-4">
+              <p class="text-xs text-gray-400"><strong class="text-white">適合：</strong>具備研究背景、希望自主執行分析的使用者。</p>
             </div>
           </div>
+        </div>
+
+        <!-- 統一的超連結引導 -->
+        <div class="text-center">
+          <a href="modules.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gray-900/60 border border-gray-700/80 text-sm text-gray-300 hover:text-white hover:border-molris-cyan/60 hover:bg-gray-800 transition-all group/link shadow-md">
+            各模組所需信用點，請參考功能模組頁面 
+            <i class="fa-solid fa-arrow-right transform group-hover/link:translate-x-1 transition-transform text-molris-cyan"></i>
+          </a>
         </div>
       </div>
 
