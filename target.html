@@ -301,6 +301,11 @@
     function AlgorithmScanner({ algoData, atoms, phase }) {
       const [scanPos, setScanPos] = useState(0);
       
+      // 1. 建立 Ref 以便在動畫幀中動態控制繪製範圍
+      const solventGeoRef = useRef();
+      const proteinGeoRef = useRef();
+      const cavityGeoRef = useRef();
+      
       // 自我判斷是否應該顯示
       const visible = phase >= 3 && phase <= 5;
       
@@ -308,32 +313,40 @@
       const bounds = useMemo(() => computeTightBounds(atoms, 2.0), [atoms]);
 
       // 提取並過濾三種點陣資料 (只保留在 Bounding Box 內的點)
+      // 【關鍵修改】：過濾後，根據 X 座標「由左至右」進行排序，這是掃描揭露效果的核心
       const { solventFiltered, proteinFiltered, cavityFiltered } = useMemo(() => {
-        if (!algoData || !algoData.voxels || !bounds) return { solventFiltered: new Float32Array(), proteinFiltered: new Float32Array(), cavityFiltered: new Float32Array() };
+        if (!algoData || !algoData.voxels || !bounds) return { 
+            solventFiltered: { array: new Float32Array(), count: 0 }, 
+            proteinFiltered: { array: new Float32Array(), count: 0 }, 
+            cavityFiltered: { array: new Float32Array(), count: 0 } 
+        };
         
-        // 算出邊界絕對座標
-        const minX = bounds.cx - bounds.sizeX / 2;
-        const maxX = bounds.cx + bounds.sizeX / 2;
-        const minY = bounds.cy - bounds.sizeY / 2;
-        const maxY = bounds.cy + bounds.sizeY / 2;
-        const minZ = bounds.cz - bounds.sizeZ / 2;
-        const maxZ = bounds.cz + bounds.sizeZ / 2;
+        const minX = bounds.cx - bounds.sizeX / 2; const maxX = bounds.cx + bounds.sizeX / 2;
+        const minY = bounds.cy - bounds.sizeY / 2; const maxY = bounds.cy + bounds.sizeY / 2;
+        const minZ = bounds.cz - bounds.sizeZ / 2; const maxZ = bounds.cz + bounds.sizeZ / 2;
 
-        const filterPoints = (pointsArray) => {
+        const filterAndSort = (pointsArray) => {
           const res = [];
           for (let i = 0; i < pointsArray.length; i++) {
             const [x, y, z] = pointsArray[i];
             if (x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ) {
-              res.push(x, y, z);
+              res.push({x, y, z});
             }
           }
-          return new Float32Array(res);
+          // 依照 X 座標由小到大排序
+          res.sort((a, b) => a.x - b.x);
+          
+          const flat = new Float32Array(res.length * 3);
+          for(let i = 0; i < res.length; i++) {
+            flat[i*3] = res[i].x; flat[i*3+1] = res[i].y; flat[i*3+2] = res[i].z;
+          }
+          return { array: flat, count: res.length };
         };
 
         return {
-          solventFiltered: filterPoints(algoData.voxels.solvent || []),
-          proteinFiltered: filterPoints(algoData.voxels.protein || []),
-          cavityFiltered: filterPoints(algoData.voxels.cavity || [])
+          solventFiltered: filterAndSort(algoData.voxels.solvent || []),
+          proteinFiltered: filterAndSort(algoData.voxels.protein || []),
+          cavityFiltered: filterAndSort(algoData.voxels.cavity || [])
         };
       }, [algoData, bounds]);
 
@@ -343,7 +356,24 @@
         return new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ);
       }, [bounds]);
 
-      // 掃描動畫邏輯 (完美限制在邊界內)
+      // 【關鍵修改】：二元搜尋法，極速找出當前掃描線 (X座標) 左邊有幾個點
+      const findVisibleCount = (array, totalCount, currentX) => {
+        let left = 0;
+        let right = totalCount - 1;
+        let ans = 0;
+        while(left <= right) {
+          const mid = Math.floor((left + right) / 2);
+          if (array[mid * 3] <= currentX) {
+            ans = mid + 1;
+            left = mid + 1;
+          } else {
+            right = mid - 1;
+          }
+        }
+        return ans;
+      };
+
+      // 掃描動畫邏輯與動態點位顯示
       useFrame((state, delta) => {
         if (visible && bounds) {
           const startX = bounds.cx - bounds.sizeX / 2;
@@ -351,11 +381,14 @@
           
           setScanPos(prev => {
             const nextPos = prev + 12.0 * delta; // 掃描速度
-            // 如果超出右邊界，或者一開始位置不對，就歸位到最左側重新掃描
-            if (nextPos > endX || prev < startX) {
-              return startX;
-            }
-            return nextPos;
+            const finalPos = (nextPos > endX || prev < startX) ? startX : nextPos;
+            
+            // 【關鍵修改】：利用 setDrawRange 即時控制只畫出掃描線左側的點 (掃描揭露效果)
+            if (solventGeoRef.current) solventGeoRef.current.setDrawRange(0, findVisibleCount(solventFiltered.array, solventFiltered.count, finalPos));
+            if (proteinGeoRef.current) proteinGeoRef.current.setDrawRange(0, findVisibleCount(proteinFiltered.array, proteinFiltered.count, finalPos));
+            if (cavityGeoRef.current) cavityGeoRef.current.setDrawRange(0, findVisibleCount(cavityFiltered.array, cavityFiltered.count, finalPos));
+
+            return finalPos;
           });
         }
       });
@@ -371,34 +404,34 @@
             </group>
           )}
 
-          {/* 1. 溶劑區 (Solvent) - 亮冰藍色薄霧 (避免變黑) */}
+          {/* 1. 溶劑區 (Solvent) - 乾淨的淡冰藍色 */}
           <points>
-            <bufferGeometry>
-              <bufferAttribute attach="attributes-position" count={solventFiltered.length / 3} array={solventFiltered} itemSize={3} />
+            <bufferGeometry ref={solventGeoRef}>
+              <bufferAttribute attach="attributes-position" count={solventFiltered.count} array={solventFiltered.array} itemSize={3} />
             </bufferGeometry>
             <pointsMaterial color="#add8e6" size={0.2} transparent={true} opacity={0.25} depthWrite={false} />
           </points>
 
-          {/* 2. 蛋白質實體區 (Protein) - 顯眼的亮綠色，關閉映射保持發光 */}
+          {/* 2. 蛋白質實體區 (Protein) - 改為灰白色避免與碳(綠)衝突 */}
           <points>
-            <bufferGeometry>
-              <bufferAttribute attach="attributes-position" count={proteinFiltered.length / 3} array={proteinFiltered} itemSize={3} />
+            <bufferGeometry ref={proteinGeoRef}>
+              <bufferAttribute attach="attributes-position" count={proteinFiltered.count} array={proteinFiltered.array} itemSize={3} />
             </bufferGeometry>
-            <pointsMaterial color="#00ff66" size={0.5} transparent={true} opacity={0.8} toneMapped={false} depthWrite={false} />
+            <pointsMaterial color="#aaaaaa" size={0.5} transparent={true} opacity={0.8} toneMapped={false} depthWrite={false} />
           </points>
 
-          {/* 3. 結合口袋區 (Cavity) - 極高對比的橘黃色發光體 */}
+          {/* 3. 結合口袋區 (Cavity) - 改為高亮的青色 (Cyan) */}
           <points>
-            <bufferGeometry>
-              <bufferAttribute attach="attributes-position" count={cavityFiltered.length / 3} array={cavityFiltered} itemSize={3} />
+            <bufferGeometry ref={cavityGeoRef}>
+              <bufferAttribute attach="attributes-position" count={cavityFiltered.count} array={cavityFiltered.array} itemSize={3} />
             </bufferGeometry>
-            <pointsMaterial color="#ffaa00" size={0.85} transparent={true} opacity={0.95} toneMapped={false} depthWrite={false} />
+            <pointsMaterial color="#00ffff" size={0.85} transparent={true} opacity={0.95} toneMapped={false} depthWrite={false} />
           </points>
 
-          {/* 掃描線平面 */}
+          {/* 掃描線平面 - 尺寸完美貼合 Box */}
           {bounds && (
             <mesh position={[scanPos, bounds.cy, bounds.cz]} rotation={[0, Math.PI / 2, 0]}>
-              <planeGeometry args={[bounds.sizeZ * 1.2, bounds.sizeY * 1.2]} />
+              <planeGeometry args={[bounds.sizeZ, bounds.sizeY]} />
               <meshBasicMaterial color="#00ffff" transparent={true} opacity={0.3} side={THREE.DoubleSide} depthWrite={false} />
             </mesh>
           )}
