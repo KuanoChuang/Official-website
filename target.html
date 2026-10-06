@@ -126,17 +126,15 @@
           dummy.scale.setScalar(atom.radius * 0.9);
           dummy.updateMatrix();
           meshRef.current.setMatrixAt(i, dummy.matrix);
-          
-          let hexColor = '#888888';
-          const type = atom.type ? atom.type.toUpperCase() : '';
-          
-          if (type === 'O') hexColor = '#ff3333';      // 氧: 鮮紅
-          else if (type === 'N') hexColor = '#3333ff'; // 氮: 鮮藍
-          else if (type === 'S') hexColor = '#ffcc33'; // 硫: 亮黃
-          else if (type === 'H') hexColor = '#ffffff'; // 氫: 純白
-          else if (type === 'C') hexColor = '#33ff33'; // 碳: 亮綠
+          if (type === 'O') hexColor = '#ff3333';
+          else if (type === 'N') hexColor = '#3333ff';
+          else if (type === 'S') hexColor = '#ffcc33';
+          else if (type === 'H') hexColor = '#ffffff';
+          else if (type === 'C') hexColor = '#33ff33';
           
           const color = new THREE.Color(hexColor);
+          // 【完美對應 PyVista】將顏色亮度打 8 折，對應您的 diffuse=0.8 參數，避免原子在強光下過曝
+          color.multiplyScalar(0.8); 
           meshRef.current.setColorAt(i, color);
         });
         meshRef.current.instanceMatrix.needsUpdate = true;
@@ -148,15 +146,17 @@
       return (
         <instancedMesh ref={meshRef} args={[null, null, atoms.length]}>
           <sphereGeometry args={[1, 16, 16]} />
-          <meshStandardMaterial 
-            roughness={0.4} metalness={0.2} 
-            transparent opacity={opacity} depthWrite={opacity === 1.0}
+          {/* 【完美對應 PyVista】使用 Phong 材質，對應您的 specular_power=30 與 specular=0.8 */}
+          <meshPhongMaterial 
+            shininess={30} 
+            specular="#cccccc" 
+            transparent={true} opacity={opacity} depthWrite={opacity === 1.0}
           />
         </instancedMesh>
       );
     }
 
-    // Phase 1 & 6: SES 半透明膜渲染 (超強包覆感與邊緣漸層)
+    // Phase 1 & 6: SES 半透明膜渲染
     function SESView({ visible }) {
       const gltf = useGLTF('./protein_ses.glb');
       const geometry = useMemo(() => {
@@ -174,20 +174,15 @@
 
       return (
         <mesh geometry={geometry}>
-          <meshPhysicalMaterial 
-            color="#e6f0ff"           
-            transmission={0.95}       /* 極高透光率，看透內部原子 */
-            opacity={1.0}             /* 必須為 1.0 才能啟動物理折射運算 */
+          {/* 【完美對應 PyVista】捨棄物理折射，改用傳統 Alpha 混色模型與 Phong 光照 */}
+          <meshPhongMaterial 
+            color="#00aaff"           /* 賦予 SES 表面明顯的顏色 */
             transparent={true}
-            roughness={0.08}          /* 光滑濕潤感 */
-            thickness={6.0}           /* 大幅增加物理厚度，創造包裹感 */
-            ior={1.6}                 /* 高折射率，透鏡彎曲邊緣 */
-            clearcoat={1.0}           /* 表面反光塗層 */
-            clearcoatRoughness={0.05} 
-            attenuationColor="#0033cc"/* 邊緣深藍色，創造立體細胞膜漸層感 */
-            attenuationDistance={5.0} /* 讓吸收範圍變短，強化邊緣輪廓 */
-            depthWrite={false}        /* 關閉深度寫入，完美呈現內部實體不被遮擋 */
-            side={THREE.DoubleSide}
+            opacity={0.4}             /* 明確的半透明度 (對應 op_val) */
+            shininess={15}            /* 對應您的 specular_power=15 */
+            specular="#222222"        /* 對應您的低反光 specular=0.15 */
+            side={THREE.FrontSide}    /* 對應您的 culling='back' (背面剔除，只畫正面) */
+            depthWrite={false}        /* 關閉深度寫入以確保內部原子不被遮擋 */
           />
         </mesh>
       );
@@ -367,14 +362,13 @@
       });
       
       const geo = <boxGeometry args={[grid.spacing, grid.spacing, grid.spacing]} />;
-      const mat = <meshBasicMaterial transparent opacity={0.65} />;
       
       return (
         <group visible={phase >= 3 && phase <= 5}>
-          {protein.length > 0 && <instancedMesh ref={pRef} args={[null, null, protein.length]}>{geo}{mat}</instancedMesh>}
-          {solvent.length > 0 && <instancedMesh ref={sRef} args={[null, null, solvent.length]}>{geo}{mat}</instancedMesh>}
-          {cavity.length > 0 && <instancedMesh ref={cRef} args={[null, null, cavity.length]}>{geo}{mat}</instancedMesh>}
-          {probe.length > 0 && <instancedMesh ref={prRef} args={[null, null, probe.length]}>{geo}<meshBasicMaterial transparent opacity={0.9} /></instancedMesh>}
+          {protein.length > 0 && <instancedMesh ref={pRef} args={[null, null, protein.length]}>{geo}<meshBasicMaterial transparent opacity={0.3} /></instancedMesh>}
+          {solvent.length > 0 && <instancedMesh ref={sRef} args={[null, null, solvent.length]}>{geo}<meshBasicMaterial transparent opacity={0.1} /></instancedMesh>}
+          {cavity.length > 0 && <instancedMesh ref={cRef} args={[null, null, cavity.length]}>{geo}<meshBasicMaterial transparent opacity={0.95} toneMapped={false} /></instancedMesh>}
+          {probe.length > 0 && <instancedMesh ref={prRef} args={[null, null, probe.length]}>{geo}<meshBasicMaterial transparent opacity={0.95} toneMapped={false} /></instancedMesh>}
         </group>
       );
     }
