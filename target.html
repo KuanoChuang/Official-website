@@ -298,23 +298,32 @@
     }
 
     // Phase 3, 4, 5: 網格動畫掃描器
-    function AlgorithmScanner({ algoData, visible, sharedBounds }) {
-      const scanRef = useRef();
-      const [scanPos, setScanPos] = useState(-20);
+    function AlgorithmScanner({ algoData, atoms, phase }) {
+      const [scanPos, setScanPos] = useState(0);
+      
+      // 自我判斷是否應該顯示
+      const visible = phase >= 3 && phase <= 5;
+      
+      // 自我計算最合身的掃描邊界框
+      const bounds = useMemo(() => computeTightBounds(atoms, 2.0), [atoms]);
 
       // 提取並過濾三種點陣資料 (只保留在 Bounding Box 內的點)
       const { solventFiltered, proteinFiltered, cavityFiltered } = useMemo(() => {
-        if (!algoData || !algoData.voxels || !sharedBounds) return { solventFiltered: new Float32Array(), proteinFiltered: new Float32Array(), cavityFiltered: new Float32Array() };
+        if (!algoData || !algoData.voxels || !bounds) return { solventFiltered: new Float32Array(), proteinFiltered: new Float32Array(), cavityFiltered: new Float32Array() };
         
+        // 算出邊界絕對座標
+        const minX = bounds.cx - bounds.sizeX / 2;
+        const maxX = bounds.cx + bounds.sizeX / 2;
+        const minY = bounds.cy - bounds.sizeY / 2;
+        const maxY = bounds.cy + bounds.sizeY / 2;
+        const minZ = bounds.cz - bounds.sizeZ / 2;
+        const maxZ = bounds.cz + bounds.sizeZ / 2;
+
         const filterPoints = (pointsArray) => {
           const res = [];
           for (let i = 0; i < pointsArray.length; i++) {
             const [x, y, z] = pointsArray[i];
-            if (
-              x >= sharedBounds.minX && x <= sharedBounds.maxX &&
-              y >= sharedBounds.minY && y <= sharedBounds.maxY &&
-              z >= sharedBounds.minZ && z <= sharedBounds.maxZ
-            ) {
+            if (x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ) {
               res.push(x, y, z);
             }
           }
@@ -326,25 +335,28 @@
           proteinFiltered: filterPoints(algoData.voxels.protein || []),
           cavityFiltered: filterPoints(algoData.voxels.cavity || [])
         };
-      }, [algoData, sharedBounds]);
+      }, [algoData, bounds]);
 
       // Phase 3 黃色邊界框
       const boxGeo = useMemo(() => {
-        if (!sharedBounds) return null;
-        return new THREE.BoxGeometry(sharedBounds.sizeX, sharedBounds.sizeY, sharedBounds.sizeZ);
-      }, [sharedBounds]);
+        if (!bounds) return null;
+        return new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ);
+      }, [bounds]);
 
-      // 掃描動畫邏輯 (自適應 Bounding Box 寬度)
+      // 掃描動畫邏輯 (完美限制在邊界內)
       useFrame((state, delta) => {
-        if (visible && sharedBounds) {
-          const startX = sharedBounds.minX;
-          const endX = sharedBounds.maxX;
+        if (visible && bounds) {
+          const startX = bounds.cx - bounds.sizeX / 2;
+          const endX = bounds.cx + bounds.sizeX / 2;
           
-          if (scanPos < endX) {
-            setScanPos(prev => prev + 12.0 * delta); // 掃描速度
-          } else {
-            setScanPos(startX); // 循環掃描
-          }
+          setScanPos(prev => {
+            const nextPos = prev + 12.0 * delta; // 掃描速度
+            // 如果超出右邊界，或者一開始位置不對，就歸位到最左側重新掃描
+            if (nextPos > endX || prev < startX) {
+              return startX;
+            }
+            return nextPos;
+          });
         }
       });
 
@@ -352,9 +364,9 @@
 
       return (
         <group>
-          {/* 【新增】：Phase 3 專屬的黃色邊界框 */}
-          {sharedBounds && (
-            <group position={[sharedBounds.cx, sharedBounds.cy, sharedBounds.cz]}>
+          {/* Phase 3 專屬的黃色邊界框 */}
+          {bounds && phase === 3 && (
+            <group position={[bounds.cx, bounds.cy, bounds.cz]}>
               <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#ffee00" renderOrder={-1} />
             </group>
           )}
@@ -364,28 +376,15 @@
             <bufferGeometry>
               <bufferAttribute attach="attributes-position" count={solventFiltered.length / 3} array={solventFiltered} itemSize={3} />
             </bufferGeometry>
-            <pointsMaterial 
-              color="#add8e6" /* 亮冰藍色，即使低透明度也不會變黑 */
-              size={0.2} 
-              transparent={true} 
-              opacity={0.25}  /* 調整透明度形成薄霧感 */
-              depthWrite={false} 
-            />
+            <pointsMaterial color="#add8e6" size={0.2} transparent={true} opacity={0.25} depthWrite={false} />
           </points>
 
-          {/* 2. 蛋白質實體區 (Protein) - 顯眼的螢光綠實體 */}
+          {/* 2. 蛋白質實體區 (Protein) - 顯眼的亮綠色，關閉映射保持發光 */}
           <points>
             <bufferGeometry>
               <bufferAttribute attach="attributes-position" count={proteinFiltered.length / 3} array={proteinFiltered} itemSize={3} />
             </bufferGeometry>
-            <pointsMaterial 
-              color="#00ff66" /* 顯眼的亮綠色 */
-              size={0.5} 
-              transparent={true} 
-              opacity={0.8} 
-              toneMapped={false} /* 關閉光照映射，讓顏色始終保持鮮明發亮 */
-              depthWrite={false} 
-            />
+            <pointsMaterial color="#00ff66" size={0.5} transparent={true} opacity={0.8} toneMapped={false} depthWrite={false} />
           </points>
 
           {/* 3. 結合口袋區 (Cavity) - 極高對比的橘黃色發光體 */}
@@ -393,20 +392,13 @@
             <bufferGeometry>
               <bufferAttribute attach="attributes-position" count={cavityFiltered.length / 3} array={cavityFiltered} itemSize={3} />
             </bufferGeometry>
-            <pointsMaterial 
-              color="#ffaa00" 
-              size={0.85} 
-              transparent={true} 
-              opacity={0.95} 
-              toneMapped={false} 
-              depthWrite={false} 
-            />
+            <pointsMaterial color="#ffaa00" size={0.85} transparent={true} opacity={0.95} toneMapped={false} depthWrite={false} />
           </points>
 
           {/* 掃描線平面 */}
-          {sharedBounds && (
-            <mesh position={[scanPos, sharedBounds.cy, sharedBounds.cz]} rotation={[0, Math.PI / 2, 0]}>
-              <planeGeometry args={[sharedBounds.sizeZ * 1.2, sharedBounds.sizeY * 1.2]} />
+          {bounds && (
+            <mesh position={[scanPos, bounds.cy, bounds.cz]} rotation={[0, Math.PI / 2, 0]}>
+              <planeGeometry args={[bounds.sizeZ * 1.2, bounds.sizeY * 1.2]} />
               <meshBasicMaterial color="#00ffff" transparent={true} opacity={0.3} side={THREE.DoubleSide} depthWrite={false} />
             </mesh>
           )}
