@@ -191,19 +191,22 @@
       );
     }
     // Phase 2: 全空間 3D 網格陣列 (覆蓋整個 Bounding Box)
-    function GridWireframe({ sharedBounds, algoData, visible }) {
+    function GridWireframe({ atoms, algoData, visible }) {
+      // 在元件內部動態計算原子的合身邊界
+      const bounds = useMemo(() => computeTightBounds(atoms, 2.0), [atoms]);
+
       const geometry = useMemo(() => {
-        if (!algoData || !sharedBounds) return null;
+        if (!algoData || !bounds) return null;
         const spacing = algoData.grid.spacing || 1.0;
         const pts = [];
         
-        const halfX = sharedBounds.sizeX / 2;
-        const halfY = sharedBounds.sizeY / 2;
-        const halfZ = sharedBounds.sizeZ / 2;
+        const halfX = bounds.sizeX / 2;
+        const halfY = bounds.sizeY / 2;
+        const halfZ = bounds.sizeZ / 2;
 
-        const numX = Math.floor(sharedBounds.sizeX / spacing);
-        const numY = Math.floor(sharedBounds.sizeY / spacing);
-        const numZ = Math.floor(sharedBounds.sizeZ / spacing);
+        const numX = Math.floor(bounds.sizeX / spacing);
+        const numY = Math.floor(bounds.sizeY / spacing);
+        const numZ = Math.floor(bounds.sizeZ / spacing);
 
         const startX = - (numX * spacing) / 2;
         const startY = - (numY * spacing) / 2;
@@ -238,17 +241,17 @@
         }
         
         return new THREE.BufferGeometry().setFromPoints(pts);
-      }, [sharedBounds, algoData]);
+      }, [bounds, algoData]);
 
       const boxGeo = useMemo(() => {
-        if (!sharedBounds) return null;
-        return new THREE.BoxGeometry(sharedBounds.sizeX, sharedBounds.sizeY, sharedBounds.sizeZ);
-      }, [sharedBounds]);
+        if (!bounds) return null;
+        return new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ);
+      }, [bounds]);
 
-      if (!visible || !algoData || !sharedBounds) return null;
+      if (!visible || !algoData || !bounds) return null;
 
       return (
-        <group position={[sharedBounds.cx, sharedBounds.cy, sharedBounds.cz]}>
+        <group position={[bounds.cx, bounds.cy, bounds.cz]}>
           <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#00ffff" />
           <lineSegments geometry={geometry}>
             {/* 使用加法混色與極低透明度，製造出科幻且不干擾原子的全息網格感 */}
