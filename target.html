@@ -306,9 +306,14 @@
       const proteinGeoRef = useRef();
       const cavityGeoRef = useRef();
       
+      // 自我判斷是否應該顯示
       const visible = phase >= 3 && phase <= 5;
+      
+      // 自我計算最合身的掃描邊界框
       const bounds = useMemo(() => computeTightBounds(atoms, 2.0), [atoms]);
 
+      // 提取並過濾三種點陣資料 (只保留在 Bounding Box 內的點)
+      // 【關鍵修改】：過濾後，根據 X 座標「由左至右」進行排序，這是掃描揭露效果的核心
       const { solventFiltered, proteinFiltered, cavityFiltered } = useMemo(() => {
         if (!algoData || !algoData.voxels || !bounds) return { 
             solventFiltered: { array: new Float32Array(), count: 0 }, 
@@ -328,7 +333,9 @@
               res.push({x, y, z});
             }
           }
+          // 依照 X 座標由小到大排序
           res.sort((a, b) => a.x - b.x);
+          
           const flat = new Float32Array(res.length * 3);
           for(let i = 0; i < res.length; i++) {
             flat[i*3] = res[i].x; flat[i*3+1] = res[i].y; flat[i*3+2] = res[i].z;
@@ -336,19 +343,11 @@
           return { array: flat, count: res.length };
         };
 
-        const result = {
+        return {
           solventFiltered: filterAndSort(algoData.voxels.solvent || []),
           proteinFiltered: filterAndSort(algoData.voxels.protein || []),
           cavityFiltered: filterAndSort(algoData.voxels.cavity || [])
         };
-        
-        // 【除錯利器】：將各區域的點數量印在瀏覽器主控台
-        console.log("🔍 [Phase 3 掃描器資料統計]:");
-        console.log("💧 溶劑點數量:", result.solventFiltered.count);
-        console.log("🦴 蛋白質點數量 (您看到的白點):", result.proteinFiltered.count);
-        console.log("💎 口袋點數量 (青色):", result.cavityFiltered.count);
-        
-        return result;
       }, [algoData, bounds]);
 
       // Phase 3 黃色邊界框
