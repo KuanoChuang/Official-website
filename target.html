@@ -135,8 +135,8 @@
           else if (atom.type === 'C') hexColor = '#33ff33';
           
           const color = new THREE.Color(hexColor);
-          // 【完美對應 PyVista】將顏色亮度打 8 折，對應您的 diffuse=0.8 參數，避免原子在強光下過曝
-          color.multiplyScalar(0.8); 
+          // 【極度降低亮度】將顏色亮度打 4 折 (原本是 0.8)，對抗場景的強光，解決過曝問題
+          color.multiplyScalar(0.4); 
           meshRef.current.setColorAt(i, color);
         });
         meshRef.current.instanceMatrix.needsUpdate = true;
@@ -148,10 +148,10 @@
       return (
         <instancedMesh ref={meshRef} args={[null, null, atoms.length]}>
           <sphereGeometry args={[1, 16, 16]} />
-          {/* 【完美對應 PyVista】使用 Phong 材質，對應您的 specular_power=30 與 specular=0.8 */}
+          {/* 【降低高光反射】將 specular 改為暗灰色，避免球體表面產生刺眼的白色反光點 */}
           <meshPhongMaterial 
             shininess={30} 
-            specular="#cccccc" 
+            specular="#444444" 
             transparent={true} opacity={opacity} depthWrite={opacity === 1.0}
           />
         </instancedMesh>
