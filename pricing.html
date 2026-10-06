@@ -64,16 +64,15 @@
     }
     /* Comparison Table Styles */
     .comparison-table th {
-      position: sticky;
-      top: 80px; 
-      z-index: 10;
-      background: #111827;
+      border: 1px solid #1f2937 !important;
+      border-bottom: 2px solid #374151 !important;
+      background-clip: padding-box;
     }
-    .comparison-table th, .comparison-table td {
-      border: 1px solid rgba(255,255,255,0.1);
+    .comparison-table td {
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    .comparison-table tr:hover {
-      background: rgba(255,255,255,0.02);
+    .comparison-table tbody tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
     }
 
     /* ================= 價格切換動畫 (Cyberpunk Laser & Slot Machine) ================= */
