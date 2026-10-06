@@ -271,10 +271,10 @@
 
       return (
         <group position={[bounds.cx, bounds.cy, bounds.cz]}>
-          <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#081824" renderOrder={1} />
+          <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#081824" renderOrder={0} />
           
           {/* 1. 副網格 Micro Grid (0.5A) */}
-          <lineSegments geometry={microGeo} renderOrder={1}>
+          <lineSegments geometry={microGeo} renderOrder={0}>
             <lineBasicMaterial 
               vertexColors={true} 
               transparent={true} 
