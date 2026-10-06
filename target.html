@@ -48,7 +48,6 @@
     .color-box { width: 15px; height: 15px; border-radius: 3px; }
   </style>
 
-  <!-- 引入 React 與 Three.js -->
   <script type="importmap">
     {
       "imports": {
@@ -69,10 +68,9 @@
     import React, { useRef, useState, useEffect, useMemo, Suspense } from 'react';
     import { createRoot } from 'react-dom/client';
     import { Canvas, useFrame } from '@react-three/fiber';
-    import { OrbitControls, ContactShadows, useGLTF, Html } from '@react-three/drei';
+    import { OrbitControls, useGLTF, Html } from '@react-three/drei';
     import * as THREE from 'three';
 
-    // 錯誤邊界，防止黑屏
     class ErrorBoundary extends React.Component {
       constructor(props) {
         super(props);
@@ -92,7 +90,7 @@
       }
     }
 
-    // Phase 1 & 2: 實體原子渲染
+    // Phase 1, 2, 3: 實體原子渲染
     function AtomView({ atoms, visible, opacity = 1.0 }) {
       const meshRef = useRef();
       const dummy = useMemo(() => new THREE.Object3D(), []);
@@ -129,7 +127,7 @@
       );
     }
 
-    // Phase 1 & 6: SES 半透明表面渲染
+    // Phase 1 & 6: SES 半透明表面渲染 (高質感折射膜)
     function SESView({ visible }) {
       const gltf = useGLTF('./protein_ses.glb');
       const geometry = useMemo(() => {
@@ -148,18 +146,108 @@
       return (
         <mesh geometry={geometry}>
           <meshPhysicalMaterial 
-            color="#aaccff"       /* 調整為帶有一點點淡藍色的薄膜 */
-            transmission={0.95}   /* 極高透光度，讓內部原子一覽無遺 */
-            opacity={1.0}         /* 物理玻璃模式下，opacity 應設為 1，依賴 transmission */
+            color="#b3d4ff"           
+            transmission={0.9}        /* 極高透光率，模擬純淨玻璃 */
+            opacity={1.0}             /* 保持 1.0 才能讓折射與物理厚度生效 */
             transparent={true}
-            roughness={0.1}       /* 讓表面更光滑，反光更清晰 */
-            thickness={2.0}       /* 增加一點厚度來產生邊緣折射效果 */
-            ior={1.33}            /* 接近水/蛋白質環境的折射率 */
-            clearcoat={1.0}       /* 玻璃表面高光塗層 */
-            depthWrite={false}    /* 🚀 關鍵：關閉深度寫入，解決半透明外殼遮蔽內部原子的 Bug */
+            roughness={0.15}          
+            thickness={4.0}           /* 增加物理厚度，創造邊緣折射包覆感 */
+            ior={1.48}                /* 折射率 */
+            clearcoat={1.0}           /* 表面反光塗層 */
+            clearcoatRoughness={0.1}  
+            attenuationColor="#0055ff"/* 邊緣深層吸收色，看起來有體積感 */
+            attenuationDistance={10}  
+            depthWrite={false}        /* 關閉深度寫入，讓內部的 VDW 原子完美透出不被遮擋 */
             side={THREE.DoubleSide}
           />
         </mesh>
+      );
+    }
+
+    // 自訂的完美正方格平面網格 (不會因為長方體邊界而被拉伸)
+    function CustomGridPlane({ width, height, spacing, color }) {
+      const geometry = useMemo(() => {
+        const points = [];
+        const halfW = width / 2;
+        const halfH = height / 2;
+        
+        // 確保網格線對齊並保持完美的 spacing 距離
+        const numW = Math.floor(width / spacing);
+        const numH = Math.floor(height / spacing);
+        const startX = -(numW * spacing) / 2;
+        const startY = -(numH * spacing) / 2;
+        
+        for (let i = 0; i <= numW; i++) {
+          const x = startX + i * spacing;
+          points.push(new THREE.Vector3(x, 0, -halfH));
+          points.push(new THREE.Vector3(x, 0, halfH));
+        }
+        for (let i = 0; i <= numH; i++) {
+          const y = startY + i * spacing;
+          points.push(new THREE.Vector3(-halfW, 0, y));
+          points.push(new THREE.Vector3(halfW, 0, y));
+        }
+        return new THREE.BufferGeometry().setFromPoints(points);
+      }, [width, height, spacing]);
+
+      return (
+        <lineSegments geometry={geometry}>
+          <lineBasicMaterial color={color} transparent opacity={0.3} />
+        </lineSegments>
+      );
+    }
+
+    // Phase 2: 真實長方體網格線框架 (緊密貼合分子)
+    function GridWireframe({ algoData, atoms, visible }) {
+      const bounds = useMemo(() => {
+         if (!atoms || atoms.length === 0) return { sizeX: 20, sizeY: 20, sizeZ: 20, cx: 0, cy: 0, cz: 0 };
+         
+         // 1. 動態計算原子的真實分佈邊界
+         let minX = 9999, minY = 9999, minZ = 9999;
+         let maxX = -9999, maxY = -9999, maxZ = -9999;
+         atoms.forEach(a => {
+            const r = a.radius || 1.5;
+            minX = Math.min(minX, a.pos[0] - r);
+            minY = Math.min(minY, a.pos[1] - r);
+            minZ = Math.min(minZ, a.pos[2] - r);
+            maxX = Math.max(maxX, a.pos[0] + r);
+            maxY = Math.max(maxY, a.pos[1] + r);
+            maxZ = Math.max(maxZ, a.pos[2] + r);
+         });
+         
+         // 2. 減少緩衝網格數 (只加上一點點緩衝空間，例如 2.0 埃)
+         const padding = 2.0; 
+         const sizeX = (maxX - minX) + padding * 2;
+         const sizeY = (maxY - minY) + padding * 2;
+         const sizeZ = (maxZ - minZ) + padding * 2;
+         
+         const cx = (maxX + minX) / 2;
+         const cy = (maxY + minY) / 2;
+         const cz = (maxZ + minZ) / 2;
+         
+         return { sizeX, sizeY, sizeZ, cx, cy, cz };
+      }, [atoms]);
+
+      const boxGeo = useMemo(() => new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ), [bounds]);
+
+      if (!visible || !algoData) return null;
+      const { spacing = 1 } = algoData.grid;
+
+      return (
+        <group position={[bounds.cx, bounds.cy, bounds.cz]}>
+          {/* 緊密包覆分子的長方體外框 */}
+          <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#00f0ff" />
+          
+          {/* 底部長方體網格適配 (完美正方形網格) */}
+          <group position={[0, -bounds.sizeY/2, 0]}>
+             <CustomGridPlane width={bounds.sizeX} height={bounds.sizeZ} spacing={spacing} color="#00f0ff" />
+          </group>
+          
+          {/* 背面長方體網格適配 (完美正方形網格) */}
+          <group position={[0, 0, -bounds.sizeZ/2]} rotation={[Math.PI/2, 0, 0]}>
+             <CustomGridPlane width={bounds.sizeX} height={bounds.sizeY} spacing={spacing} color="#00f0ff" />
+          </group>
+        </group>
       );
     }
 
@@ -180,7 +268,7 @@
           const color = new THREE.Color(baseColor);
           pts.forEach((pt, i) => {
             dummy.position.set(...pt);
-            dummy.scale.setScalar(0);
+            dummy.scale.setScalar(0); // 初始化隱藏
             dummy.updateMatrix();
             ref.current.setMatrixAt(i, dummy.matrix);
             ref.current.setColorAt(i, color);
@@ -188,9 +276,9 @@
           ref.current.instanceMatrix.needsUpdate = true;
           if (ref.current.instanceColor) ref.current.instanceColor.needsUpdate = true;
         };
-        initInstanced(pRef, protein, '#888888');
-        initInstanced(sRef, solvent, '#0055ff');
-        initInstanced(cRef, cavity, '#ffaa00');
+        initInstanced(pRef, protein, '#ffffff'); // 蛋白區 (白)
+        initInstanced(sRef, solvent, '#0055ff'); // 溶劑區 (藍)
+        initInstanced(cRef, cavity, '#ff0077');  // 空腔區 (粉紅)
         initInstanced(prRef, probe, '#00ff00');
       }, [protein, solvent, cavity, probe]);
 
@@ -198,40 +286,36 @@
         if (phase < 3 || phase > 5) return;
         timeRef.current += delta;
         
-        // 確保支援真實長寬高或回退到正方體
-        const sizeX = grid.sizeX || grid.size || 20;
-        const sizeZ = grid.sizeZ || grid.size || 20;
+        const sizeX = grid.sizeX || 20;
+        const sizeZ = grid.sizeZ || 20;
         
         // Phase 3: X 軸切面掃描 (掃過後保留顏色)
         if (phase === 3) {
           const halfX = sizeX / 2;
-          const cycleTime = 4.0; // 4秒掃描一次
+          const cycleTime = 4.0;
           const progress = (timeRef.current % cycleTime) / cycleTime;
-          const scanPos = -halfX + (progress * sizeX); // 從左掃到右
+          const scanPos = -halfX + (progress * sizeX);
           
           const updateRetainScan = (ref, pts, baseColor) => {
              if (!ref.current || pts.length === 0) return;
-             
-             // 恢復顯示
-             if(ref.current.count === 0) ref.current.count = pts.length;
+             if (ref.current.count === 0) ref.current.count = pts.length;
 
              pts.forEach((pt, i) => {
                const isScanned = pt[0] <= scanPos;
                const isScanning = Math.abs(pt[0] - scanPos) < (grid.spacing * 1.5);
                
                let s = 0.0;
-               if (isScanning) s = 0.9;      // 正在掃描的切面放大且高亮
-               else if (isScanned) s = 0.5;  // 掃描過的保留半透明大小
+               if (isScanning) s = 0.9;      
+               else if (isScanned) s = 0.6;  // 掃過後保留半透明的網格實體
 
                dummy.position.set(...pt);
                dummy.scale.setScalar(s);
                dummy.updateMatrix();
                ref.current.setMatrixAt(i, dummy.matrix);
                
-               // 高亮顏色
                if (ref.current.instanceColor) {
                   const color = new THREE.Color(baseColor);
-                  if (isScanning) color.lerp(new THREE.Color('#ffffff'), 0.5);
+                  if (isScanning) color.lerp(new THREE.Color('#ffffff'), 0.8);
                   ref.current.setColorAt(i, color);
                }
              });
@@ -239,14 +323,13 @@
              if (ref.current.instanceColor) ref.current.instanceColor.needsUpdate = true;
           };
 
-          updateRetainScan(pRef, protein, '#aaaaaa'); // 蛋白區 (灰)
-          updateRetainScan(sRef, solvent, '#0055ff'); // 溶劑區 (藍)
-          updateRetainScan(cRef, cavity, '#ffaa00');  // 空腔區 (橘)
-          
-          if (prRef.current) prRef.current.count = 0; // Phase 3 隱藏探針
+          updateRetainScan(pRef, protein, '#aaaaaa'); 
+          updateRetainScan(sRef, solvent, '#0055ff'); 
+          updateRetainScan(cRef, cavity, '#ffaa00');  
+          if (prRef.current) prRef.current.count = 0; 
         }
         
-        // Phase 4: Z 軸探針侵蝕掃描 (淡化殘影)
+        // Phase 4: Z 軸探針侵蝕掃描
         if (phase === 4) {
           const halfZ = sizeZ / 2;
           const cycleTime = 3.0;
@@ -343,37 +426,6 @@
       );
     }
 
-    // Phase 2: 真實長方體網格線框架
-    function GridWireframe({ algoData, visible }) {
-      if (!visible || !algoData) return null;
-      // 讀取真實的網格大小，若無則降級為預設立方體
-      const { sizeX = 20, sizeY = 20, sizeZ = 20, spacing = 1 } = algoData.grid;
-      
-      const geometry = useMemo(() => new THREE.BoxGeometry(sizeX, sizeY, sizeZ), [sizeX, sizeY, sizeZ]);
-      
-      return (
-        <group>
-          {/* 包覆分子的長方體外框 */}
-          <boxHelper args={[new THREE.Mesh(geometry)]} color="#00f0ff" />
-          
-          {/* 底部長方體網格適配 (Scale X and Z) */}
-          <gridHelper 
-             args={[1, Math.max(1, Math.round(sizeX/spacing)), 0x444444, 0x222222]} 
-             scale={[sizeX, 1, sizeZ]} 
-             position={[0, -sizeY/2, 0]} 
-          />
-          
-          {/* 背面長方體網格適配 (Scale X and Y) */}
-          <gridHelper 
-             args={[1, Math.max(1, Math.round(sizeX/spacing)), 0x444444, 0x222222]} 
-             scale={[sizeX, 1, sizeY]} 
-             position={[0, 0, -sizeZ/2]} 
-             rotation={[Math.PI/2, 0, 0]} 
-          />
-        </group>
-      );
-    }
-
     function App() {
       const [data, setData] = useState(null);
       const [error, setError] = useState(null);
@@ -383,15 +435,15 @@
       useEffect(() => {
         fetch('./precomputed_data.json')
           .then(res => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}: 找不到 precomputed_data.json`);
+            if (!res.ok) throw new Error(`找不到 precomputed_data.json`);
             return res.json();
           })
           .then(setData)
           .catch(err => setError(err.toString()));
       }, []);
 
-      if (error) return <div className="loading" style={{color: '#ff4444'}}>資料載入失敗: <br/>{error}</div>;
-      if (!data) return <div className="loading">載入預先計算資產中...<br/>(Loading JSON Data)</div>;
+      if (error) return <div className="loading" style={{color: '#ff4444'}}>載入失敗: {error}</div>;
+      if (!data) return <div className="loading">載入預先計算資產中...</div>;
 
       return (
         <ErrorBoundary>
@@ -428,7 +480,7 @@
           {phase >= 3 && phase <= 5 && (
              <div className="legend">
                <div className="legend-item"><div className="color-box" style={{background: '#0055ff'}}></div> 溶劑區 (Solvent)</div>
-               <div className="legend-item"><div className="color-box" style={{background: '#888888'}}></div> 蛋白區 (Protein)</div>
+               <div className="legend-item"><div className="color-box" style={{background: '#aaaaaa'}}></div> 蛋白區 (Protein)</div>
                <div className="legend-item"><div className="color-box" style={{background: '#ffaa00'}}></div> 空腔區 (Cavity)</div>
                {phase >= 4 && <div className="legend-item"><div className="color-box" style={{background: '#00ff00', boxShadow: '0 0 10px #00ff00'}}></div> 探針區 (Probe Valid)</div>}
              </div>
@@ -443,19 +495,19 @@
             <directionalLight position={[-20, -10, -20]} intensity={1.5} color="#00f0ff" />
             <pointLight position={[0, 20, 0]} intensity={2.5} color="#ffffff" />
             
-            <Suspense fallback={<Html center><div style={{ color: '#00f0ff', fontSize: '18px', whiteSpace: 'nowrap' }}>載入 3D 模型中...</div></Html>}>
+            <Suspense fallback={null}>
               <group position={[0,0,0]}>
                 
-                {/* Phase 1 (單/複選) & Phase 2, 3 (作為背景幽靈原子) */}
+                {/* Phase 1: 實體/透明雙模式 & Phase 2, 3: 背景幽靈原子 */}
                 <AtomView 
                   atoms={data.atoms} 
                   visible={(phase === 1 && phase1Opts.vdw) || phase === 2 || phase === 3} 
-                  opacity={(phase === 2 || phase === 3) ? 0.15 : 1.0} 
+                  opacity={(phase === 2 || phase === 3) ? 0.2 : 1.0} 
                 />
                 <SESView visible={phase === 1 && phase1Opts.ses} />
                 
-                {/* Phase 2: 真實長方體網格 */}
-                <GridWireframe algoData={data.algo_data} visible={phase === 2} />
+                {/* Phase 2: 真實長方體網格 (邊界緊密貼合) */}
+                <GridWireframe algoData={data.algo_data} atoms={data.atoms} visible={phase === 2} />
                 
                 {/* Phase 3, 4, 5: 動畫掃描器 */}
                 <AlgorithmScanner algoData={data.algo_data} phase={phase} />
