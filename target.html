@@ -145,17 +145,25 @@
 
       if (!visible || !atoms || atoms.length === 0) return null;
 
+      // 當透明度小於 1 時，切換為無光照材質，這是產生完美 "幽靈感" 半透明且不互相穿透重疊的最強解法
       return (
         <instancedMesh ref={meshRef} args={[null, null, atoms.length]}>
           <sphereGeometry args={[1, 16, 16]} />
-          {}
-          <meshPhongMaterial 
-            shininess={30} 
-            specular="#444444" 
-            transparent={opacity < 1.0} 
-            opacity={opacity} 
-            depthWrite={true} 
-          />
+          {opacity < 1.0 ? (
+             <meshBasicMaterial 
+               transparent={true} 
+               opacity={0.15}    /* 把透明度壓到極低，讓群體看起來不會太厚重 */
+               depthWrite={false} /* 關閉深度，讓原子團變成背景雲霧 */
+             />
+          ) : (
+             <meshPhongMaterial 
+               shininess={30} 
+               specular="#444444" 
+               transparent={false} 
+               opacity={1.0} 
+               depthWrite={true} 
+             />
+          )}
         </instancedMesh>
       );
     }
@@ -191,13 +199,13 @@
       );
     }
     // Phase 2: 全空間 3D 網格陣列 (覆蓋整個 Bounding Box)
-    function GridWireframe({ atoms, algoData, visible }) {
+    function GridWireframe({ atoms, visible }) {
       // 在元件內部動態計算原子的合身邊界
       const bounds = useMemo(() => computeTightBounds(atoms, 2.0), [atoms]);
 
       const geometry = useMemo(() => {
-        if (!algoData || !bounds) return null;
-        const spacing = algoData.grid.spacing || 1.0;
+        if (!bounds) return null;
+        const spacing = 1.0; // 統一使用 1.0 作為視覺網格線，不要太密導致畫面糊掉
         const pts = [];
         
         const halfX = bounds.sizeX / 2;
@@ -241,25 +249,26 @@
         }
         
         return new THREE.BufferGeometry().setFromPoints(pts);
-      }, [bounds, algoData]);
+      }, [bounds]);
 
       const boxGeo = useMemo(() => {
         if (!bounds) return null;
         return new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ);
       }, [bounds]);
 
-      if (!visible || !algoData || !bounds) return null;
+      if (!visible || !bounds) return null;
 
       return (
         <group position={[bounds.cx, bounds.cy, bounds.cz]}>
+          {/* 取消外框的 Mesh，我們只要漂亮的淺綠色發光 BoxHelper 框線 */}
           <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#00ffff" />
           <lineSegments geometry={geometry}>
-            {}
+            {/* 讓網格線變成半透明且具有實體深度，這就能正確把背景原子關在裡面！ */}
             <lineBasicMaterial 
               color="#5588aa" 
-              transparent 
-              opacity={0.3} 
-              depthWrite={false} 
+              transparent={true} 
+              opacity={0.3}     /* 網格線變半透明 */
+              depthWrite={true} /* 重要：這條線雖然半透明，但它會寫入深度，遮擋在它後面的 VDW 原子雲！ */
             />
           </lineSegments>
         </group>
