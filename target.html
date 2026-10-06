@@ -260,15 +260,15 @@
 
       return (
         <group position={[bounds.cx, bounds.cy, bounds.cz]}>
-          {/* 取消外框的 Mesh，我們只要漂亮的淺綠色發光 BoxHelper 框線 */}
-          <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#00ffff" />
+          {/* 降低外框亮度至暗青色，不搶走原子的視覺焦點 */}
+          <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#005577" />
           <lineSegments geometry={geometry}>
-            {/* 讓網格線變成半透明且具有實體深度，這就能正確把背景原子關在裡面！ */}
+            {/* 將內部網格線調暗且透明度大幅降低至 0.1，作為背景襯托 VDW 原子 */}
             <lineBasicMaterial 
-              color="#5588aa" 
+              color="#224455" 
               transparent={true} 
-              opacity={0.3}     /* 網格線變半透明 */
-              depthWrite={true} /* 重要：這條線雖然半透明，但它會寫入深度，遮擋在它後面的 VDW 原子雲！ */
+              opacity={0.1}     
+              depthWrite={true} 
             />
           </lineSegments>
         </group>
