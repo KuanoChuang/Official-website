@@ -65,7 +65,7 @@
   <div id="root"></div>
 
   <script type="text/babel" data-type="module">
-    import React, { useRef, useState, useEffect, useMemo, Suspense } from 'react';
+    import React, { useRef, useState, useEffect, useLayoutEffect, useMemo, Suspense } from 'react';
     import { createRoot } from 'react-dom/client';
     import { Canvas, useFrame } from '@react-three/fiber';
     import { OrbitControls, useGLTF, Html } from '@react-three/drei';
@@ -95,7 +95,8 @@
       const meshRef = useRef();
       const dummy = useMemo(() => new THREE.Object3D(), []);
       
-      useEffect(() => {
+      // 使用 useLayoutEffect 確保在畫面繪製前完成顏色與矩陣配置，避免「剛載入時全白無色」的閃爍問題
+      useLayoutEffect(() => {
         if (!meshRef.current || !atoms || atoms.length === 0) return;
         atoms.forEach((atom, i) => {
           dummy.position.set(...atom.pos);
@@ -103,15 +104,20 @@
           dummy.updateMatrix();
           meshRef.current.setMatrixAt(i, dummy.matrix);
           
-          const color = new THREE.Color(
-            atom.type === 'O' ? '#ff2222' : 
-            atom.type === 'N' ? '#2255ff' : 
-            atom.type === 'S' ? '#dddd00' : '#888888'
-          );
+          let hexColor = '#888888';
+          const type = atom.type ? atom.type.toUpperCase() : '';
+          
+          if (type === 'O') hexColor = '#ff3333';      // 氧: 鮮紅
+          else if (type === 'N') hexColor = '#3333ff'; // 氮: 鮮藍
+          else if (type === 'S') hexColor = '#ffcc33'; // 硫: 亮黃
+          else if (type === 'H') hexColor = '#ffffff'; // 氫: 純白
+          else if (type === 'C') hexColor = '#33ff33'; // 碳: 亮綠
+          
+          const color = new THREE.Color(hexColor);
           meshRef.current.setColorAt(i, color);
         });
         meshRef.current.instanceMatrix.needsUpdate = true;
-        meshRef.current.instanceColor.needsUpdate = true;
+        if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
       }, [atoms, visible]);
 
       if (!visible || !atoms || atoms.length === 0) return null;
