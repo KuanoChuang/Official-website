@@ -1110,6 +1110,39 @@
 
   <!-- Interactive Script for Toggle and Animations -->
   <script>
+    // ================= 手機版側邊選單切換功能 =================
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const backdrop = document.getElementById('mobile-menu-backdrop');
+      
+      if (!menu || !backdrop) return;
+      
+      // 判斷選單是否在隱藏狀態 (包含 translate-x-full 類別)
+      if (menu.classList.contains('translate-x-full')) {
+        // 展開選單
+        menu.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // 鎖定背景滾動
+      } else {
+        // 收合選單
+        menu.classList.add('translate-x-full');
+        backdrop.classList.add('hidden');
+        document.body.style.overflow = ''; // 恢復背景滾動
+      }
+    }
+
+    // 監聽視窗縮放：如果放大到桌面尺寸 (768px 以上) 且側邊欄還開著，自動關閉並解鎖畫面
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 768) {
+        const menu = document.getElementById('mobile-menu');
+        // 檢查如果沒有 'translate-x-full'，代表選單正處於開啟狀態
+        if (menu && !menu.classList.contains('translate-x-full')) {
+          toggleMobileMenu(); // 觸發原本的 toggle 函式來乾淨地解除鎖定
+        }
+      }
+    });
+
+    // ================= 價格切換與動畫功能 =================
     document.addEventListener("DOMContentLoaded", function() {
       const toggleContainer = document.getElementById("toggle-container");
       const toggleInput = document.getElementById("billing-toggle");
@@ -1123,7 +1156,7 @@
 
       if (!toggleContainer || !toggleInput) return;
 
-      // ================= 動畫 1：雷射下殺 (月轉年) =================
+      // 1：雷射下殺 (月轉年)
       function animatePriceDown(element, newPrice, suffixColorClass) {
         if (!element) return;
         if (element.animationId) cancelAnimationFrame(element.animationId);
@@ -1131,7 +1164,6 @@
         let currentPrice = element.innerText.split('/')[0].trim();
         if (currentPrice === newPrice) return;
 
-        // 階段 1：生成雷射光束與準備熔毀的文字
         element.innerHTML = `
           <div class="relative inline-block">
             <span class="text-melt text-white">${currentPrice}</span>
@@ -1140,7 +1172,6 @@
           <span class="text-sm font-medium ${suffixColorClass} ml-1">/ 月</span>
         `;
 
-        // 階段 2：等待 550 毫秒(舊字體燒毀後)，替換為新價格並觸發量子躍遷動畫
         setTimeout(() => {
           element.innerHTML = `
             <span class="cyber-pop text-white">${newPrice}</span> 
@@ -1149,7 +1180,7 @@
         }, 550);
       }
 
-      // ================= 動畫 2：里程表滾動上升 (年轉月) =================
+      // 2：里程表滾動上升 (年轉月)
       function animatePriceUp(element, startPriceStr, endPriceStr, suffixColorClass) {
         if (!element) return;
         if (element.animationId) cancelAnimationFrame(element.animationId);
@@ -1160,7 +1191,6 @@
         const duration = 1500; 
         let startTime = null;
         
-        // 緩動演算法 (Ease Out Quint) 
         const easeOutQuint = (t) => 1 - Math.pow(1 - t, 5);
 
         const step = (currentTime) => {
@@ -1237,33 +1267,6 @@
         toggleInput.checked = !toggleInput.checked;
         updateToggleState();
       });
-      function toggleMobileMenu() {
-      const menu = document.getElementById('mobile-menu');
-      const backdrop = document.getElementById('mobile-menu-backdrop');
-      
-      // 判斷選單是否在隱藏狀態 (包含 translate-x-full 類別)
-      if (menu.classList.contains('translate-x-full')) {
-        // 展開選單
-        menu.classList.remove('translate-x-full');
-        backdrop.classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // 鎖定背景滾動
-      } else {
-        // 收合選單
-        menu.classList.add('translate-x-full');
-        backdrop.classList.add('hidden');
-        document.body.style.overflow = ''; // 恢復背景滾動
-      }
-    }
-    // 監聽視窗縮放：如果放大到桌面尺寸 (768px 以上，對應 md: 斷點) 且側邊欄還開著，自動關閉並解鎖畫面
-    window.addEventListener('resize', function() {
-      if (window.innerWidth >= 768) {
-        const menu = document.getElementById('mobile-menu');
-        // 檢查如果沒有 'translate-x-full'，代表選單正處於開啟狀態
-        if (menu && !menu.classList.contains('translate-x-full')) {
-          toggleMobileMenu(); // 觸發原本的 toggle 函式來乾淨地解除鎖定
-        }
-      }
-    });
     });
   </script>
 </body>
