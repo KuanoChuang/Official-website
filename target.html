@@ -190,56 +190,76 @@
         </mesh>
       );
     }
-
-    // 自訂的完美正方格平面網格
-    function CustomGridPlane({ width, height, spacing, color }) {
+    // Phase 2: 全空間 3D 網格陣列 (覆蓋整個 Bounding Box)
+    function GridWireframe({ sharedBounds, algoData, visible }) {
       const geometry = useMemo(() => {
-        const points = [];
-        const halfW = width / 2;
-        const halfH = height / 2;
+        if (!algoData || !sharedBounds) return null;
+        const spacing = algoData.grid.spacing || 1.0;
+        const pts = [];
         
-        const numW = Math.floor(width / spacing);
-        const numH = Math.floor(height / spacing);
-        const startX = -(numW * spacing) / 2;
-        const startY = -(numH * spacing) / 2;
+        const halfX = sharedBounds.sizeX / 2;
+        const halfY = sharedBounds.sizeY / 2;
+        const halfZ = sharedBounds.sizeZ / 2;
+
+        const numX = Math.floor(sharedBounds.sizeX / spacing);
+        const numY = Math.floor(sharedBounds.sizeY / spacing);
+        const numZ = Math.floor(sharedBounds.sizeZ / spacing);
+
+        const startX = - (numX * spacing) / 2;
+        const startY = - (numY * spacing) / 2;
+        const startZ = - (numZ * spacing) / 2;
+
+        // X軸平行的線 (佈滿 Y-Z 平面)
+        for (let j = 0; j <= numY; j++) {
+          for (let k = 0; k <= numZ; k++) {
+            const y = startY + j * spacing;
+            const z = startZ + k * spacing;
+            pts.push(new THREE.Vector3(-halfX, y, z));
+            pts.push(new THREE.Vector3(halfX, y, z));
+          }
+        }
+        // Y軸平行的線 (佈滿 X-Z 平面)
+        for (let i = 0; i <= numX; i++) {
+          for (let k = 0; k <= numZ; k++) {
+            const x = startX + i * spacing;
+            const z = startZ + k * spacing;
+            pts.push(new THREE.Vector3(x, -halfY, z));
+            pts.push(new THREE.Vector3(x, halfY, z));
+          }
+        }
+        // Z軸平行的線 (佈滿 X-Y 平面)
+        for (let i = 0; i <= numX; i++) {
+          for (let j = 0; j <= numY; j++) {
+            const x = startX + i * spacing;
+            const y = startY + j * spacing;
+            pts.push(new THREE.Vector3(x, y, -halfZ));
+            pts.push(new THREE.Vector3(x, y, halfZ));
+          }
+        }
         
-        for (let i = 0; i <= numW; i++) {
-          const x = startX + i * spacing;
-          points.push(new THREE.Vector3(x, 0, -halfH));
-          points.push(new THREE.Vector3(x, 0, halfH));
-        }
-        for (let i = 0; i <= numH; i++) {
-          const y = startY + i * spacing;
-          points.push(new THREE.Vector3(-halfW, 0, y));
-          points.push(new THREE.Vector3(halfW, 0, y));
-        }
-        return new THREE.BufferGeometry().setFromPoints(points);
-      }, [width, height, spacing]);
+        return new THREE.BufferGeometry().setFromPoints(pts);
+      }, [sharedBounds, algoData]);
+
+      const boxGeo = useMemo(() => {
+        if (!sharedBounds) return null;
+        return new THREE.BoxGeometry(sharedBounds.sizeX, sharedBounds.sizeY, sharedBounds.sizeZ);
+      }, [sharedBounds]);
+
+      if (!visible || !algoData || !sharedBounds) return null;
 
       return (
-        <lineSegments geometry={geometry}>
-          <lineBasicMaterial color={color} transparent opacity={0.3} />
-        </lineSegments>
-      );
-    }
-
-    // Phase 2: 長方體合身網格線框架
-    function GridWireframe({ algoData, atoms, visible }) {
-      const bounds = useMemo(() => computeTightBounds(atoms, 2.0), [atoms]);
-      const boxGeo = useMemo(() => new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ), [bounds]);
-
-      if (!visible || !algoData) return null;
-      const { spacing = 1 } = algoData.grid;
-
-      return (
-        <group position={[bounds.cx, bounds.cy, bounds.cz]}>
-          <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#00f0ff" />
-          <group position={[0, -bounds.sizeY/2, 0]}>
-             <CustomGridPlane width={bounds.sizeX} height={bounds.sizeZ} spacing={spacing} color="#00f0ff" />
-          </group>
-          <group position={[0, 0, -bounds.sizeZ/2]} rotation={[Math.PI/2, 0, 0]}>
-             <CustomGridPlane width={bounds.sizeX} height={bounds.sizeY} spacing={spacing} color="#00f0ff" />
-          </group>
+        <group position={[sharedBounds.cx, sharedBounds.cy, sharedBounds.cz]}>
+          <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#00ffff" />
+          <lineSegments geometry={geometry}>
+            {/* 使用加法混色與極低透明度，製造出科幻且不干擾原子的全息網格感 */}
+            <lineBasicMaterial 
+              color="#0088ff" 
+              transparent 
+              opacity={0.15} 
+              depthWrite={false} 
+              blending={THREE.AdditiveBlending} 
+            />
+          </lineSegments>
         </group>
       );
     }
