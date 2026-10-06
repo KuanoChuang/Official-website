@@ -409,7 +409,7 @@
             <bufferGeometry ref={solventGeoRef}>
               <bufferAttribute attach="attributes-position" count={solventFiltered.count} array={solventFiltered.array} itemSize={3} />
             </bufferGeometry>
-            <pointsMaterial color="#add8e6" size={0.2} transparent={true} opacity={0.25} depthWrite={false} />
+            <pointsMaterial color="#add8e6" size={0.4} transparent={true} opacity={0.25} depthWrite={false} />
           </points>
 
           {/* 2. 蛋白質實體區 (Protein) - 改為灰白色避免與碳(綠)衝突 */}
@@ -421,11 +421,12 @@
           </points>
 
           {/* 3. 結合口袋區 (Cavity) - 改為高亮的青色 (Cyan) */}
-          <points>
+          <points renderOrder={1}>
             <bufferGeometry ref={cavityGeoRef}>
               <bufferAttribute attach="attributes-position" count={cavityFiltered.count} array={cavityFiltered.array} itemSize={3} />
             </bufferGeometry>
-            <pointsMaterial color="#00ffff" size={0.85} transparent={true} opacity={0.95} toneMapped={false} depthWrite={false} />
+            {/* 口袋區的點稍微大一點以示強調 */}
+            <pointsMaterial color="#00ffff" size={0.8} transparent={true} opacity={1.0} toneMapped={false} depthWrite={false} blending={THREE.AdditiveBlending} />
           </points>
 
           {/* 掃描線平面 - 尺寸完美貼合 Box */}
