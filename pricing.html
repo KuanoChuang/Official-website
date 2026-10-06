@@ -240,6 +240,7 @@
   <!-- 2. 右側滑出面板 (覆蓋全螢幕) -->
   <div id="mobile-menu" class="fixed top-0 right-0 h-[100dvh] w-[260px] bg-[#0A111A] border-l border-gray-800 transform translate-x-full transition-transform duration-300 ease-in-out z-[70] flex flex-col md:hidden shadow-[[-20px_0_40px_rgba(0,0,0,0.8)]]">
     
+    <!-- 側邊欄頭部：Logo 與關閉按鈕 -->
     <div class="h-20 flex items-center justify-between px-6 border-b border-gray-800/80 shrink-0">
       <a href="index.html" class="text-lg font-bold tracking-wider text-white flex items-center gap-2 group">
         <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i> Molris
@@ -249,7 +250,10 @@
       </button>
     </div>
     
+    <!-- 側邊欄連結列表 -->
     <div class="flex-1 overflow-y-auto py-8 px-6 flex flex-col gap-6 text-[16px]">
+      
+      <!-- 關於 Molris -->
       <div data-open="false" class="group">
         <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>關於 Molris</span>
@@ -268,6 +272,7 @@
         </div>
       </div>
 
+      <!-- 技術平台 (預設展開 - 提示目前頁面位置) -->
       <div data-open="true" class="group">
         <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>技術平台</span>
@@ -287,6 +292,7 @@
         </div>
       </div>
 
+      <!-- 專案介紹 -->
       <div data-open="false" class="group">
         <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>專案介紹</span>
@@ -302,6 +308,7 @@
         </div>
       </div>
 
+      <!-- 方案介紹 -->
       <div data-open="false" class="group">
         <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>方案介紹</span>
@@ -317,6 +324,7 @@
         </div>
       </div>
 
+      <!-- 聯絡我們 -->
       <div data-open="false" class="group">
         <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>聯絡我們</span>
@@ -332,6 +340,7 @@
         </div>
       </div>
       
+      <!-- 語言切換底部 -->
       <div class="border-t border-gray-800/80 pt-6 mt-4 flex items-center gap-2 text-gray-300 hover:text-white cursor-pointer transition-colors shrink-0">
         <i class="fa-solid fa-globe text-gray-400"></i>
         <span class="text-sm font-bold">中文</span>
