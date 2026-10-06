@@ -270,7 +270,7 @@
           // 動態貼合真實 Bounding Box，不浪費動畫時間在空白處
           const scanPos = (bounds.cx - bounds.sizeX/2) + (progress * bounds.sizeX);
           
-          const updateRetainScan = (ref, pts, baseColor, isCavity) => {
+          const updateRetainScan = (ref, pts, baseColor, type) => {
              if (!ref.current || pts.length === 0) return;
              if (ref.current.count === 0) ref.current.count = pts.length;
 
@@ -279,8 +279,13 @@
                const isScanning = Math.abs(pt[0] - scanPos) < (grid.spacing * 1.5);
                
                let s = 0.0;
-               if (isScanning) s = 0.9;      
-               else if (isScanned) s = isCavity ? 0.8 : 0.4;  // 口袋更實體一點
+               if (isScanning) {
+                 s = type === 'cavity' ? 1.0 : 0.8;
+               } else if (isScanned) {
+                 if (type === 'cavity') s = 0.85;       // 強化口袋實體感
+                 else if (type === 'protein') s = 0.4;  // 蛋白點維持中等
+                 else if (type === 'solvent') s = 0.2;  // 大幅縮小溶劑點體積
+               }
 
                dummy.position.set(...pt);
                dummy.scale.setScalar(s);
@@ -297,9 +302,9 @@
              if (ref.current.instanceColor) ref.current.instanceColor.needsUpdate = true;
           };
 
-          updateRetainScan(pRef, protein, '#aaaaaa', false); // 蛋白區 灰色
-          updateRetainScan(sRef, solvent, '#0055ff', false); // 溶劑區 藍色
-          updateRetainScan(cRef, cavity, '#ffaa00', true);   // 空腔區 橘黃色
+          updateRetainScan(pRef, protein, '#aaaaaa', 'protein'); // 蛋白區 灰色
+          updateRetainScan(sRef, solvent, '#0055ff', 'solvent'); // 溶劑區 藍色
+          updateRetainScan(cRef, cavity, '#ffaa00', 'cavity');   // 空腔區 橘黃色
           if (prRef.current) prRef.current.count = 0; 
         }
         
