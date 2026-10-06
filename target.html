@@ -126,6 +126,48 @@
           dummy.scale.setScalar(atom.radius * 0.9);
           dummy.updateMatrix();
           meshRef.current.setMatrixAt(i, dummy.matrix);
+          
+          let hexColor = '#cccccc'; // 預設顏色
+          if (atom.type === 'O') hexColor = '#ff3333';
+          else if (atom.type === 'N') hexColor = '#3333ff';
+          else if (atom.type === 'S') hexColor = '#ffcc33';
+          else if (atom.type === 'H') hexColor = '#ffffff';
+          else if (atom.type === 'C') hexColor = '#33ff33';
+          
+          const color = new THREE.Color(hexColor);
+          // 【完美對應 PyVista】將顏色亮度打 8 折，對應您的 diffuse=0.8 參數，避免原子在強光下過曝
+          color.multiplyScalar(0.8); 
+          meshRef.current.setColorAt(i, color);
+        });
+        meshRef.current.instanceMatrix.needsUpdate = true;
+        if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
+      }, [atoms, visible]);
+
+      if (!visible || !atoms || atoms.length === 0) return null;
+
+      return (
+        <instancedMesh ref={meshRef} args={[null, null, atoms.length]}>
+          <sphereGeometry args={[1, 16, 16]} />
+          {/* 【完美對應 PyVista】使用 Phong 材質，對應您的 specular_power=30 與 specular=0.8 */}
+          <meshPhongMaterial 
+            shininess={30} 
+            specular="#cccccc" 
+            transparent={true} opacity={opacity} depthWrite={opacity === 1.0}
+          />
+        </instancedMesh>
+      );
+    }
+      const meshRef = useRef();
+      const dummy = useMemo(() => new THREE.Object3D(), []);
+      
+      // 使用 useLayoutEffect 解決「剛載入時全白無色」的閃爍問題，並且套用完美色彩對應
+      useLayoutEffect(() => {
+        if (!meshRef.current || !atoms || atoms.length === 0) return;
+        atoms.forEach((atom, i) => {
+          dummy.position.set(...atom.pos);
+          dummy.scale.setScalar(atom.radius * 0.9);
+          dummy.updateMatrix();
+          meshRef.current.setMatrixAt(i, dummy.matrix);
           if (type === 'O') hexColor = '#ff3333';
           else if (type === 'N') hexColor = '#3333ff';
           else if (type === 'S') hexColor = '#ffcc33';
