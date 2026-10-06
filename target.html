@@ -270,11 +270,11 @@
 
       return (
         <group position={[bounds.cx, bounds.cy, bounds.cz]}>
-          {/* 【關鍵修改 2：降低外框亮度】 */}
-          <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#002233" />
+          {/* 【關鍵修改：加入 renderOrder={1} 強制鎖定渲染順序，解決視角旋轉時的前後層級錯亂】 */}
+          <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#002233" renderOrder={1} />
           
           {/* 1. 副網格 Micro Grid (0.5A) */}
-          <lineSegments geometry={microGeo}>
+          <lineSegments geometry={microGeo} renderOrder={1}>
             <lineBasicMaterial 
               vertexColors={true} 
               transparent={true} 
@@ -284,8 +284,7 @@
           </lineSegments>
 
           {/* 2. 主網格 Macro Grid (2.5A) */}
-          <lineSegments geometry={macroGeo}>
-            {/* 【關鍵修改 3：大幅調低主網格的透明度與顏色亮度】 */}
+          <lineSegments geometry={macroGeo} renderOrder={1}>
             <lineBasicMaterial color="#113344" transparent={true} opacity={0.15} depthWrite={false} />
           </lineSegments>
 
