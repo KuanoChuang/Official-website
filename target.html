@@ -425,7 +425,7 @@
             <bufferGeometry ref={cavityGeoRef}>
               <bufferAttribute attach="attributes-position" count={cavityFiltered.count} array={cavityFiltered.array} itemSize={3} />
             </bufferGeometry>
-            <pointsMaterial color="#00ffff" size={0.8} transparent={true} opacity={1.0} toneMapped={false} depthWrite={false} blending={THREE.AdditiveBlending} />
+            <pointsMaterial color="#00ffff" size={0.8} transparent={true} opacity={1.0} toneMapped={false} depthWrite={false} />
           </points>
 
           {/* 掃描線平面 - 尺寸完美貼合 Box */}
