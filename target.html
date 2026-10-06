@@ -204,7 +204,36 @@
     }
 
     // Phase 2: 真實長方體網格線框架 (緊密貼合分子)
-    function GridWireframe({ algoData, bounds, visible }) {
+    function GridWireframe({ algoData, atoms, visible }) {
+      const bounds = useMemo(() => {
+         if (!atoms || atoms.length === 0) return { sizeX: 20, sizeY: 20, sizeZ: 20, cx: 0, cy: 0, cz: 0 };
+         
+         // 1. 動態計算原子的真實分佈邊界
+         let minX = 9999, minY = 9999, minZ = 9999;
+         let maxX = -9999, maxY = -9999, maxZ = -9999;
+         atoms.forEach(a => {
+            const r = a.radius || 1.5;
+            minX = Math.min(minX, a.pos[0] - r);
+            minY = Math.min(minY, a.pos[1] - r);
+            minZ = Math.min(minZ, a.pos[2] - r);
+            maxX = Math.max(maxX, a.pos[0] + r);
+            maxY = Math.max(maxY, a.pos[1] + r);
+            maxZ = Math.max(maxZ, a.pos[2] + r);
+         });
+         
+         // 2. 減少緩衝網格數 (只加上一點點緩衝空間，例如 2.0 埃)
+         const padding = 2.0; 
+         const sizeX = (maxX - minX) + padding * 2;
+         const sizeY = (maxY - minY) + padding * 2;
+         const sizeZ = (maxZ - minZ) + padding * 2;
+         
+         const cx = (maxX + minX) / 2;
+         const cy = (maxY + minY) / 2;
+         const cz = (maxZ + minZ) / 2;
+         
+         return { sizeX, sizeY, sizeZ, cx, cy, cz };
+      }, [atoms]);
+
       const boxGeo = useMemo(() => new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ), [bounds]);
 
       if (!visible || !algoData) return null;
@@ -229,25 +258,9 @@
     }
 
     // Phase 3, 4, 5: 網格動畫掃描器
-    function AlgorithmScanner({ algoData, bounds, phase }) {
+    function AlgorithmScanner({ algoData, phase }) {
       const { grid, voxels } = algoData;
-      
-      // 過濾掉超出合身 Bounding Box 的網格點 (確保 Phase 3 和 Phase 2 視覺體積完全對齊一致)
-      const filteredVoxels = useMemo(() => {
-         const isInside = (pt) => {
-             return Math.abs(pt[0] - bounds.cx) <= bounds.sizeX / 2 &&
-                    Math.abs(pt[1] - bounds.cy) <= bounds.sizeY / 2 &&
-                    Math.abs(pt[2] - bounds.cz) <= bounds.sizeZ / 2;
-         };
-         return {
-             protein: (voxels.protein || []).filter(isInside),
-             solvent: (voxels.solvent || []).filter(isInside),
-             cavity: (voxels.cavity || []).filter(isInside),
-             probe: (voxels.probe || []).filter(isInside)
-         };
-      }, [voxels, bounds]);
-
-      const { protein, solvent, cavity, probe } = filteredVoxels;
+      const { protein = [], solvent = [], cavity = [], probe = [] } = voxels;
       
       const pRef = useRef(); const sRef = useRef(); 
       const cRef = useRef(); const prRef = useRef();
@@ -279,12 +292,15 @@
         if (phase < 3 || phase > 5) return;
         timeRef.current += delta;
         
+        const sizeX = grid.sizeX || 20;
+        const sizeZ = grid.sizeZ || 20;
+        
         // Phase 3: X 軸切面掃描 (掃過後保留顏色)
         if (phase === 3) {
+          const halfX = sizeX / 2;
           const cycleTime = 4.0;
           const progress = (timeRef.current % cycleTime) / cycleTime;
-          const startX = bounds.cx - bounds.sizeX / 2;
-          const scanPos = startX + (progress * bounds.sizeX);
+          const scanPos = -halfX + (progress * sizeX);
           
           const updateRetainScan = (ref, pts, baseColor) => {
              if (!ref.current || pts.length === 0) return;
@@ -321,10 +337,10 @@
         
         // Phase 4: Z 軸探針侵蝕掃描
         if (phase === 4) {
+          const halfZ = sizeZ / 2;
           const cycleTime = 3.0;
           const progress = (timeRef.current % cycleTime) / cycleTime;
-          const startZ = bounds.cz - bounds.sizeZ / 2;
-          const scanZ = startZ + (progress * bounds.sizeZ);
+          const scanZ = -halfZ + (progress * sizeZ);
           
           if(pRef.current) pRef.current.count = 0;
           if(sRef.current) sRef.current.count = 0;
@@ -435,31 +451,6 @@
       if (error) return <div className="loading" style={{color: '#ff4444'}}>載入失敗: {error}</div>;
       if (!data) return <div className="loading">載入預先計算資產中...</div>;
 
-      // 統一計算全域的緊密邊界 (Shared Bounds)，確保 Phase 2 和 Phase 3 的網格體積完全對齊
-      const sharedBounds = useMemo(() => {
-         if (!data || !data.atoms || data.atoms.length === 0) return { sizeX: 20, sizeY: 20, sizeZ: 20, cx: 0, cy: 0, cz: 0 };
-         let minX = 9999, minY = 9999, minZ = 9999;
-         let maxX = -9999, maxY = -9999, maxZ = -9999;
-         data.atoms.forEach(a => {
-            const r = a.radius || 1.5;
-            minX = Math.min(minX, a.pos[0] - r);
-            minY = Math.min(minY, a.pos[1] - r);
-            minZ = Math.min(minZ, a.pos[2] - r);
-            maxX = Math.max(maxX, a.pos[0] + r);
-            maxY = Math.max(maxY, a.pos[1] + r);
-            maxZ = Math.max(maxZ, a.pos[2] + r);
-         });
-         const padding = 2.0; 
-         return {
-             sizeX: (maxX - minX) + padding * 2,
-             sizeY: (maxY - minY) + padding * 2,
-             sizeZ: (maxZ - minZ) + padding * 2,
-             cx: (maxX + minX) / 2,
-             cy: (maxY + minY) / 2,
-             cz: (maxZ + minZ) / 2
-         };
-      }, [data]);
-
       return (
         <ErrorBoundary>
           <div className="ui-panel">
@@ -522,10 +513,10 @@
                 <SESView visible={phase === 1 && phase1Opts.ses} />
                 
                 {/* Phase 2: 真實長方體網格 (邊界緊密貼合) */}
-                <GridWireframe algoData={data.algo_data} bounds={sharedBounds} visible={phase === 2} />
+                <GridWireframe algoData={data.algo_data} atoms={data.atoms} visible={phase === 2} />
                 
                 {/* Phase 3, 4, 5: 動畫掃描器 */}
-                <AlgorithmScanner algoData={data.algo_data} bounds={sharedBounds} phase={phase} />
+                <AlgorithmScanner algoData={data.algo_data} phase={phase} />
                 
                 {/* Phase 6: 口袋 Mesh 呈現 */}
                 <PocketMesh meshData={data.algo_data.pocket_mesh} visible={phase === 6} />
