@@ -152,17 +152,17 @@
       return (
         <mesh geometry={geometry}>
           <meshPhysicalMaterial 
-            color="#b3d4ff"           
-            transmission={0.9}        /* 極高透光率，模擬純淨玻璃 */
+            color="#e6f0ff"           
+            transmission={0.95}       /* 提高直視時的透光率，讓內部原子更清晰 */
             opacity={1.0}             /* 保持 1.0 才能讓折射與物理厚度生效 */
             transparent={true}
-            roughness={0.15}          
-            thickness={4.0}           /* 增加物理厚度，創造邊緣折射包覆感 */
-            ior={1.48}                /* 折射率 */
+            roughness={0.08}          /* 降低粗糙度，讓表面看起來更像濕潤的薄膜 */
+            thickness={6.0}           /* 大幅增加物理厚度，強化包裹感 */
+            ior={1.6}                 /* 提高折射率，讓邊緣產生更強烈的透鏡彎曲變形 */
             clearcoat={1.0}           /* 表面反光塗層 */
-            clearcoatRoughness={0.1}  
-            attenuationColor="#0055ff"/* 邊緣深層吸收色，看起來有體積感 */
-            attenuationDistance={10}  
+            clearcoatRoughness={0.05} 
+            attenuationColor="#0033cc"/* 加深邊緣體積吸收色，創造細胞膜的立體漸層感 */
+            attenuationDistance={5.0} /* 縮短吸收距離，讓邊緣顏色更濃郁，凸顯包覆邊界 */
             depthWrite={false}        /* 關閉深度寫入，讓內部的 VDW 原子完美透出不被遮擋 */
             side={THREE.DoubleSide}
           />
