@@ -298,133 +298,118 @@
     }
 
     // Phase 3, 4, 5: 網格動畫掃描器
-    function AlgorithmScanner({ algoData, atoms, phase }) {
-      const { grid, voxels } = algoData;
-      const { protein = [], solvent = [], cavity = [], probe = [] } = voxels;
-      
-      const bounds = useMemo(() => computeTightBounds(atoms, 2.0), [atoms]);
-      
-      const pRef = useRef(); const sRef = useRef(); 
-      const cRef = useRef(); const prRef = useRef();
-      const dummy = useMemo(() => new THREE.Object3D(), []);
-      
-      const timeRef = useRef(0);
-      
+    function AlgorithmScanner({ algoData, visible, sharedBounds }) {
+      const scanRef = useRef();
+      const [scanPos, setScanPos] = useState(-20);
+
+      // 提取並過濾三種點陣資料 (只保留在 Bounding Box 內的點)
+      const { solventFiltered, proteinFiltered, cavityFiltered } = useMemo(() => {
+        if (!algoData || !algoData.voxels || !sharedBounds) return { solventFiltered: new Float32Array(), proteinFiltered: new Float32Array(), cavityFiltered: new Float32Array() };
+        
+        const filterPoints = (pointsArray) => {
+          const res = [];
+          for (let i = 0; i < pointsArray.length; i++) {
+            const [x, y, z] = pointsArray[i];
+            if (
+              x >= sharedBounds.minX && x <= sharedBounds.maxX &&
+              y >= sharedBounds.minY && y <= sharedBounds.maxY &&
+              z >= sharedBounds.minZ && z <= sharedBounds.maxZ
+            ) {
+              res.push(x, y, z);
+            }
+          }
+          return new Float32Array(res);
+        };
+
+        return {
+          solventFiltered: filterPoints(algoData.voxels.solvent || []),
+          proteinFiltered: filterPoints(algoData.voxels.protein || []),
+          cavityFiltered: filterPoints(algoData.voxels.cavity || [])
+        };
+      }, [algoData, sharedBounds]);
+
+      // Phase 3 黃色邊界框
+      const boxGeo = useMemo(() => {
+        if (!sharedBounds) return null;
+        return new THREE.BoxGeometry(sharedBounds.sizeX, sharedBounds.sizeY, sharedBounds.sizeZ);
+      }, [sharedBounds]);
+
+      // 掃描動畫邏輯 (自適應 Bounding Box 寬度)
       useFrame((state, delta) => {
-        if (phase < 3 || phase > 5) return;
-        timeRef.current += delta;
-        
-        // Phase 3: X 軸單向掃描 (掃過後保留半透明方塊並上色)
-        if (phase === 3) {
-          const cycleTime = 4.0;
-          const progress = (timeRef.current % cycleTime) / cycleTime;
-          // 動態貼合真實 Bounding Box，不浪費動畫時間在空白處
-          const scanPos = (bounds.cx - bounds.sizeX/2) + (progress * bounds.sizeX);
+        if (visible && sharedBounds) {
+          const startX = sharedBounds.minX;
+          const endX = sharedBounds.maxX;
           
-          const updateRetainScan = (ref, pts, baseColor, type) => {
-             if (!ref.current || pts.length === 0) return;
-             if (ref.current.count === 0) ref.current.count = pts.length;
-
-             pts.forEach((pt, i) => {
-               const isScanned = pt[0] <= scanPos;
-               const isScanning = Math.abs(pt[0] - scanPos) < (grid.spacing * 1.5);
-               
-               let s = 0.0;
-               if (isScanning) {
-                 s = type === 'cavity' ? 1.0 : 0.8;
-               } else if (isScanned) {
-                 if (type === 'cavity') s = 0.85;       // 強化口袋實體感
-                 else if (type === 'protein') s = 0.4;  // 蛋白點維持中等
-                 else if (type === 'solvent') s = 0.2;  // 大幅縮小溶劑點體積
-               }
-
-               dummy.position.set(...pt);
-               dummy.scale.setScalar(s);
-               dummy.updateMatrix();
-               ref.current.setMatrixAt(i, dummy.matrix);
-               
-               if (ref.current.instanceColor) {
-                  const color = new THREE.Color(baseColor);
-                  if (isScanning) color.lerp(new THREE.Color('#ffffff'), 0.8);
-                  ref.current.setColorAt(i, color);
-               }
-             });
-             ref.current.instanceMatrix.needsUpdate = true;
-             if (ref.current.instanceColor) ref.current.instanceColor.needsUpdate = true;
-          };
-
-          updateRetainScan(pRef, protein, '#aaaaaa', 'protein'); // 蛋白區 灰色
-          updateRetainScan(sRef, solvent, '#0055ff', 'solvent'); // 溶劑區 藍色
-          updateRetainScan(cRef, cavity, '#ffaa00', 'cavity');   // 空腔區 橘黃色
-          if (prRef.current) prRef.current.count = 0; 
-        }
-        
-        // Phase 4: Z 軸探針侵蝕掃描
-        if (phase === 4) {
-          const cycleTime = 3.0;
-          const progress = (timeRef.current % cycleTime) / cycleTime;
-          const scanZ = (bounds.cz - bounds.sizeZ/2) + (progress * bounds.sizeZ);
-          
-          if(pRef.current) pRef.current.count = 0;
-          if(sRef.current) sRef.current.count = 0;
-          if(cRef.current) cRef.current.count = cavity.length;
-          if(prRef.current) prRef.current.count = probe.length;
-          
-          const updateFadeScan = (ref, pts, isProbe) => {
-             if (!ref.current || pts.length === 0) return;
-             pts.forEach((pt, i) => {
-               const dz = scanZ - pt[2];
-               let s = 0;
-               if (dz > 0 && dz < 4.0) s = isProbe ? 0.8 : 0.4;
-               else if (Math.abs(dz) <= grid.spacing) s = 1.0;
-               
-               dummy.position.set(...pt);
-               dummy.scale.setScalar(s);
-               dummy.updateMatrix();
-               ref.current.setMatrixAt(i, dummy.matrix);
-               
-               if (ref.current.instanceColor) {
-                  const baseColor = isProbe ? new THREE.Color('#00ff00') : new THREE.Color('#ffaa00');
-                  const fade = Math.max(0.1, 1.0 - (dz / 4.0));
-                  ref.current.setColorAt(i, dz > grid.spacing ? baseColor.multiplyScalar(fade) : baseColor);
-               }
-             });
-             ref.current.instanceMatrix.needsUpdate = true;
-             if (ref.current.instanceColor) ref.current.instanceColor.needsUpdate = true;
-          };
-          updateFadeScan(cRef, cavity, false);
-          updateFadeScan(prRef, probe, true);
-        }
-        
-        // Phase 5: 聯集探針可行區
-        if (phase === 5) {
-          if(pRef.current) pRef.current.count = 0;
-          if(sRef.current) sRef.current.count = 0;
-          if(cRef.current) cRef.current.count = 0;
-          if(prRef.current && probe.length > 0) {
-            prRef.current.count = probe.length;
-            const color = new THREE.Color('#00ff00');
-            probe.forEach((pt, i) => {
-               dummy.position.set(...pt);
-               dummy.scale.setScalar(0.9);
-               dummy.updateMatrix();
-               prRef.current.setMatrixAt(i, dummy.matrix);
-               prRef.current.setColorAt(i, color);
-            });
-            prRef.current.instanceMatrix.needsUpdate = true;
-            prRef.current.instanceColor.needsUpdate = true;
+          if (scanPos < endX) {
+            setScanPos(prev => prev + 12.0 * delta); // 掃描速度
+          } else {
+            setScanPos(startX); // 循環掃描
           }
         }
       });
-      
-      const geo = <boxGeometry args={[grid.spacing, grid.spacing, grid.spacing]} />;
-      
+
+      if (!visible) return null;
+
       return (
-        <group visible={phase >= 3 && phase <= 5}>
-          {protein.length > 0 && <instancedMesh ref={pRef} args={[null, null, protein.length]}>{geo}<meshBasicMaterial transparent opacity={0.3} /></instancedMesh>}
-          {solvent.length > 0 && <instancedMesh ref={sRef} args={[null, null, solvent.length]}>{geo}<meshBasicMaterial transparent opacity={0.1} /></instancedMesh>}
-          {cavity.length > 0 && <instancedMesh ref={cRef} args={[null, null, cavity.length]}>{geo}<meshBasicMaterial transparent opacity={0.95} toneMapped={false} /></instancedMesh>}
-          {probe.length > 0 && <instancedMesh ref={prRef} args={[null, null, probe.length]}>{geo}<meshBasicMaterial transparent opacity={0.95} toneMapped={false} /></instancedMesh>}
+        <group>
+          {/* 【新增】：Phase 3 專屬的黃色邊界框 */}
+          {sharedBounds && (
+            <group position={[sharedBounds.cx, sharedBounds.cy, sharedBounds.cz]}>
+              <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#ffee00" renderOrder={-1} />
+            </group>
+          )}
+
+          {/* 1. 溶劑區 (Solvent) - 亮冰藍色薄霧 (避免變黑) */}
+          <points>
+            <bufferGeometry>
+              <bufferAttribute attach="attributes-position" count={solventFiltered.length / 3} array={solventFiltered} itemSize={3} />
+            </bufferGeometry>
+            <pointsMaterial 
+              color="#add8e6" /* 亮冰藍色，即使低透明度也不會變黑 */
+              size={0.2} 
+              transparent={true} 
+              opacity={0.25}  /* 調整透明度形成薄霧感 */
+              depthWrite={false} 
+            />
+          </points>
+
+          {/* 2. 蛋白質實體區 (Protein) - 顯眼的螢光綠實體 */}
+          <points>
+            <bufferGeometry>
+              <bufferAttribute attach="attributes-position" count={proteinFiltered.length / 3} array={proteinFiltered} itemSize={3} />
+            </bufferGeometry>
+            <pointsMaterial 
+              color="#00ff66" /* 顯眼的亮綠色 */
+              size={0.5} 
+              transparent={true} 
+              opacity={0.8} 
+              toneMapped={false} /* 關閉光照映射，讓顏色始終保持鮮明發亮 */
+              depthWrite={false} 
+            />
+          </points>
+
+          {/* 3. 結合口袋區 (Cavity) - 極高對比的橘黃色發光體 */}
+          <points>
+            <bufferGeometry>
+              <bufferAttribute attach="attributes-position" count={cavityFiltered.length / 3} array={cavityFiltered} itemSize={3} />
+            </bufferGeometry>
+            <pointsMaterial 
+              color="#ffaa00" 
+              size={0.85} 
+              transparent={true} 
+              opacity={0.95} 
+              toneMapped={false} 
+              depthWrite={false} 
+            />
+          </points>
+
+          {/* 掃描線平面 */}
+          {sharedBounds && (
+            <mesh position={[scanPos, sharedBounds.cy, sharedBounds.cz]} rotation={[0, Math.PI / 2, 0]}>
+              <planeGeometry args={[sharedBounds.sizeZ * 1.2, sharedBounds.sizeY * 1.2]} />
+              <meshBasicMaterial color="#00ffff" transparent={true} opacity={0.3} side={THREE.DoubleSide} depthWrite={false} />
+            </mesh>
+          )}
         </group>
       );
     }
