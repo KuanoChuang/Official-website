@@ -200,55 +200,70 @@
     }
     // Phase 2: 全空間 3D 網格陣列 (覆蓋整個 Bounding Box)
     function GridWireframe({ atoms, visible }) {
-      // 在元件內部動態計算原子的合身邊界
       const bounds = useMemo(() => computeTightBounds(atoms, 2.0), [atoms]);
 
-      const geometry = useMemo(() => {
+      // 1. 主網格 (Macro Grid) - 2.5Å (較亮，提供整體空間感)
+      const macroGeo = useMemo(() => {
         if (!bounds) return null;
-        const spacing = 1.0; // 統一使用 1.0 作為視覺網格線，不要太密導致畫面糊掉
+        const spacing = 2.5;
         const pts = [];
-        
-        const halfX = bounds.sizeX / 2;
-        const halfY = bounds.sizeY / 2;
-        const halfZ = bounds.sizeZ / 2;
+        const halfX = bounds.sizeX / 2; const halfY = bounds.sizeY / 2; const halfZ = bounds.sizeZ / 2;
+        const numX = Math.floor(bounds.sizeX / spacing); const numY = Math.floor(bounds.sizeY / spacing); const numZ = Math.floor(bounds.sizeZ / spacing);
+        const startX = - (numX * spacing) / 2; const startY = - (numY * spacing) / 2; const startZ = - (numZ * spacing) / 2;
 
-        const numX = Math.floor(bounds.sizeX / spacing);
-        const numY = Math.floor(bounds.sizeY / spacing);
-        const numZ = Math.floor(bounds.sizeZ / spacing);
-
-        const startX = - (numX * spacing) / 2;
-        const startY = - (numY * spacing) / 2;
-        const startZ = - (numZ * spacing) / 2;
-
-        // X軸平行的線 (佈滿 Y-Z 平面)
-        for (let j = 0; j <= numY; j++) {
-          for (let k = 0; k <= numZ; k++) {
-            const y = startY + j * spacing;
-            const z = startZ + k * spacing;
-            pts.push(new THREE.Vector3(-halfX, y, z));
-            pts.push(new THREE.Vector3(halfX, y, z));
-          }
-        }
-        // Y軸平行的線 (佈滿 X-Z 平面)
-        for (let i = 0; i <= numX; i++) {
-          for (let k = 0; k <= numZ; k++) {
-            const x = startX + i * spacing;
-            const z = startZ + k * spacing;
-            pts.push(new THREE.Vector3(x, -halfY, z));
-            pts.push(new THREE.Vector3(x, halfY, z));
-          }
-        }
-        // Z軸平行的線 (佈滿 X-Y 平面)
-        for (let i = 0; i <= numX; i++) {
-          for (let j = 0; j <= numY; j++) {
-            const x = startX + i * spacing;
-            const y = startY + j * spacing;
-            pts.push(new THREE.Vector3(x, y, -halfZ));
-            pts.push(new THREE.Vector3(x, y, halfZ));
-          }
-        }
+        for (let j = 0; j <= numY; j++) for (let k = 0; k <= numZ; k++) { pts.push(new THREE.Vector3(-halfX, startY + j * spacing, startZ + k * spacing)); pts.push(new THREE.Vector3(halfX, startY + j * spacing, startZ + k * spacing)); }
+        for (let i = 0; i <= numX; i++) for (let k = 0; k <= numZ; k++) { pts.push(new THREE.Vector3(startX + i * spacing, -halfY, startZ + k * spacing)); pts.push(new THREE.Vector3(startX + i * spacing, halfY, startZ + k * spacing)); }
+        for (let i = 0; i <= numX; i++) for (let j = 0; j <= numY; j++) { pts.push(new THREE.Vector3(startX + i * spacing, startY + j * spacing, -halfZ)); pts.push(new THREE.Vector3(startX + i * spacing, startY + j * spacing, halfZ)); }
         
         return new THREE.BufferGeometry().setFromPoints(pts);
+      }, [bounds]);
+
+      // 2. 副網格 (Micro Grid) - 0.5Å (較暗，且向中心梯度隱形)
+      const microGeo = useMemo(() => {
+        if (!bounds) return null;
+        const spacing = 0.5;
+        const pts = [];
+        const colors = [];
+        
+        // 副網格邊緣的基礎顏色 (較暗沉的青藍色)
+        const baseColor = new THREE.Color("#004466"); 
+        
+        const halfX = bounds.sizeX / 2; const halfY = bounds.sizeY / 2; const halfZ = bounds.sizeZ / 2;
+        const numX = Math.floor(bounds.sizeX / spacing); const numY = Math.floor(bounds.sizeY / spacing); const numZ = Math.floor(bounds.sizeZ / spacing);
+        const startX = - (numX * spacing) / 2; const startY = - (numY * spacing) / 2; const startZ = - (numZ * spacing) / 2;
+
+        // 計算頂點淡化係數的函數
+        const getFade = (x, y, z) => {
+            const fx = Math.abs(x) / halfX;
+            const fy = Math.abs(y) / halfY;
+            const fz = Math.abs(z) / halfZ;
+            // 取最大的相對軸向距離 (0~1)。越接近外殼邊緣，數值越接近 1。
+            const maxDist = Math.max(fx, fy, fz);
+            // 使用 5 次方曲線 (Power of 5)：這會讓核心區域極度乾淨，只在最外側 20% 顯現網格
+            return Math.pow(maxDist, 5); 
+        };
+
+        const addLine = (x1, y1, z1, x2, y2, z2) => {
+            pts.push(x1, y1, z1, x2, y2, z2);
+            
+            // 分別計算線段兩端的淡化程度
+            const fade1 = getFade(x1, y1, z1);
+            const fade2 = getFade(x2, y2, z2);
+            
+            // 將計算出的暗色塞入色彩陣列 (顏色越黑，後續 AdditiveBlending 就越透明)
+            colors.push(baseColor.r * fade1, baseColor.g * fade1, baseColor.b * fade1);
+            colors.push(baseColor.r * fade2, baseColor.g * fade2, baseColor.b * fade2);
+        };
+
+        for (let j = 0; j <= numY; j++) for (let k = 0; k <= numZ; k++) addLine(-halfX, startY + j * spacing, startZ + k * spacing, halfX, startY + j * spacing, startZ + k * spacing);
+        for (let i = 0; i <= numX; i++) for (let k = 0; k <= numZ; k++) addLine(startX + i * spacing, -halfY, startZ + k * spacing, startX + i * spacing, halfY, startZ + k * spacing);
+        for (let i = 0; i <= numX; i++) for (let j = 0; j <= numY; j++) addLine(startX + i * spacing, startY + j * spacing, -halfZ, startX + i * spacing, startY + j * spacing, halfZ);
+        
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+        // 寫入自訂的頂點顏色
+        geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        return geo;
       }, [bounds]);
 
       const boxGeo = useMemo(() => {
@@ -260,17 +275,25 @@
 
       return (
         <group position={[bounds.cx, bounds.cy, bounds.cz]}>
-          {/* 降低外框亮度至暗青色，不搶走原子的視覺焦點 */}
-          <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#005577" />
-          <lineSegments geometry={geometry}>
-            {/* 將內部網格線調暗且透明度大幅降低至 0.1，作為背景襯托 VDW 原子 */}
+          <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#004455" />
+          
+          {/* 1. 副網格 Micro Grid (0.5A) */}
+          <lineSegments geometry={microGeo}>
+            {/* 關鍵：開啟 vertexColors 並使用 AdditiveBlending，黑色點會等同於完全隱形！ */}
             <lineBasicMaterial 
-              color="#224455" 
+              vertexColors={true} 
               transparent={true} 
-              opacity={0.1}     
-              depthWrite={true} 
+              blending={THREE.AdditiveBlending}
+              depthWrite={false} 
             />
           </lineSegments>
+
+          {/* 2. 主網格 Macro Grid (2.5A) */}
+          <lineSegments geometry={macroGeo}>
+            {/* 顏色較亮 (#227799)，均勻分佈 */}
+            <lineBasicMaterial color="#227799" transparent={true} opacity={0.3} depthWrite={false} />
+          </lineSegments>
+
         </group>
       );
     }
