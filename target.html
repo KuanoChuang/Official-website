@@ -505,13 +505,12 @@
             const visible = phase === 4;
             const probeRef = useRef();
 
-            // 控制掃描進度的狀態
             const scanState = useRef({ globalIdx: 0, timer: 0 });
 
             const sortedData = useMemo(() => {
                 if (!algoData || !algoData.voxels) return null;
 
-                // 1. Solvent (保持原本寫法)
+                // 1. Solvent
                 const solventPts = algoData.voxels.solvent || [];
                 const solventFlat = new Float32Array(solventPts.length * 3);
                 for (let i = 0; i < solventPts.length; i++) {
@@ -520,7 +519,7 @@
                     solventFlat[i * 3 + 2] = solventPts[i][2];
                 }
 
-                // 2. Protein (保持原本寫法)
+                // 2. Protein
                 const proteinPts = algoData.voxels.protein || [];
                 const proteinFlat = new Float32Array(proteinPts.length * 3);
                 for (let i = 0; i < proteinPts.length; i++) {
@@ -529,7 +528,7 @@
                     proteinFlat[i * 3 + 2] = proteinPts[i][2];
                 }
 
-                // 3. Cavity (外殼點) - 依照 Y 軸排序，做為掃描軌跡
+                // 3. Cavity (外殼點)
                 const cavityPts = (algoData.voxels.cavity || []).map(p => ({ x: p[0], y: p[1], z: p[2] }));
                 cavityPts.sort((a, b) => {
                     if (Math.abs(a.y - b.y) > 0.01) return a.y - b.y;
@@ -561,16 +560,16 @@
             }, [algoData]);
 
             // ==========================================
-            // 材質 1：Cavity 外殼材質 (暗青 -> 亮青帶 -> 暗青)
+            // 材質 1：Cavity 外殼材質 (與 Probe 統一大小與不透明度)
             // ==========================================
             const cavityMaterial = useMemo(() => {
                 return new THREE.ShaderMaterial({
                     uniforms: {
                         currentY: { value: -999.0 },
                         layerThickness: { value: 0.6 },
-                        colorIdle: { value: new THREE.Color(0.0, 0.3, 0.3) },    // 暗青色 (未掃描與掃描後)
-                        colorActive: { value: new THREE.Color(0.0, 1.0, 1.0) },  // 亮青色 (當前掃描層)
-                        size: { value: 2.0 }
+                        colorIdle: { value: new THREE.Color(0.0, 0.3, 0.3) },
+                        colorActive: { value: new THREE.Color(0.0, 1.0, 1.0) },
+                        size: { value: 0.6 } // 統一大為 0.6
                     },
                     vertexShader: `
                 uniform float size;
@@ -590,19 +589,15 @@
                 uniform vec3 colorActive;
                 varying vec3 vWorldPosition;
                 void main() {
-                    // 計算此點與當前掃描層 Y 軸的距離
                     float dist = abs(vWorldPosition.y - currentY);
-                    
-                    // 如果距離小於厚度，則混合亮青色，否則維持暗青色
                     float intensity = 1.0 - smoothstep(0.0, layerThickness, dist);
                     vec3 finalColor = mix(colorIdle, colorActive, intensity);
                     
-                    // 讓點變圓形
                     vec2 coord = gl_PointCoord - vec2(0.5);
                     if(length(coord) > 0.5) discard;
                     
-                    // 外殼透明度稍微調低
-                    gl_FragColor = vec4(finalColor, 0.25); 
+                    // 統一不透明度為 1.0
+                    gl_FragColor = vec4(finalColor, 1.0); 
                 }
             `,
                     transparent: true,
@@ -611,18 +606,18 @@
             }, []);
 
             // ==========================================
-            // 材質 2：Probe 核心材質 (暗青 -> 亮青帶 -> 亮紫 -> 暗紫)
+            // 材質 2：Probe 核心材質 (與 Cavity 統一大小與不透明度)
             // ==========================================
             const probeMaterial = useMemo(() => {
                 return new THREE.ShaderMaterial({
                     uniforms: {
                         currentY: { value: -999.0 },
                         layerThickness: { value: 0.6 },
-                        colorUnscanned: { value: new THREE.Color(0.0, 0.3, 0.3) }, // 尚未掃描：暗青色
-                        colorScanning: { value: new THREE.Color(0.0, 1.0, 1.0) },  // 正在掃描：亮青色 (和外殼同步)
-                        colorScannedBright: { value: new THREE.Color(1.0, 0.2, 1.0) }, // 剛掃過一瞬間：亮紫色
-                        colorScannedDark: { value: new THREE.Color(0.4, 0.0, 0.4) },   // 掃描完畢：暗紫色
-                        size: { value: 3.5 } // Probe 稍微大顆一點
+                        colorUnscanned: { value: new THREE.Color(0.0, 0.3, 0.3) },
+                        colorScanning: { value: new THREE.Color(0.0, 1.0, 1.0) },
+                        colorScannedBright: { value: new THREE.Color(1.0, 0.2, 1.0) },
+                        colorScannedDark: { value: new THREE.Color(0.4, 0.0, 0.4) },
+                        size: { value: 0.6 } // 統一大為 0.6
                     },
                     vertexShader: `
                 uniform float size;
@@ -648,18 +643,14 @@
                     float y = vWorldPosition.y;
                     vec3 finalColor;
                     
-                    // 1. 正在當前層 (掃描中) -> 亮青色
                     if (abs(y - currentY) < layerThickness) {
                         finalColor = colorScanning;
                     } 
-                    // 2. 已經掃描過 (在掃描層的下方，假設由下往上掃，若您的資料是由上往下，這裡改為 y > currentY)
                     else if (y < currentY) {
-                        // 如果離掃描層很近 (剛掃過)，呈現亮紫色；離遠了變回暗紫色
                         float dist = abs(y - currentY);
                         float intensity = 1.0 - smoothstep(layerThickness, layerThickness + 0.8, dist);
                         finalColor = mix(colorScannedDark, colorScannedBright, intensity);
                     } 
-                    // 3. 還沒掃描到 -> 暗青色
                     else {
                         finalColor = colorUnscanned;
                     }
@@ -667,7 +658,8 @@
                     vec2 coord = gl_PointCoord - vec2(0.5);
                     if(length(coord) > 0.5) discard;
                     
-                    gl_FragColor = vec4(finalColor, 1.0); // 核心保持不透明發光
+                    // 統一不透明度為 1.0
+                    gl_FragColor = vec4(finalColor, 1.0); 
                 }
             `,
                     transparent: true,
@@ -683,24 +675,21 @@
                 const currentPoint = pts[currentIdx];
                 const currentY = currentPoint.y;
 
-                // 更新探針球位置與旋轉
                 if (probeRef.current) {
                     probeRef.current.position.lerp(new THREE.Vector3(currentPoint.x, currentPoint.y, currentPoint.z), 0.4);
                     probeRef.current.rotation.x += delta * 2.5;
                     probeRef.current.rotation.y += delta * 2.5;
                 }
 
-                // 把當前高度 (currentY) 傳送給 GPU 運算顏色
                 if (cavityMaterial) cavityMaterial.uniforms.currentY.value = currentY;
                 if (probeMaterial) probeMaterial.uniforms.currentY.value = currentY;
 
-                // 推進掃描進度
                 scanState.current.timer += delta;
                 if (scanState.current.timer > 0.012) {
                     const step = Math.max(1, Math.floor(pts.length / 400));
                     scanState.current.globalIdx += step;
                     scanState.current.timer = 0;
-                    if (scanState.current.globalIdx >= pts.length) scanState.current.globalIdx = 0; // 循環掃描
+                    if (scanState.current.globalIdx >= pts.length) scanState.current.globalIdx = 0;
                 }
             });
 
@@ -708,7 +697,6 @@
 
             return (
                 <group>
-                    {/* 1. Solvent (靜態) */}
                     {sortedData.solventCount > 0 && (
                         <points>
                             <bufferGeometry>
@@ -718,7 +706,6 @@
                         </points>
                     )}
 
-                    {/* 2. Protein (靜態) */}
                     {sortedData.proteinCount > 0 && (
                         <points>
                             <bufferGeometry>
@@ -728,7 +715,6 @@
                         </points>
                     )}
 
-                    {/* 3. Cavity (外殼 - 動態 Shader) */}
                     {sortedData.cavityCount > 0 && (
                         <points renderOrder={1}>
                             <bufferGeometry>
@@ -738,7 +724,6 @@
                         </points>
                     )}
 
-                    {/* 4. Probe (核心 - 動態 Shader) */}
                     {sortedData.probeCount > 0 && (
                         <points renderOrder={2}>
                             <bufferGeometry>
@@ -748,7 +733,6 @@
                         </points>
                     )}
 
-                    {/* 5. 實體探針球 */}
                     <group ref={probeRef}>
                         <mesh>
                             <sphereGeometry args={[1.4, 16, 16]} />
