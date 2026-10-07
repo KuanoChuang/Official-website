@@ -814,7 +814,7 @@
             if (!data) return <div className="loading">載入中...</div>;
 
             return (
-                <ErrorBoundary>
+                <Boundary>
                     <div className="ui-panel">
                         <h2>Pocket Algorithm</h2>
 
@@ -851,7 +851,6 @@
                                 </div>}
                         </div>
                     )}
-
                     <Canvas camera={{ position: [0, 0, 35], fov: 45 }}>
                         <color attach="background" args={['#030508']} />
                         <OrbitControls autoRotate={phase === 5 || phase === 1} autoRotateSpeed={0.5} makeDefault />
@@ -891,7 +890,7 @@
                             </group>
                         </Suspense>
                     </Canvas>
-                </ErrorBoundary>
+                </Boundary>
             );
         }
         const root = createRoot(document.getElementById('root'));
