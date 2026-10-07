@@ -678,7 +678,11 @@
             const [error, setError] = useState(null);
             const [phase, setPhase] = useState(1);
             const [phase1Opts, setPhase1Opts] = useState({ vdw: true, ses: true });
-
+            const bounds = useMemo(() => {
+                if (!data || !data.atoms) return null;
+                return computeTightBounds(data.atoms);
+            }, [data]);
+            
             useEffect(() => {
                 fetch('./precomputed_data.json')
                     .then(res => {
