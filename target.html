@@ -501,7 +501,8 @@
             );
         }
         // Phase 4: 網格動畫掃描器
-        function ProbeScanner({ algoData, atoms, phase }) {
+        function ProbeScanner({ algoData, phase }) {
+            // 假設 phase 4 是顯示這個元件的階段
             const visible = phase === 4;
             const probeRef = useRef();
             const probeColorAttrRef = useRef();
@@ -511,7 +512,16 @@
             const sortedData = useMemo(() => {
                 if (!algoData || !algoData.voxels) return null;
 
-                // 1. Protein 蛋白質點
+                // 1. Solvent 溶劑點 (靜態背景)
+                const solventPts = algoData.voxels.solvent || [];
+                const solventFlat = new Float32Array(solventPts.length * 3);
+                for (let i = 0; i < solventPts.length; i++) {
+                    solventFlat[i * 3] = solventPts[i][0];
+                    solventFlat[i * 3 + 1] = solventPts[i][1];
+                    solventFlat[i * 3 + 2] = solventPts[i][2];
+                }
+
+                // 2. Protein 蛋白質點 (靜態背景)
                 const proteinPts = algoData.voxels.protein || [];
                 const proteinFlat = new Float32Array(proteinPts.length * 3);
                 for (let i = 0; i < proteinPts.length; i++) {
@@ -520,7 +530,7 @@
                     proteinFlat[i * 3 + 2] = proteinPts[i][2];
                 }
 
-                // 2. Cavity 擴展外殼點 (做為探針的掃描路徑與幽靈背景)
+                // 3. Cavity 擴展外殼點 (做為探針的掃描路徑與幽靈背景)
                 const cavityPts = (algoData.voxels.cavity || []).map(p => ({ x: p[0], y: p[1], z: p[2] }));
                 cavityPts.sort((a, b) => {
                     if (Math.abs(a.y - b.y) > 0.01) return a.y - b.y;
@@ -529,16 +539,13 @@
                 });
 
                 const cavityFlat = new Float32Array(cavityPts.length * 3);
-                const cavityColors = new Float32Array(cavityPts.length * 3);
                 for (let i = 0; i < cavityPts.length; i++) {
                     cavityFlat[i * 3] = cavityPts[i].x;
                     cavityFlat[i * 3 + 1] = cavityPts[i].y;
                     cavityFlat[i * 3 + 2] = cavityPts[i].z;
-                    // 靜態背景色 (微弱的青色)
-                    cavityColors[i * 3] = 0.0; cavityColors[i * 3 + 1] = 0.3; cavityColors[i * 3 + 2] = 0.3;
                 }
 
-                // 3. Probe 核心點 (掃描時會跟著發光變色的點)
+                // 4. Probe 核心點 (掃描時會跟著發光變色的點)
                 const probePts = (algoData.voxels.probe || []).map(p => ({ x: p[0], y: p[1], z: p[2] }));
                 probePts.sort((a, b) => {
                     if (Math.abs(a.y - b.y) > 0.01) return a.y - b.y;
@@ -552,59 +559,24 @@
                     probeFlat[i * 3] = probePts[i].x;
                     probeFlat[i * 3 + 1] = probePts[i].y;
                     probeFlat[i * 3 + 2] = probePts[i].z;
-                    // 初始狀態色
+                    // 初始狀態色 (暗青色)
                     probeColors[i * 3] = 0.0; probeColors[i * 3 + 1] = 0.3; probeColors[i * 3 + 2] = 0.3;
                 }
 
                 return {
+                    solventArray: solventFlat,
+                    solventCount: solventPts.length,
                     proteinArray: proteinFlat,
+                    proteinCount: proteinPts.length,
                     cavityPts,
                     cavityArray: cavityFlat,
-                    cavityColors,
+                    cavityCount: cavityPts.length,
                     probePts,
                     probeArray: probeFlat,
+                    probeCount: probePts.length,
                     probeColors
                 };
             }, [algoData]);
-
-            const proteinMaterial = useMemo(() => {
-                return new THREE.ShaderMaterial({
-                    uniforms: {
-                        baseColor: { value: new THREE.Color("#ff9933") },
-                        currentY: { value: -999.0 },
-                        layerThickness: { value: 1.0 },
-                        activeOpacity: { value: 0.65 },
-                        inactiveOpacity: { value: 0.02 },
-                        size: { value: 3.5 }
-                    },
-                    vertexShader: `
-        uniform float size;
-        uniform float currentY;
-        varying float vDistance;
-        void main() {
-            vDistance = abs(position.y - currentY);
-            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-            gl_PointSize = size * (20.0 / -mvPosition.z);
-            gl_Position = projectionMatrix * mvPosition;
-        }
-    `,
-                    fragmentShader: `
-        uniform vec3 baseColor;
-        uniform float activeOpacity;
-        uniform float inactiveOpacity;
-        uniform float layerThickness;
-        varying float vDistance;
-        void main() {
-            float alpha = vDistance < layerThickness ? activeOpacity : inactiveOpacity;
-            vec2 coord = gl_PointCoord - vec2(0.5);
-            if(length(coord) > 0.5) discard; 
-            gl_FragColor = vec4(baseColor, alpha);
-        }
-    `,
-                    transparent: true,
-                    depthWrite: false,
-                });
-            }, []);
 
             useFrame((state, delta) => {
                 if (!visible || !sortedData || sortedData.cavityPts.length === 0) return;
@@ -621,11 +593,10 @@
                     probeRef.current.rotation.y += delta * 2.5;
                 }
 
-                if (proteinMaterial) proteinMaterial.uniforms.currentY.value = currentY;
-
                 // 僅針對 Probe 點陣列進行變色計算
                 const pPts = sortedData.probePts;
                 const pColors = sortedData.probeColors;
+
                 for (let i = 0; i < pPts.length; i++) {
                     const p = pPts[i];
                     const isScanned = p.y <= currentY + 0.05; // 利用 Y 軸判斷是否掃描過
@@ -658,37 +629,48 @@
 
             return (
                 <group>
-                    {/* 1. 蛋白質點 */}
-                    <points renderOrder={0}>
-                        <bufferGeometry>
-                            <bufferAttribute attach="attributes-position" count={sortedData.proteinArray.length / 3} array={sortedData.proteinArray} itemSize={3} />
-                        </bufferGeometry>
-                        <primitive object={proteinMaterial} attach="material" />
-                    </points>
+                    {/* 1. 溶劑點 (您提供的原始寫法) */}
+                    {sortedData.solventCount > 0 && (
+                        <points>
+                            <bufferGeometry>
+                                <bufferAttribute attach="attributes-position" count={sortedData.solventCount} array={sortedData.solventArray} itemSize={3} />
+                            </bufferGeometry>
+                            <pointsMaterial color="#add8e6" size={0.4} transparent={true} opacity={0.25} depthWrite={false} />
+                        </points>
+                    )}
 
-                    {/* 2. Cavity 外殼點 (靜態背景，淡淡的 0.2 透明度) */}
-                    {sortedData.cavityArray.length > 0 && (
+                    {/* 2. 蛋白質點 (您提供的原始寫法) */}
+                    {sortedData.proteinCount > 0 && (
+                        <points>
+                            <bufferGeometry>
+                                <bufferAttribute attach="attributes-position" count={sortedData.proteinCount} array={sortedData.proteinArray} itemSize={3} />
+                            </bufferGeometry>
+                            <pointsMaterial color="#ff9933" size={0.6} transparent={true} opacity={0.75} toneMapped={false} depthWrite={false} />
+                        </points>
+                    )}
+
+                    {/* 3. Cavity 外殼點 (靜態微弱幽靈色，讓探針知道在掃哪裡) */}
+                    {sortedData.cavityCount > 0 && (
                         <points renderOrder={1}>
                             <bufferGeometry>
-                                <bufferAttribute attach="attributes-position" count={sortedData.cavityArray.length / 3} array={sortedData.cavityArray} itemSize={3} />
-                                <bufferAttribute attach="attributes-color" count={sortedData.cavityColors.length / 3} array={sortedData.cavityColors} itemSize={3} />
+                                <bufferAttribute attach="attributes-position" count={sortedData.cavityCount} array={sortedData.cavityArray} itemSize={3} />
                             </bufferGeometry>
-                            <pointsMaterial size={0.6} vertexColors={true} transparent={true} opacity={0.2} depthWrite={false} depthTest={false} toneMapped={false} />
+                            <pointsMaterial color="#004d4d" size={0.6} transparent={true} opacity={0.15} toneMapped={false} depthWrite={false} depthTest={false} />
                         </points>
                     )}
 
-                    {/* 3. Probe 核心點 (掃描變色層) */}
-                    {sortedData.probeArray.length > 0 && (
+                    {/* 4. Probe 核心點 (掃描變色層，使用 vertexColors) */}
+                    {sortedData.probeCount > 0 && (
                         <points renderOrder={2}>
                             <bufferGeometry>
-                                <bufferAttribute attach="attributes-position" count={sortedData.probeArray.length / 3} array={sortedData.probeArray} itemSize={3} />
-                                <bufferAttribute ref={probeColorAttrRef} attach="attributes-color" count={sortedData.probeColors.length / 3} array={sortedData.probeColors} itemSize={3} />
+                                <bufferAttribute attach="attributes-position" count={sortedData.probeCount} array={sortedData.probeArray} itemSize={3} />
+                                <bufferAttribute ref={probeColorAttrRef} attach="attributes-color" count={sortedData.probeCount} array={sortedData.probeColors} itemSize={3} />
                             </bufferGeometry>
-                            <pointsMaterial size={1.0} vertexColors={true} transparent={true} opacity={1.0} depthWrite={false} depthTest={false} toneMapped={false} />
+                            <pointsMaterial size={1.0} vertexColors={true} transparent={true} opacity={1.0} toneMapped={false} depthWrite={false} depthTest={false} />
                         </points>
                     )}
 
-                    {/* 4. 實體探針球 */}
+                    {/* 5. 實體探針球 */}
                     <group ref={probeRef}>
                         <mesh>
                             <sphereGeometry args={[1.4, 16, 16]} />
