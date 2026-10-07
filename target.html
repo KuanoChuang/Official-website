@@ -501,208 +501,218 @@
             );
         }
         // Phase 4: 網格動畫掃描器
-        // --- 預先實體化所有顏色，確保不會傳入錯誤的字串 ---
-        const COLOR_IDLE = new THREE.Color("#2a4d69");          // 0次：深藍灰
-        const COLOR_SCAN_1 = new THREE.Color("#4db8ff");        // 1次：微亮青色
-        const COLOR_SCAN_2 = new THREE.Color("#00ff66");        // 2次：明亮青綠
-        const COLOR_SCAN_3_CAVITY = new THREE.Color("#aaffcc"); // 3次外殼：淡螢光綠
-        const COLOR_SCAN_3_PROBE = new THREE.Color("#ff33cc");  // 3次核心：高光粉紫
-        const COLOR_SCANNING = new THREE.Color("#ffffff");      // 掃描瞬間的白光
-
         function ProbeScanner({ algoData, phase }) {
             const visible = phase === 4;
             const probeRef = useRef();
-            const activeInstancedRef = useRef(null);
 
-            const [scanAxis, setScanAxis] = useState(0);
+            // 控制掃描進度的狀態
             const scanState = useRef({ globalIdx: 0, timer: 0 });
-            const currentHitsRef = useRef([]);
 
-            // ==========================================
-            // 1. 安全解析資料
-            // ==========================================
             const sortedData = useMemo(() => {
                 if (!algoData || !algoData.voxels) return null;
 
                 const solventPts = algoData.voxels.solvent || [];
                 const solventFlat = new Float32Array(solventPts.length * 3);
                 for (let i = 0; i < solventPts.length; i++) {
-                    solventFlat[i * 3] = solventPts[i][0] || 0;
-                    solventFlat[i * 3 + 1] = solventPts[i][1] || 0;
-                    solventFlat[i * 3 + 2] = solventPts[i][2] || 0;
+                    solventFlat[i * 3] = solventPts[i][0];
+                    solventFlat[i * 3 + 1] = solventPts[i][1];
+                    solventFlat[i * 3 + 2] = solventPts[i][2];
                 }
 
                 const proteinPts = algoData.voxels.protein || [];
                 const proteinFlat = new Float32Array(proteinPts.length * 3);
                 for (let i = 0; i < proteinPts.length; i++) {
-                    proteinFlat[i * 3] = proteinPts[i][0] || 0;
-                    proteinFlat[i * 3 + 1] = proteinPts[i][1] || 0;
-                    proteinFlat[i * 3 + 2] = proteinPts[i][2] || 0;
+                    proteinFlat[i * 3] = proteinPts[i][0];
+                    proteinFlat[i * 3 + 1] = proteinPts[i][1];
+                    proteinFlat[i * 3 + 2] = proteinPts[i][2];
                 }
 
-                const rawActive = algoData.voxels.active_voxels || [];
-                const activePts = rawActive.map((p, originalIndex) => {
-                    if (!Array.isArray(p) || p.length < 5) {
-                        return { x: 0, y: 0, z: 0, targetHits: 0, isTrueProbe: false, originalIndex };
-                    }
-                    return {
-                        x: Number(p[0]),
-                        y: Number(p[1]),
-                        z: Number(p[2]),
-                        targetHits: Number(p[3]),
-                        isTrueProbe: Number(p[4]) === 1,
-                        originalIndex
-                    };
+                const cavityPts = (algoData.voxels.cavity || []).map(p => ({ x: p[0], y: p[1], z: p[2] }));
+                cavityPts.sort((a, b) => {
+                    if (Math.abs(a.y - b.y) > 0.01) return a.y - b.y;
+                    if (Math.abs(a.x - b.x) > 0.01) return a.x - b.x;
+                    return a.z - b.z;
                 });
+                const cavityFlat = new Float32Array(cavityPts.length * 3);
+                for (let i = 0; i < cavityPts.length; i++) {
+                    cavityFlat[i * 3] = cavityPts[i].x;
+                    cavityFlat[i * 3 + 1] = cavityPts[i].y;
+                    cavityFlat[i * 3 + 2] = cavityPts[i].z;
+                }
 
-                currentHitsRef.current = new Array(activePts.length).fill(0);
-
-                const pathX = [...activePts].sort((a, b) => a.x - b.x);
-                const pathY = [...activePts].sort((a, b) => a.y - b.y);
-                const pathZ = [...activePts].sort((a, b) => a.z - b.z);
+                const probePts = (algoData.voxels.probe || []);
+                const probeFlat = new Float32Array(probePts.length * 3);
+                for (let i = 0; i < probePts.length; i++) {
+                    probeFlat[i * 3] = probePts[i][0];
+                    probeFlat[i * 3 + 1] = probePts[i][1];
+                    probeFlat[i * 3 + 2] = probePts[i][2];
+                }
 
                 return {
                     solventCount: solventPts.length, solventArray: solventFlat,
                     proteinCount: proteinPts.length, proteinArray: proteinFlat,
-                    activeCount: activePts.length, activePts: activePts,
-                    paths: [pathX, pathY, pathZ]
+                    cavityPts, cavityCount: cavityPts.length, cavityArray: cavityFlat,
+                    probeCount: probePts.length, probeArray: probeFlat
                 };
             }, [algoData]);
 
-            const sphereGeo = useMemo(() => new THREE.SphereGeometry(0.4, 8, 8), []);
+            // ==========================================
+            // 材質 1：Cavity 外殼材質 (深藍灰 -> 螢光綠掃描線 -> 淡青色殼)
+            // ==========================================
+            const cavityMaterial = useMemo(() => {
+                return new THREE.ShaderMaterial({
+                    uniforms: {
+                        currentY: { value: -999.0 },
+                        layerThickness: { value: 0.8 },
+                        colorIdle: { value: new THREE.Color("#2a4d69") },   // 尚未掃描：深藍灰
+                        colorActive: { value: new THREE.Color("#00ff66") }, // 掃描中：螢光綠
+                        colorScanned: { value: new THREE.Color("#4db8ff") }, // 掃描後：淡青色
+                        worldSize: { value: 0.8 } // 修改為 0.8
+                    },
+                    vertexShader: `
+                uniform float worldSize;
+                varying vec3 vWorldPosition;
+                void main() {
+                    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                    vWorldPosition = worldPosition.xyz;
+                    vec4 mvPosition = viewMatrix * worldPosition;
+                    gl_PointSize = worldSize * (400.0 / max(-mvPosition.z, 0.1));
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
+                    fragmentShader: `
+                uniform float currentY;
+                uniform float layerThickness;
+                uniform vec3 colorIdle;
+                uniform vec3 colorActive;
+                uniform vec3 colorScanned;
+                varying vec3 vWorldPosition;
+                void main() {
+                    float y = vWorldPosition.y;
+                    vec3 finalColor;
+                    float alpha = 1.0;
+                    
+                    if (abs(y - currentY) < layerThickness) {
+                        // 1. 正在掃描 (螢光綠)
+                        finalColor = colorActive;
+                        alpha = 1.0;
+                    } 
+                    else if (y < currentY) {
+                        // 2. 掃描過後 (淡青色)
+                        float dist = abs(y - currentY);
+                        // 加入一點殘光漸層，離掃描線越近越亮，遠離後變成穩定的淡青色
+                        float intensity = 1.0 - smoothstep(layerThickness, layerThickness + 1.0, dist);
+                        finalColor = mix(colorScanned, colorActive, intensity);
+                        // 外殼掃完後稍微透明，才不會遮住核心
+                        alpha = mix(0.4, 1.0, intensity); 
+                    } 
+                    else {
+                        // 3. 還沒掃到 (深藍灰)
+                        finalColor = colorIdle;
+                        alpha = 0.3; // 掃描前更透明一點
+                    }
 
-            // 【關鍵修復】：確保材質設定正確，避免一片黑
-            const baseMaterial = useMemo(() => {
-                return new THREE.MeshBasicMaterial({
-                    color: "#ffffff", // 預設底色必須是白色，這樣 vertexColors 才能正確疊加覆蓋
+                    vec2 coord = gl_PointCoord - vec2(0.5);
+                    if(length(coord) > 0.5) discard;
+                    
+                    gl_FragColor = vec4(finalColor, alpha); 
+                }
+            `,
                     transparent: true,
-                    opacity: 0.9,
-                    depthWrite: true,
-                    // 在某些 Three.js 版本中，MeshBasicMaterial 可能不完全支持 InstancedMesh 的顏色疊加
-                    // 但如果設定為 true 沒問題就保留。如果還是黑的，有時關閉它反而會強迫使用 instanceColor
-                    // 此處維持 true，搭配底色 white 是標準做法。
-                    // (注意: Three.js r135 之後已捨棄 vertexColors 布林值，改為使用 THREE.VertexColors 等常數，但 R3F 通常能兼容)
+                    depthWrite: false, // 關閉深度寫入，避免半透明點互相遮擋
                 });
             }, []);
 
             // ==========================================
-            // 3. 強制寫入 InstancedMesh 初始狀態
+            // 材質 2：Probe 核心材質 (深藍灰 -> 螢光綠掃描線 -> 亮粉紫核心)
             // ==========================================
-            useLayoutEffect(() => {
-                if (!sortedData || !activeInstancedRef.current || sortedData.activeCount === 0) return;
-
-                const dummy = new THREE.Object3D();
-
-                for (let i = 0; i < sortedData.activeCount; i++) {
-                    const p = sortedData.activePts[i];
-                    if (isNaN(p.x) || isNaN(p.y) || isNaN(p.z)) continue;
-
-                    dummy.position.set(p.x, p.y, p.z);
-                    dummy.updateMatrix();
-                    activeInstancedRef.current.setMatrixAt(i, dummy.matrix);
-                    // 初始化全黑的話，代表 COLOR_IDLE 沒成功傳進去
-                    activeInstancedRef.current.setColorAt(i, COLOR_IDLE);
+            const probeMaterial = useMemo(() => {
+                return new THREE.ShaderMaterial({
+                    uniforms: {
+                        currentY: { value: -999.0 },
+                        layerThickness: { value: 0.8 },
+                        colorUnscanned: { value: new THREE.Color("#2a4d69") }, // 尚未掃描：與外殼相同的深藍灰
+                        colorScanning: { value: new THREE.Color("#00ff66") },  // 掃描中：與外殼同步的螢光綠
+                        colorScannedBright: { value: new THREE.Color("#ffffff") }, // 剛掃過的瞬間高光(白)
+                        colorScannedDark: { value: new THREE.Color("#ff33cc") },   // 掃描完畢：亮粉紫 (不再是暗紫，確保清晰)
+                        worldSize: { value: 0.8 } // 修改為 0.8
+                    },
+                    vertexShader: `
+                uniform float worldSize;
+                varying vec3 vWorldPosition;
+                void main() {
+                    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                    vWorldPosition = worldPosition.xyz;
+                    vec4 mvPosition = viewMatrix * worldPosition;
+                    gl_PointSize = worldSize * (400.0 / max(-mvPosition.z, 0.1));
+                    gl_Position = projectionMatrix * mvPosition;
                 }
+            `,
+                    fragmentShader: `
+                uniform float currentY;
+                uniform float layerThickness;
+                uniform vec3 colorUnscanned;
+                uniform vec3 colorScanning;
+                uniform vec3 colorScannedBright;
+                uniform vec3 colorScannedDark;
+                varying vec3 vWorldPosition;
+                
+                void main() {
+                    float y = vWorldPosition.y;
+                    vec3 finalColor;
+                    float alpha = 1.0;
+                    
+                    if (abs(y - currentY) < layerThickness) {
+                        // 1. 正在掃描 (螢光綠)
+                        finalColor = colorScanning;
+                    } 
+                    else if (y < currentY) {
+                        // 2. 掃描過後 (閃白光 -> 亮粉紫)
+                        float dist = abs(y - currentY);
+                        float intensity = 1.0 - smoothstep(layerThickness, layerThickness + 1.2, dist);
+                        finalColor = mix(colorScannedDark, colorScannedBright, intensity);
+                        alpha = 1.0; // 核心永遠保持 1.0 不透明度，確保從外殼中凸顯出來
+                    } 
+                    else {
+                        // 3. 還沒掃到 (深藍灰)
+                        finalColor = colorUnscanned;
+                        alpha = 0.3; // 掃描前與外殼融為一體
+                    }
 
-                activeInstancedRef.current.instanceMatrix.needsUpdate = true;
-                // 確保顏色緩衝區被標記為需要更新
-                if (activeInstancedRef.current.instanceColor) {
-                    activeInstancedRef.current.instanceColor.needsUpdate = true;
+                    vec2 coord = gl_PointCoord - vec2(0.5);
+                    if(length(coord) > 0.5) discard;
+                    
+                    gl_FragColor = vec4(finalColor, alpha); 
                 }
+            `,
+                    transparent: true,
+                    depthWrite: false,
+                });
+            }, []);
 
-            }, [sortedData, visible]);
-
-            useEffect(() => {
-                setScanAxis(0);
-                scanState.current = { globalIdx: 0, timer: 0 };
-                if (currentHitsRef.current) {
-                    currentHitsRef.current.fill(0);
-                }
-            }, [algoData]);
-
-            const getPointColor = (currentHits, targetHits, isTrueProbe) => {
-                if (currentHits === 0) return COLOR_IDLE;
-                if (currentHits < targetHits) {
-                    if (currentHits === 1) return COLOR_SCAN_1;
-                    if (currentHits === 2) return COLOR_SCAN_2;
-                }
-                if (isTrueProbe) return COLOR_SCAN_3_PROBE;
-                return COLOR_SCAN_3_CAVITY;
-            };
-
-            // ==========================================
-            // 4. 動畫迴圈更新顏色
-            // ==========================================
             useFrame((state, delta) => {
-                if (!visible || !sortedData || sortedData.activeCount === 0 || scanAxis >= 3) return;
+                if (!visible || !sortedData || sortedData.cavityPts.length === 0) return;
 
-                const currentPath = sortedData.paths[scanAxis];
-                const currentIdx = Math.max(0, Math.min(scanState.current.globalIdx, currentPath.length - 1));
-                const currentPoint = currentPath[currentIdx];
-
-                if (!currentPoint) return;
+                const pts = sortedData.cavityPts;
+                const currentIdx = Math.min(scanState.current.globalIdx, pts.length - 1);
+                const currentPoint = pts[currentIdx];
+                const currentY = currentPoint.y;
 
                 if (probeRef.current) {
-                    probeRef.current.position.lerp(new THREE.Vector3(currentPoint.x, currentPoint.y, currentPoint.z), 0.5);
+                    probeRef.current.position.lerp(new THREE.Vector3(currentPoint.x, currentPoint.y, currentPoint.z), 0.4);
                     probeRef.current.rotation.x += delta * 2.5;
                     probeRef.current.rotation.y += delta * 2.5;
                 }
 
-                const probePos = probeRef.current.position;
-                const scanThickness = 1.0;
-                let needsColorUpdate = false;
-
-                for (let i = 0; i < sortedData.activeCount; i++) {
-                    const p = sortedData.activePts[i];
-                    const meshIndex = p.originalIndex;
-
-                    let inSlice = false;
-                    let isPast = false;
-
-                    if (scanAxis === 0) {
-                        inSlice = Math.abs(p.x - probePos.x) < scanThickness;
-                        isPast = p.x < probePos.x;
-                    } else if (scanAxis === 1) {
-                        inSlice = Math.abs(p.y - probePos.y) < scanThickness;
-                        isPast = p.y < probePos.y;
-                    } else if (scanAxis === 2) {
-                        inSlice = Math.abs(p.z - probePos.z) < scanThickness;
-                        isPast = p.z < probePos.z;
-                    }
-
-                    if (inSlice) {
-                        activeInstancedRef.current.setColorAt(meshIndex, COLOR_SCANNING);
-                        needsColorUpdate = true;
-                    } else if (isPast) {
-                        if (currentHitsRef.current[meshIndex] === scanAxis) {
-                            currentHitsRef.current[meshIndex] += 1;
-                        }
-                        const displayHits = Math.min(currentHitsRef.current[meshIndex], p.targetHits);
-                        const targetColor = getPointColor(displayHits, p.targetHits, p.isTrueProbe);
-                        activeInstancedRef.current.setColorAt(meshIndex, targetColor);
-                        needsColorUpdate = true;
-                    } else {
-                        const displayHits = Math.min(currentHitsRef.current[meshIndex], p.targetHits);
-                        const targetColor = getPointColor(displayHits, p.targetHits, p.isTrueProbe);
-                        activeInstancedRef.current.setColorAt(meshIndex, targetColor);
-                        needsColorUpdate = true;
-                    }
-                }
-
-                if (needsColorUpdate && activeInstancedRef.current.instanceColor) {
-                    activeInstancedRef.current.instanceColor.needsUpdate = true;
-                }
+                if (cavityMaterial) cavityMaterial.uniforms.currentY.value = currentY;
+                if (probeMaterial) probeMaterial.uniforms.currentY.value = currentY;
 
                 scanState.current.timer += delta;
-                if (scanState.current.timer > 0.01) {
-                    const step = Math.max(1, Math.floor(currentPath.length / 150));
+                if (scanState.current.timer > 0.012) {
+                    const step = Math.max(1, Math.floor(pts.length / 400));
                     scanState.current.globalIdx += step;
                     scanState.current.timer = 0;
-
-                    if (scanState.current.globalIdx >= currentPath.length) {
-                        scanState.current.globalIdx = 0;
-                        setScanAxis(prev => prev + 1);
-                    }
+                    if (scanState.current.globalIdx >= pts.length) scanState.current.globalIdx = 0;
                 }
             });
 
@@ -724,30 +734,40 @@
                             <bufferGeometry>
                                 <bufferAttribute attach="attributes-position" count={sortedData.proteinCount} array={sortedData.proteinArray} itemSize={3} />
                             </bufferGeometry>
-                            <pointsMaterial color="#ff9933" size={0.6} transparent={true} opacity={0.5} toneMapped={false} depthWrite={false} />
+                            <pointsMaterial color="#ff9933" size={0.6} transparent={true} opacity={0.6} toneMapped={false} depthWrite={false} />
                         </points>
                     )}
 
-                    {sortedData.activeCount > 0 && (
-                        <instancedMesh
-                            ref={activeInstancedRef}
-                            args={[sphereGeo, baseMaterial, sortedData.activeCount]}
-                            renderOrder={2}
-                        />
+                    {/* Cavity RenderOrder 設為 1 */}
+                    {sortedData.cavityCount > 0 && (
+                        <points renderOrder={1}>
+                            <bufferGeometry>
+                                <bufferAttribute attach="attributes-position" count={sortedData.cavityCount} array={sortedData.cavityArray} itemSize={3} />
+                            </bufferGeometry>
+                            <primitive object={cavityMaterial} attach="material" />
+                        </points>
                     )}
 
-                    {scanAxis < 3 && sortedData.activeCount > 0 && (
-                        <group ref={probeRef}>
-                            <mesh>
-                                <sphereGeometry args={[1.4, 16, 16]} />
-                                <meshBasicMaterial color="#ffffff" wireframe={true} transparent={true} opacity={0.4} depthTest={false} />
-                            </mesh>
-                            <mesh>
-                                <sphereGeometry args={[0.3, 8, 8]} />
-                                <meshBasicMaterial color="#ff33cc" depthTest={false} />
-                            </mesh>
-                        </group>
+                    {/* Probe RenderOrder 設為 2 (確保核心畫在外殼上層) */}
+                    {sortedData.probeCount > 0 && (
+                        <points renderOrder={2}>
+                            <bufferGeometry>
+                                <bufferAttribute attach="attributes-position" count={sortedData.probeCount} array={sortedData.probeArray} itemSize={3} />
+                            </bufferGeometry>
+                            <primitive object={probeMaterial} attach="material" />
+                        </points>
                     )}
+
+                    <group ref={probeRef}>
+                        <mesh>
+                            <sphereGeometry args={[1.4, 16, 16]} />
+                            <meshBasicMaterial color="#00ff66" wireframe={true} transparent={true} opacity={0.8} depthTest={false} />
+                        </mesh>
+                        <mesh>
+                            <sphereGeometry args={[0.3, 8, 8]} />
+                            <meshBasicMaterial color="#ffffff" depthTest={false} />
+                        </mesh>
+                    </group>
                 </group>
             );
         }
