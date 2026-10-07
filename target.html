@@ -504,6 +504,11 @@
         function ProbeScanner({ algoData, phase }) {
             const visible = phase === 4;
             const probeRef = useRef();
+
+            // 綁定 InstancedMesh 的 Ref
+            const cavityInstancedRef = useRef(null);
+            const probeInstancedRef = useRef(null);
+
             const scanState = useRef({ globalIdx: 0, timer: 0 });
 
             // 1. 整理資料
@@ -577,8 +582,7 @@
                     gl_FragColor = vec4(finalColor, 1.0); 
                 }
             `,
-                    // 修正透明度與深度測試，避免 Z-fighting 破圖
-                    transparent: false, // 既然 opacity 是 1.0，直接關閉透明以提升效能與渲染正確性
+                    transparent: false,
                     depthWrite: true,
                 });
             }, []);
@@ -628,47 +632,42 @@
                     gl_FragColor = vec4(finalColor, 1.0); 
                 }
             `,
-                    transparent: false, // 關閉透明以確保實體球渲染正常
+                    transparent: false,
                     depthWrite: true,
                 });
             }, []);
 
             // ==========================================
-            // 3. 手動建構 InstancedMesh (終極防護，保證顯示)
+            // 3. 強制設定 InstancedMesh 矩陣位置
             // ==========================================
-            const cavityInstancedMesh = useMemo(() => {
-                if (!sortedData || sortedData.cavityCount === 0) return null;
+            // 使用 useLayoutEffect 確保在 DOM 更新後、瀏覽器繪製前設定位置
+            useLayoutEffect(() => {
+                if (!sortedData) return;
 
-                const mesh = new THREE.InstancedMesh(sphereGeo, cavityMaterial, sortedData.cavityCount);
                 const dummy = new THREE.Object3D();
 
-                for (let i = 0; i < sortedData.cavityCount; i++) {
-                    const p = sortedData.cavityPts[i];
-                    dummy.position.set(p.x, p.y, p.z);
-                    dummy.updateMatrix();
-                    mesh.setMatrixAt(i, dummy.matrix);
+                // 設定 Cavity 位置
+                if (cavityInstancedRef.current && sortedData.cavityCount > 0) {
+                    for (let i = 0; i < sortedData.cavityCount; i++) {
+                        const p = sortedData.cavityPts[i];
+                        dummy.position.set(p.x, p.y, p.z);
+                        dummy.updateMatrix();
+                        cavityInstancedRef.current.setMatrixAt(i, dummy.matrix);
+                    }
+                    cavityInstancedRef.current.instanceMatrix.needsUpdate = true;
                 }
-                mesh.instanceMatrix.needsUpdate = true;
-                mesh.renderOrder = 1;
-                return mesh;
-            }, [sortedData, sphereGeo, cavityMaterial]);
 
-            const probeInstancedMesh = useMemo(() => {
-                if (!sortedData || sortedData.probeCount === 0) return null;
-
-                const mesh = new THREE.InstancedMesh(sphereGeo, probeMaterial, sortedData.probeCount);
-                const dummy = new THREE.Object3D();
-
-                for (let i = 0; i < sortedData.probeCount; i++) {
-                    const p = sortedData.probePts[i];
-                    dummy.position.set(p.x, p.y, p.z);
-                    dummy.updateMatrix();
-                    mesh.setMatrixAt(i, dummy.matrix);
+                // 設定 Probe 位置
+                if (probeInstancedRef.current && sortedData.probeCount > 0) {
+                    for (let i = 0; i < sortedData.probeCount; i++) {
+                        const p = sortedData.probePts[i];
+                        dummy.position.set(p.x, p.y, p.z);
+                        dummy.updateMatrix();
+                        probeInstancedRef.current.setMatrixAt(i, dummy.matrix);
+                    }
+                    probeInstancedRef.current.instanceMatrix.needsUpdate = true;
                 }
-                mesh.instanceMatrix.needsUpdate = true;
-                mesh.renderOrder = 2;
-                return mesh;
-            }, [sortedData, sphereGeo, probeMaterial]);
+            }, [sortedData]);
 
 
             // ==========================================
@@ -722,9 +721,22 @@
                         </points>
                     )}
 
-                    {/* 直接掛載我們手動建立好的 InstancedMesh */}
-                    {cavityInstancedMesh && <primitive object={cavityInstancedMesh} />}
-                    {probeInstancedMesh && <primitive object={probeInstancedMesh} />}
+                    {/* 宣告 InstancedMesh 並綁定 ref，讓 useLayoutEffect 可以寫入矩陣 */}
+                    {sortedData.cavityCount > 0 && (
+                        <instancedMesh
+                            ref={cavityInstancedRef}
+                            args={[sphereGeo, cavityMaterial, sortedData.cavityCount]}
+                            renderOrder={1}
+                        />
+                    )}
+
+                    {sortedData.probeCount > 0 && (
+                        <instancedMesh
+                            ref={probeInstancedRef}
+                            args={[sphereGeo, probeMaterial, sortedData.probeCount]}
+                            renderOrder={2}
+                        />
+                    )}
 
                     <group ref={probeRef}>
                         <mesh>
