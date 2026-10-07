@@ -353,16 +353,20 @@
             );
         }
         // Phase 3: 網格動畫掃描器
-        function AlgorithmScanner({ algoData, atoms, phase, bounds }) {
+        function AlgorithmScanner({ algoData, phase, bounds }) {
             const [scanAxis, setScanAxis] = useState('x');
 
             const solventGeoRef = useRef();
             const proteinGeoRef = useRef();
-            const cavityGeoRef = useRef();
+            const activeGeoRef = useRef(); // 原本的 cavityGeoRef 改名為 activeGeoRef
             const scanPlaneRef = useRef();
+
             const scanState = useRef({ pos: -9999, phase: 'scanning', timer: 0 });
             const visible = phase === 3;
 
+            // ==========================================
+            // 1. 修正：適配新版 JSON (active_voxels) 的資料解析
+            // ==========================================
             const sortedData = useMemo(() => {
                 if (!algoData || !algoData.voxels || !bounds) return null;
 
@@ -370,47 +374,82 @@
                 const minY = bounds.cy - bounds.sizeY / 2; const maxY = bounds.cy + bounds.sizeY / 2;
                 const minZ = bounds.cz - bounds.sizeZ / 2; const maxZ = bounds.cz + bounds.sizeZ / 2;
 
-                const filterAndSort = (pointsArray, axis) => {
+                const filterAndSort = (pointsArray, axis, isRawActive = false) => {
                     const res = [];
                     for (let i = 0; i < pointsArray.length; i++) {
-                        const [x, y, z] = pointsArray[i];
+                        // 如果是新的 active_voxels，每個元素是 [x, y, z, hits, is_probe]
+                        // 如果是舊的 solvent/protein，每個元素是 [x, y, z]
+                        const pt = pointsArray[i];
+                        if (!pt) continue;
+
+                        const x = Number(pt[0]);
+                        const y = Number(pt[1]);
+                        const z = Number(pt[2]);
+
                         if (x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ) {
                             res.push({ x, y, z });
                         }
                     }
+                    // 依照指定的掃描軸排序
                     res.sort((a, b) => a[axis] - b[axis]);
 
                     const flat = new Float32Array(res.length * 3);
                     for (let i = 0; i < res.length; i++) {
-                        flat[i * 3] = res[i].x; flat[i * 3 + 1] = res[i].y; flat[i * 3 + 2] = res[i].z;
+                        flat[i * 3] = res[i].x;
+                        flat[i * 3 + 1] = res[i].y;
+                        flat[i * 3 + 2] = res[i].z;
                     }
                     return { array: flat, count: res.length };
                 };
 
+                // 讀取新版 active_voxels
+                const rawActive = algoData.voxels.active_voxels || [];
+                const rawSolvent = algoData.voxels.solvent || [];
+                const rawProtein = algoData.voxels.protein || [];
+
                 return {
-                    x: { solvent: filterAndSort(algoData.voxels.solvent || [], 'x'), protein: filterAndSort(algoData.voxels.protein || [], 'x'), cavity: filterAndSort(algoData.voxels.cavity || [], 'x') },
-                    y: { solvent: filterAndSort(algoData.voxels.solvent || [], 'y'), protein: filterAndSort(algoData.voxels.protein || [], 'y'), cavity: filterAndSort(algoData.voxels.cavity || [], 'y') },
-                    z: { solvent: filterAndSort(algoData.voxels.solvent || [], 'z'), protein: filterAndSort(algoData.voxels.protein || [], 'z'), cavity: filterAndSort(algoData.voxels.cavity || [], 'z') }
+                    x: {
+                        solvent: filterAndSort(rawSolvent, 'x'),
+                        protein: filterAndSort(rawProtein, 'x'),
+                        active: filterAndSort(rawActive, 'x', true)
+                    },
+                    y: {
+                        solvent: filterAndSort(rawSolvent, 'y'),
+                        protein: filterAndSort(rawProtein, 'y'),
+                        active: filterAndSort(rawActive, 'y', true)
+                    },
+                    z: {
+                        solvent: filterAndSort(rawSolvent, 'z'),
+                        protein: filterAndSort(rawProtein, 'z'),
+                        active: filterAndSort(rawActive, 'z', true)
+                    }
                 };
             }, [algoData, bounds]);
 
+            // 切換軸向時重置 DrawRange
             useEffect(() => {
                 if (solventGeoRef.current) solventGeoRef.current.setDrawRange(0, 0);
                 if (proteinGeoRef.current) proteinGeoRef.current.setDrawRange(0, 0);
-                if (cavityGeoRef.current) cavityGeoRef.current.setDrawRange(0, 0);
+                if (activeGeoRef.current) activeGeoRef.current.setDrawRange(0, 0);
             }, [scanAxis]);
 
+            // 效能優化：二分搜尋找出在目前掃描平面「之前」的點數
             const findVisibleCount = (array, totalCount, currentPos, axisOffset) => {
                 let left = 0; let right = totalCount - 1; let ans = 0;
                 while (left <= right) {
                     const mid = Math.floor((left + right) / 2);
                     if (array[mid * 3 + axisOffset] <= currentPos) {
                         ans = mid + 1; left = mid + 1;
-                    } else { right = mid - 1; }
+                    } else {
+                        right = mid - 1;
+                    }
                 }
                 return ans;
             };
 
+            // ==========================================
+            // 2. 動畫迴圈
+            // ==========================================
             useFrame((state, delta) => {
                 if (!visible || !bounds || !sortedData) return;
 
@@ -435,6 +474,7 @@
                         scanState.current.pos = end;
                     }
 
+                    // 更新半透明掃描板的位置
                     if (scanPlaneRef.current) {
                         if (scanAxis === 'x') {
                             scanPlaneRef.current.position.set(scanState.current.pos, bounds.cy, bounds.cz);
@@ -450,10 +490,13 @@
                         }
                     }
 
+                    // 更新要畫出多少個點
                     const currentData = sortedData[scanAxis];
                     if (solventGeoRef.current) solventGeoRef.current.setDrawRange(0, findVisibleCount(currentData.solvent.array, currentData.solvent.count, scanState.current.pos, currentOffset));
                     if (proteinGeoRef.current) proteinGeoRef.current.setDrawRange(0, findVisibleCount(currentData.protein.array, currentData.protein.count, scanState.current.pos, currentOffset));
-                    if (cavityGeoRef.current) cavityGeoRef.current.setDrawRange(0, findVisibleCount(currentData.cavity.array, currentData.cavity.count, scanState.current.pos, currentOffset));
+
+                    // 【修復】：更新活躍點 (Cavity/Probe) 的顯示數量
+                    if (activeGeoRef.current) activeGeoRef.current.setDrawRange(0, findVisibleCount(currentData.active.array, currentData.active.count, scanState.current.pos, currentOffset));
 
                 } else if (scanState.current.phase === 'pausing') {
                     scanState.current.timer += delta;
@@ -471,30 +514,44 @@
 
             return (
                 <group>
+                    {/* Solvent */}
                     <points>
                         <bufferGeometry ref={solventGeoRef} key={`solvent-${scanAxis}`}>
                             <bufferAttribute attach="attributes-position" count={currentData.solvent.count} array={currentData.solvent.array} itemSize={3} />
                         </bufferGeometry>
                         <pointsMaterial color="#add8e6" size={0.4} transparent={true} opacity={0.25} depthWrite={false} />
                     </points>
+
+                    {/* Protein */}
                     <points>
                         <bufferGeometry ref={proteinGeoRef} key={`protein-${scanAxis}`}>
                             <bufferAttribute attach="attributes-position" count={currentData.protein.count} array={currentData.protein.array} itemSize={3} />
                         </bufferGeometry>
                         <pointsMaterial color="#ff9933" size={0.6} transparent={true} opacity={0.75} toneMapped={false} depthWrite={false} />
                     </points>
+
+                    {/* Active Voxels (原本的 Cavity 變成 Active 統一代替) */}
                     <points renderOrder={1}>
-                        <bufferGeometry ref={cavityGeoRef} key={`cavity-${scanAxis}`}>
-                            <bufferAttribute attach="attributes-position" count={currentData.cavity.count} array={currentData.cavity.array} itemSize={3} />
+                        <bufferGeometry ref={activeGeoRef} key={`active-${scanAxis}`}>
+                            <bufferAttribute attach="attributes-position" count={currentData.active.count} array={currentData.active.array} itemSize={3} />
                         </bufferGeometry>
+                        {/* 統一代替為螢光綠，讓掃描板推過去時看起來很醒目 */}
                         <pointsMaterial color="#00ffff" size={0.8} transparent={true} opacity={1.0} toneMapped={false} depthWrite={false} depthTest={false} />
                     </points>
+
+                    {/* 掃描平面 (Plane) */}
                     {bounds && (
                         <mesh ref={scanPlaneRef}>
                             {scanAxis === 'x' && <planeGeometry args={[bounds.sizeZ, bounds.sizeY]} />}
                             {scanAxis === 'y' && <planeGeometry args={[bounds.sizeX, bounds.sizeZ]} />}
                             {scanAxis === 'z' && <planeGeometry args={[bounds.sizeX, bounds.sizeY]} />}
-                            <meshBasicMaterial color={scanAxis === 'x' ? "#00ffff" : scanAxis === 'y' ? "#ff00ff" : "#ffff00"} transparent={true} opacity={0.3} side={THREE.DoubleSide} depthWrite={false} />
+                            <meshBasicMaterial
+                                color={scanAxis === 'x' ? "#00ffff" : scanAxis === 'y' ? "#ff00ff" : "#ffff00"}
+                                transparent={true}
+                                opacity={0.3}
+                                side={THREE.DoubleSide}
+                                depthWrite={false}
+                            />
                         </mesh>
                     )}
                 </group>
