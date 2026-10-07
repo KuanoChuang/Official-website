@@ -647,48 +647,24 @@
         }
         // Phase 5: 口袋平滑 Mesh
         function PocketMesh({ meshData, visible }) {
-            // 1. 監聽並印出收到的資料，幫助除錯
-            React.useEffect(() => {
-                if (visible) {
-                    console.log("🔍 [PocketMesh] 目前收到的 meshData:", meshData);
-                }
-            }, [meshData, visible]);
-
             const geometry = useMemo(() => {
-                if (!meshData || !meshData.vertices || meshData.vertices.length === 0) {
-                    console.warn("⚠️ [PocketMesh] 沒有有效的 vertices 資料！");
-                    return null;
-                }
-
-                try {
-                    const geo = new THREE.BufferGeometry();
-
-                    // 攤平資料
-                    const verts = new Float32Array(meshData.vertices.flat());
-                    const indices = new Uint32Array(meshData.faces.flat());
-
-                    console.log(`📊 [PocketMesh] 成功攤平！頂點數量: ${verts.length / 3}, 三角面數量: ${indices.length / 3}`);
-
-                    geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
-                    geo.setIndex(new THREE.BufferAttribute(indices, 1));
-                    geo.computeVertexNormals();
-                    return geo;
-                } catch (err) {
-                    console.error("❌ [PocketMesh] 幾何體建構失敗:", err);
-                    return null;
-                }
+                if (!meshData || !meshData.vertices || meshData.vertices.length === 0) return null;
+                const geo = new THREE.BufferGeometry();
+                const verts = new Float32Array(meshData.vertices.flat());
+                const indices = new Uint16Array(meshData.faces.flat());
+                geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+                geo.setIndex(new THREE.BufferAttribute(indices, 1));
+                geo.computeVertexNormals();
+                return geo;
             }, [meshData]);
 
             if (!visible || !geometry) return null;
 
             return (
-                <mesh geometry={geometry} renderOrder={999}>
-                    {/* 2. 終極測試材質：純紅線條 + 無視遮蔽 (depthTest={false}) */}
-                    <meshBasicMaterial
-                        color="#ff0000"
-                        wireframe={true}
-                        side={THREE.DoubleSide}
-                        depthTest={false}
+                <mesh geometry={geometry}>
+                    <meshPhysicalMaterial
+                        color="#00ffcc" transmission={0.6} opacity={1} transparent={true}
+                        roughness={0.2} thickness={1.5} emissive="#004433" side={THREE.DoubleSide}
                     />
                 </mesh>
             );
