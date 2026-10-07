@@ -355,37 +355,25 @@
         // Phase 3: 網格動畫掃描器
         function AlgorithmScanner({ algoData, phase, bounds }) {
             const [scanAxis, setScanAxis] = useState('x');
-
             const solventGeoRef = useRef();
             const proteinGeoRef = useRef();
-            const activeGeoRef = useRef(); // 原本的 cavityGeoRef 改名為 activeGeoRef
+            const activeGeoRef = useRef();
             const scanPlaneRef = useRef();
-
             const scanState = useRef({ pos: -9999, phase: 'scanning', timer: 0 });
             const visible = phase === 3;
-
-            // ==========================================
-            // 1. 修正：適配新版 JSON (active_voxels) 的資料解析
-            // ==========================================
             const sortedData = useMemo(() => {
                 if (!algoData || !algoData.voxels || !bounds) return null;
-
                 const minX = bounds.cx - bounds.sizeX / 2; const maxX = bounds.cx + bounds.sizeX / 2;
                 const minY = bounds.cy - bounds.sizeY / 2; const maxY = bounds.cy + bounds.sizeY / 2;
                 const minZ = bounds.cz - bounds.sizeZ / 2; const maxZ = bounds.cz + bounds.sizeZ / 2;
-
                 const filterAndSort = (pointsArray, axis, isRawActive = false) => {
                     const res = [];
                     for (let i = 0; i < pointsArray.length; i++) {
-                        // 如果是新的 active_voxels，每個元素是 [x, y, z, hits, is_probe]
-                        // 如果是舊的 solvent/protein，每個元素是 [x, y, z]
                         const pt = pointsArray[i];
                         if (!pt) continue;
-
                         const x = Number(pt[0]);
                         const y = Number(pt[1]);
                         const z = Number(pt[2]);
-
                         if (x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ) {
                             res.push({ x, y, z });
                         }
@@ -401,8 +389,6 @@
                     }
                     return { array: flat, count: res.length };
                 };
-
-                // 讀取新版 active_voxels
                 const rawActive = algoData.voxels.active_voxels || [];
                 const rawSolvent = algoData.voxels.solvent || [];
                 const rawProtein = algoData.voxels.protein || [];
@@ -474,7 +460,6 @@
                         scanState.current.pos = end;
                     }
 
-                    // 更新半透明掃描板的位置
                     if (scanPlaneRef.current) {
                         if (scanAxis === 'x') {
                             scanPlaneRef.current.position.set(scanState.current.pos, bounds.cy, bounds.cz);
@@ -490,12 +475,9 @@
                         }
                     }
 
-                    // 更新要畫出多少個點
                     const currentData = sortedData[scanAxis];
                     if (solventGeoRef.current) solventGeoRef.current.setDrawRange(0, findVisibleCount(currentData.solvent.array, currentData.solvent.count, scanState.current.pos, currentOffset));
                     if (proteinGeoRef.current) proteinGeoRef.current.setDrawRange(0, findVisibleCount(currentData.protein.array, currentData.protein.count, scanState.current.pos, currentOffset));
-
-                    // 【修復】：更新活躍點 (Cavity/Probe) 的顯示數量
                     if (activeGeoRef.current) activeGeoRef.current.setDrawRange(0, findVisibleCount(currentData.active.array, currentData.active.count, scanState.current.pos, currentOffset));
 
                 } else if (scanState.current.phase === 'pausing') {
@@ -530,13 +512,12 @@
                         <pointsMaterial color="#ff9933" size={0.6} transparent={true} opacity={0.75} toneMapped={false} depthWrite={false} />
                     </points>
 
-                    {/* Active Voxels (原本的 Cavity 變成 Active 統一代替) */}
+                    {/* Active Voxels */}
                     <points renderOrder={1}>
                         <bufferGeometry ref={activeGeoRef} key={`active-${scanAxis}`}>
                             <bufferAttribute attach="attributes-position" count={currentData.active.count} array={currentData.active.array} itemSize={3} />
                         </bufferGeometry>
-                        {/* 統一代替為螢光綠，讓掃描板推過去時看起來很醒目 */}
-                        <pointsMaterial color="#00ffff" size={0.8} transparent={true} opacity={1.0} toneMapped={false} depthWrite={false} depthTest={false} />
+                        <pointsMaterial color="#4db8ff" size={0.8} transparent={true} opacity={1.0} toneMapped={false} depthWrite={false} depthTest={false} />
                     </points>
 
                     {/* 掃描平面 (Plane) */}
