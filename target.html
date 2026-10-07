@@ -504,13 +504,15 @@
         function ProbeScanner({ algoData, phase }) {
             const visible = phase === 4;
             const probeRef = useRef();
+            const cavityInstancedRef = useRef();
+            const probeInstancedRef = useRef();
 
             const scanState = useRef({ globalIdx: 0, timer: 0 });
 
             const sortedData = useMemo(() => {
                 if (!algoData || !algoData.voxels) return null;
 
-                // 1. Solvent
+                // 1. Solvent & Protein (維持原本使用 <points> 即可，作為背景)
                 const solventPts = algoData.voxels.solvent || [];
                 const solventFlat = new Float32Array(solventPts.length * 3);
                 for (let i = 0; i < solventPts.length; i++) {
@@ -519,7 +521,6 @@
                     solventFlat[i * 3 + 2] = solventPts[i][2];
                 }
 
-                // 2. Protein
                 const proteinPts = algoData.voxels.protein || [];
                 const proteinFlat = new Float32Array(proteinPts.length * 3);
                 for (let i = 0; i < proteinPts.length; i++) {
@@ -528,39 +529,53 @@
                     proteinFlat[i * 3 + 2] = proteinPts[i][2];
                 }
 
-                // 3. Cavity (外殼點)
+                // 2. Cavity (外殼點) - 排序供掃描使用
                 const cavityPts = (algoData.voxels.cavity || []).map(p => ({ x: p[0], y: p[1], z: p[2] }));
                 cavityPts.sort((a, b) => {
                     if (Math.abs(a.y - b.y) > 0.01) return a.y - b.y;
                     if (Math.abs(a.x - b.x) > 0.01) return a.x - b.x;
                     return a.z - b.z;
                 });
-                const cavityFlat = new Float32Array(cavityPts.length * 3);
-                for (let i = 0; i < cavityPts.length; i++) {
-                    cavityFlat[i * 3] = cavityPts[i].x;
-                    cavityFlat[i * 3 + 1] = cavityPts[i].y;
-                    cavityFlat[i * 3 + 2] = cavityPts[i].z;
-                }
 
-                // 4. Probe (探針點)
-                const probePts = (algoData.voxels.probe || []);
-                const probeFlat = new Float32Array(probePts.length * 3);
-                for (let i = 0; i < probePts.length; i++) {
-                    probeFlat[i * 3] = probePts[i][0];
-                    probeFlat[i * 3 + 1] = probePts[i][1];
-                    probeFlat[i * 3 + 2] = probePts[i][2];
-                }
+                // 3. Probe (探針點)
+                const probePts = (algoData.voxels.probe || []).map(p => ({ x: p[0], y: p[1], z: p[2] }));
 
                 return {
                     solventCount: solventPts.length, solventArray: solventFlat,
                     proteinCount: proteinPts.length, proteinArray: proteinFlat,
-                    cavityPts, cavityCount: cavityPts.length, cavityArray: cavityFlat,
-                    probeCount: probePts.length, probeArray: probeFlat
+                    cavityPts, cavityCount: cavityPts.length,
+                    probePts, probeCount: probePts.length
                 };
             }, [algoData]);
 
+            // 初始化 InstancedMesh 的矩陣
+            useEffect(() => {
+                if (!sortedData || !cavityInstancedRef.current || !probeInstancedRef.current) return;
+
+                const dummy = new THREE.Object3D();
+
+                // 設定 Cavity 實例矩陣
+                for (let i = 0; i < sortedData.cavityCount; i++) {
+                    const p = sortedData.cavityPts[i];
+                    dummy.position.set(p.x, p.y, p.z);
+                    dummy.updateMatrix();
+                    cavityInstancedRef.current.setMatrixAt(i, dummy.matrix);
+                }
+                cavityInstancedRef.current.instanceMatrix.needsUpdate = true;
+
+                // 設定 Probe 實例矩陣
+                for (let i = 0; i < sortedData.probeCount; i++) {
+                    const p = sortedData.probePts[i];
+                    dummy.position.set(p.x, p.y, p.z);
+                    dummy.updateMatrix();
+                    probeInstancedRef.current.setMatrixAt(i, dummy.matrix);
+                }
+                probeInstancedRef.current.instanceMatrix.needsUpdate = true;
+            }, [sortedData]);
+
+
             // ==========================================
-            // 材質 1：Cavity 外殼材質 (與 Probe 統一大小與不透明度)
+            // 材質 1：Cavity 外殼材質 (ShaderMaterial 用於 Mesh)
             // ==========================================
             const cavityMaterial = useMemo(() => {
                 return new THREE.ShaderMaterial({
@@ -568,18 +583,15 @@
                         currentY: { value: -999.0 },
                         layerThickness: { value: 0.6 },
                         colorIdle: { value: new THREE.Color(0.0, 0.3, 0.3) },
-                        colorActive: { value: new THREE.Color(0.0, 1.0, 1.0) },
-                        size: { value: 0.6 } // 統一大為 0.6
+                        colorActive: { value: new THREE.Color(0.0, 1.0, 1.0) }
                     },
                     vertexShader: `
-                uniform float size;
                 varying vec3 vWorldPosition;
                 void main() {
-                    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                    // InstancedMesh 需要計算 instanceMatrix
+                    vec4 worldPosition = modelMatrix * instanceMatrix * vec4(position, 1.0);
                     vWorldPosition = worldPosition.xyz;
-                    vec4 mvPosition = viewMatrix * worldPosition;
-                    gl_PointSize = size * (20.0 / -mvPosition.z);
-                    gl_Position = projectionMatrix * mvPosition;
+                    gl_Position = projectionMatrix * viewMatrix * worldPosition;
                 }
             `,
                     fragmentShader: `
@@ -593,20 +605,17 @@
                     float intensity = 1.0 - smoothstep(0.0, layerThickness, dist);
                     vec3 finalColor = mix(colorIdle, colorActive, intensity);
                     
-                    vec2 coord = gl_PointCoord - vec2(0.5);
-                    if(length(coord) > 0.5) discard;
-                    
-                    // 統一不透明度為 1.0
+                    // Mesh 幾何體本身就是圓的，不需要 gl_PointCoord discard
                     gl_FragColor = vec4(finalColor, 1.0); 
                 }
             `,
                     transparent: true,
-                    depthWrite: false,
+                    depthWrite: true, // Mesh 可以開啟深度寫入
                 });
             }, []);
 
             // ==========================================
-            // 材質 2：Probe 核心材質 (與 Cavity 統一大小與不透明度)
+            // 材質 2：Probe 核心材質 (ShaderMaterial 用於 Mesh)
             // ==========================================
             const probeMaterial = useMemo(() => {
                 return new THREE.ShaderMaterial({
@@ -616,18 +625,14 @@
                         colorUnscanned: { value: new THREE.Color(0.0, 0.3, 0.3) },
                         colorScanning: { value: new THREE.Color(0.0, 1.0, 1.0) },
                         colorScannedBright: { value: new THREE.Color(1.0, 0.2, 1.0) },
-                        colorScannedDark: { value: new THREE.Color(0.4, 0.0, 0.4) },
-                        size: { value: 0.6 } // 統一大為 0.6
+                        colorScannedDark: { value: new THREE.Color(0.4, 0.0, 0.4) }
                     },
                     vertexShader: `
-                uniform float size;
                 varying vec3 vWorldPosition;
                 void main() {
-                    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                    vec4 worldPosition = modelMatrix * instanceMatrix * vec4(position, 1.0);
                     vWorldPosition = worldPosition.xyz;
-                    vec4 mvPosition = viewMatrix * worldPosition;
-                    gl_PointSize = size * (20.0 / -mvPosition.z);
-                    gl_Position = projectionMatrix * mvPosition;
+                    gl_Position = projectionMatrix * viewMatrix * worldPosition;
                 }
             `,
                     fragmentShader: `
@@ -655,15 +660,11 @@
                         finalColor = colorUnscanned;
                     }
 
-                    vec2 coord = gl_PointCoord - vec2(0.5);
-                    if(length(coord) > 0.5) discard;
-                    
-                    // 統一不透明度為 1.0
                     gl_FragColor = vec4(finalColor, 1.0); 
                 }
             `,
                     transparent: true,
-                    depthWrite: false,
+                    depthWrite: true,
                 });
             }, []);
 
@@ -695,6 +696,10 @@
 
             if (!visible || !sortedData) return null;
 
+            // 定義統一的實體小球大小 (這裡設定為半徑 0.2，您可以根據需求調整)
+            const voxelRadius = 0.2;
+            const sphereGeo = new THREE.SphereGeometry(voxelRadius, 8, 8); // 8x8 面數夠低，效能好
+
             return (
                 <group>
                     {sortedData.solventCount > 0 && (
@@ -715,22 +720,16 @@
                         </points>
                     )}
 
+                    {/* 改用 InstancedMesh 渲染 Cavity */}
                     {sortedData.cavityCount > 0 && (
-                        <points renderOrder={1}>
-                            <bufferGeometry>
-                                <bufferAttribute attach="attributes-position" count={sortedData.cavityCount} array={sortedData.cavityArray} itemSize={3} />
-                            </bufferGeometry>
-                            <primitive object={cavityMaterial} attach="material" />
-                        </points>
+                        <instancedMesh ref={cavityInstancedRef} args={[sphereGeo, cavityMaterial, sortedData.cavityCount]} renderOrder={1}>
+                        </instancedMesh>
                     )}
 
+                    {/* 改用 InstancedMesh 渲染 Probe */}
                     {sortedData.probeCount > 0 && (
-                        <points renderOrder={2}>
-                            <bufferGeometry>
-                                <bufferAttribute attach="attributes-position" count={sortedData.probeCount} array={sortedData.probeArray} itemSize={3} />
-                            </bufferGeometry>
-                            <primitive object={probeMaterial} attach="material" />
-                        </points>
+                        <instancedMesh ref={probeInstancedRef} args={[sphereGeo, probeMaterial, sortedData.probeCount]} renderOrder={2}>
+                        </instancedMesh>
                     )}
 
                     <group ref={probeRef}>
