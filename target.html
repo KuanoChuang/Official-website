@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pre-computed Protein Visualizer</title>
+    <title>Voxel Scanner Visualizer</title>
     <style>
         body {
             margin: 0;
@@ -12,12 +12,10 @@
             background-color: #030508;
             font-family: 'Segoe UI', Tahoma, sans-serif;
         }
-
         #root {
             width: 100vw;
             height: 100vh;
         }
-
         .ui-panel {
             position: absolute;
             top: 20px;
@@ -34,7 +32,6 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(12px);
         }
-
         .ui-panel h2 {
             color: #fff;
             margin: 0 0 10px 0;
@@ -43,7 +40,6 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             padding-bottom: 10px;
         }
-
         .phase-btn {
             background: rgba(255, 255, 255, 0.05);
             color: #aaa;
@@ -56,13 +52,11 @@
             transition: all 0.2s;
             font-size: 13px;
         }
-
         .phase-btn:hover {
             background: rgba(0, 240, 255, 0.1);
             color: #fff;
             border-color: #00f0ff;
         }
-
         .phase-btn.active {
             background: #00f0ff;
             color: #000;
@@ -70,14 +64,12 @@
             box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
             font-weight: bold;
         }
-
         .sub-options {
             display: flex;
             gap: 10px;
             margin-top: 5px;
             margin-bottom: 5px;
         }
-
         .sub-btn {
             flex: 1;
             padding: 6px;
@@ -88,17 +80,14 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
         .sub-btn:hover {
             background: rgba(255, 0, 119, 0.3);
         }
-
         .sub-btn.active {
             background: #ff0077;
             border-color: #ff0077;
             font-weight: bold;
         }
-
         .loading {
             position: absolute;
             top: 50%;
@@ -109,7 +98,6 @@
             font-weight: 300;
             letter-spacing: 1px;
         }
-
         .legend {
             position: absolute;
             bottom: 20px;
@@ -123,13 +111,11 @@
             flex-direction: column;
             gap: 5px;
         }
-
         .legend-item {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
         .color-box {
             width: 15px;
             height: 15px;
@@ -153,7 +139,6 @@
 
 <body>
     <div id="root"></div>
-
     <script type="text/babel" data-type="module">
         import React, { useRef, useState, useEffect, useLayoutEffect, useMemo, Suspense } from 'react';
         import { createRoot } from 'react-dom/client';
@@ -179,7 +164,6 @@
                 return this.props.children;
             }
         }
-
         // 計算合身邊界 (共用邏輯)
         function computeTightBounds(atoms, padding = 2.0) {
             if (!atoms || atoms.length === 0) return { sizeX: 20, sizeY: 20, sizeZ: 20, cx: 0, cy: 0, cz: 0 };
@@ -202,13 +186,10 @@
             const cz = (maxZ + minZ) / 2;
             return { sizeX, sizeY, sizeZ, cx, cy, cz };
         }
-
         // Phase 1, 2, 3: 實體原子渲染
         function AtomView({ atoms, visible, opacity = 1.0 }) {
             const meshRef = useRef();
             const dummy = useMemo(() => new THREE.Object3D(), []);
-
-            // 使用 useLayoutEffect 解決「剛載入時全白無色」的閃爍問題，並且套用完美色彩對應
             useLayoutEffect(() => {
                 if (!meshRef.current || !atoms || atoms.length === 0) return;
                 atoms.forEach((atom, i) => {
@@ -225,7 +206,6 @@
                     else if (atom.type === 'C') hexColor = '#33ff33';
 
                     const color = new THREE.Color(hexColor);
-                    // 【極度降低亮度】將顏色亮度打 4 折 (原本是 0.8)，對抗場景的強光，解決過曝問題
                     color.multiplyScalar(0.4);
                     meshRef.current.setColorAt(i, color);
                 });
@@ -234,8 +214,6 @@
             }, [atoms, visible]);
 
             if (!visible || !atoms || atoms.length === 0) return null;
-
-            // 當透明度小於 1 時，切換為無光照材質，這是產生完美 "幽靈感" 半透明且不互相穿透重疊的最強解法
             return (
                 <instancedMesh ref={meshRef} args={[null, null, atoms.length]}>
                     <sphereGeometry args={[1, 16, 16]} />
@@ -275,14 +253,13 @@
 
             return (
                 <mesh geometry={geometry}>
-                    {/* 【完美對應 PyVista】捨棄物理折射，改用傳統 Alpha 混色模型與 Phong 光照 */}
                     <meshPhongMaterial
                         color="#00aaff"           /* 賦予 SES 表面明顯的顏色 */
                         transparent={true}
-                        opacity={0.4}             /* 明確的半透明度 (對應 op_val) */
-                        shininess={15}            /* 對應您的 specular_power=15 */
-                        specular="#222222"        /* 對應您的低反光 specular=0.15 */
-                        side={THREE.FrontSide}    /* 對應您的 culling='back' (背面剔除，只畫正面) */
+                        opacity={0.4}             /* 明確的半透明度 */
+                        shininess={15}            
+                        specular="#222222"        
+                        side={THREE.FrontSide}    
                         depthWrite={false}        /* 關閉深度寫入以確保內部原子不被遮擋 */
                     />
                 </mesh>
@@ -386,7 +363,6 @@
                 </group>
             );
         }
-
         // Phase 3, 4, 5: 網格動畫掃描器
         function AlgorithmScanner({ algoData, atoms, phase }) {
             const [scanAxis, setScanAxis] = useState('x'); // 當前掃描軸: 'x', 'y', 'z'
@@ -594,6 +570,203 @@
                 </group>
             );
         }
+        // Phase 4: 網格動畫掃描器
+        function ProbeScanner({ algoData, phase }) {
+            const visible = phase === 4;
+            const probeRef = useRef();
+            const pocketGeoRef = useRef();
+            const colorAttrRef = useRef();
+
+            // 追蹤動畫進度的狀態
+            const scanState = useRef({
+                globalIdx: 0,
+                timer: 0
+            });
+
+            // 預先計算與排序：建立「由下而上、逐層掃描」的資料結構
+            const sortedData = useMemo(() => {
+                if (!algoData || !algoData.voxels) return null;
+
+                // 1. 蛋白質點 (Amber 琥珀色) - 轉為平坦陣列供 Shader 使用
+                const proteinPts = algoData.voxels.protein || [];
+                const proteinFlat = new Float32Array(proteinPts.length * 3);
+                for (let i = 0; i < proteinPts.length; i++) {
+                    proteinFlat[i * 3] = proteinPts[i][0];
+                    proteinFlat[i * 3 + 1] = proteinPts[i][1];
+                    proteinFlat[i * 3 + 2] = proteinPts[i][2];
+                }
+
+                // 2. 口袋點 (Cavity) - 核心邏輯：依照 Y 軸 (層數) 進行嚴格排序
+                const cavityPts = (algoData.voxels.cavity || []).map(p => ({ x: p[0], y: p[1], z: p[2] }));
+                cavityPts.sort((a, b) => {
+                    if (Math.abs(a.y - b.y) > 0.01) return a.y - b.y; // 先排 Y 軸 (分層)
+                    if (Math.abs(a.x - b.x) > 0.01) return a.x - b.x; // 同層排 X 軸
+                    return a.z - b.z;                                 // 最後排 Z 軸
+                });
+
+                // 準備幾何陣列與獨立的顏色陣列 (Vertex Colors)
+                const cavityFlat = new Float32Array(cavityPts.length * 3);
+                const cavityColors = new Float32Array(cavityPts.length * 3);
+                
+                // 初始化所有口袋點為「暗青色 (Dark Cyan)」
+                for (let i = 0; i < cavityPts.length; i++) {
+                    cavityFlat[i * 3] = cavityPts[i].x;
+                    cavityFlat[i * 3 + 1] = cavityPts[i].y;
+                    cavityFlat[i * 3 + 2] = cavityPts[i].z;
+                    
+                    cavityColors[i * 3] = 0.0;     // R
+                    cavityColors[i * 3 + 1] = 0.3; // G
+                    cavityColors[i * 3 + 2] = 0.3; // B
+                }
+
+                return {
+                    proteinArray: proteinFlat,
+                    cavityPts: cavityPts,
+                    cavityArray: cavityFlat,
+                    cavityColors: cavityColors
+                };
+            }, [algoData]);
+
+            // 專屬 GPU Shader：動態控制蛋白質網格的「逐層亮暗」
+            const proteinMaterial = useMemo(() => {
+                return new THREE.ShaderMaterial({
+                    uniforms: {
+                        baseColor: { value: new THREE.Color("#ff9933") }, // 琥珀橘黃
+                        currentY: { value: -999.0 },                      // 探針目前高度
+                        layerThickness: { value: 1.0 },                   // 高亮層的厚度
+                        activeOpacity: { value: 0.65 },                   // 掃描層的透明度
+                        inactiveOpacity: { value: 0.02 },                 // 非掃描層極度暗化
+                        size: { value: 3.5 }                              // 點大小
+                    },
+                    vertexShader: `
+                        uniform float size;
+                        uniform float currentY;
+                        varying float vDistance;
+                        void main() {
+                            // 計算每個頂點距離當前掃描層面的距離
+                            vDistance = abs(position.y - currentY);
+                            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                            gl_PointSize = size * (20.0 / -mvPosition.z);
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform vec3 baseColor;
+                        uniform float activeOpacity;
+                        uniform float inactiveOpacity;
+                        uniform float layerThickness;
+                        varying float vDistance;
+                        void main() {
+                            // 距離小於層厚度則發亮，否則暗化
+                            float alpha = vDistance < layerThickness ? activeOpacity : inactiveOpacity;
+                            vec2 coord = gl_PointCoord - vec2(0.5);
+                            if(length(coord) > 0.5) discard; // 將方形點裁切成圓形
+                            gl_FragColor = vec4(baseColor, alpha);
+                        }
+                    `,
+                    transparent: true,
+                    depthWrite: false,
+                });
+            }, []);
+
+            useFrame((state, delta) => {
+                if (!visible || !sortedData || sortedData.cavityPts.length === 0) return;
+
+                const pts = sortedData.cavityPts;
+                const currentIdx = scanState.current.globalIdx;
+                const currentPoint = pts[currentIdx];
+                const currentY = currentPoint.y;
+
+                // 1. 移動 1.4A 探針 (平滑內插)
+                if (probeRef.current) {
+                    probeRef.current.position.lerp(new THREE.Vector3(currentPoint.x, currentPoint.y, currentPoint.z), 0.4);
+                    // 探針自轉增加科技感
+                    probeRef.current.rotation.x += delta * 2.5;
+                    probeRef.current.rotation.y += delta * 2.5;
+                }
+
+                // 2. 更新蛋白質 Shader：告知 GPU 目前掃描到的 Y 軸高度
+                if (proteinMaterial) {
+                    proteinMaterial.uniforms.currentY.value = currentY;
+                }
+
+                // 3. 極速更新口袋網格點顏色 (Vertex Colors)
+                const colors = sortedData.cavityColors;
+                for (let i = 0; i < pts.length; i++) {
+                    const p = pts[i];
+                    const isScanned = i <= currentIdx;
+                    const isCurrentLayer = Math.abs(p.y - currentY) < 0.5; // 是否與探針處於同一層
+
+                    let r, g, b;
+                    if (isScanned) {
+                        // 已經被探針掃描過 (判定為符合) -> 變成洋紅色 (Magenta)
+                        if (isCurrentLayer) { r=1.0; g=0.2; b=1.0; } // 當前層：亮洋紅
+                        else { r=0.4; g=0.0; b=0.4; }                // 過去層：暗洋紅
+                    } else {
+                        // 尚未掃描到
+                        if (isCurrentLayer) { r=0.0; g=1.0; b=1.0; } // 當前層：亮青色 (Cyan)
+                        else { r=0.0; g=0.3; b=0.3; }                // 未來層：暗青色
+                    }
+
+                    colors[i * 3] = r;
+                    colors[i * 3 + 1] = g;
+                    colors[i * 3 + 2] = b;
+                }
+                
+                // 標記顏色緩衝區需要更新
+                if (colorAttrRef.current) colorAttrRef.current.needsUpdate = true;
+
+                // 4. 動畫計時器 (控制探針滾動速度)
+                scanState.current.timer += delta;
+                if (scanState.current.timer > 0.012) { 
+                    scanState.current.globalIdx++;
+                    scanState.current.timer = 0;
+                    
+                    // 掃描完畢，從最底層重新開始
+                    if (scanState.current.globalIdx >= pts.length) {
+                        scanState.current.globalIdx = 0;
+                    }
+                }
+            });
+
+            if (!visible || !sortedData) return null;
+
+            return (
+                <group>
+                    {/* 1. 蛋白質網格 (掛載自製的逐層發光 Shader) */}
+                    <points renderOrder={0}>
+                        <bufferGeometry>
+                            <bufferAttribute attach="attributes-position" count={sortedData.proteinArray.length / 3} array={sortedData.proteinArray} itemSize={3} />
+                        </bufferGeometry>
+                        <primitive object={proteinMaterial} attach="material" />
+                    </points>
+
+                    {/* 2. 口袋網格 (掛載動態頂點色彩 Vertex Colors) */}
+                    <points renderOrder={1}>
+                        <bufferGeometry ref={pocketGeoRef}>
+                            <bufferAttribute attach="attributes-position" count={sortedData.cavityArray.length / 3} array={sortedData.cavityArray} itemSize={3} />
+                            <bufferAttribute ref={colorAttrRef} attach="attributes-color" count={sortedData.cavityColors.length / 3} array={sortedData.cavityColors} itemSize={3} />
+                        </bufferGeometry>
+                        {/* 這裡啟動 vertexColors={true} 讓點能獨立擁有顏色 */}
+                        <pointsMaterial size={0.8} vertexColors={true} transparent={true} opacity={1.0} depthWrite={false} depthTest={false} toneMapped={false} />
+                    </points>
+
+                    {/* 3. LIGSITE 1.4Å 半徑探針 */}
+                    <group ref={probeRef}>
+                        {/* 外部雷達紫光圈 */}
+                        <mesh>
+                            <sphereGeometry args={[1.4, 16, 16]} />
+                            <meshBasicMaterial color="#ff00ff" wireframe={true} transparent={true} opacity={0.6} depthTest={false} />
+                        </mesh>
+                        {/* 內部實體核心 */}
+                        <mesh>
+                            <sphereGeometry args={[0.3, 8, 8]} />
+                            <meshBasicMaterial color="#ffffff" depthTest={false} />
+                        </mesh>
+                    </group>
+                </group>
+            );
+        }
         // Phase 6: 口袋平滑 Mesh
         function PocketMesh({ meshData, visible }) {
             const geometry = useMemo(() => {
@@ -636,7 +809,7 @@
             }, []);
 
             if (error) return <div className="loading" style={{ color: '#ff4444' }}>載入失敗: {error}</div>;
-            if (!data) return <div className="loading">載入預先計算資產中...</div>;
+            if (!data) return <div className="loading">載入中...</div>;
 
             return (
                 <ErrorBoundary>
@@ -683,22 +856,20 @@
                         <color attach="background" args={['#030508']} />
                         <OrbitControls autoRotate={phase === 6 || phase === 1} autoRotateSpeed={0.5} makeDefault />
 
-                        {/* 1. 大幅降低環境光 (由 2.0 降至 0.6) - 恢復原子的陰影與鮮豔色彩 */}
+                        {/* 1. 環境光 */}
                         <ambientLight intensity={0.6} />
 
-                        {/* 2. 主光源 (由 3.0 降至 1.5) - 提供立體感，不會將表面照到發白 */}
+                        {/* 2. 主光源 - 提供立體感，不會將表面照到發白 */}
                         <directionalLight position={[20, 20, 20]} intensity={1.5} />
 
-                        {/* 3. 背面輪廓光 (由 1.5 降至 0.8) - 專門勾勒 SES 邊緣的漂亮藍光 */}
+                        {/* 3. 背面輪廓光 - 專門勾勒 SES 邊緣 */}
                         <directionalLight position={[-20, -10, -20]} intensity={0.8} color="#00f0ff" />
 
-                        {/* 4. 頂部輔助光 (由 2.5 降至 0.8) - 柔和提亮整體 */}
+                        {/* 4. 頂部輔助光 - 柔和提亮整體 */}
                         <pointLight position={[0, 20, 0]} intensity={0.8} color="#ffffff" />
 
                         <Suspense fallback={null}>
                             <group position={[0, 0, 0]}>
-
-                                {/* Phase 1: 實體/透明雙模式 & Phase 2, 3: 背景半透明原子 */}
                                 <AtomView
                                     atoms={data.atoms}
                                     visible={(phase === 1 && phase1Opts.vdw) || phase === 2 || phase === 3}
@@ -706,12 +877,12 @@
                                 />
                                 <SESView visible={phase === 1 && phase1Opts.ses} />
 
-                                {/* Phase 2: 長方體完美合身網格 */}
                                 <GridWireframe algoData={data.algo_data} atoms={data.atoms} visible={phase === 2} />
 
                                 {/* Phase 3, 4, 5: 動畫掃描器 (動態綁定合身邊界框進行掃描) */}
                                 <AlgorithmScanner algoData={data.algo_data} atoms={data.atoms} phase={phase} />
 
+                                <ProbeScanner algoData={precomputedData?.algo_data} phase={phase} />
                                 {/* Phase 6: 口袋 Mesh 呈現 */}
                                 <PocketMesh meshData={data.algo_data.pocket_mesh} visible={phase === 6} />
                                 <SESView visible={phase === 6} />
@@ -722,10 +893,8 @@
                 </ErrorBoundary>
             );
         }
-
         const root = createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
 </body>
-
 </html>
