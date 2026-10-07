@@ -12,10 +12,12 @@
             background-color: #030508;
             font-family: 'Segoe UI', Tahoma, sans-serif;
         }
+
         #root {
             width: 100vw;
             height: 100vh;
         }
+
         .ui-panel {
             position: absolute;
             top: 20px;
@@ -32,6 +34,7 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(12px);
         }
+
         .ui-panel h2 {
             color: #fff;
             margin: 0 0 10px 0;
@@ -40,6 +43,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             padding-bottom: 10px;
         }
+
         .phase-btn {
             background: rgba(255, 255, 255, 0.05);
             color: #aaa;
@@ -52,11 +56,13 @@
             transition: all 0.2s;
             font-size: 13px;
         }
+
         .phase-btn:hover {
             background: rgba(0, 240, 255, 0.1);
             color: #fff;
             border-color: #00f0ff;
         }
+
         .phase-btn.active {
             background: #00f0ff;
             color: #000;
@@ -64,12 +70,14 @@
             box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
             font-weight: bold;
         }
+
         .sub-options {
             display: flex;
             gap: 10px;
             margin-top: 5px;
             margin-bottom: 5px;
         }
+
         .sub-btn {
             flex: 1;
             padding: 6px;
@@ -80,14 +88,17 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
         .sub-btn:hover {
             background: rgba(255, 0, 119, 0.3);
         }
+
         .sub-btn.active {
             background: #ff0077;
             border-color: #ff0077;
             font-weight: bold;
         }
+
         .loading {
             position: absolute;
             top: 50%;
@@ -98,6 +109,7 @@
             font-weight: 300;
             letter-spacing: 1px;
         }
+
         .legend {
             position: absolute;
             bottom: 20px;
@@ -112,11 +124,13 @@
             flex-direction: column;
             gap: 5px;
         }
+
         .legend-item {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+
         .color-box {
             width: 15px;
             height: 15px;
@@ -187,8 +201,9 @@
             const cz = (maxZ + minZ) / 2;
             return { sizeX, sizeY, sizeZ, cx, cy, cz };
         }
+
         // Phase 1, 2, 3: 實體原子渲染
-        function AtomView({ atoms, visible, opacity = 1.0 }) {
+        function AtomView({ atoms, visible, dimmed = false }) {
             const meshRef = useRef();
             const dummy = useMemo(() => new THREE.Object3D(), []);
             useLayoutEffect(() => {
@@ -218,19 +233,19 @@
             return (
                 <instancedMesh ref={meshRef} args={[null, null, atoms.length]}>
                     <sphereGeometry args={[1, 16, 16]} />
-                    {opacity < 1.0 ? (
-                        <meshBasicMaterial
-                            transparent={true}
-                            opacity={0.15}    /* 把透明度壓到極低，讓群體看起來不會太厚重 */
-                            depthWrite={false} /* 關閉深度，讓原子團變成背景雲霧 */
-                        />
-                    ) : (
+                    {!dimmed ? (
                         <meshPhongMaterial
                             shininess={30}
                             specular="#444444"
                             transparent={false}
                             opacity={1.0}
                             depthWrite={true}
+                        />
+                    ) : (
+                        <meshBasicMaterial
+                            transparent={true}
+                            opacity={0.15}    /* 把透明度壓到極低，讓群體看起來不會太厚重 */
+                            depthWrite={false} /* 關閉深度，讓原子團變成背景雲霧 */
                         />
                     )}
                 </instancedMesh>
@@ -258,19 +273,17 @@
                         color="#00aaff"           /* 賦予 SES 表面明顯的顏色 */
                         transparent={true}
                         opacity={0.4}             /* 明確的半透明度 */
-                        shininess={15}            
-                        specular="#222222"        
-                        side={THREE.FrontSide}    
+                        shininess={15}
+                        specular="#222222"
+                        side={THREE.FrontSide}
                         depthWrite={false}        /* 關閉深度寫入以確保內部原子不被遮擋 */
                     />
                 </mesh>
             );
         }
         // Phase 2: 全空間 3D 網格陣列 (覆蓋整個 Bounding Box)
-        function GridWireframe({ atoms, visible }) {
-            const bounds = useMemo(() => computeTightBounds(atoms, 2.0), [atoms]);
-
-            // 1. 主網格 (Macro Grid) - 2.5Å (較亮，提供整體空間感)
+        function GridWireframe({ algoData, atoms, visible, bounds }) {
+            // 1. 主網格 (Macro Grid) - 2.5Å
             const macroGeo = useMemo(() => {
                 if (!bounds) return null;
                 const spacing = 2.5;
@@ -286,16 +299,15 @@
                 return new THREE.BufferGeometry().setFromPoints(pts);
             }, [bounds]);
 
-            // 2. 副網格 (Micro Grid) - 0.5Å (較暗，且向中心梯度隱形)
+            // 2. 副網格 (Micro Grid) - 0.5Å
             const microGeo = useMemo(() => {
                 if (!bounds) return null;
                 const spacing = 0.5;
                 const pts = [];
                 const colors = [];
 
-                // 【關鍵優化】：改用包含 Alpha 通道的 RGBA 混色，避免多線疊加發光
                 const baseColor = new THREE.Color("#224466");
-                const maxOpacity = 0.08; // 副網格的極限透明度，設定得非常非常淡
+                const maxOpacity = 0.08;
 
                 const halfX = bounds.sizeX / 2; const halfY = bounds.sizeY / 2; const halfZ = bounds.sizeZ / 2;
                 const numX = Math.floor(bounds.sizeX / spacing); const numY = Math.floor(bounds.sizeY / spacing); const numZ = Math.floor(bounds.sizeZ / spacing);
@@ -306,16 +318,13 @@
                     const fy = Math.abs(y) / halfY;
                     const fz = Math.abs(z) / halfZ;
                     const maxDist = Math.max(fx, fy, fz);
-                    return Math.pow(maxDist, 4); // 4次方，讓內部大部分區域接近完全透明
+                    return Math.pow(maxDist, 4);
                 };
 
                 const addLine = (x1, y1, z1, x2, y2, z2) => {
                     pts.push(x1, y1, z1, x2, y2, z2);
-
                     const fade1 = getFade(x1, y1, z1);
                     const fade2 = getFade(x2, y2, z2);
-
-                    // 寫入 R, G, B, A 四個數值
                     colors.push(baseColor.r, baseColor.g, baseColor.b, fade1 * maxOpacity);
                     colors.push(baseColor.r, baseColor.g, baseColor.b, fade2 * maxOpacity);
                 };
@@ -326,60 +335,35 @@
 
                 const geo = new THREE.BufferGeometry();
                 geo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
-                geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4)); // 設定 itemSize = 4 來支援透明度
+                geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4));
                 return geo;
-            }, [bounds]);
-
-            const boxGeo = useMemo(() => {
-                if (!bounds) return null;
-                return new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ);
             }, [bounds]);
 
             if (!visible || !bounds) return null;
 
             return (
                 <group position={[bounds.cx, bounds.cy, bounds.cz]}>
-                    <boxHelper args={[new THREE.Mesh(boxGeo)]} color="#081824" renderOrder={-1} />
-
-                    {/* 1. 副網格 Micro Grid (0.5A) */}
                     <lineSegments geometry={microGeo} renderOrder={-1}>
-                        <lineBasicMaterial
-                            vertexColors={true}
-                            transparent={true}
-                            blending={THREE.NormalBlending}
-                            depthWrite={false}
-                        />
+                        <lineBasicMaterial vertexColors={true} transparent={true} blending={THREE.NormalBlending} depthWrite={false} />
                     </lineSegments>
-
-                    {/* 2. 主網格 Macro Grid (2.5A) */}
                     <lineSegments geometry={macroGeo} renderOrder={-1}>
-                        <lineBasicMaterial
-                            color="#113355"
-                            transparent={true}
-                            opacity={0.12}
-                            depthWrite={false}
-                        />
+                        <lineBasicMaterial color="#113355" transparent={true} opacity={0.12} depthWrite={false} />
                     </lineSegments>
-
                 </group>
             );
         }
         // Phase 3: 網格動畫掃描器
-        function AlgorithmScanner({ algoData, atoms, phase }) {
-            const [scanAxis, setScanAxis] = useState('x'); // 當前掃描軸: 'x', 'y', 'z'
+        function AlgorithmScanner({ algoData, atoms, phase, bounds }) {
+            const [scanAxis, setScanAxis] = useState('x');
 
             const solventGeoRef = useRef();
             const proteinGeoRef = useRef();
             const cavityGeoRef = useRef();
             const scanPlaneRef = useRef();
-            const scanState = useRef({
-                pos: -9999, // 初始座標標記
-                phase: 'scanning', // 狀態: 'scanning' 或 'pausing'
-                timer: 0 // 暫停計時器
-            });
+            const scanState = useRef({ pos: -9999, phase: 'scanning', timer: 0 });
 
             const visible = phase === 3;
-            const bounds = useMemo(() => computeTightBounds(atoms, 2.0), [atoms]);
+
             const sortedData = useMemo(() => {
                 if (!algoData || !algoData.voxels || !bounds) return null;
 
@@ -395,7 +379,6 @@
                             res.push({ x, y, z });
                         }
                     }
-                    // 根據指定的軸向進行動態排序 (X軸, Y軸, 或 Z軸)
                     res.sort((a, b) => a[axis] - b[axis]);
 
                     const flat = new Float32Array(res.length * 3);
@@ -406,48 +389,29 @@
                 };
 
                 return {
-                    x: {
-                        solvent: filterAndSort(algoData.voxels.solvent || [], 'x'),
-                        protein: filterAndSort(algoData.voxels.protein || [], 'x'),
-                        cavity: filterAndSort(algoData.voxels.cavity || [], 'x')
-                    },
-                    y: {
-                        solvent: filterAndSort(algoData.voxels.solvent || [], 'y'),
-                        protein: filterAndSort(algoData.voxels.protein || [], 'y'),
-                        cavity: filterAndSort(algoData.voxels.cavity || [], 'y')
-                    },
-                    z: {
-                        solvent: filterAndSort(algoData.voxels.solvent || [], 'z'),
-                        protein: filterAndSort(algoData.voxels.protein || [], 'z'),
-                        cavity: filterAndSort(algoData.voxels.cavity || [], 'z')
-                    }
+                    x: { solvent: filterAndSort(algoData.voxels.solvent || [], 'x'), protein: filterAndSort(algoData.voxels.protein || [], 'x'), cavity: filterAndSort(algoData.voxels.cavity || [], 'x') },
+                    y: { solvent: filterAndSort(algoData.voxels.solvent || [], 'y'), protein: filterAndSort(algoData.voxels.protein || [], 'y'), cavity: filterAndSort(algoData.voxels.cavity || [], 'y') },
+                    z: { solvent: filterAndSort(algoData.voxels.solvent || [], 'z'), protein: filterAndSort(algoData.voxels.protein || [], 'z'), cavity: filterAndSort(algoData.voxels.cavity || [], 'z') }
                 };
             }, [algoData, bounds]);
 
-            // 當掃描軸切換時，確保畫面先清空
             useEffect(() => {
                 if (solventGeoRef.current) solventGeoRef.current.setDrawRange(0, 0);
                 if (proteinGeoRef.current) proteinGeoRef.current.setDrawRange(0, 0);
                 if (cavityGeoRef.current) cavityGeoRef.current.setDrawRange(0, 0);
             }, [scanAxis]);
 
-            // 通用二元搜尋：支援從 array 中尋找 X(0), Y(1) 或 Z(2) 的臨界點
             const findVisibleCount = (array, totalCount, currentPos, axisOffset) => {
                 let left = 0; let right = totalCount - 1; let ans = 0;
                 while (left <= right) {
                     const mid = Math.floor((left + right) / 2);
-                    // axisOffset 決定比對的是 X, Y 還是 Z
                     if (array[mid * 3 + axisOffset] <= currentPos) {
-                        ans = mid + 1;
-                        left = mid + 1;
-                    } else {
-                        right = mid - 1;
-                    }
+                        ans = mid + 1; left = mid + 1;
+                    } else { right = mid - 1; }
                 }
                 return ans;
             };
 
-            // 每一幀的 GPU 動畫更新邏輯
             useFrame((state, delta) => {
                 if (!visible || !bounds || !sortedData) return;
 
@@ -456,44 +420,37 @@
                 const offsets = { x: 0, y: 1, z: 2 };
                 const currentOffset = offsets[scanAxis];
 
-                // 設定各軸向的起點與終點
                 const startVals = { x: bounds.cx - bounds.sizeX / 2, y: bounds.cy - bounds.sizeY / 2, z: bounds.cz - bounds.sizeZ / 2 };
                 const endVals = { x: bounds.cx + bounds.sizeX / 2, y: bounds.cy + bounds.sizeY / 2, z: bounds.cz + bounds.sizeZ / 2 };
 
                 const start = startVals[scanAxis];
                 const end = endVals[scanAxis];
 
-                // 初始化座標
                 if (scanState.current.pos === -9999) scanState.current.pos = start;
 
                 if (scanState.current.phase === 'scanning') {
-                    scanState.current.pos += 15.0 * delta; // 掃描速度
-
-                    // 抵達終點，準備切換方向
+                    scanState.current.pos += 15.0 * delta;
                     if (scanState.current.pos > end) {
                         scanState.current.phase = 'pausing';
                         scanState.current.timer = 0;
-                        // 掃描到底時全顯
                         scanState.current.pos = end;
                     }
 
-                    // 更新光束平面的物理位置與【關鍵修復：旋轉角度】
                     if (scanPlaneRef.current) {
                         if (scanAxis === 'x') {
                             scanPlaneRef.current.position.set(scanState.current.pos, bounds.cy, bounds.cz);
-                            scanPlaneRef.current.rotation.set(0, Math.PI / 2, 0); // 面向 X 軸
+                            scanPlaneRef.current.rotation.set(0, Math.PI / 2, 0);
                         }
                         if (scanAxis === 'y') {
                             scanPlaneRef.current.position.set(bounds.cx, scanState.current.pos, bounds.cz);
-                            scanPlaneRef.current.rotation.set(Math.PI / 2, 0, 0); // 面向 Y 軸
+                            scanPlaneRef.current.rotation.set(Math.PI / 2, 0, 0);
                         }
                         if (scanAxis === 'z') {
                             scanPlaneRef.current.position.set(bounds.cx, bounds.cy, scanState.current.pos);
-                            scanPlaneRef.current.rotation.set(0, 0, 0); // 面向 Z 軸
+                            scanPlaneRef.current.rotation.set(0, 0, 0);
                         }
                     }
 
-                    // GPU 級別直接更新繪製範圍 (極速揭露效果)
                     const currentData = sortedData[scanAxis];
                     if (solventGeoRef.current) solventGeoRef.current.setDrawRange(0, findVisibleCount(currentData.solvent.array, currentData.solvent.count, scanState.current.pos, currentOffset));
                     if (proteinGeoRef.current) proteinGeoRef.current.setDrawRange(0, findVisibleCount(currentData.protein.array, currentData.protein.count, scanState.current.pos, currentOffset));
@@ -501,66 +458,45 @@
 
                 } else if (scanState.current.phase === 'pausing') {
                     scanState.current.timer += delta;
-                    // 暫停 0.6 秒後切換到下一個軸向
                     if (scanState.current.timer > 0.6) {
                         scanState.current.phase = 'scanning';
                         const nextAxis = axes[(axisIdx + 1) % 3];
                         scanState.current.pos = startVals[nextAxis];
-                        setScanAxis(nextAxis); // 觸發 React 更新渲染以綁定新陣列
+                        setScanAxis(nextAxis);
                     }
                 }
             });
 
             if (!visible || !sortedData) return null;
-            const currentData = sortedData[scanAxis]; // 取得對應軸向的排序資料
+            const currentData = sortedData[scanAxis];
 
             return (
                 <group>
-                    {/* 邊界框 */}
-                    {bounds && (
-                        <group position={[bounds.cx, bounds.cy, bounds.cz]}>
-                            <boxHelper args={[new THREE.Mesh(new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ))]} color="#ffee00" renderOrder={-1} />
-                        </group>
-                    )}
-
-                    {/* 1. 溶劑區 (Solvent) - 淡冰藍色 */}
+                    {/* 已移除冗餘的邊界框 */}
                     <points>
                         <bufferGeometry ref={solventGeoRef} key={`solvent-${scanAxis}`}>
                             <bufferAttribute attach="attributes-position" count={currentData.solvent.count} array={currentData.solvent.array} itemSize={3} />
                         </bufferGeometry>
                         <pointsMaterial color="#add8e6" size={0.4} transparent={true} opacity={0.25} depthWrite={false} />
                     </points>
-
-                    {/* 2. 蛋白質實體區 (Protein) - 橘琥珀色*/}
                     <points>
                         <bufferGeometry ref={proteinGeoRef} key={`protein-${scanAxis}`}>
                             <bufferAttribute attach="attributes-position" count={currentData.protein.count} array={currentData.protein.array} itemSize={3} />
                         </bufferGeometry>
                         <pointsMaterial color="#ff9933" size={0.6} transparent={true} opacity={0.75} toneMapped={false} depthWrite={false} />
                     </points>
-
-                    {/* 3. 結合口袋區 (Cavity) - 高亮的青色 (Cyan) 加 X 光穿透 */}
                     <points renderOrder={1}>
                         <bufferGeometry ref={cavityGeoRef} key={`cavity-${scanAxis}`}>
                             <bufferAttribute attach="attributes-position" count={currentData.cavity.count} array={currentData.cavity.array} itemSize={3} />
                         </bufferGeometry>
                         <pointsMaterial color="#00ffff" size={0.8} transparent={true} opacity={1.0} toneMapped={false} depthWrite={false} depthTest={false} />
                     </points>
-
-                    {/* 雷達掃描平面，會根據當前軸向自動改變長寬 (旋轉已在 useFrame 中處理) */}
                     {bounds && (
                         <mesh ref={scanPlaneRef}>
                             {scanAxis === 'x' && <planeGeometry args={[bounds.sizeZ, bounds.sizeY]} />}
                             {scanAxis === 'y' && <planeGeometry args={[bounds.sizeX, bounds.sizeZ]} />}
                             {scanAxis === 'z' && <planeGeometry args={[bounds.sizeX, bounds.sizeY]} />}
-
-                            <meshBasicMaterial
-                                color={scanAxis === 'x' ? "#00ffff" : scanAxis === 'y' ? "#ff00ff" : "#ffff00"}
-                                transparent={true}
-                                opacity={0.3}
-                                side={THREE.DoubleSide}
-                                depthWrite={false}
-                            />
+                            <meshBasicMaterial color={scanAxis === 'x' ? "#00ffff" : scanAxis === 'y' ? "#ff00ff" : "#ffff00"} transparent={true} opacity={0.3} side={THREE.DoubleSide} depthWrite={false} />
                         </mesh>
                     )}
                 </group>
@@ -572,94 +508,70 @@
             const probeRef = useRef();
             const pocketGeoRef = useRef();
             const colorAttrRef = useRef();
-            const bounds = useMemo(() => computeTightBounds(atoms, 2.0), [atoms]);
-            // 追蹤動畫進度的狀態
-            const scanState = useRef({
-                globalIdx: 0,
-                timer: 0
-            });
 
-            // 預先計算與排序：建立「由下而上、逐層掃描」的資料結構
+            const scanState = useRef({ globalIdx: 0, timer: 0 });
+
             const sortedData = useMemo(() => {
                 if (!algoData || !algoData.voxels) return null;
 
-                // 1. 蛋白質點 (Amber 琥珀色) - 轉為平坦陣列供 Shader 使用
                 const proteinPts = algoData.voxels.protein || [];
                 const proteinFlat = new Float32Array(proteinPts.length * 3);
                 for (let i = 0; i < proteinPts.length; i++) {
-                    proteinFlat[i * 3] = proteinPts[i][0];
-                    proteinFlat[i * 3 + 1] = proteinPts[i][1];
-                    proteinFlat[i * 3 + 2] = proteinPts[i][2];
+                    proteinFlat[i * 3] = proteinPts[i][0]; proteinFlat[i * 3 + 1] = proteinPts[i][1]; proteinFlat[i * 3 + 2] = proteinPts[i][2];
                 }
 
-                // 2. 口袋點 (Cavity) - 核心邏輯：依照 Y 軸 (層數) 進行嚴格排序
                 const cavityPts = (algoData.voxels.cavity || []).map(p => ({ x: p[0], y: p[1], z: p[2] }));
                 cavityPts.sort((a, b) => {
-                    if (Math.abs(a.y - b.y) > 0.01) return a.y - b.y; // 先排 Y 軸 (分層)
-                    if (Math.abs(a.x - b.x) > 0.01) return a.x - b.x; // 同層排 X 軸
-                    return a.z - b.z;                                 // 最後排 Z 軸
+                    if (Math.abs(a.y - b.y) > 0.01) return a.y - b.y;
+                    if (Math.abs(a.x - b.x) > 0.01) return a.x - b.x;
+                    return a.z - b.z;
                 });
 
-                // 準備幾何陣列與獨立的顏色陣列 (Vertex Colors)
                 const cavityFlat = new Float32Array(cavityPts.length * 3);
                 const cavityColors = new Float32Array(cavityPts.length * 3);
-                
-                // 初始化所有口袋點為「暗青色 (Dark Cyan)」
+
                 for (let i = 0; i < cavityPts.length; i++) {
-                    cavityFlat[i * 3] = cavityPts[i].x;
-                    cavityFlat[i * 3 + 1] = cavityPts[i].y;
-                    cavityFlat[i * 3 + 2] = cavityPts[i].z;
-                    
-                    cavityColors[i * 3] = 0.0;     // R
-                    cavityColors[i * 3 + 1] = 0.3; // G
-                    cavityColors[i * 3 + 2] = 0.3; // B
+                    cavityFlat[i * 3] = cavityPts[i].x; cavityFlat[i * 3 + 1] = cavityPts[i].y; cavityFlat[i * 3 + 2] = cavityPts[i].z;
+                    cavityColors[i * 3] = 0.0; cavityColors[i * 3 + 1] = 0.3; cavityColors[i * 3 + 2] = 0.3;
                 }
 
-                return {
-                    proteinArray: proteinFlat,
-                    cavityPts: cavityPts,
-                    cavityArray: cavityFlat,
-                    cavityColors: cavityColors
-                };
+                return { proteinArray: proteinFlat, cavityPts: cavityPts, cavityArray: cavityFlat, cavityColors: cavityColors };
             }, [algoData]);
 
-            // 專屬 GPU Shader：動態控制蛋白質網格的「逐層亮暗」
             const proteinMaterial = useMemo(() => {
                 return new THREE.ShaderMaterial({
                     uniforms: {
-                        baseColor: { value: new THREE.Color("#ff9933") }, // 琥珀橘黃
-                        currentY: { value: -999.0 },                      // 探針目前高度
-                        layerThickness: { value: 1.0 },                   // 高亮層的厚度
-                        activeOpacity: { value: 0.65 },                   // 掃描層的透明度
-                        inactiveOpacity: { value: 0.02 },                 // 非掃描層極度暗化
-                        size: { value: 3.5 }                              // 點大小
+                        baseColor: { value: new THREE.Color("#ff9933") },
+                        currentY: { value: -999.0 },
+                        layerThickness: { value: 1.0 },
+                        activeOpacity: { value: 0.65 },
+                        inactiveOpacity: { value: 0.02 },
+                        size: { value: 3.5 }
                     },
                     vertexShader: `
-                        uniform float size;
-                        uniform float currentY;
-                        varying float vDistance;
-                        void main() {
-                            // 計算每個頂點距離當前掃描層面的距離
-                            vDistance = abs(position.y - currentY);
-                            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                            gl_PointSize = size * (20.0 / -mvPosition.z);
-                            gl_Position = projectionMatrix * mvPosition;
-                        }
-                    `,
+                uniform float size;
+                uniform float currentY;
+                varying float vDistance;
+                void main() {
+                    vDistance = abs(position.y - currentY);
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    gl_PointSize = size * (20.0 / -mvPosition.z);
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
                     fragmentShader: `
-                        uniform vec3 baseColor;
-                        uniform float activeOpacity;
-                        uniform float inactiveOpacity;
-                        uniform float layerThickness;
-                        varying float vDistance;
-                        void main() {
-                            // 距離小於層厚度則發亮，否則暗化
-                            float alpha = vDistance < layerThickness ? activeOpacity : inactiveOpacity;
-                            vec2 coord = gl_PointCoord - vec2(0.5);
-                            if(length(coord) > 0.5) discard; // 將方形點裁切成圓形
-                            gl_FragColor = vec4(baseColor, alpha);
-                        }
-                    `,
+                uniform vec3 baseColor;
+                uniform float activeOpacity;
+                uniform float inactiveOpacity;
+                uniform float layerThickness;
+                varying float vDistance;
+                void main() {
+                    float alpha = vDistance < layerThickness ? activeOpacity : inactiveOpacity;
+                    vec2 coord = gl_PointCoord - vec2(0.5);
+                    if(length(coord) > 0.5) discard; 
+                    gl_FragColor = vec4(baseColor, alpha);
+                }
+            `,
                     transparent: true,
                     depthWrite: false,
                 });
@@ -673,55 +585,35 @@
                 const currentPoint = pts[currentIdx];
                 const currentY = currentPoint.y;
 
-                // 1. 移動 1.4A 探針 (平滑內插)
                 if (probeRef.current) {
                     probeRef.current.position.lerp(new THREE.Vector3(currentPoint.x, currentPoint.y, currentPoint.z), 0.4);
-                    // 探針自轉增加科技感
-                    probeRef.current.rotation.x += delta * 2.5;
-                    probeRef.current.rotation.y += delta * 2.5;
+                    probeRef.current.rotation.x += delta * 2.5; probeRef.current.rotation.y += delta * 2.5;
                 }
 
-                // 2. 更新蛋白質 Shader：告知 GPU 目前掃描到的 Y 軸高度
-                if (proteinMaterial) {
-                    proteinMaterial.uniforms.currentY.value = currentY;
-                }
+                if (proteinMaterial) proteinMaterial.uniforms.currentY.value = currentY;
 
-                // 3. 極速更新口袋網格點顏色 (Vertex Colors)
                 const colors = sortedData.cavityColors;
                 for (let i = 0; i < pts.length; i++) {
                     const p = pts[i];
                     const isScanned = i <= currentIdx;
-                    const isCurrentLayer = Math.abs(p.y - currentY) < 0.5; // 是否與探針處於同一層
+                    const isCurrentLayer = Math.abs(p.y - currentY) < 0.5;
 
                     let r, g, b;
                     if (isScanned) {
-                        // 已經被探針掃描過 (判定為符合) -> 變成洋紅色 (Magenta)
-                        if (isCurrentLayer) { r=1.0; g=0.2; b=1.0; } // 當前層：亮洋紅
-                        else { r=0.4; g=0.0; b=0.4; }                // 過去層：暗洋紅
+                        if (isCurrentLayer) { r = 1.0; g = 0.2; b = 1.0; } else { r = 0.4; g = 0.0; b = 0.4; }
                     } else {
-                        // 尚未掃描到
-                        if (isCurrentLayer) { r=0.0; g=1.0; b=1.0; } // 當前層：亮青色 (Cyan)
-                        else { r=0.0; g=0.3; b=0.3; }                // 未來層：暗青色
+                        if (isCurrentLayer) { r = 0.0; g = 1.0; b = 1.0; } else { r = 0.0; g = 0.3; b = 0.3; }
                     }
-
-                    colors[i * 3] = r;
-                    colors[i * 3 + 1] = g;
-                    colors[i * 3 + 2] = b;
+                    colors[i * 3] = r; colors[i * 3 + 1] = g; colors[i * 3 + 2] = b;
                 }
-                
-                // 標記顏色緩衝區需要更新
+
                 if (colorAttrRef.current) colorAttrRef.current.needsUpdate = true;
 
-                // 4. 動畫計時器 (控制探針滾動速度)
                 scanState.current.timer += delta;
-                if (scanState.current.timer > 0.012) { 
+                if (scanState.current.timer > 0.012) {
                     scanState.current.globalIdx++;
                     scanState.current.timer = 0;
-                    
-                    // 掃描完畢，從最底層重新開始
-                    if (scanState.current.globalIdx >= pts.length) {
-                        scanState.current.globalIdx = 0;
-                    }
+                    if (scanState.current.globalIdx >= pts.length) scanState.current.globalIdx = 0;
                 }
             });
 
@@ -729,38 +621,25 @@
 
             return (
                 <group>
-                    {/* 邊界框 */}
-                    {bounds && (
-                        <group position={[bounds.cx, bounds.cy, bounds.cz]}>
-                            <boxHelper args={[new THREE.Mesh(new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ))]} color="#ffee00" renderOrder={-1} />
-                        </group>
-                    )}
-                    {/* 1. 蛋白質網格 (掛載自製的逐層發光 Shader) */}
+                    {/* 已移除冗餘的邊界框 */}
                     <points renderOrder={0}>
                         <bufferGeometry>
                             <bufferAttribute attach="attributes-position" count={sortedData.proteinArray.length / 3} array={sortedData.proteinArray} itemSize={3} />
                         </bufferGeometry>
                         <primitive object={proteinMaterial} attach="material" />
                     </points>
-
-                    {/* 2. 口袋網格 (掛載動態頂點色彩 Vertex Colors) */}
                     <points renderOrder={1}>
                         <bufferGeometry ref={pocketGeoRef}>
                             <bufferAttribute attach="attributes-position" count={sortedData.cavityArray.length / 3} array={sortedData.cavityArray} itemSize={3} />
                             <bufferAttribute ref={colorAttrRef} attach="attributes-color" count={sortedData.cavityColors.length / 3} array={sortedData.cavityColors} itemSize={3} />
                         </bufferGeometry>
-                        {/* 這裡啟動 vertexColors={true} 讓點能獨立擁有顏色 */}
                         <pointsMaterial size={0.8} vertexColors={true} transparent={true} opacity={1.0} depthWrite={false} depthTest={false} toneMapped={false} />
                     </points>
-
-                    {/* 3. LIGSITE 1.4Å 半徑探針 */}
                     <group ref={probeRef}>
-                        {/* 外部雷達紫光圈 */}
                         <mesh>
                             <sphereGeometry args={[1.4, 16, 16]} />
                             <meshBasicMaterial color="#ff00ff" wireframe={true} transparent={true} opacity={0.6} depthTest={false} />
                         </mesh>
-                        {/* 內部實體核心 */}
                         <mesh>
                             <sphereGeometry args={[0.3, 8, 8]} />
                             <meshBasicMaterial color="#ffffff" depthTest={false} />
@@ -841,12 +720,12 @@
                         </button>
                     </div>
 
-                    {phase === 3 && phase === 4 && (
+                    {phase === 3 || phase === 4 && (
                         <div className="legend">
                             <div className="legend-item"><div className="color-box" style={{ background: '#add8e6' }}></div> 溶劑區</div>
                             <div className="legend-item"><div className="color-box" style={{ background: '#ff9933' }}></div> 蛋白區</div>
                             <div className="legend-item"><div className="color-box" style={{ background: '#00ffff' }}></div> 空腔區</div>
-                            {phase >= 4 && 
+                            {phase >= 4 &&
                                 <div className="legend-item"><div className="color-box" style={{ background: '#ff00ff' }}></div> 探針區
                                 </div>}
                         </div>
@@ -869,23 +748,31 @@
 
                         <Suspense fallback={null}>
                             <group position={[0, 0, 0]}>
-                                {/* Phase 1: vdw */}
+                                {/* 統一呼叫的邊界框，在 Phase 2, 3, 4 顯示 */}
+                                {bounds && (phase === 2 || phase === 3 || phase === 4) && (
+                                    <group position={[bounds.cx, bounds.cy, bounds.cz]}>
+                                        <boxHelper
+                                            args={[new THREE.Mesh(new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ))]}
+                                            color="#ffee00"
+                                            renderOrder={-1}
+                                        />
+                                    </group>
+                                )}
+                                {/* Phase 1, 2, 3: vdw */}
                                 <AtomView
                                     atoms={data.atoms}
                                     visible={(phase === 1 && phase1Opts.vdw) || phase === 2 || phase === 3}
-                                    opacity={(phase === 2 || phase === 3) ? 0.2 : 1.0}/>
+                                    dimmed={phase === 2 || phase === 3} />
                                 {/* Phase 1: SES */}
-                                <SESView visible={phase === 1 && phase1Opts.ses} />
+                                <SESView visible={(phase === 1 && phase1Opts.ses) || phase === 5} />
                                 {/* Phase 2: 空間網格化 */}
-                                <GridWireframe algoData={data.algo_data} atoms={data.atoms} visible={phase === 2} />
+                                <GridWireframe algoData={data.algo_data} atoms={data.atoms} visible={phase === 2} bounds={bounds} />
                                 {/* Phase 3: 距離場掃描動畫 */}
-                                <AlgorithmScanner algoData={data.algo_data} atoms={data.atoms} phase={phase} />
-
+                                <AlgorithmScanner algoData={data.algo_data} atoms={data.atoms} phase={phase} bounds={bounds} />
                                 {/* Phase 4: 探針掃描動畫 */}
-                                <ProbeScanner algoData={data.algo_data} atoms={data.atoms} phase={phase} />
+                                <ProbeScanner algoData={data.algo_data} phase={phase} />
                                 {/* Phase 5: 口袋 Mesh 呈現 */}
                                 <PocketMesh meshData={data.algo_data.pocket_mesh} visible={phase === 5} />
-                                <SESView visible={phase === 5} />
                             </group>
                         </Suspense>
                     </Canvas>
@@ -896,4 +783,5 @@
         root.render(<App />);
     </script>
 </body>
+
 </html>
