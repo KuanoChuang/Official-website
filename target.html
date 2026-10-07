@@ -171,7 +171,7 @@
                 if (this.state.hasError) {
                     return (
                         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: '#ff4444', backgroundColor: 'rgba(0,0,0,0.9)', padding: '30px', borderRadius: '10px', zIndex: 100, border: '1px solid #ff4444' }}>
-                            <h3>渲染崩潰 (Crash)</h3>
+                            <h3>渲染崩潰</h3>
                             <pre style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}>{this.state.error.message}</pre>
                         </div>
                     );
@@ -179,7 +179,7 @@
                 return this.props.children;
             }
         }
-        // 計算合身邊界 (共用邏輯)
+        // 計算box邊界
         function computeTightBounds(atoms, padding = 2.0) {
             if (!atoms || atoms.length === 0) return { sizeX: 20, sizeY: 20, sizeZ: 20, cx: 0, cy: 0, cz: 0 };
             let minX = 9999, minY = 9999, minZ = 9999;
@@ -361,7 +361,6 @@
             const cavityGeoRef = useRef();
             const scanPlaneRef = useRef();
             const scanState = useRef({ pos: -9999, phase: 'scanning', timer: 0 });
-
             const visible = phase === 3;
 
             const sortedData = useMemo(() => {
@@ -472,7 +471,6 @@
 
             return (
                 <group>
-                    {/* 已移除冗餘的邊界框 */}
                     <points>
                         <bufferGeometry ref={solventGeoRef} key={`solvent-${scanAxis}`}>
                             <bufferAttribute attach="attributes-position" count={currentData.solvent.count} array={currentData.solvent.array} itemSize={3} />
@@ -621,7 +619,6 @@
 
             return (
                 <group>
-                    {/* 已移除冗餘的邊界框 */}
                     <points renderOrder={0}>
                         <bufferGeometry>
                             <bufferAttribute attach="attributes-position" count={sortedData.proteinArray.length / 3} array={sortedData.proteinArray} itemSize={3} />
@@ -682,7 +679,7 @@
                 if (!data || !data.atoms) return null;
                 return computeTightBounds(data.atoms);
             }, [data]);
-            
+
             useEffect(() => {
                 fetch('./precomputed_data.json')
                     .then(res => {
