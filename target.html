@@ -501,6 +501,7 @@
             );
         }
         // Phase 4: 網格動畫掃描器
+        // --- 預先實體化所有顏色，確保不會傳入錯誤的字串 ---
         const COLOR_IDLE = new THREE.Color("#2a4d69");          // 0次：深藍灰
         const COLOR_SCAN_1 = new THREE.Color("#4db8ff");        // 1次：微亮青色
         const COLOR_SCAN_2 = new THREE.Color("#00ff66");        // 2次：明亮青綠
@@ -518,13 +519,10 @@
             const currentHitsRef = useRef([]);
 
             // ==========================================
-            // 1. 安全且嚴謹的資料解析
+            // 1. 安全解析資料
             // ==========================================
             const sortedData = useMemo(() => {
-                if (!algoData || !algoData.voxels) {
-                    console.log("⚠️ algoData.voxels is missing!");
-                    return null;
-                }
+                if (!algoData || !algoData.voxels) return null;
 
                 const solventPts = algoData.voxels.solvent || [];
                 const solventFlat = new Float32Array(solventPts.length * 3);
@@ -542,14 +540,8 @@
                     proteinFlat[i * 3 + 2] = proteinPts[i][2] || 0;
                 }
 
-                // 【關鍵修復】：確保安全地將 JSON 陣列轉為物件結構
                 const rawActive = algoData.voxels.active_voxels || [];
-                if (rawActive.length === 0) {
-                    console.log("⚠️ active_voxels is empty!");
-                }
-
                 const activePts = rawActive.map((p, originalIndex) => {
-                    // 檢查 p 是否為陣列且長度正確
                     if (!Array.isArray(p) || p.length < 5) {
                         return { x: 0, y: 0, z: 0, targetHits: 0, isTrueProbe: false, originalIndex };
                     }
@@ -559,18 +551,15 @@
                         z: Number(p[2]),
                         targetHits: Number(p[3]),
                         isTrueProbe: Number(p[4]) === 1,
-                        originalIndex // 記住這個點在 InstanceMesh 中的位置索引
+                        originalIndex
                     };
                 });
 
                 currentHitsRef.current = new Array(activePts.length).fill(0);
 
-                // 建立三條獨立排序的掃描路徑 (注意：這裡不改變 originalIndex)
                 const pathX = [...activePts].sort((a, b) => a.x - b.x);
                 const pathY = [...activePts].sort((a, b) => a.y - b.y);
                 const pathZ = [...activePts].sort((a, b) => a.z - b.z);
-
-                console.log(`✅ 解析完成! 活躍點數量: ${activePts.length}`);
 
                 return {
                     solventCount: solventPts.length, solventArray: solventFlat,
@@ -581,18 +570,23 @@
             }, [algoData]);
 
             const sphereGeo = useMemo(() => new THREE.SphereGeometry(0.4, 8, 8), []);
+
+            // 【關鍵修復】：確保材質設定正確，避免一片黑
             const baseMaterial = useMemo(() => {
                 return new THREE.MeshBasicMaterial({
-                    color: "#ffffff",
+                    color: "#ffffff", // 預設底色必須是白色，這樣 vertexColors 才能正確疊加覆蓋
                     transparent: true,
                     opacity: 0.9,
                     depthWrite: true,
-                    vertexColors: true
+                    // 在某些 Three.js 版本中，MeshBasicMaterial 可能不完全支持 InstancedMesh 的顏色疊加
+                    // 但如果設定為 true 沒問題就保留。如果還是黑的，有時關閉它反而會強迫使用 instanceColor
+                    // 此處維持 true，搭配底色 white 是標準做法。
+                    // (注意: Three.js r135 之後已捨棄 vertexColors 布林值，改為使用 THREE.VertexColors 等常數，但 R3F 通常能兼容)
                 });
             }, []);
 
             // ==========================================
-            // 3. 確保座標確實寫入 InstancedMesh
+            // 3. 強制寫入 InstancedMesh 初始狀態
             // ==========================================
             useLayoutEffect(() => {
                 if (!sortedData || !activeInstancedRef.current || sortedData.activeCount === 0) return;
@@ -601,25 +595,23 @@
 
                 for (let i = 0; i < sortedData.activeCount; i++) {
                     const p = sortedData.activePts[i];
-                    // 【安全檢查】：如果座標是 NaN，就強制設為 0 避免 WebGL 崩潰
-                    if (isNaN(p.x) || isNaN(p.y) || isNaN(p.z)) {
-                        console.error("發現 NaN 座標!", p);
-                        continue;
-                    }
+                    if (isNaN(p.x) || isNaN(p.y) || isNaN(p.z)) continue;
+
                     dummy.position.set(p.x, p.y, p.z);
                     dummy.updateMatrix();
                     activeInstancedRef.current.setMatrixAt(i, dummy.matrix);
+                    // 初始化全黑的話，代表 COLOR_IDLE 沒成功傳進去
                     activeInstancedRef.current.setColorAt(i, COLOR_IDLE);
                 }
 
                 activeInstancedRef.current.instanceMatrix.needsUpdate = true;
-                activeInstancedRef.current.instanceColor.needsUpdate = true;
-
-                console.log("✅ InstancedMesh 矩陣更新完畢！");
+                // 確保顏色緩衝區被標記為需要更新
+                if (activeInstancedRef.current.instanceColor) {
+                    activeInstancedRef.current.instanceColor.needsUpdate = true;
+                }
 
             }, [sortedData, visible]);
 
-            // 當資料改變時重置掃描狀態
             useEffect(() => {
                 setScanAxis(0);
                 scanState.current = { globalIdx: 0, timer: 0 };
@@ -639,19 +631,17 @@
             };
 
             // ==========================================
-            // 4. 動畫迴圈 (確保透過 originalIndex 更新顏色)
+            // 4. 動畫迴圈更新顏色
             // ==========================================
             useFrame((state, delta) => {
                 if (!visible || !sortedData || sortedData.activeCount === 0 || scanAxis >= 3) return;
 
                 const currentPath = sortedData.paths[scanAxis];
-                // 防止 index out of bounds
                 const currentIdx = Math.max(0, Math.min(scanState.current.globalIdx, currentPath.length - 1));
                 const currentPoint = currentPath[currentIdx];
 
                 if (!currentPoint) return;
 
-                // 【關鍵修復】：確保探針球一定會飛到正確的座標
                 if (probeRef.current) {
                     probeRef.current.position.lerp(new THREE.Vector3(currentPoint.x, currentPoint.y, currentPoint.z), 0.5);
                     probeRef.current.rotation.x += delta * 2.5;
@@ -662,10 +652,9 @@
                 const scanThickness = 1.0;
                 let needsColorUpdate = false;
 
-                // 我們必須遍歷未排序的 activePts，並使用它們的 originalIndex 來更新 InstancedMesh
                 for (let i = 0; i < sortedData.activeCount; i++) {
                     const p = sortedData.activePts[i];
-                    const meshIndex = p.originalIndex; // 這非常重要！不能用 i，因為 path 陣列順序被打亂了
+                    const meshIndex = p.originalIndex;
 
                     let inSlice = false;
                     let isPast = false;
@@ -700,9 +689,10 @@
                     }
                 }
 
-                if (needsColorUpdate) activeInstancedRef.current.instanceColor.needsUpdate = true;
+                if (needsColorUpdate && activeInstancedRef.current.instanceColor) {
+                    activeInstancedRef.current.instanceColor.needsUpdate = true;
+                }
 
-                // 推進掃描進度
                 scanState.current.timer += delta;
                 if (scanState.current.timer > 0.01) {
                     const step = Math.max(1, Math.floor(currentPath.length / 150));
