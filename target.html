@@ -363,7 +363,7 @@
                 </group>
             );
         }
-        // Phase 3, 4, 5: 網格動畫掃描器
+        // Phase 3: 網格動畫掃描器
         function AlgorithmScanner({ algoData, atoms, phase }) {
             const [scanAxis, setScanAxis] = useState('x'); // 當前掃描軸: 'x', 'y', 'z'
 
@@ -379,7 +379,7 @@
                 timer: 0 // 暫停計時器
             });
 
-            const visible = phase >= 3 && phase <= 5;
+            const visible = phase === 3;
             // 假設 computeTightBounds 已在外部定義或透過 props 傳入
             const bounds = useMemo(() => computeTightBounds(atoms, 2.0), [atoms]);
 
