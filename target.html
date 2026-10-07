@@ -882,7 +882,7 @@
                                 {/* Phase 3, 4, 5: 動畫掃描器 (動態綁定合身邊界框進行掃描) */}
                                 <AlgorithmScanner algoData={data.algo_data} atoms={data.atoms} phase={phase} />
 
-                                <ProbeScanner algoData={precomputedData?.algo_data} phase={phase} />
+                                <ProbeScanner algoData={data.algo_data} phase={phase} />
                                 {/* Phase 6: 口袋 Mesh 呈現 */}
                                 <PocketMesh meshData={data.algo_data.pocket_mesh} visible={phase === 6} />
                                 <SESView visible={phase === 6} />
