@@ -649,9 +649,11 @@
         function PocketMesh({ meshData, visible }) {
             const geometry = useMemo(() => {
                 if (!meshData || !meshData.vertices || meshData.vertices.length === 0) return null;
+
                 const geo = new THREE.BufferGeometry();
                 const verts = new Float32Array(meshData.vertices.flat());
-                const indices = new Uint16Array(meshData.faces.flat());
+                const indices = new Uint32Array(meshData.faces.flat());
+
                 geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
                 geo.setIndex(new THREE.BufferAttribute(indices, 1));
                 geo.computeVertexNormals();
@@ -661,10 +663,16 @@
             if (!visible || !geometry) return null;
 
             return (
-                <mesh geometry={geometry}>
-                    <meshPhysicalMaterial
-                        color="#00ffcc" transmission={0.6} opacity={1} transparent={true}
-                        roughness={0.2} thickness={1.5} emissive="#004433" side={THREE.DoubleSide}
+                // 為了確保不被 SES 遮擋，設定稍微高一點的 renderOrder
+                <mesh geometry={geometry} renderOrder={2}>
+                    <meshPhongMaterial
+                        color="#00ffff"          /* 亮青色 */
+                        emissive="#005555"       /* 讓它自己微微發光，不怕被環境光吃掉 */
+                        transparent={true}
+                        opacity={0.85}           /* 讓它具有一定的實體感 */
+                        side={THREE.DoubleSide}  /* 確保內外兩面都渲染 */
+                        depthWrite={false}       /* 避免和外層 SES 產生 Z-fighting 閃爍 */
+                        shininess={60}
                     />
                 </mesh>
             );
