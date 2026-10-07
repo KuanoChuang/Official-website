@@ -504,15 +504,12 @@
         function ProbeScanner({ algoData, phase }) {
             const visible = phase === 4;
             const probeRef = useRef();
-            const cavityInstancedRef = useRef();
-            const probeInstancedRef = useRef();
-
             const scanState = useRef({ globalIdx: 0, timer: 0 });
 
+            // 1. 整理資料
             const sortedData = useMemo(() => {
                 if (!algoData || !algoData.voxels) return null;
 
-                // 1. Solvent & Protein (維持原本使用 <points> 即可，作為背景)
                 const solventPts = algoData.voxels.solvent || [];
                 const solventFlat = new Float32Array(solventPts.length * 3);
                 for (let i = 0; i < solventPts.length; i++) {
@@ -529,7 +526,6 @@
                     proteinFlat[i * 3 + 2] = proteinPts[i][2];
                 }
 
-                // 2. Cavity (外殼點) - 排序供掃描使用
                 const cavityPts = (algoData.voxels.cavity || []).map(p => ({ x: p[0], y: p[1], z: p[2] }));
                 cavityPts.sort((a, b) => {
                     if (Math.abs(a.y - b.y) > 0.01) return a.y - b.y;
@@ -537,7 +533,6 @@
                     return a.z - b.z;
                 });
 
-                // 3. Probe (探針點)
                 const probePts = (algoData.voxels.probe || []).map(p => ({ x: p[0], y: p[1], z: p[2] }));
 
                 return {
@@ -548,35 +543,11 @@
                 };
             }, [algoData]);
 
-            // 初始化 InstancedMesh 的矩陣
-            useEffect(() => {
-                if (!sortedData || !cavityInstancedRef.current || !probeInstancedRef.current) return;
-
-                const dummy = new THREE.Object3D();
-
-                // 設定 Cavity 實例矩陣
-                for (let i = 0; i < sortedData.cavityCount; i++) {
-                    const p = sortedData.cavityPts[i];
-                    dummy.position.set(p.x, p.y, p.z);
-                    dummy.updateMatrix();
-                    cavityInstancedRef.current.setMatrixAt(i, dummy.matrix);
-                }
-                cavityInstancedRef.current.instanceMatrix.needsUpdate = true;
-
-                // 設定 Probe 實例矩陣
-                for (let i = 0; i < sortedData.probeCount; i++) {
-                    const p = sortedData.probePts[i];
-                    dummy.position.set(p.x, p.y, p.z);
-                    dummy.updateMatrix();
-                    probeInstancedRef.current.setMatrixAt(i, dummy.matrix);
-                }
-                probeInstancedRef.current.instanceMatrix.needsUpdate = true;
-            }, [sortedData]);
-
-
             // ==========================================
-            // 材質 1：Cavity 外殼材質 (ShaderMaterial 用於 Mesh)
+            // 2. 建立共用幾何體與 Shader 材質
             // ==========================================
+            const sphereGeo = useMemo(() => new THREE.SphereGeometry(0.25, 8, 8), []);
+
             const cavityMaterial = useMemo(() => {
                 return new THREE.ShaderMaterial({
                     uniforms: {
@@ -588,7 +559,6 @@
                     vertexShader: `
                 varying vec3 vWorldPosition;
                 void main() {
-                    // InstancedMesh 需要計算 instanceMatrix
                     vec4 worldPosition = modelMatrix * instanceMatrix * vec4(position, 1.0);
                     vWorldPosition = worldPosition.xyz;
                     gl_Position = projectionMatrix * viewMatrix * worldPosition;
@@ -604,19 +574,15 @@
                     float dist = abs(vWorldPosition.y - currentY);
                     float intensity = 1.0 - smoothstep(0.0, layerThickness, dist);
                     vec3 finalColor = mix(colorIdle, colorActive, intensity);
-                    
-                    // Mesh 幾何體本身就是圓的，不需要 gl_PointCoord discard
                     gl_FragColor = vec4(finalColor, 1.0); 
                 }
             `,
-                    transparent: true,
-                    depthWrite: true, // Mesh 可以開啟深度寫入
+                    // 修正透明度與深度測試，避免 Z-fighting 破圖
+                    transparent: false, // 既然 opacity 是 1.0，直接關閉透明以提升效能與渲染正確性
+                    depthWrite: true,
                 });
             }, []);
 
-            // ==========================================
-            // 材質 2：Probe 核心材質 (ShaderMaterial 用於 Mesh)
-            // ==========================================
             const probeMaterial = useMemo(() => {
                 return new THREE.ShaderMaterial({
                     uniforms: {
@@ -659,15 +625,55 @@
                     else {
                         finalColor = colorUnscanned;
                     }
-
                     gl_FragColor = vec4(finalColor, 1.0); 
                 }
             `,
-                    transparent: true,
+                    transparent: false, // 關閉透明以確保實體球渲染正常
                     depthWrite: true,
                 });
             }, []);
 
+            // ==========================================
+            // 3. 手動建構 InstancedMesh (終極防護，保證顯示)
+            // ==========================================
+            const cavityInstancedMesh = useMemo(() => {
+                if (!sortedData || sortedData.cavityCount === 0) return null;
+
+                const mesh = new THREE.InstancedMesh(sphereGeo, cavityMaterial, sortedData.cavityCount);
+                const dummy = new THREE.Object3D();
+
+                for (let i = 0; i < sortedData.cavityCount; i++) {
+                    const p = sortedData.cavityPts[i];
+                    dummy.position.set(p.x, p.y, p.z);
+                    dummy.updateMatrix();
+                    mesh.setMatrixAt(i, dummy.matrix);
+                }
+                mesh.instanceMatrix.needsUpdate = true;
+                mesh.renderOrder = 1;
+                return mesh;
+            }, [sortedData, sphereGeo, cavityMaterial]);
+
+            const probeInstancedMesh = useMemo(() => {
+                if (!sortedData || sortedData.probeCount === 0) return null;
+
+                const mesh = new THREE.InstancedMesh(sphereGeo, probeMaterial, sortedData.probeCount);
+                const dummy = new THREE.Object3D();
+
+                for (let i = 0; i < sortedData.probeCount; i++) {
+                    const p = sortedData.probePts[i];
+                    dummy.position.set(p.x, p.y, p.z);
+                    dummy.updateMatrix();
+                    mesh.setMatrixAt(i, dummy.matrix);
+                }
+                mesh.instanceMatrix.needsUpdate = true;
+                mesh.renderOrder = 2;
+                return mesh;
+            }, [sortedData, sphereGeo, probeMaterial]);
+
+
+            // ==========================================
+            // 4. 動畫迴圈
+            // ==========================================
             useFrame((state, delta) => {
                 if (!visible || !sortedData || sortedData.cavityPts.length === 0) return;
 
@@ -696,10 +702,6 @@
 
             if (!visible || !sortedData) return null;
 
-            // 定義統一的實體小球大小 (這裡設定為半徑 0.2，您可以根據需求調整)
-            const voxelRadius = 0.2;
-            const sphereGeo = new THREE.SphereGeometry(voxelRadius, 8, 8); // 8x8 面數夠低，效能好
-
             return (
                 <group>
                     {sortedData.solventCount > 0 && (
@@ -720,17 +722,9 @@
                         </points>
                     )}
 
-                    {/* 改用 InstancedMesh 渲染 Cavity */}
-                    {sortedData.cavityCount > 0 && (
-                        <instancedMesh ref={cavityInstancedRef} args={[sphereGeo, cavityMaterial, sortedData.cavityCount]} renderOrder={1}>
-                        </instancedMesh>
-                    )}
-
-                    {/* 改用 InstancedMesh 渲染 Probe */}
-                    {sortedData.probeCount > 0 && (
-                        <instancedMesh ref={probeInstancedRef} args={[sphereGeo, probeMaterial, sortedData.probeCount]} renderOrder={2}>
-                        </instancedMesh>
-                    )}
+                    {/* 直接掛載我們手動建立好的 InstancedMesh */}
+                    {cavityInstancedMesh && <primitive object={cavityInstancedMesh} />}
+                    {probeInstancedMesh && <primitive object={probeInstancedMesh} />}
 
                     <group ref={probeRef}>
                         <mesh>
