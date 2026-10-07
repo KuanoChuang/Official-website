@@ -734,6 +734,12 @@
 
             return (
                 <group>
+                    {/* 黃色邊界框 */}
+                    {bounds && phase === 3 && (
+                        <group position={[bounds.cx, bounds.cy, bounds.cz]}>
+                            <boxHelper args={[new THREE.Mesh(new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ))]} color="#ffee00" renderOrder={-1} />
+                        </group>
+                    )}
                     {/* 1. 蛋白質網格 (掛載自製的逐層發光 Shader) */}
                     <points renderOrder={0}>
                         <bufferGeometry>
