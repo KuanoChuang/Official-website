@@ -516,7 +516,7 @@
 
             return (
                 <group>
-                    {/* Phase 3 黃色邊界框 */}
+                    {/* 邊界框 */}
                     {bounds && (
                         <group position={[bounds.cx, bounds.cy, bounds.cz]}>
                             <boxHelper args={[new THREE.Mesh(new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ))]} color="#ffee00" renderOrder={-1} />
@@ -531,7 +531,7 @@
                         <pointsMaterial color="#add8e6" size={0.4} transparent={true} opacity={0.25} depthWrite={false} />
                     </points>
 
-                    {/* 2. 蛋白質實體區 (Protein) - 灰白色 (使用你原先優化過的參數) */}
+                    {/* 2. 蛋白質實體區 (Protein) - 橘琥珀色*/}
                     <points>
                         <bufferGeometry ref={proteinGeoRef} key={`protein-${scanAxis}`}>
                             <bufferAttribute attach="attributes-position" count={currentData.protein.count} array={currentData.protein.array} itemSize={3} />
@@ -729,7 +729,7 @@
 
             return (
                 <group>
-                    {/* 黃色邊界框 */}
+                    {/* 邊界框 */}
                     {bounds && (
                         <group position={[bounds.cx, bounds.cy, bounds.cz]}>
                             <boxHelper args={[new THREE.Mesh(new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ))]} color="#ffee00" renderOrder={-1} />
@@ -816,7 +816,7 @@
             return (
                 <ErrorBoundary>
                     <div className="ui-panel">
-                        <h2>POCKET ALGORITHM PIPELINE</h2>
+                        <h2>Pocket Algorithm</h2>
 
                         <button className={`phase-btn ${phase === 1 ? 'active' : ''}`} onClick={() => setPhase(1)}>
                             Phase 1: 結構視覺化
@@ -850,7 +850,9 @@
                             <div className="legend-item"><div className="color-box" style={{ background: '#add8e6' }}></div> 溶劑區 (Solvent)</div>
                             <div className="legend-item"><div className="color-box" style={{ background: '#ff9933' }}></div> 蛋白區 (Protein)</div>
                             <div className="legend-item"><div className="color-box" style={{ background: '#00ffff' }}></div> 空腔區 (Cavity)</div>
-                            {phase >= 4 && <div className="legend-item"><div className="color-box" style={{ background: '#00ff00', boxShadow: '0 0 10px #00ff00' }}></div> 探針區 (Probe Valid)</div>}
+                            {phase >= 4 && 
+                                <div className="legend-item"><div className="color-box" style={{ background: '#ff00ff' }}></div> 探針區 (Probe Valid)
+                                </div>}
                         </div>
                     )}
 
@@ -881,10 +883,11 @@
 
                                 <GridWireframe algoData={data.algo_data} atoms={data.atoms} visible={phase === 2} />
 
-                                {/* Phase 3, 4, 5: 動畫掃描器 (動態綁定合身邊界框進行掃描) */}
+                                {/* Phase 3: 距離場掃描動畫 */}
                                 <AlgorithmScanner algoData={data.algo_data} atoms={data.atoms} phase={phase} />
 
-                                <ProbeScanner algoData={data.algo_data} phase={phase} />
+                                {/* Phase 4: 探針掃描動畫 */}
+                                <ProbeScanner algoData={data.algo_data} atoms={data.atoms} phase={phase} />
                                 {/* Phase 6: 口袋 Mesh 呈現 */}
                                 <PocketMesh meshData={data.algo_data.pocket_mesh} visible={phase === 6} />
                                 <SESView visible={phase === 6} />
