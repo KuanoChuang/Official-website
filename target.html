@@ -647,32 +647,48 @@
         }
         // Phase 5: 口袋平滑 Mesh
         function PocketMesh({ meshData, visible }) {
+            // 1. 監聽並印出收到的資料，幫助除錯
+            React.useEffect(() => {
+                if (visible) {
+                    console.log("🔍 [PocketMesh] 目前收到的 meshData:", meshData);
+                }
+            }, [meshData, visible]);
+
             const geometry = useMemo(() => {
-                if (!meshData || !meshData.vertices || meshData.vertices.length === 0) return null;
+                if (!meshData || !meshData.vertices || meshData.vertices.length === 0) {
+                    console.warn("⚠️ [PocketMesh] 沒有有效的 vertices 資料！");
+                    return null;
+                }
 
-                const geo = new THREE.BufferGeometry();
-                const verts = new Float32Array(meshData.vertices.flat());
-                const indices = new Uint32Array(meshData.faces.flat());
+                try {
+                    const geo = new THREE.BufferGeometry();
 
-                geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
-                geo.setIndex(new THREE.BufferAttribute(indices, 1));
-                geo.computeVertexNormals();
-                return geo;
+                    // 攤平資料
+                    const verts = new Float32Array(meshData.vertices.flat());
+                    const indices = new Uint32Array(meshData.faces.flat());
+
+                    console.log(`📊 [PocketMesh] 成功攤平！頂點數量: ${verts.length / 3}, 三角面數量: ${indices.length / 3}`);
+
+                    geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+                    geo.setIndex(new THREE.BufferAttribute(indices, 1));
+                    geo.computeVertexNormals();
+                    return geo;
+                } catch (err) {
+                    console.error("❌ [PocketMesh] 幾何體建構失敗:", err);
+                    return null;
+                }
             }, [meshData]);
 
             if (!visible || !geometry) return null;
 
             return (
-                // 為了確保不被 SES 遮擋，設定稍微高一點的 renderOrder
-                <mesh geometry={geometry} renderOrder={2}>
-                    <meshPhongMaterial
-                        color="#00ffff"          /* 亮青色 */
-                        emissive="#005555"       /* 讓它自己微微發光，不怕被環境光吃掉 */
-                        transparent={true}
-                        opacity={0.85}           /* 讓它具有一定的實體感 */
-                        side={THREE.DoubleSide}  /* 確保內外兩面都渲染 */
-                        depthWrite={false}       /* 避免和外層 SES 產生 Z-fighting 閃爍 */
-                        shininess={60}
+                <mesh geometry={geometry} renderOrder={999}>
+                    {/* 2. 終極測試材質：純紅線條 + 無視遮蔽 (depthTest={false}) */}
+                    <meshBasicMaterial
+                        color="#ff0000"
+                        wireframe={true}
+                        side={THREE.DoubleSide}
+                        depthTest={false}
                     />
                 </mesh>
             );
