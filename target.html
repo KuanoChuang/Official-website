@@ -544,18 +544,15 @@
             const probeRef = useRef();
             const activeInstancedRef = useRef(null);
 
-            // 掃描引擎狀態
-            // scanAxis: 0=X, 1=Y, 2=Z, 3=完成
             const [scanAxis, setScanAxis] = useState(0);
             const scanState = useRef({ globalIdx: 0, timer: 0 });
 
             // ==========================================
-            // 1. 解析資料 (讀取 X, Y, Z 獨立狀態)
+            // 1. 解析資料 (讀取 9 維度陣列)
             // ==========================================
             const sortedData = useMemo(() => {
                 if (!algoData || !algoData.voxels) return null;
 
-                // --- 處理背景 Solvent ---
                 const solventPts = algoData.voxels.solvent || [];
                 const solventFlat = new Float32Array(solventPts.length * 3);
                 for (let i = 0; i < solventPts.length; i++) {
@@ -564,7 +561,6 @@
                     solventFlat[i * 3 + 2] = solventPts[i][2] || 0;
                 }
 
-                // --- 處理背景 Protein ---
                 const proteinPts = algoData.voxels.protein || [];
                 const proteinFlat = new Float32Array(proteinPts.length * 3);
                 for (let i = 0; i < proteinPts.length; i++) {
@@ -573,15 +569,17 @@
                     proteinFlat[i * 3 + 2] = proteinPts[i][2] || 0;
                 }
 
-                // --- 處理動態 Active Voxels (Cavity + Probe) ---
                 const rawActive = algoData.voxels.active_voxels || [];
                 const activeCount = rawActive.length;
 
-                // 準備給幾何體 Attributes 的陣列
                 const activeFlat = new Float32Array(activeCount * 3);
-                const targetHitsArray = new Float32Array(activeCount);
 
-                // 分別儲存該點在 X, Y, Z 三個視角下是否為真核心的判定 (0 或 1)
+                // 記錄是否被該軸打中 (Hit)
+                const hitXArray = new Float32Array(activeCount);
+                const hitYArray = new Float32Array(activeCount);
+                const hitZArray = new Float32Array(activeCount);
+
+                // 記錄在該軸是否為核心 (Probe)
                 const isProbeXArray = new Float32Array(activeCount);
                 const isProbeYArray = new Float32Array(activeCount);
                 const isProbeZArray = new Float32Array(activeCount);
@@ -590,7 +588,6 @@
 
                 for (let i = 0; i < activeCount; i++) {
                     const p = rawActive[i];
-                    // 防護措施：確保轉為數字
                     const x = Number(p[0]) || 0;
                     const y = Number(p[1]) || 0;
                     const z = Number(p[2]) || 0;
@@ -599,16 +596,18 @@
                     activeFlat[i * 3 + 1] = y;
                     activeFlat[i * 3 + 2] = z;
 
-                    // 讀取 Python 算好的疊加打擊數與各軸獨立狀態
-                    targetHitsArray[i] = Number(p[3]) || 0;
-                    isProbeXArray[i] = Number(p[4]) || 0;
-                    isProbeYArray[i] = Number(p[5]) || 0;
-                    isProbeZArray[i] = Number(p[6]) || 0;
+                    // 讀取 Python 的 9 維資料 [x, y, z, hX, hY, hZ, pX, pY, pZ]
+                    hitXArray[i] = Number(p[3]) || 0;
+                    hitYArray[i] = Number(p[4]) || 0;
+                    hitZArray[i] = Number(p[5]) || 0;
+
+                    isProbeXArray[i] = Number(p[6]) || 0;
+                    isProbeYArray[i] = Number(p[7]) || 0;
+                    isProbeZArray[i] = Number(p[8]) || 0;
 
                     activePts.push({ x, y, z });
                 }
 
-                // 為了讓探針球能在空間中順暢飛行，必須建立三條依特定軸向排序的路徑
                 const pathX = [...activePts].sort((a, b) => a.x - b.x);
                 const pathY = [...activePts].sort((a, b) => a.y - b.y);
                 const pathZ = [...activePts].sort((a, b) => a.z - b.z);
@@ -617,19 +616,19 @@
                     solventCount: solventPts.length, solventArray: solventFlat,
                     proteinCount: proteinPts.length, proteinArray: proteinFlat,
                     activeCount: activeCount, activeArray: activeFlat,
-                    targetHitsArray, isProbeXArray, isProbeYArray, isProbeZArray,
+                    hitXArray, hitYArray, hitZArray,
+                    isProbeXArray, isProbeYArray, isProbeZArray,
                     paths: [pathX, pathY, pathZ]
                 };
             }, [algoData]);
 
-            // 當重新載入資料時，將掃描狀態歸零
             useEffect(() => {
                 setScanAxis(0);
                 scanState.current = { globalIdx: 0, timer: 0 };
             }, [algoData]);
 
             // ==========================================
-            // 2. 建立死因追溯 ShaderMaterial
+            // 2. 完美的精確狀態機 Shader
             // ==========================================
             const activeMaterial = useMemo(() => {
                 return new THREE.ShaderMaterial({
@@ -637,51 +636,39 @@
                         currentProbePos: { value: new THREE.Vector3(0, -999, 0) },
                         scanAxis: { value: 0 },
                         layerThickness: { value: 0.8 },
-                        worldSize: { value: 0.8 }, // 對應原本的 size=0.8
+                        worldSize: { value: 0.8 },
 
-                        // 基礎顏色
-                        colorIdle: { value: new THREE.Color("#2a4d69") },     // 掃描前暗色
+                        colorIdle: { value: new THREE.Color("#1a2b3c") },     // 未掃描前：極暗色
                         colorScanning: { value: new THREE.Color("#ffffff") }, // 掃描切面白光
 
-                        // 漸進式判定色彩系統
-                        // 第一層 (X軸剛掃完)
-                        colorL1_Cavity_X: { value: new THREE.Color("#4db8ff") }, // 微亮青 (死於 X 軸，它距離核心大於1.4A)
-                        colorL1_Probe: { value: new THREE.Color("#8a4d8f") },    // 微亮紫 (在 X 軸視角看起來是核心)
+                        // 死因色彩系統
+                        colorL1_Cavity_X: { value: new THREE.Color("#4db8ff") }, // 青色 (死於 X 軸)
+                        colorL1_Probe: { value: new THREE.Color("#8a4d8f") },    // 微亮紫 (X 軸過關)
 
-                        // 第二層 (Y軸剛掃完)
-                        colorL2_Cavity_Y: { value: new THREE.Color("#00cc66") }, // 明亮綠 (原本是紫，但死於 Y 軸被降級)
-                        colorL2_Probe: { value: new THREE.Color("#cc44aa") },    // 明亮粉紫 (過了 X, Y 兩關的核心)
+                        colorL2_Cavity_Y: { value: new THREE.Color("#00cc66") }, // 綠色 (死於 Y 軸)
+                        colorL2_Probe: { value: new THREE.Color("#cc44aa") },    // 明亮紫 (Y 軸過關)
 
-                        // 第三層 (Z軸剛掃完，最終定案)
-                        colorL3_Cavity_Z: { value: new THREE.Color("#ffff00") }, // 螢光黃 (過了兩關，最終死於 Z 軸)
-                        colorL3_Probe: { value: new THREE.Color("#ff33cc") }     // 高光粉紫 (最終的三軸真核心)
+                        colorL3_Cavity_Z: { value: new THREE.Color("#ffff00") }, // 黃色 (死於 Z 軸)
+                        colorL3_Probe: { value: new THREE.Color("#ff33cc") }     // 高光紫 (三軸真核心)
                     },
                     vertexShader: `
                 uniform float worldSize;
                 
-                // 接收從 BufferAttribute 傳過來的自定義屬性資料
-                attribute float targetHits;
-                attribute float isProbeX;
-                attribute float isProbeY;
-                attribute float isProbeZ;
+                attribute float hitX; attribute float hitY; attribute float hitZ;
+                attribute float isProbeX; attribute float isProbeY; attribute float isProbeZ;
                 
                 varying vec3 vWorldPosition;
-                varying float vTargetHits;
-                varying float vIsProbeX;
-                varying float vIsProbeY;
-                varying float vIsProbeZ;
+                varying float vHitX; varying float vHitY; varying float vHitZ;
+                varying float vIsProbeX; varying float vIsProbeY; varying float vIsProbeZ;
 
                 void main() {
-                    vTargetHits = targetHits;
-                    vIsProbeX = isProbeX;
-                    vIsProbeY = isProbeY;
-                    vIsProbeZ = isProbeZ;
+                    vHitX = hitX; vHitY = hitY; vHitZ = hitZ;
+                    vIsProbeX = isProbeX; vIsProbeY = isProbeY; vIsProbeZ = isProbeZ;
                     
                     vec4 worldPosition = modelMatrix * vec4(position, 1.0);
                     vWorldPosition = worldPosition.xyz;
                     vec4 mvPosition = viewMatrix * worldPosition;
                     
-                    // 根據相機距離縮放點的大小，確保不失真
                     gl_PointSize = worldSize * (400.0 / max(-mvPosition.z, 0.1));
                     gl_Position = projectionMatrix * mvPosition;
                 }
@@ -691,25 +678,19 @@
                 uniform int scanAxis;
                 uniform float layerThickness;
                 
-                uniform vec3 colorIdle;
-                uniform vec3 colorScanning;
-                
+                uniform vec3 colorIdle; uniform vec3 colorScanning;
                 uniform vec3 colorL1_Cavity_X; uniform vec3 colorL1_Probe;
                 uniform vec3 colorL2_Cavity_Y; uniform vec3 colorL2_Probe;
                 uniform vec3 colorL3_Cavity_Z; uniform vec3 colorL3_Probe;
 
                 varying vec3 vWorldPosition;
-                varying float vTargetHits;
-                varying float vIsProbeX;
-                varying float vIsProbeY;
-                varying float vIsProbeZ;
+                varying float vHitX; varying float vHitY; varying float vHitZ;
+                varying float vIsProbeX; varying float vIsProbeY; varying float vIsProbeZ;
 
                 void main() {
-                    // 把預設的方塊點切成圓形
                     vec2 coord = gl_PointCoord - vec2(0.5);
                     if(length(coord) > 0.5) discard;
 
-                    // 空間邏輯判斷
                     bool isPastX = vWorldPosition.x < currentProbePos.x;
                     bool isPastY = vWorldPosition.y < currentProbePos.y;
                     bool isPastZ = vWorldPosition.z < currentProbePos.z;
@@ -718,95 +699,72 @@
                     bool inSliceY = abs(vWorldPosition.y - currentProbePos.y) < layerThickness;
                     bool inSliceZ = abs(vWorldPosition.z - currentProbePos.z) < layerThickness;
 
-                    // 計算「視覺上該點目前被累積掃描過幾次」
-                    int visualHits = 0;
+                    // 狀態機：0=Idle, 1/2/3=Probe等級, 11/12/13=死於X/Y/Z的Cavity
+                    int state = 0; 
                     bool isScanningNow = false;
 
-                    if (scanAxis == 0) {
-                        if (inSliceX) isScanningNow = true;
-                        if (isPastX) visualHits = 1;
-                    } else if (scanAxis == 1) {
-                        visualHits = 1; // X軸一定已經掃完
-                        if (inSliceY) isScanningNow = true;
-                        if (isPastY) visualHits = 2;
-                    } else if (scanAxis == 2) {
-                        visualHits = 2; // X,Y軸一定已經掃完
-                        if (inSliceZ) isScanningNow = true;
-                        if (isPastZ) visualHits = 3;
-                    } else if (scanAxis >= 3) {
-                        visualHits = 3; // 掃描動畫結束
+                    // 【X 軸判定】
+                    if (scanAxis >= 0) {
+                        if (scanAxis == 0 && inSliceX && vHitX > 0.5) isScanningNow = true;
+                        // 只有真正被 X 軸打中的點，才會在 X 軸結算！
+                        if (vHitX > 0.5 && (scanAxis > 0 || isPastX)) {
+                            if (vIsProbeX > 0.5) state = 1; // 暫定為 X 軸核心
+                            else state = 11; // 淘汰為 X 軸外殼
+                        }
                     }
 
-                    // 防禦機制：點的視覺亮起次數絕不能超過 Python 預先算好的目標上限
-                    int maxHits = int(vTargetHits);
-                    if (visualHits > maxHits) visualHits = maxHits;
-
-                    vec3 finalColor = colorIdle;
-                    float alpha = 0.3; // 掃描前預設半透明
-
-                    // 1. 正在被切面掃過的點，閃亮白光
-                    if (isScanningNow && visualHits < maxHits) {
-                        finalColor = colorScanning;
-                        alpha = 1.0;
-                    } 
-                    // 2. 掃描過後的點，根據「降級邏輯」計算顏色
-                    else if (visualHits > 0) {
-                        
-                        if (visualHits == 1) {
-                            // 【第一層：X 軸判決】
-                            if (vIsProbeX > 0.5) {
-                                finalColor = colorL1_Probe;
-                                alpha = 0.6; // 核心光芒漸漸亮起
+                    // 【Y 軸判定】
+                    if (scanAxis >= 1) {
+                        if (scanAxis == 1 && inSliceY && vHitY > 0.5) isScanningNow = true;
+                        if (vHitY > 0.5 && (scanAxis > 1 || isPastY)) {
+                            if (state == 11) {
+                                // 已經在 X 軸死掉了，保持屍體狀態
+                            } else if (vIsProbeY > 0.5) {
+                                state = 2; // 升級為 Y 軸核心
                             } else {
-                                finalColor = colorL1_Cavity_X; // 青色 (X軸淘汰)
-                                alpha = 0.4; // 成為外殼，降低透明度避免擋住內部
-                            }
-                        } 
-                        else if (visualHits == 2) {
-                            // 【第二層：Y 軸判決 (繼承 X)】
-                            if (vIsProbeX < 0.5) {
-                                // 已經在第一關死掉，保持 X 軸屍體的青色
-                                finalColor = colorL1_Cavity_X;
-                                alpha = 0.4;
-                            } else if (vIsProbeY < 0.5) {
-                                // 原本是核心，但在這關被發現超過 1.4A，降級淘汰
-                                finalColor = colorL2_Cavity_Y; // 綠色 (Y軸淘汰)
-                                alpha = 0.6;
-                            } else {
-                                // 連續過兩關的強悍核心
-                                finalColor = colorL2_Probe;
-                                alpha = 0.8;
-                            }
-                        } 
-                        else if (visualHits >= 3) {
-                            // 【第三層：Z 軸最終判決】
-                            if (vIsProbeX < 0.5) {
-                                finalColor = colorL1_Cavity_X; // 保持青色
-                                alpha = 0.4;
-                            } else if (vIsProbeY < 0.5) {
-                                finalColor = colorL2_Cavity_Y; // 保持綠色
-                                alpha = 0.6;
-                            } else if (vIsProbeZ < 0.5) {
-                                // 原本是完美核心，卻死在最後一步
-                                finalColor = colorL3_Cavity_Z; // 黃色 (Z軸淘汰)
-                                alpha = 0.8;
-                            } else {
-                                // 完美的最終核心點！
-                                finalColor = colorL3_Probe;
-                                alpha = 1.0; // 完全不透明，最為耀眼
+                                state = 12; // 淘汰為 Y 軸外殼
                             }
                         }
+                    }
+
+                    // 【Z 軸判定】
+                    if (scanAxis >= 2) {
+                        if (scanAxis == 2 && inSliceZ && vHitZ > 0.5) isScanningNow = true;
+                        if (vHitZ > 0.5 && (scanAxis > 2 || isPastZ)) {
+                            if (state == 11 || state == 12) {
+                                // 已經死於 X 或 Y，保持屍體狀態
+                            } else if (vIsProbeZ > 0.5) {
+                                state = 3; // 恭喜成為最終核心
+                            } else {
+                                state = 13; // 淘汰為 Z 軸外殼
+                            }
+                        }
+                    }
+
+                    // 【著色器映射】
+                    vec3 finalColor = colorIdle;
+                    float alpha = 0.1; // Idle 狀態幾乎透明
+
+                    if (isScanningNow) {
+                        finalColor = colorScanning;
+                        alpha = 1.0;
+                    } else {
+                        if (state == 1) { finalColor = colorL1_Probe; alpha = 0.5; }
+                        else if (state == 2) { finalColor = colorL2_Probe; alpha = 0.7; }
+                        else if (state == 3) { finalColor = colorL3_Probe; alpha = 1.0; }
+                        else if (state == 11) { finalColor = colorL1_Cavity_X; alpha = 0.4; }
+                        else if (state == 12) { finalColor = colorL2_Cavity_Y; alpha = 0.6; }
+                        else if (state == 13) { finalColor = colorL3_Cavity_Z; alpha = 0.8; }
                     }
 
                     gl_FragColor = vec4(finalColor, alpha); 
                 }
             `,
                     transparent: true,
-                    depthWrite: false, // 確保外殼和內部不會因為深度緩衝區而互相打架破圖
+                    depthWrite: false,
                 });
             }, []);
 
-            // 初始載入：為 InstancedMesh 設定基礎矩陣座標
             useLayoutEffect(() => {
                 if (!sortedData || !activeInstancedRef.current) return;
                 const dummy = new THREE.Object3D();
@@ -821,41 +779,29 @@
                 }
             }, [sortedData, visible]);
 
-            // ==========================================
-            // 3. 動畫迴圈推動
-            // ==========================================
             useFrame((state, delta) => {
                 if (!visible || !sortedData || sortedData.activeCount === 0 || scanAxis >= 3) return;
-
                 const currentPath = sortedData.paths[scanAxis];
-                // 確保不會陣列越界
                 const currentIdx = Math.min(scanState.current.globalIdx, currentPath.length - 1);
                 const currentPoint = currentPath[currentIdx];
-
                 if (!currentPoint) return;
 
-                // 探針球平滑追蹤目前排序點
                 if (probeRef.current) {
                     probeRef.current.position.lerp(new THREE.Vector3(currentPoint.x, currentPoint.y, currentPoint.z), 0.5);
                     probeRef.current.rotation.x += delta * 2.5;
                     probeRef.current.rotation.y += delta * 2.5;
                 }
 
-                // 把狀態塞進 GPU
                 if (activeMaterial) {
                     activeMaterial.uniforms.scanAxis.value = scanAxis;
                     activeMaterial.uniforms.currentProbePos.value.copy(probeRef.current.position);
                 }
 
-                // 推進掃描幀數，讓探針往前走
                 scanState.current.timer += delta;
                 if (scanState.current.timer > 0.01) {
-                    // 動態步伐控制：點越多走越快，確保幾秒內掃完一軸
                     const step = Math.max(1, Math.floor(currentPath.length / 120));
                     scanState.current.globalIdx += step;
                     scanState.current.timer = 0;
-
-                    // 掃描完畢，進入下一軸向
                     if (scanState.current.globalIdx >= currentPath.length) {
                         scanState.current.globalIdx = 0;
                         setScanAxis(prev => prev + 1);
@@ -867,7 +813,6 @@
 
             return (
                 <group>
-                    {/* 靜態背景層：Solvent */}
                     {sortedData.solventCount > 0 && (
                         <points>
                             <bufferGeometry>
@@ -877,7 +822,6 @@
                         </points>
                     )}
 
-                    {/* 靜態背景層：Protein */}
                     {sortedData.proteinCount > 0 && (
                         <points>
                             <bufferGeometry>
@@ -887,13 +831,16 @@
                         </points>
                     )}
 
-                    {/* 動態主角：利用 Shader 的 Active Voxels */}
                     {sortedData.activeCount > 0 && (
                         <points renderOrder={1}>
                             <bufferGeometry>
                                 <bufferAttribute attach="attributes-position" count={sortedData.activeCount} array={sortedData.activeArray} itemSize={3} />
-                                {/* 傳入給 Shader 的判定數據 */}
-                                <bufferAttribute attach="attributes-targetHits" count={sortedData.activeCount} array={sortedData.targetHitsArray} itemSize={1} />
+
+                                {/* 傳入完整的 Hit 和 Probe 狀態標籤 */}
+                                <bufferAttribute attach="attributes-hitX" count={sortedData.activeCount} array={sortedData.hitXArray} itemSize={1} />
+                                <bufferAttribute attach="attributes-hitY" count={sortedData.activeCount} array={sortedData.hitYArray} itemSize={1} />
+                                <bufferAttribute attach="attributes-hitZ" count={sortedData.activeCount} array={sortedData.hitZArray} itemSize={1} />
+
                                 <bufferAttribute attach="attributes-isProbeX" count={sortedData.activeCount} array={sortedData.isProbeXArray} itemSize={1} />
                                 <bufferAttribute attach="attributes-isProbeY" count={sortedData.activeCount} array={sortedData.isProbeYArray} itemSize={1} />
                                 <bufferAttribute attach="attributes-isProbeZ" count={sortedData.activeCount} array={sortedData.isProbeZArray} itemSize={1} />
@@ -902,7 +849,6 @@
                         </points>
                     )}
 
-                    {/* 掃描進行中的實體探針球 */}
                     {scanAxis < 3 && sortedData.activeCount > 0 && (
                         <group ref={probeRef}>
                             <mesh>
