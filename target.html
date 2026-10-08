@@ -324,7 +324,7 @@
 
                 // 讓探針沿著閉合曲線持續往前進
                 // 將經過的時間取小數部分 (% 1)，保持在 0.0 ~ 1.0 之間循環
-                const speed = 0.05; // 調整這個數值來改變掃描速度
+                const speed = 0.001; // 調整這個數值來改變掃描速度
                 const t = (clock.elapsedTime * speed) % 1;
 
                 const position = curve.getPointAt(t);
