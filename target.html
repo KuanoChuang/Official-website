@@ -1011,16 +1011,21 @@
 
                     {(phase === 3 || phase === 4) && (
                         <div className="legend">
-                            {/* 基礎背景結構 */}
+                            {/* 基礎區塊 */}
                             <div className="legend-item"><div className="color-box" style={{ background: '#88ccff' }}></div> 溶劑區</div>
                             <div className="legend-item"><div className="color-box" style={{ background: '#ff9933' }}></div> 蛋白區</div>
                             
-                            {/* 三軸空腔區 (Phase 3 & 4 都有) */}
+                            {/* 掃描中 (白色) - 排在蛋白區右邊 */}
+                            <div className="legend-item">
+                                <div className="color-box" style={{ background: '#ffffff'}}></div> 掃描中
+                            </div>
+
+                            {/* 三軸空腔區 */}
                             <div className="legend-item"><div className="color-box" style={{ background: '#4db8ff' }}></div> X軸 空腔</div>
                             <div className="legend-item"><div className="color-box" style={{ background: '#00F200' }}></div> Y軸 空腔</div>
                             <div className="legend-item"><div className="color-box" style={{ background: '#F3E91F' }}></div> Z軸 空腔</div>
                             
-                            {/* 三軸探針核心區 (只有 Phase 4 才有) */}
+                            {/* 三軸探針核心區 */}
                             {phase === 4 && (
                                 <>
                                     <div className="legend-item"><div className="color-box" style={{ background: '#DB5BBD' }}></div> X軸 探針</div>
