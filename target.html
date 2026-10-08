@@ -685,8 +685,6 @@
                 varying float vIsProbeX; varying float vIsProbeY; varying float vIsProbeZ;
 
                 void main() {
-                    vec2 coord = gl_PointCoord - vec2(0.5);
-                    if(length(coord) > 0.5) discard;
 
                     // 1. 判定是否已經過去了 (加入 0.1 的稍大容差，對付 lerp 未到達的問題)
                     bool isPastX = vWorldPosition.x < (currentProbePos.x + 0.1);
