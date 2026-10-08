@@ -158,7 +158,7 @@
         import React, { useRef, useState, useEffect, useLayoutEffect, useMemo, Suspense } from 'react';
         import { createRoot } from 'react-dom/client';
         import { Canvas, useFrame } from '@react-three/fiber';
-        import { OrbitControls, useGLTF } from '@react-three/drei';
+        import { OrbitControls, useGLTF, Sphere, Line } from '@react-three/drei';
         import * as THREE from 'three';
 
         class Boundary extends React.Component {
@@ -351,22 +351,24 @@
             useFrame(({ clock }) => {
                 if (!probeRef.current || !curve) return;
                 // 來回滾動 (0 -> 1 -> 0)
-                const t = (Math.sin(clock.elapsedTime * 1.5) + 1) / 2;
+                // 這裡把速度從 1.5 稍微調慢到 1.0，讓使用者看清楚軌跡
+                const t = (Math.sin(clock.elapsedTime * 1.0) + 1) / 2;
                 const position = curve.getPointAt(t);
                 probeRef.current.position.copy(position);
             });
 
             return (
-                <Sphere ref={probeRef} args={[radius, 32, 32]}>
-                    <meshPhysicalMaterial
-                        color="#00ffff"
-                        transmission={0.9}
-                        opacity={1}
-                        transparent
-                        roughness={0.0}
-                        thickness={1.5}
+                <mesh ref={probeRef}>
+                    {/* 使用你提供的 1.4Å 線框球設定 */}
+                    <sphereGeometry args={[radius, 16, 16]} />
+                    <meshBasicMaterial
+                        color="#ffffff"
+                        wireframe={true}
+                        transparent={true}
+                        opacity={0.4}
+                        depthTest={false} /* 確保線框永遠顯示在最上層，不會被原子遮擋 */
                     />
-                </Sphere>
+                </mesh>
             );
         }
         // Phase 2: 全空間 3D 網格陣列 (覆蓋整個 Bounding Box)
@@ -1188,9 +1190,9 @@
                                     visible={(phase === 1 && phase1Opts.vdw) || phase === 2 || phase === 3}
                                     dimmed={phase === 2 || phase === 3} />
 
-                                <ProbeScannerView 
-                                    atoms={data.atoms} 
-                                    visible={phase === 1} 
+                                <ProbeScannerView
+                                    atoms={data.atoms}
+                                    visible={phase === 1}
                                 />
                                 {/* Phase 1,5: SES */}
                                 <SESView visible={(phase === 1 && phase1Opts.ses) || phase === 5} />
