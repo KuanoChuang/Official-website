@@ -517,7 +517,14 @@
                         <bufferGeometry ref={activeGeoRef} key={`active-${scanAxis}`}>
                             <bufferAttribute attach="attributes-position" count={currentData.active.count} array={currentData.active.array} itemSize={3} />
                         </bufferGeometry>
-                        <pointsMaterial color="#4db8ff" size={0.75} transparent={true} opacity={0.8} toneMapped={false} depthWrite={false} />
+                        <pointsMaterial 
+                            color={scanAxis === 'x' ? "#4db8ff" : scanAxis === 'y' ? "#00F200" : "#F3E91F"} 
+                            size={0.75} 
+                            transparent={true} 
+                            opacity={0.8} 
+                            toneMapped={false} 
+                            depthWrite={false} 
+                        />
                     </points>
 
                     {/* 掃描平面 (Plane) */}
@@ -527,7 +534,7 @@
                             {scanAxis === 'y' && <planeGeometry args={[bounds.sizeX, bounds.sizeZ]} />}
                             {scanAxis === 'z' && <planeGeometry args={[bounds.sizeX, bounds.sizeY]} />}
                             <meshBasicMaterial
-                                color={scanAxis === 'x' ? "#00ffff" : scanAxis === 'y' ? "#ff00ff" : "#ffff00"}
+                                color={scanAxis === 'x' ? "#4db8ff" : scanAxis === 'y' ? "#00F200" : "#F3E91F"}
                                 transparent={true}
                                 opacity={0.3}
                                 side={THREE.DoubleSide}
