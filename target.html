@@ -751,7 +751,7 @@
                         else destiny = 13;
                     }
 
-                    // 4. 上色
+                    // 4. 上色 (提升了各階段的核心透明度 alpha)
                     vec3 finalColor = colorIdle;
                     float alpha = 0.05; 
 
@@ -761,17 +761,17 @@
                     } else if (unlockedLevel > 0) {
                         if (unlockedLevel == 1) {
                             if (vHitX > 0.5) {
-                                if (vIsProbeX > 0.5) { finalColor = colorL1_Probe; alpha = 0.5; }
+                                if (vIsProbeX > 0.5) { finalColor = colorL1_Probe; alpha = 0.6; }
                                 else { finalColor = colorL1_Cavity_X; alpha = 0.4; }
                             }
                         } 
                         else if (unlockedLevel == 2) {
                             if (destiny == 11) { finalColor = colorL1_Cavity_X; alpha = 0.4; } 
                             else if (vHitY > 0.5) {
-                                if (vIsProbeY > 0.5) { finalColor = colorL2_Probe; alpha = 0.7; }
+                                if (vIsProbeY > 0.5) { finalColor = colorL2_Probe; alpha = 0.8; }
                                 else { finalColor = colorL2_Cavity_Y; alpha = 0.6; } 
                             } else {
-                                if (vIsProbeX > 0.5) { finalColor = colorL1_Probe; alpha = 0.5; }
+                                if (vIsProbeX > 0.5) { finalColor = colorL1_Probe; alpha = 0.6; }
                             }
                         } 
                         else if (unlockedLevel == 3) {
@@ -781,13 +781,19 @@
                                 if (vIsProbeZ > 0.5) { finalColor = colorL3_Probe; alpha = 1.0; } 
                                 else { finalColor = colorL3_Cavity_Z; alpha = 0.8; } 
                             } else {
-                                if (destiny == 2) { finalColor = colorL2_Probe; alpha = 0.7; }
-                                else if (destiny == 1) { finalColor = colorL1_Probe; alpha = 0.5; }
+                                if (destiny == 2) { finalColor = colorL2_Probe; alpha = 0.8; }
+                                else if (destiny == 1) { finalColor = colorL1_Probe; alpha = 0.6; }
                             }
                         }
                     }
 
+                    // 將計算出來的線性顏色賦值給 gl_FragColor
                     gl_FragColor = vec4(finalColor, alpha); 
+                    
+                    // 【顏色修復關鍵】：引入 Three.js 內建的色彩空間與色調轉換，讓 Shader 顏色與原生 PointsMaterial 一樣亮！
+                    // 注意：如果您的 Three.js 版本較舊而報錯，請將 colorspace_fragment 改為 encodings_fragment
+                    #include <tonemapping_fragment>
+                    #include <colorspace_fragment>
                 }
             `,
                     transparent: true,
