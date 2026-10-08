@@ -813,7 +813,7 @@
             useFrame((state, delta) => {
                 if (!visible || !sortedData || sortedData.activeCount === 0) return;
 
-                // 如果進入展示期 (scanAxis === 3)，暫停幾秒後重置回 X 軸
+                // 1. 如果進入展示期 (scanAxis === 3)，計時後重置
                 if (scanAxis >= 3) {
                     scanState.current.displayTimer += delta;
                     if (scanState.current.displayTimer > 3.0) { // 停留 3 秒
@@ -829,35 +829,44 @@
                 const currentIdx = Math.min(scanState.current.globalIdx, currentPath.length - 1);
                 const currentPoint = currentPath[currentIdx];
 
-                if (!currentPoint) return;
-
-                if (probeRef.current) {
+                // 2. 探針球移動 (只有在有目標點時才 lerp)
+                if (currentPoint && probeRef.current) {
                     probeRef.current.position.lerp(new THREE.Vector3(currentPoint.x, currentPoint.y, currentPoint.z), 0.5);
                     probeRef.current.rotation.x += delta * 2.5;
                     probeRef.current.rotation.y += delta * 2.5;
                 }
 
-                if (activeMaterial) {
+                // 3. 更新 Shader (確保探針位置即時傳入)
+                if (activeMaterial && probeRef.current) {
                     activeMaterial.uniforms.scanAxis.value = scanAxis;
                     activeMaterial.uniforms.currentProbePos.value.copy(probeRef.current.position);
                 }
 
+                // 4. 推進進度 (不管有沒有 currentPoint，時間都要繼續走！)
                 scanState.current.timer += delta;
-                if (scanState.current.globalIdx >= currentPath.length) {
-                // 【終極殺招】：切換軸向之前，強制把探針球順移到極遠處 (超過 1000 確保 isPast 絕對成立)，
-                // 這樣 Shader 就會在這一幀把所有點強迫結算！
-                if (scanAxis === 0) probeRef.current.position.x = 1000;
-                if (scanAxis === 1) probeRef.current.position.y = 1000;
-                if (scanAxis === 2) probeRef.current.position.z = 1000;
-                
-                // 強制更新 Shader Uniform
-                if (activeMaterial) {
-                    activeMaterial.uniforms.currentProbePos.value.copy(probeRef.current.position);
-                }
+                if (scanState.current.timer > 0.01) {
+                    const step = Math.max(1, Math.floor(currentPath.length / 120));
+                    scanState.current.globalIdx += step;
+                    scanState.current.timer = 0;
 
-                scanState.current.globalIdx = 0;
-                setScanAxis(prev => prev + 1); // 0->1, 1->2, 2->3(進入展示期)
-            }
+                    // 該軸掃描到底了
+                    if (scanState.current.globalIdx >= currentPath.length) {
+
+                        // 【白光消除法】：切換軸向之前，不直接修改 probe 實體，
+                        // 而是強制把極遠的座標傳給 Shader，瞬間結算該軸所有點！
+                        if (activeMaterial) {
+                            const farPos = new THREE.Vector3().copy(probeRef.current.position);
+                            if (scanAxis === 0) farPos.x += 1000;
+                            if (scanAxis === 1) farPos.y += 1000;
+                            if (scanAxis === 2) farPos.z += 1000;
+                            activeMaterial.uniforms.currentProbePos.value.copy(farPos);
+                        }
+
+                        // 重置進度並切換到下一軸
+                        scanState.current.globalIdx = 0;
+                        setScanAxis(prev => prev + 1); // 0->1, 1->2, 2->3(展示)
+                    }
+                }
             });
 
             if (!visible || !sortedData) return null;
