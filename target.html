@@ -1010,28 +1010,59 @@
                     </div>
 
                     {(phase === 3 || phase === 4) && (
-                        <div className="legend">
-                            {/* 基礎區塊 */}
-                            <div className="legend-item"><div className="color-box" style={{ background: '#88ccff' }}></div> 溶劑區</div>
-                            <div className="legend-item"><div className="color-box" style={{ background: '#ff9933' }}></div> 蛋白區</div>
-                            
-                            {/* 掃描中 (白色) - 排在蛋白區右邊 */}
-                            <div className="legend-item">
-                                <div className="color-box" style={{ background: '#ffffff'}}></div> 掃描中
+                        <div 
+                            className="legend" 
+                            style={{ 
+                                display: 'grid', 
+                                // Phase 3 只需要 1 欄，Phase 4 需要 2 欄
+                                gridTemplateColumns: phase === 4 ? 'auto auto' : 'auto', 
+                                gap: '10px 30px', // 上下間距 10px，左右間距 30px
+                                alignItems: 'center'
+                            }}
+                        >
+                            {/* 第一排：溶劑 */}
+                            <div className="legend-item" style={{ gridRow: 1, gridColumn: 1 }}>
+                                <div className="color-box" style={{ background: '#88ccff' }}></div> 溶劑區
                             </div>
 
-                            {/* 三軸空腔區 */}
-                            <div className="legend-item"><div className="color-box" style={{ background: '#4db8ff' }}></div> X軸 空腔</div>
-                            <div className="legend-item"><div className="color-box" style={{ background: '#00F200' }}></div> Y軸 空腔</div>
-                            <div className="legend-item"><div className="color-box" style={{ background: '#F3E91F' }}></div> Z軸 空腔</div>
-                            
-                            {/* 三軸探針核心區 */}
+                            {/* 第二排：蛋白 + 掃描(如果有的話) */}
+                            <div className="legend-item" style={{ gridRow: 2, gridColumn: 1 }}>
+                                <div className="color-box" style={{ background: '#ff9933' }}></div> 蛋白區
+                            </div>
                             {phase === 4 && (
-                                <>
-                                    <div className="legend-item"><div className="color-box" style={{ background: '#DB5BBD' }}></div> X軸 探針</div>
-                                    <div className="legend-item"><div className="color-box" style={{ background: '#E16DE1' }}></div> Y軸 探針</div>
-                                    <div className="legend-item"><div className="color-box" style={{ background: '#ff00ff' }}></div> Z軸 探針</div>
-                                </>
+                                <div className="legend-item" style={{ gridRow: 2, gridColumn: 2 }}>
+                                    <div className="color-box" style={{ background: '#ffffff' }}></div> 掃描中
+                                </div>
+                            )}
+
+                            {/* 第三排：X 軸相關 */}
+                            <div className="legend-item" style={{ gridRow: 3, gridColumn: 1 }}>
+                                <div className="color-box" style={{ background: '#4db8ff' }}></div> X軸 空腔
+                            </div>
+                            {phase === 4 && (
+                                <div className="legend-item" style={{ gridRow: 3, gridColumn: 2 }}>
+                                    <div className="color-box" style={{ background: '#DB5BBD' }}></div> X軸 探針
+                                </div>
+                            )}
+
+                            {/* 第四排：Y 軸相關 */}
+                            <div className="legend-item" style={{ gridRow: 4, gridColumn: 1 }}>
+                                <div className="color-box" style={{ background: '#00F200' }}></div> Y軸 空腔
+                            </div>
+                            {phase === 4 && (
+                                <div className="legend-item" style={{ gridRow: 4, gridColumn: 2 }}>
+                                    <div className="color-box" style={{ background: '#E16DE1' }}></div> Y軸 探針
+                                </div>
+                            )}
+
+                            {/* 第五排：Z 軸相關 */}
+                            <div className="legend-item" style={{ gridRow: 5, gridColumn: 1 }}>
+                                <div className="color-box" style={{ background: '#F3E91F' }}></div> Z軸 空腔
+                            </div>
+                            {phase === 4 && (
+                                <div className="legend-item" style={{ gridRow: 5, gridColumn: 2 }}>
+                                    <div className="color-box" style={{ background: '#ff00ff' }}></div> Z軸 探針
+                                </div>
                             )}
                         </div>
                     )}
