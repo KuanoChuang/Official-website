@@ -687,9 +687,9 @@
                     if(length(coord) > 0.5) discard;
 
                     // 1. 空間位置判定
-                    bool isPastX = vWorldPosition.x < currentProbePos.x;
-                    bool isPastY = vWorldPosition.y < currentProbePos.y;
-                    bool isPastZ = vWorldPosition.z < currentProbePos.z;
+                    bool isPastX = vWorldPosition.x <= (currentProbePos.x + 0.01);
+                    bool isPastY = vWorldPosition.y <= (currentProbePos.y + 0.01);
+                    bool isPastZ = vWorldPosition.z <= (currentProbePos.z + 0.01);
 
                     bool inSliceX = abs(vWorldPosition.x - currentProbePos.x) < layerThickness;
                     bool inSliceY = abs(vWorldPosition.y - currentProbePos.y) < layerThickness;
