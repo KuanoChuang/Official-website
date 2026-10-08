@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>多尺度建模 (Multi-scale Modeling) | Molris 默瑞思</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+            sans: ['"Noto Sans TC"', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
+          },
+          colors: {
+            molris: {
+              cyan: '#00E5FF',
+              blue: '#0A2463',
+              dark: '#030509',
+              gray: '#8A9BAE',
+              neonpink: '#F000FF',
+              orange: '#F97316'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    // 圖片輪播邏輯
+    let currentSlideIdx = 0;
+    const totalSlides = 3;
+    
+    const slideCaptions = [
+      "Molris 視覺化 - 蛋白質同源建模",
+      "Molris 視覺化 - 奈米與主客體結構",
+      "Molris 視覺化 - 表面靜電勢分佈 (APBS)"
+    ];
+    let autoPlayInterval;
+
+    function renderSlide(index) {
+      for (let i = 0; i < totalSlides; i++) {
+        const img = document.getElementById(`hero-img-${i}`);
+        const dot = document.getElementById(`hero-dot-${i}`);
+        
+        if (i === index) {
+          img.classList.remove('opacity-0', 'z-0');
+          img.classList.add('opacity-100', 'z-10');
+          dot.classList.remove('bg-white/40');
+          dot.classList.add('bg-molris-cyan');
+        } else {
+          img.classList.remove('opacity-100', 'z-10');
+          img.classList.add('opacity-0', 'z-0');
+          dot.classList.remove('bg-molris-cyan');
+          dot.classList.add('bg-white/40');
+        }
+      }
+      document.getElementById('hero-slider-caption').innerText = slideCaptions[index];
+    }
+
+    function nextSlide(step) {
+      currentSlideIdx = (currentSlideIdx + step + totalSlides) % totalSlides;
+      renderSlide(currentSlideIdx);
+      resetAutoPlay();
+    }
+
+    function setSlide(index) {
+      currentSlideIdx = index;
+      renderSlide(currentSlideIdx);
+      resetAutoPlay();
+    }
+
+    function resetAutoPlay() {
+      clearInterval(autoPlayInterval);
+      autoPlayInterval = setInterval(() => {
+        nextSlide(1);
+      }, 4500); 
+    }
+
+    // === 動態背景引擎 (多尺度幾何網格) ===
+    function generateModelingBackground() {
+      const container = document.getElementById('dynamic-hero-bg');
+      if (!container) return;
+      
+      container.innerHTML = '';
+      const numNodes = 40;
+      const nodes = [];
+
+      // 產生隨機節點
+      for (let i = 0; i < numNodes; i++) {
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        nodes.push({ x, y, id: i });
+
+        const node = document.createElement('div');
+        // 模擬原子/奈米節點
+        const size = Math.random() > 0.8 ? 'w-2 h-2 bg-[#D946EF]' : 'w-1.5 h-1.5 bg-molris-cyan';
+        const shadow = Math.random() > 0.8 ? 'shadow-[0_0_10px_#D946EF]' : 'shadow-[0_0_8px_#00E5FF]';
+        
+        node.className = `absolute rounded-full ${size} ${shadow} animate-pulse`;
+        node.style.left = `${x}%`;
+        node.style.top = `${y}%`;
+        node.style.animationDuration = `${Math.random() * 3 + 1.5}s`;
+        node.style.animationDelay = `${Math.random() * 2}s`;
+        container.appendChild(node);
+      }
+
+      // 繪製連線 (模擬分子鍵結與奈米晶格)
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("class", "absolute inset-0 w-full h-full z-0 opacity-30");
+      svg.style.pointerEvents = 'none';
+
+      for (let i = 0; i < numNodes; i++) {
+        for (let j = i + 1; j < numNodes; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 15) { // 距離近的節點連線
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", `${nodes[i].x}%`);
+            line.setAttribute("y1", `${nodes[i].y}%`);
+            line.setAttribute("x2", `${nodes[j].x}%`);
+            line.setAttribute("y2", `${nodes[j].y}%`);
+            line.setAttribute("stroke", "#00E5FF");
+            line.setAttribute("stroke-width", "0.5");
+            
+            // 加入動態發光
+            const anim = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+            anim.setAttribute("attributeName", "opacity");
+            anim.setAttribute("values", "0.1;0.6;0.1");
+            anim.setAttribute("dur", `${Math.random() * 4 + 2}s`);
+            anim.setAttribute("repeatCount", "indefinite");
+            line.appendChild(anim);
+
+            svg.appendChild(line);
+          }
+        }
+      }
+      container.appendChild(svg);
+    }
+
+    // --- 互動清單釘選 (Pin) 切換邏輯 ---
+    function togglePin(element) {
+      if (element.dataset.pinned === "true") {
+        element.dataset.pinned = "false";
+      } else {
+        element.dataset.pinned = "true";
+      }
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const backdrop = document.getElementById('mobile-menu-backdrop');
+      if (menu.classList.contains('translate-x-full')) {
+        menu.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      } else {
+        menu.classList.add('translate-x-full');
+        backdrop.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    }
+
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 768) {
+        const menu = document.getElementById('mobile-menu');
+        if (menu && !menu.classList.contains('translate-x-full')) toggleMobileMenu();
+      }
+    });
+
+    window.onload = () => {
+      resetAutoPlay();
+      generateModelingBackground();
+    };
+  </script>
+  
+  <style>
+    body { background-color: #030509; color: #E2E8F0; }
+    .glass-nav {
+      background: rgba(3, 5, 9, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+    }
+    .dropdown:hover .dropdown-content { display: block; animation: fadeIn 0.2s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-slide-down { animation: slideDown 0.4s ease-out forwards; }
+    .glass-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
+    
+    .expand-container { grid-template-rows: 0fr; transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    .group:hover .expand-container { grid-template-rows: 1fr; }
+    
+    @keyframes subtleBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+    .hover-animate-bounce { animation: subtleBounce 2s ease-in-out infinite; }
+
+    /* Surface Visualization Animations */
+    @keyframes rotate3D {
+        0% { transform: rotateY(0deg) rotateX(10deg); }
+        100% { transform: rotateY(360deg) rotateX(10deg); }
+    }
+    .anim-rotate-3d { animation: rotate3D 20s linear infinite; transform-style: preserve-3d; }
+    
+    @keyframes surfacePulse {
+        0%, 100% { filter: drop-shadow(0 0 15px rgba(0,229,255,0.4)); }
+        50% { filter: drop-shadow(0 0 30px rgba(0,229,255,0.8)); }
+    }
+    .surface-glow { animation: surfacePulse 4s infinite; }
+
+    /* QC Dashboard Specific Animations - Adapted for Modeling */
+    @keyframes dihedralSweep {
+      0%, 10% { transform: rotate(0deg); opacity: 0.5; }
+      50%, 60% { transform: rotate(180deg); opacity: 1; stroke: #00E5FF; }
+      100% { transform: rotate(360deg); opacity: 0.5; }
+    }
+    .anim-dihedral { animation: dihedralSweep 4s ease-in-out infinite; transform-origin: center; }
+
+    @keyframes stericClash {
+      0%, 100% { transform: scale(1); fill: #EF4444; opacity: 0.8; }
+      50% { transform: scale(0.8) translate(-5px, 5px); fill: #10B981; opacity: 1; }
+    }
+    .anim-clash { animation: stericClash 3s ease-in-out infinite; }
+
+    @keyframes energyMin {
+      0% { transform: translateY(-20px) translateX(-40px); opacity: 0; }
+      20% { opacity: 1; }
+      80% { transform: translateY(20px) translateX(30px); opacity: 1; }
+      100% { transform: translateY(20px) translateX(40px); opacity: 0; }
+    }
+    .anim-energy { animation: energyMin 3s cubic-bezier(0.25, 0.1, 0.25, 1) infinite; }
+
+    @keyframes coreRipple {
+      0% { transform: scale(1); opacity: 0; filter: drop-shadow(0 0 0px #00E5FF); border-width: 4px; }
+      1% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 10px #00E5FF) drop-shadow(0 0 20px #00E5FF); border-width: 4px; }
+      25% { transform: scale(4); opacity: 0; filter: drop-shadow(0 0 20px #00E5FF); border-width: 1px; }
+      26%, 100% { transform: scale(1); opacity: 0; }
+    }
+    .anim-core-ripple { animation: coreRipple 24s cubic-bezier(0.1, 0.8, 0.3, 1) infinite; }
+    
+    @keyframes radarSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .radar-spin { animation: radarSpin 4s linear infinite; }
+
+    @keyframes particleFlow {
+      from { stroke-dashoffset: 0; }
+      to { stroke-dashoffset: -64; }
+    }
+    .anim-particle-flow { animation: particleFlow 1.5s linear infinite; }
+
+  </style>
+</head>
+
+<body class="font-sans antialiased overflow-x-hidden selection:bg-molris-cyan selection:text-white">
+  
+  <!-- ==================== Header ==================== -->
+  <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="index.html" class="text-2xl font-bold tracking-wider text-white flex items-center gap-2 group">
+        <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i> Molris
+      </a>
+      <nav class="hidden md:flex items-center gap-8 text-[16px] font-medium">
+        <div class="relative group dropdown py-8">
+          <a href="index.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">關於Molris <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+        </div>
+        <div class="relative group dropdown py-8">
+          <a href="platform.html" class="text-molris-cyan transition-colors flex items-center gap-1">技術平台 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-44 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="msa.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多序列比對</a>
+            <a href="modeling.html" class="block px-4 py-2 text-molris-cyan bg-gray-800 font-bold transition-colors flex items-center gap-2"><i class="fa-solid fa-caret-right text-xs"></i> 多尺度建模</a>
+            <a href="target.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">靶點探索</a>
+            <a href="docking.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子對接</a>
+            <a href="dynamics.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子動力學</a>
+            <a href="optimize.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子結構設計</a>
+          </div>
+        </div>
+        <div class="relative group dropdown py-8">
+          <a href="project.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">專案介紹 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+        </div>
+        <div class="relative group dropdown py-8">
+          <a href="pricing.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">方案介紹 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+        </div>
+        <div class="relative group dropdown py-8">
+          <a href="contact.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">聯絡我們 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+        </div>
+        <div class="flex items-center gap-2 pl-4 border-l border-gray-700">
+          <i class="fa-solid fa-globe text-gray-400"></i>
+          <span class="text-gray-300 hover:text-white cursor-pointer transition-colors">中文</span>
+        </div>
+      </nav>
+      <button onclick="toggleMobileMenu()" class="md:hidden text-gray-300 hover:text-white z-50 relative p-2">
+        <i class="fa-solid fa-bars text-2xl"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Menu Backdrop -->
+  <div id="mobile-menu-backdrop" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden transition-opacity md:hidden"></div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="fixed top-0 right-0 h-[100dvh] w-[260px] bg-[#0A111A] border-l border-gray-800 transform translate-x-full transition-transform duration-300 ease-in-out z-[70] flex flex-col md:hidden shadow-[[-20px_0_40px_rgba(0,0,0,0.8)]]">
+    <div class="h-20 flex items-center justify-between px-6 border-b border-gray-800/80 shrink-0">
+      <a href="index.html" class="text-lg font-bold tracking-wider text-white flex items-center gap-2 group">
+        <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i> Molris
+      </a>
+      <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800 transition-colors">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+    </div>
+    <div class="flex-1 overflow-y-auto py-8 px-6 flex flex-col gap-6 text-[16px]">
+      <div data-open="true" class="group">
+        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+          <span>技術平台</span>
+          <i class="fa-solid fa-chevron-down text-xs opacity-100 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+        </button>
+        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div class="overflow-hidden">
+            <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-molris-cyan/30">
+              <a href="msa.html" class="text-sm text-gray-400 hover:text-molris-cyan">多序列比對</a>
+              <a href="modeling.html" class="text-sm text-molris-cyan font-medium flex items-center gap-2"><i class="fa-solid fa-caret-right text-xs"></i> 多尺度建模</a>
+              <a href="target.html" class="text-sm text-gray-400 hover:text-molris-cyan">靶點探索</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="pt-20">
+    
+    <!-- ==================== 1. Hero Banner ==================== -->
+    <section class="relative min-h-[90vh] flex flex-col justify-center overflow-hidden border-b border-gray-800/80 bg-molris-dark">
+      
+      <!-- 賽博龐克光暈 -->
+      <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#D946EF]/20 rounded-full blur-[180px] pointer-events-none z-0"></div>
+      <div class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-molris-cyan/20 rounded-full blur-[180px] pointer-events-none z-0"></div>
+
+      <!-- 邊角 UI 裝飾 -->
+      <div class="absolute top-8 left-8 w-12 h-12 border-t-2 border-l-2 border-molris-cyan/30 pointer-events-none z-0"></div>
+      <div class="absolute bottom-8 right-8 w-12 h-12 border-b-2 border-r-2 border-[#D946EF]/30 pointer-events-none z-0"></div>
+
+      <!-- 動態幾何網格引擎 -->
+      <div id="dynamic-hero-bg" class="absolute inset-0 z-0 pointer-events-none w-full h-full"></div>
+
+      <!-- 中央光學防護罩 -->
+      <div class="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(3,5,9,0.9)_15%,rgba(3,5,9,0.7)_50%,transparent_100%)]"></div>
+
+      <div class="max-w-4xl mx-auto px-6 relative z-10 text-center">
+        <span class="inline-block py-1 px-3 rounded-full border border-molris-cyan/30 bg-molris-cyan/10 text-molris-cyan text-sm font-inter tracking-widest mb-6 shadow-[0_0_15px_rgba(0,229,255,0.1)]">
+          STRUCTURAL BIOLOGY & CHEMISTRY
+        </span>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-wide text-white drop-shadow-lg">
+          多尺度建模 <br>
+          <span class="text-2xl md:text-3xl text-gray-400 font-light mt-4 inline-block tracking-widest font-inter">Multi-scale Modeling</span>
+        </h1>
+        <p class="text-lg text-gray-400 leading-relaxed max-w-3xl mx-auto mb-10 drop-shadow-md text-justify md:text-center">
+          從單一小分子的立體拓樸，到蛋白質的三維摺疊，再到複雜的主客體系統與奈米粒子。<br>
+          我們提供跨越原子的精確度與超分子的宏觀視野，建構真實的微觀物理世界。
+        </p>
+        
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="contact.html" class="px-8 py-3.5 rounded-full bg-molris-cyan text-molris-dark font-bold hover:bg-white hover:shadow-[0_0_20px_rgba(0,229,255,0.4)] transition-all w-full sm:w-auto">
+            啟動建模專案
+          </a>
+          <a href="#tech-library" class="px-8 py-3.5 rounded-full border border-gray-600 text-white hover:border-molris-cyan hover:text-molris-cyan hover:bg-molris-cyan/5 transition-all w-full sm:w-auto">
+            探索核心技術庫
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. 視覺展示與基礎介紹 ==================== -->
+    <section class="py-20 relative bg-[#0A111A]">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          
+          <!-- 左側：圖片輪播 -->
+          <div class="relative group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-molris-cyan to-[#D946EF] rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+            <div class="relative bg-[#050B14] rounded-2xl overflow-hidden border border-gray-800 shadow-2xl group/slider">
+              
+              <div class="relative w-full h-[300px] md:h-[400px] bg-gray-900 flex items-center justify-center overflow-hidden">
+                <!-- 佔位圖：實際應用請替換為真實圖片 src -->
+                <div id="hero-img-0" class="absolute inset-0 w-full h-full bg-gray-800 transition-opacity duration-700 opacity-100 z-10 flex items-center justify-center text-gray-500 text-xl font-bold border border-gray-700">
+                  <i class="fa-solid fa-dna text-4xl text-molris-cyan mb-2 block text-center w-full"></i>
+                  [蛋白質同源建模]
+                </div>
+                <div id="hero-img-1" class="absolute inset-0 w-full h-full bg-gray-700 transition-opacity duration-700 opacity-0 z-0 flex items-center justify-center text-gray-400 text-xl font-bold border border-gray-600">
+                  <i class="fa-solid fa-cubes text-4xl text-[#D946EF] mb-2 block text-center w-full"></i>
+                  [奈米與主客體結構]
+                </div>
+                <div id="hero-img-2" class="absolute inset-0 w-full h-full bg-gray-800 transition-opacity duration-700 opacity-0 z-0 flex items-center justify-center text-gray-500 text-xl font-bold border border-gray-700">
+                  <i class="fa-solid fa-masks-theater text-4xl text-[#10B981] mb-2 block text-center w-full"></i>
+                  [表面靜電勢 APBS]
+                </div>
+                
+                <button onclick="nextSlide(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity hover:bg-molris-cyan hover:text-black z-20 backdrop-blur-sm">
+                  <i class="fa-solid fa-chevron-left text-sm"></i>
+                </button>
+                <button onclick="nextSlide(1)" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity hover:bg-molris-cyan hover:text-black z-20 backdrop-blur-sm">
+                  <i class="fa-solid fa-chevron-right text-sm"></i>
+                </button>
+
+                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                  <button onclick="setSlide(0)" id="hero-dot-0" class="w-2.5 h-2.5 rounded-full bg-molris-cyan transition-colors shadow-lg"></button>
+                  <button onclick="setSlide(1)" id="hero-dot-1" class="w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white/80 transition-colors shadow-lg"></button>
+                  <button onclick="setSlide(2)" id="hero-dot-2" class="w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white/80 transition-colors shadow-lg"></button>
+                </div>
+              </div>
+
+              <div class="bg-gray-900/90 p-4 text-sm md:text-lg text-gray-300 text-center border-t border-gray-800 flex justify-center items-center gap-2">
+                <i class="fa-solid fa-cube text-molris-cyan"></i> <span id="hero-slider-caption">Molris 視覺化 - 蛋白質同源建模</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右側：What & Why -->
+          <div class="space-y-10">
+            <div>
+              <h2 class="text-3xl font-bold text-white mb-4 flex items-center gap-3">
+                <span class="text-molris-cyan"><i class="fa-solid fa-cubes-stacked"></i></span> 建構真實的分子視界
+              </h2>
+              <p class="text-gray-400 leading-relaxed text-[18px] md:text-base text-justify">
+                無論是藥物開發初期的<span class="text-white font-bold">小分子立體分子結構</span>建構，缺乏結晶結構時的<span class="text-white font-bold">蛋白質同源建模</span>，或是複雜的<span class="text-white font-bold">奈米粒子與主客體化學</span>模擬。精確的三維立體座標是所有分子對接、動力學模擬與虛擬篩選的絕對基石。
+              </p>
+            </div>
+
+            <div>
+              <h2 class="text-3xl font-bold text-white mb-4 flex items-center gap-3">
+                <span class="text-molris-cyan"><i class="fa-solid fa-bullseye"></i></span> 多尺度建模能解決什麼問題？
+              </h2>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[16px]">
+                <div class="flex items-start gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
+                  <i class="fa-solid fa-check text-molris-cyan mt-1 text-[16px]"></i>
+                  <span class="text-gray-300">補足未知的蛋白質 3D 結構</span>
+                </div>
+                <div class="flex items-start gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
+                  <i class="fa-solid fa-check text-molris-cyan mt-1 text-[16px]"></i>
+                  <span class="text-gray-300">提供分子對接的精確受體</span>
+                </div>
+                <div class="flex items-start gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
+                  <i class="fa-solid fa-check text-molris-cyan mt-1 text-[16px]"></i>
+                  <span class="text-gray-300">建構主客體包結錯合物</span>
+                </div>
+                <div class="flex items-start gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
+                  <i class="fa-solid fa-check text-molris-cyan mt-1 text-[16px]"></i>
+                  <span class="text-gray-300">預測奈米粒子的幾何排列</span>
+                </div>
+                <div class="flex items-start gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
+                  <i class="fa-solid fa-check text-molris-cyan mt-1 text-[16px]"></i>
+                  <span class="text-gray-300">分析表面化學結構與特徵</span>
+                </div>
+                <div class="flex items-start gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
+                  <i class="fa-solid fa-check text-molris-cyan mt-1 text-[16px]"></i>
+                  <span class="text-gray-300">排除晶體結構中的立體位阻</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. 核心建模領域 (Glass Cards) ==================== -->
+    <section class="py-20 bg-[#050B14] border-y border-gray-800">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-white mb-4">全面涵蓋不同尺度的結構系統</h2>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- 區塊 1: 基礎生物分子 -->
+          <div class="glass-card p-8 rounded-2xl border border-gray-800/80 shadow-lg relative">
+            <div class="flex items-center gap-4 mb-3 border-b border-gray-800/50 pb-4">
+              <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-[#10B981] border border-gray-700 shrink-0">
+                <i class="fa-solid fa-dna text-xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white">基礎生物與小分子</h3>
+            </div>
+            <ul class="space-y-1">
+              <li class="group cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 data-[pinned=true]:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50 data-[pinned=true]:border-gray-700/50" onclick="togglePin(this)" title="點擊釘選 / 取消釘選">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-[#10B981] group-data-[pinned=true]:bg-[#10B981] transition-colors shadow-[0_0_0px_#10B981] group-hover:shadow-[0_0_8px_#10B981] group-data-[pinned=true]:shadow-[0_0_8px_#10B981]"></span>
+                    <strong class="text-gray-300 group-hover:text-[#10B981] group-data-[pinned=true]:text-[#10B981] transition-colors text-lg">蛋白質建模</strong>
+                  </div>
+                  <i class="fa-solid fa-thumbtack text-sm text-gray-500 opacity-40 group-hover:opacity-100 group-data-[pinned=true]:opacity-100 -rotate-45 group-data-[pinned=true]:rotate-0 transition-all group-hover:text-[#10B981] group-data-[pinned=true]:text-[#10B981]"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] group-data-[pinned=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[16px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      包含同源建模 (Homology modeling)，基於已知高同源性模板，結合序列比對與空間約束，精確預測未知蛋白質的 3D 摺疊結構與 Loop 區間。
+                    </p>
+                  </div>
+                </div>
+              </li>
+              <li class="group cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 data-[pinned=true]:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50 data-[pinned=true]:border-gray-700/50" onclick="togglePin(this)" title="點擊釘選 / 取消釘選">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-[#10B981] group-data-[pinned=true]:bg-[#10B981] transition-colors shadow-[0_0_0px_#10B981] group-hover:shadow-[0_0_8px_#10B981] group-data-[pinned=true]:shadow-[0_0_8px_#10B981]"></span>
+                    <strong class="text-gray-300 group-hover:text-[#10B981] group-data-[pinned=true]:text-[#10B981] transition-colors text-lg">小分子建模</strong>
+                  </div>
+                  <i class="fa-solid fa-thumbtack text-sm text-gray-500 opacity-40 group-hover:opacity-100 group-data-[pinned=true]:opacity-100 -rotate-45 group-data-[pinned=true]:rotate-0 transition-all group-hover:text-[#10B981] group-data-[pinned=true]:text-[#10B981]"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] group-data-[pinned=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[16px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      將 SMILES 或 2D 拓樸圖轉換為具備正確鍵長、鍵角與立體化學構型的立體分子結構，並進行能量最小化優化。
+                    </p>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- 區塊 2: 複合體與材料 -->
+          <div class="glass-card p-8 rounded-2xl border border-gray-800/80 shadow-lg relative">
+            <div class="flex items-center gap-4 mb-3 border-b border-gray-800/50 pb-3">
+              <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-[#D946EF] border border-gray-700 shrink-0">
+                <i class="fa-solid fa-layer-group text-xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white">超分子與奈米材料</h3>
+            </div>
+            <ul class="space-y-1">
+              <li class="group cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 data-[pinned=true]:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50 data-[pinned=true]:border-gray-700/50" onclick="togglePin(this)" title="點擊釘選 / 取消釘選">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-[#D946EF] group-data-[pinned=true]:bg-[#D946EF] transition-colors shadow-[0_0_0px_#D946EF] group-hover:shadow-[0_0_8px_#D946EF] group-data-[pinned=true]:shadow-[0_0_8px_#D946EF]"></span>
+                    <strong class="text-gray-300 group-hover:text-[#D946EF] group-data-[pinned=true]:text-[#D946EF] transition-colors text-lg">主客體化學</strong>
+                  </div>
+                  <i class="fa-solid fa-thumbtack text-sm text-gray-500 opacity-40 group-hover:opacity-100 group-data-[pinned=true]:opacity-100 -rotate-45 group-data-[pinned=true]:rotate-0 transition-all group-hover:text-[#D946EF] group-data-[pinned=true]:text-[#D946EF]"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] group-data-[pinned=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[16px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      建構環糊精、冠醚等大環主體分子與客體藥物的包結錯合物 (Inclusion complex) 初始構象，分析空間位阻與氫鍵網絡。
+                    </p>
+                  </div>
+                </div>
+              </li>
+              <li class="group cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 data-[pinned=true]:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50 data-[pinned=true]:border-gray-700/50" onclick="togglePin(this)" title="點擊釘選 / 取消釘選">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-[#D946EF] group-data-[pinned=true]:bg-[#D946EF] transition-colors shadow-[0_0_0px_#D946EF] group-hover:shadow-[0_0_8px_#D946EF] group-data-[pinned=true]:shadow-[0_0_8px_#D946EF]"></span>
+                    <strong class="text-gray-300 group-hover:text-[#D946EF] group-data-[pinned=true]:text-[#D946EF] transition-colors text-lg">奈米粒子建構</strong>
+                  </div>
+                  <i class="fa-solid fa-thumbtack text-sm text-gray-500 opacity-40 group-hover:opacity-100 group-data-[pinned=true]:opacity-100 -rotate-45 group-data-[pinned=true]:rotate-0 transition-all group-hover:text-[#D946EF] group-data-[pinned=true]:text-[#D946EF]"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] group-data-[pinned=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[16px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      依據晶格參數與對稱性，建構金屬奈米團簇、碳奈米管、石墨烯或高分子微胞，作為材料模擬與藥物載體的物理基礎。
+                    </p>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- 區塊 3: 表面特徵 -->
+          <div class="glass-card p-8 rounded-2xl border border-gray-800/80 shadow-lg relative">
+            <div class="flex items-center gap-4 mb-3 border-b border-gray-800/50 pb-3">
+              <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-molris-cyan border border-gray-700 shrink-0">
+                <i class="fa-solid fa-masks-theater text-xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white">表面化學結構與場域</h3>
+            </div>
+            <ul class="space-y-1">
+              <li class="group cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 data-[pinned=true]:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50 data-[pinned=true]:border-gray-700/50" onclick="togglePin(this)" title="點擊釘選 / 取消釘選">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-molris-cyan group-data-[pinned=true]:bg-molris-cyan transition-colors shadow-[0_0_0px_#00E5FF] group-hover:shadow-[0_0_8px_#00E5FF] group-data-[pinned=true]:shadow-[0_0_8px_#00E5FF]"></span>
+                    <strong class="text-gray-300 group-hover:text-molris-cyan group-data-[pinned=true]:text-molris-cyan transition-colors text-lg">幾何表面建模</strong>
+                  </div>
+                  <i class="fa-solid fa-thumbtack text-sm text-gray-500 opacity-40 group-hover:opacity-100 group-data-[pinned=true]:opacity-100 -rotate-45 group-data-[pinned=true]:rotate-0 transition-all group-hover:text-molris-cyan group-data-[pinned=true]:text-molris-cyan"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] group-data-[pinned=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[16px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      精確計算凡得瓦表面 (vdW)、溶劑可及表面 (SAS) 與溶劑極限表面 (SES)，定義分子與外界互動的真實邊界。
+                    </p>
+                  </div>
+                </div>
+              </li>
+              <li class="group cursor-pointer p-3 -mx-3 rounded-xl hover:bg-gray-800/40 data-[pinned=true]:bg-gray-800/40 transition-all border border-transparent hover:border-gray-700/50 data-[pinned=true]:border-gray-700/50" onclick="togglePin(this)" title="點擊釘選 / 取消釘選">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-molris-cyan group-data-[pinned=true]:bg-molris-cyan transition-colors shadow-[0_0_0px_#00E5FF] group-hover:shadow-[0_0_8px_#00E5FF] group-data-[pinned=true]:shadow-[0_0_8px_#00E5FF]"></span>
+                    <strong class="text-gray-300 group-hover:text-molris-cyan group-data-[pinned=true]:text-molris-cyan transition-colors text-lg">表面性質映射</strong>
+                  </div>
+                  <i class="fa-solid fa-thumbtack text-sm text-gray-500 opacity-40 group-hover:opacity-100 group-data-[pinned=true]:opacity-100 -rotate-45 group-data-[pinned=true]:rotate-0 transition-all group-hover:text-molris-cyan group-data-[pinned=true]:text-molris-cyan"></i>
+                </div>
+                <div class="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] group-data-[pinned=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <p class="text-[16px] text-gray-400 mt-2 pl-4 leading-relaxed text-justify">
+                      求解泊松-波茲曼方程式進行 APBS 表面靜電分析，或映射分子親脂性勢能 (MLP) 與 TFE，直觀評估結合口袋特性。
+                    </p>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 4. 深度解析：表面建模與化學特徵 ==================== -->
+    <section class="py-20 relative bg-[#0A111A]">
+      <div class="max-w-6xl mx-auto px-6 flex flex-col gap-12">
+        
+        <div class="text-center mb-4">
+          <span class="text-molris-cyan text-sm font-bold tracking-widest uppercase mb-2 block font-inter">Advanced Surface Analytics</span>
+          <h2 class="text-3xl font-bold text-white">表面建模與物理化學性質</h2>
+          <p class="text-gray-400 mt-4 max-w-3xl mx-auto text-justify md:text-center text-[16px]">
+            分子並非僅是點與線組成的骨架，而是佔據空間的實體。表面建模技術定義了藥物與受體實際「接觸」的物理邊界與化學環境，為高階分子對接提供必要資訊。
+          </p>
+        </div>
+
+        <!-- 表面定義 (vdW, SAS, SES) -->
+        <div class="bg-gradient-to-br from-gray-900 to-black p-8 md:p-12 rounded-3xl border border-molris-cyan/20 shadow-[0_0_40px_rgba(0,229,255,0.05)] relative overflow-hidden flex flex-col md:flex-row gap-8 items-center">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-molris-cyan/10 blur-[80px] rounded-full pointer-events-none"></div>
+          
+          <div class="md:w-1/2 relative z-10">
+            <h3 class="text-2xl font-bold text-white mb-6 border-l-4 border-molris-cyan pl-4">三維幾何表面建構 (Surface Models)</h3>
+            <div class="space-y-6 text-gray-400 text-[16px] text-justify">
+              <div>
+                <strong class="text-white block mb-1">凡得瓦表面 (vdW, van der Waals Surface)</strong>
+                將分子中每個原子視為半徑等於其凡得瓦半徑的堅硬圓球，這些圓球聯集後的最外層輪廓。這是定義分子基礎體積邊界的最直接方式。
+              </div>
+              <div>
+                <strong class="text-white block mb-1">溶劑可及表面 (SAS, Solvent Accessible Surface)</strong>
+                使用一個代表溶劑分子的探針圓球 (通常為水的半徑 1.4 Å) 在 vdW 表面滾動，探針<span class="text-molris-cyan font-bold">球心</span>所劃過的軌跡。常用於計算隱式溶劑模型中的溶劑化自由能。
+              </div>
+              <div>
+                <strong class="text-white block mb-1">溶劑極限表面 (SES, Solvent Excluded Surface)</strong>
+                探針圓球在 vdW 表面滾動時，探針<span class="text-molris-cyan font-bold">球面</span>向內與分子接觸所形成的連續曲面。SES 消除了 SAS 中不合理的小孔洞，是最能真實反映蛋白質「表面口袋形狀」的模型。
+              </div>
+            </div>
+          </div>
+          
+          <!-- 示意圖區 -->
+          <div class="md:w-1/2 flex justify-center relative z-10">
+             <div class="w-full max-w-[350px] aspect-square rounded-full border border-gray-700 bg-gray-900/50 flex items-center justify-center relative shadow-[inset_0_0_40px_rgba(0,0,0,0.8)]">
+                <div class="absolute w-32 h-32 bg-[#1F2937] rounded-full border-[3px] border-[#374151]"></div>
+                <div class="absolute w-40 h-40 rounded-full border-2 border-dashed border-gray-500 animate-[spin_20s_linear_infinite]"></div>
+                <div class="absolute w-40 h-40 rounded-full border border-molris-cyan/50 scale-110"></div>
+                <div class="absolute top-10 left-10 w-6 h-6 bg-blue-400/80 rounded-full shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
+                <span class="absolute bottom-6 text-xs text-gray-500 font-mono tracking-widest">vdW / SAS / SES</span>
+             </div>
+          </div>
+        </div>
+
+        <!-- 表面化學結構與連續場域 (APBS, MLP, etc.) -->
+        <div class="bg-gradient-to-bl from-gray-900 to-black p-8 md:p-12 rounded-3xl border border-[#D946EF]/20 shadow-[0_0_40px_rgba(217,70,239,0.05)] relative overflow-hidden flex flex-col md:flex-row-reverse gap-8 items-center">
+          <div class="absolute top-0 left-0 w-64 h-64 bg-[#D946EF]/10 blur-[80px] rounded-full pointer-events-none"></div>
+          
+          <div class="md:w-1/2 relative z-10">
+            <h3 class="text-2xl font-bold text-white mb-6 border-l-4 border-[#D946EF] pl-4">表面化學結構與性質映射</h3>
+            <div class="space-y-6 text-gray-400 text-[16px] text-justify">
+              <div>
+                <strong class="text-white block mb-1">APBS 表面靜電分析 (Electrostatic Potential)</strong>
+                透過求解泊松-波茲曼方程式，計算生物分子在離子溶劑環境中的靜電場分佈。將數值映射至 SES 表面（通常以<span class="text-red-500 font-bold">紅負</span>、<span class="text-blue-500 font-bold">藍正</span>表示），直觀判斷結合口袋的電荷互補性。
+              </div>
+              <div>
+                <strong class="text-white block mb-1">分子親脂性勢能 (MLP, Molecular Lipophilicity Potential)</strong>
+                將分子的疏水與親水性質映射於 3D 空間表面。此特徵強烈影響藥物的穿透性與受體的疏水作用力結合熱力學。
+              </div>
+              <div>
+                <strong class="text-white block mb-1">APS 與 TFE 等進階指標</strong>
+                結合 APS (Asymmetry/Action Potential Surface) 或 TFE 等衍生性質，進一步量化結合位點的極性分佈、場域梯度與熱力學自由能，為合理藥物設計 (SBDD) 提供定量指標。
+              </div>
+            </div>
+          </div>
+          
+          <!-- 示意圖區 -->
+          <div class="md:w-1/2 flex justify-center relative z-10">
+             <div class="w-full max-w-[350px] aspect-square rounded-full border border-gray-700 bg-[#050A10] flex items-center justify-center relative surface-glow">
+                <div class="absolute w-3/4 h-3/4 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] bg-gradient-to-tr from-red-600/60 via-white/10 to-blue-600/60 blur-md anim-rotate-3d shadow-[inset_0_0_20px_rgba(255,255,255,0.2)]"></div>
+                <span class="absolute bottom-6 text-xs text-gray-500 font-mono tracking-widest text-center">APBS Electrostatic Map</span>
+             </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== 5. 核心建模技術庫 (Grid) ==================== -->
+    <section id="tech-library" class="py-24 relative overflow-hidden bg-[#050B14] border-t border-gray-800">
+      <div class="absolute right-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-molris-cyan/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <div class="mb-12">
+          <h2 class="text-3xl font-bold text-white mb-4">核心建模技術庫</h2>
+          <p class="text-gray-400 max-w-3xl text-justify text-[16px]">
+            結構建模需考量系統大小與所需的物理化學細節。<br>
+            Molris 整合多種主流建模與力場演算法，依據您的研究標的，調配最適切的運算資源，產出符合幾何與能量規範的可靠模型。
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Tech 1 -->
+          <div class="block bg-gray-900/50 border border-gray-800 p-6 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group shadow-sm">
+            <div class="flex items-center gap-3 mb-4 border-b border-gray-800/50 pb-2">
+              <i class="fa-solid fa-pills text-molris-cyan text-xl"></i>
+              <h4 class="text-lg text-white font-bold group-hover:text-molris-cyan transition-colors">小分子立體建模</h4>
+            </div>
+            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">
+              透過 RDKit 等工具，將 SMILES 字串或 2D 結構圖轉換為初步 3D 構象，並利用 MMFF94 或 UFF 力場進行幾何與能量最小化，確保正確的立體化學特性。
+            </p>
+          </div>
+
+          <!-- Tech 2 -->
+          <div class="block bg-gray-900/50 border border-gray-800 p-6 rounded-xl hover:bg-gray-800/60 hover:border-molris-cyan/50 transition-all duration-300 group shadow-sm">
+            <div class="flex items-center gap-3 mb-4 border-b border-gray-800/50 pb-2">
+              <i class="fa-solid fa-dna text-molris-cyan text-xl"></i>
+              <h4 class="text-lg text-white font-bold group-hover:text-molris-cyan transition-colors">蛋白質同源建模</h4>
+            </div>
+            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">
+              (Homology Modeling) 基於高相似度的已知晶體結構作為模板，預測未知序列的 3D 摺疊。包含骨架建構、側鏈重組與 Loop 區域的動力學優化。
+            </p>
+          </div>
+
+          <!-- Tech 3 -->
+          <div class="block bg-gray-900/50 border border-gray-800 p-6 rounded-xl hover:bg-gray-800/60 hover:border-[#D946EF]/50 transition-all duration-300 group shadow-sm">
+            <div class="flex items-center gap-3 mb-4 border-b border-gray-800/50 pb-2">
+              <i class="fa-solid fa-box-open text-[#D946EF] text-xl"></i>
+              <h4 class="text-lg text-white font-bold group-hover:text-[#D946EF] transition-colors">主客體化學組裝</h4>
+            </div>
+            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">
+              針對環糊精等大環分子與客體藥物，透過系統性的構象搜索與對接演算法，建立空間位阻最小、氫鍵網絡最穩定的超分子包結錯合物。
+            </p>
+          </div>
+
+          <!-- Tech 4 -->
+          <div class="block bg-gray-900/50 border border-gray-800 p-6 rounded-xl hover:bg-gray-800/60 hover:border-[#D946EF]/50 transition-all duration-300 group shadow-sm">
+            <div class="flex items-center gap-3 mb-4 border-b border-gray-800/50 pb-2">
+              <i class="fa-solid fa-cubes-stacked text-[#D946EF] text-xl"></i>
+              <h4 class="text-lg text-white font-bold group-hover:text-[#D946EF] transition-colors">奈米粒子建構</h4>
+            </div>
+            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">
+              依據晶體學參數 (如 FCC, BCC 晶格)，自動生成金、銀等金屬奈米團簇，或建構特定對稱性的奈米管、脂質體，為載體模擬提供基底。
+            </p>
+          </div>
+
+          <!-- Tech 5 -->
+          <div class="block bg-gray-900/50 border border-gray-800 p-6 rounded-xl hover:bg-gray-800/60 hover:border-[#10B981]/50 transition-all duration-300 group shadow-sm">
+            <div class="flex items-center gap-3 mb-4 border-b border-gray-800/50 pb-2">
+              <i class="fa-solid fa-circle-nodes text-[#10B981] text-xl"></i>
+              <h4 class="text-lg text-white font-bold group-hover:text-[#10B981] transition-colors">力場能量最小化</h4>
+            </div>
+            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">
+              (Energy Minimization) 使用 OPLS, AMBER 或 CHARMM 力場，調整分子內的鍵長、鍵角與二面角，消除空間光柵重疊，使結構回到局部能量極小值。
+            </p>
+          </div>
+
+          <!-- Tech 6 -->
+          <div class="block bg-gray-900/50 border border-gray-800 p-6 rounded-xl hover:bg-gray-800/60 hover:border-[#F97316]/50 transition-all duration-300 group shadow-sm">
+            <div class="flex items-center gap-3 mb-4 border-b border-gray-800/50 pb-2">
+              <i class="fa-solid fa-vial-circle-check text-[#F97316] text-xl"></i>
+              <h4 class="text-lg text-white font-bold group-hover:text-[#F97316] transition-colors">質子化狀態預測</h4>
+            </div>
+            <p class="text-[15px] text-gray-400 leading-relaxed text-justify group-hover:text-gray-300 transition-colors">
+              使用 pKa 計算工具 (如 PROPKA)，精確預測蛋白質殘基與小分子配體在特定生理 pH 值 (如 7.4) 下的質子化狀態與互變異構物。
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 6. 驗證機制 (Quality Control Dashboard) ==================== -->
+    <section class="py-24 pt-16 bg-[#0A111A] border-t border-gray-800">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-white mb-4">Molris 的模型驗證標準</h2>
+          <p class="text-gray-400 max-w-3xl mx-auto text-lg text-justify md:text-center">建立模型只是第一步，我們確保產出的結構具備嚴謹的物理化學合理性：</p>
+        </div>
+
+        <!-- 1. 手機 / 平板版：靜態卡片 -->
+        <div class="grid md:grid-cols-2 lg:hidden gap-6">
+          <div class="glass-card p-6 rounded-2xl border-t-2 border-t-molris-cyan hover:bg-gray-800/40 transition-colors group">
+            <div class="flex items-center gap-3 text-molris-cyan mb-4">
+              <i class="fa-solid fa-shapes text-2xl group-hover:scale-110 transition-transform"></i>
+              <h4 class="text-white font-bold text-[18px] m-0">幾何構象檢視</h4>
+            </div>
+            <p class="text-sm text-gray-400 leading-relaxed text-justify">
+              分析 Ramachandran plot 確認蛋白質主鏈二面角 (Phi/Psi) 是否落在合理區域，檢測異常的鍵長與鍵角。
+            </p>
+          </div>
+          
+          <div class="glass-card p-6 rounded-2xl border-t-2 border-t-[#D946EF] hover:bg-gray-800/40 transition-colors group">
+            <div class="flex items-center gap-3 text-[#D946EF] mb-4">
+              <i class="fa-solid fa-compress-arrows-alt text-2xl group-hover:scale-110 transition-transform"></i>
+              <h4 class="text-white font-bold text-[18px] m-0">立體位阻排除</h4>
+            </div>
+            <p class="text-sm text-gray-400 leading-relaxed text-justify">
+              嚴格檢測原子間距，排除不合理的光柵重疊 (Steric Clashes)，確保模型在物理空間上的絕對合理性。
+            </p>
+          </div>
+
+          <div class="glass-card p-6 rounded-2xl border-t-2 border-t-[#10B981] hover:bg-gray-800/40 transition-colors group">
+            <div class="flex items-center gap-3 text-[#10B981] mb-4">
+              <i class="fa-solid fa-bolt text-2xl group-hover:scale-110 transition-transform"></i>
+              <h4 class="text-white font-bold text-[18px] m-0">能量分佈評估</h4>
+            </div>
+            <p class="text-sm text-gray-400 leading-relaxed text-justify">
+              利用經驗力場函數，計算模型整體的勢能，識別並修復高能量的局部區域，如不穩定的 Loop 或擁擠的側鏈。
+            </p>
+          </div>
+
+          <div class="glass-card p-6 rounded-2xl border-t-2 border-t-[#F97316] hover:bg-gray-800/40 transition-colors group">
+            <div class="flex items-center gap-3 text-[#F97316] mb-4">
+              <i class="fa-solid fa-vial-circle-check text-2xl group-hover:scale-110 transition-transform"></i>
+              <h4 class="text-white font-bold text-[18px] m-0">質子化狀態確認</h4>
+            </div>
+            <p class="text-sm text-gray-400 leading-relaxed text-justify">
+              依據目標生理 pH 值 (如 pH 7.4)，精確設定表面胺基酸與配體的質子化與互變異構物狀態，為後續對接做準備。
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. 桌面大螢幕版：動態儀表板 -->
+        <div class="hidden lg:flex relative w-full max-w-7xl mx-auto min-h-[600px] items-center justify-center mt-12">
+          
+          <style>
+            @keyframes animFocus {
+              0%, 22% { opacity: 1; filter: grayscale(0%); }
+              28%, 99% { opacity: 0.60; filter: grayscale(60%); }
+              100% { opacity: 1; filter: grayscale(0%); }
+            }
+            .node-1 div[class*="bg-[#050A10]"] { animation: animFocus 24s infinite; animation-delay: 0s; }
+            .node-2 div[class*="bg-[#050A10]"] { animation: animFocus 24s infinite; animation-delay: -18.0s; }
+            .node-3 div[class*="bg-[#050A10]"] { animation: animFocus 24s infinite; animation-delay: -12.0s; }
+            .node-4 div[class*="bg-[#050A10]"] { animation: animFocus 24s infinite; animation-delay: -6.0s; }
+          </style>
+
+          <svg class="absolute inset-0 w-full h-full z-0 pointer-events-none" preserveAspectRatio="xMidYMid meet">
+            <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="#00E5FF" stroke-width="2" opacity="0.35" />
+            <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="#D946EF" stroke-width="2" opacity="0.35" />
+            <line x1="50%" y1="50%" x2="20%" y2="80%" stroke="#10B981" stroke-width="2" opacity="0.35" />
+            <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#F97316" stroke-width="2" opacity="0.35" />
+            
+            <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="#00E5FF" stroke-width="6" stroke-linecap="round" stroke-dasharray="6 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 10px #00E5FF) drop-shadow(0 0 20px #00E5FF);" />
+            <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="#D946EF" stroke-width="6" stroke-linecap="round" stroke-dasharray="6 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 10px #D946EF) drop-shadow(0 0 20px #D946EF);" />
+            <line x1="50%" y1="50%" x2="20%" y2="80%" stroke="#10B981" stroke-width="6" stroke-linecap="round" stroke-dasharray="6 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 10px #10B981) drop-shadow(0 0 20px #10B981);" />
+            <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#F97316" stroke-width="6" stroke-linecap="round" stroke-dasharray="6 60" class="anim-particle-flow" style="filter: drop-shadow(0 0 10px #F97316) drop-shadow(0 0 20px #F97316);" />
+          </svg>
+
+          <!-- 核心防禦/運算中樞 -->
+          <div class="absolute z-20 w-36 h-36 rounded-full bg-[#03060A] border border-molris-cyan/50 shadow-[0_0_40px_rgba(0,229,255,0.15)] flex flex-col items-center justify-center group">
+            <div class="absolute inset-0 rounded-full border-molris-cyan anim-core-ripple pointer-events-none" style="animation-delay: 0s;"></div>
+            <div class="absolute inset-0 rounded-full border-[#D946EF] anim-core-ripple pointer-events-none" style="animation-delay: -18.0s;"></div>
+            <div class="absolute inset-0 rounded-full border-[#10B981] anim-core-ripple pointer-events-none" style="animation-delay: -12.0s;"></div>
+            <div class="absolute inset-0 rounded-full border-[#F97316] anim-core-ripple pointer-events-none" style="animation-delay: -6.0s;"></div>
+            
+            <div class="absolute inset-2 border-t-2 border-molris-cyan rounded-full radar-spin opacity-50"></div>
+            <i class="fa-solid fa-microscope text-4xl text-molris-cyan mb-2"></i>
+            <span class="text-xs text-white font-bold tracking-widest text-center leading-tight">3D<br>ENGINE</span>
+          </div>
+
+          <div class="absolute inset-0 z-10 w-full max-w-6xl mx-auto h-full flex flex-col justify-between">
+            
+            <!-- 上半部 -->
+            <div class="flex items-start justify-between w-full pt-4">
+              
+              <!-- 節點 1: 幾何構象 (Ramachandran) -->
+              <div class="node-1 bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform -translate-x-4 group hover:bg-gray-800 hover:border-molris-cyan transition-all duration-300 relative z-20 cursor-default shadow-xl">
+                <div class="flex items-center gap-3 mb-3">
+                  <i class="fa-solid fa-shapes text-xl text-molris-cyan"></i>
+                  <h4 class="text-white font-bold text-xl group-hover:text-molris-cyan transition-colors">幾何構象檢視</h4>
+                </div>
+                
+                <div class="w-full h-[140px] bg-[#050A10] rounded-lg relative overflow-hidden border border-gray-800 flex items-center justify-center">
+                  <!-- 模擬 Ramachandran Plot / 二面角 -->
+                  <svg width="100%" height="100%" viewBox="0 0 140 140">
+                    <line x1="70" y1="10" x2="70" y2="130" stroke="#374151" stroke-width="1"/>
+                    <line x1="10" y1="70" x2="130" y2="70" stroke="#374151" stroke-width="1"/>
+                    <rect x="20" y="20" width="40" height="40" fill="#00E5FF" opacity="0.2" rx="4"/>
+                    <rect x="80" y="80" width="40" height="40" fill="#00E5FF" opacity="0.1" rx="4"/>
+                    <g fill="#00E5FF">
+                      <circle cx="35" cy="35" r="2"/><circle cx="45" cy="25" r="1.5"/><circle cx="50" cy="45" r="2.5"/><circle cx="30" cy="50" r="1"/>
+                      <circle cx="95" cy="95" r="2"/><circle cx="105" cy="110" r="1.5"/><circle cx="85" cy="100" r="1"/>
+                    </g>
+                    <!-- 掃描指針 -->
+                    <line x1="70" y1="70" x2="30" y2="30" stroke="#D946EF" stroke-width="2" class="anim-dihedral" stroke-dasharray="4 2"/>
+                  </svg>
+                </div>
+
+                <div class="grid expand-container">
+                  <div class="overflow-hidden">
+                    <div class="pt-3 mt-3 border-t border-gray-700">
+                      <p class="text-sm text-gray-400">分析 Ramachandran plot 確認蛋白質主鏈二面角是否落在合理區域，檢測異常的鍵長與鍵角。</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 節點 2: 立體位阻排除 (Steric Clash) -->
+              <div class="node-2 bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform translate-x-4 group hover:bg-gray-800 hover:border-[#D946EF] transition-all duration-300 relative z-20 cursor-default shadow-xl">
+                <div class="flex items-center gap-3 mb-3">
+                  <i class="fa-solid fa-compress-arrows-alt text-xl text-[#D946EF]"></i>
+                  <h4 class="text-white font-bold text-xl group-hover:text-[#D946EF] transition-colors">立體位阻排除</h4>
+                </div>
+                
+                <div class="w-full h-[140px] bg-[#050A10] rounded-lg relative overflow-hidden border border-gray-800 flex items-center justify-center">
+                  <svg width="100%" height="100%" viewBox="0 0 140 140">
+                    <!-- 原子 1 -->
+                    <circle cx="50" cy="70" r="30" fill="none" stroke="#4B5563" stroke-width="2" stroke-dasharray="4 4"/>
+                    <!-- 原子 2 (發生位阻並彈開) -->
+                    <circle cx="80" cy="70" r="25" class="anim-clash"/>
+                    <!-- 核心點 -->
+                    <circle cx="50" cy="70" r="4" fill="#6B7280"/>
+                    <circle cx="80" cy="70" r="4" fill="#10B981" class="anim-clash"/>
+                  </svg>
+                </div>
+
+                <div class="grid expand-container">
+                  <div class="overflow-hidden">
+                    <div class="pt-3 mt-3 border-t border-gray-700">
+                      <p class="text-sm text-gray-400">嚴格檢測原子間距，排除不合理的光柵重疊 (Steric Clashes)，確保模型在物理空間上的絕對合理性。</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            
+            <!-- 下半部 -->
+            <div class="flex items-end justify-between w-full pb-4">
+
+              <!-- 節點 3: 能量分佈評估 (Energy Minimization) -->
+              <div class="node-3 bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform -translate-x-4 group hover:bg-gray-800 hover:border-[#10B981] transition-all duration-300 relative z-20 cursor-default shadow-xl mt-auto mb-0">
+                
+                <div class="grid expand-container mb-2">
+                  <div class="overflow-hidden">
+                    <div class="pb-4 border-b border-gray-700">
+                      <p class="text-sm text-gray-400">利用經驗力場函數，計算模型整體的勢能，識別並修復高能量的局部區域，如不穩定的 Loop 或擁擠的側鏈。</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-3 mb-3">
+                  <i class="fa-solid fa-bolt text-xl text-[#10B981]"></i>
+                  <h4 class="text-white font-bold text-xl group-hover:text-[#10B981] transition-colors">能量分佈評估</h4>
+                </div>
+                
+                <div class="w-full h-[140px] bg-[#050A10] rounded-lg relative overflow-hidden border border-gray-800 p-3 flex items-center justify-center">
+                  <!-- 能量勢阱圖 -->
+                  <svg width="100%" height="100%" viewBox="0 0 140 100">
+                    <path d="M 10 20 Q 50 120 90 80 T 130 50" fill="none" stroke="#374151" stroke-width="3"/>
+                    <!-- 最小化動畫點 -->
+                    <circle cx="50" cy="50" r="6" fill="#10B981" class="anim-energy shadow-[0_0_8px_#10B981]"/>
+                    <!-- X/Y 軸 -->
+                    <line x1="5" y1="90" x2="135" y2="90" stroke="#4B5563" stroke-width="1"/>
+                    <line x1="10" y1="5" x2="10" y2="95" stroke="#4B5563" stroke-width="1"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- 節點 4: 質子化狀態確認 (Protonation) -->
+              <div class="node-4 bg-gray-900/80 border border-gray-700 p-5 rounded-xl backdrop-blur-md w-[340px] transform translate-x-4 group hover:bg-gray-800 hover:border-molris-orange transition-all duration-300 relative z-20 cursor-default shadow-xl mt-auto mb-0">
+                
+                <div class="grid expand-container mb-2">
+                  <div class="overflow-hidden">
+                    <div class="pb-4 border-b border-gray-700">
+                      <p class="text-sm text-gray-400">依據目標生理 pH 值，精確設定表面胺基酸與配體的質子化與互變異構物狀態，為後續對接做準備。</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-3 mb-3">
+                  <i class="fa-solid fa-vial-circle-check text-xl text-molris-orange"></i>
+                  <h4 class="text-white font-bold text-xl group-hover:text-molris-orange transition-colors">質子化狀態確認</h4>
+                </div>
+                
+                <div class="w-full h-[140px] bg-[#050A10] rounded-lg relative overflow-hidden border border-gray-800 flex items-center justify-center">
+                  <!-- 模擬化學鍵與氫質子加上去的動畫 -->
+                  <svg width="100%" height="100%" viewBox="0 0 140 100">
+                    <!-- 分子骨架 -->
+                    <polyline points="40,60 70,40 100,60" fill="none" stroke="#4B5563" stroke-width="3" stroke-linejoin="round"/>
+                    <line x1="70" y1="40" x2="70" y2="20" stroke="#4B5563" stroke-width="3"/>
+                    <!-- 原有原子 -->
+                    <circle cx="40" cy="60" r="5" fill="#9CA3AF"/>
+                    <circle cx="100" cy="60" r="5" fill="#9CA3AF"/>
+                    <circle cx="70" cy="40" r="5" fill="#9CA3AF"/>
+                    <!-- 質子化位點 -->
+                    <text x="65" y="15" fill="#4B5563" font-size="12" font-weight="bold" font-family="sans-serif">O</text>
+                    
+                    <!-- H+ 飛入結合 -->
+                    <g class="anim-energy" style="animation-duration: 2.5s;">
+                      <line x1="90" y1="0" x2="80" y2="10" stroke="#F97316" stroke-width="2" stroke-dasharray="2 2"/>
+                      <circle cx="90" cy="0" r="4" fill="#F97316"/>
+                      <text x="96" y="-2" fill="#F97316" font-size="10" font-weight="bold" font-family="sans-serif">H+</text>
+                    </g>
+                    <!-- 結合後狀態 (閃爍) -->
+                    <text x="75" y="15" fill="#F97316" font-size="12" font-weight="bold" font-family="sans-serif" class="animate-pulse">H</text>
+                  </svg>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 7. CTA ==================== -->
+    <section class="py-24 relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-[#050B14] to-[#0A2463]/20"></div>
+      <div class="max-w-5xl mx-auto px-6 relative z-10">
+        <div class="glass-card p-10 md:p-16 rounded-3xl border border-molris-cyan/30 text-center relative shadow-[0_0_50px_rgba(0,229,255,0.1)]">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+            以精確的結構，啟動您的分子探索
+          </h2>
+          <p class="text-gray-400 mb-10 max-w-2xl mx-auto text-[16px] leading-relaxed text-justify md:text-center">
+            錯誤的初始結構或是不合理的幾何構型，會導致後續所有模擬計算產生巨大偏差。<br>
+            交給 Molris 團隊為您建構、優化並嚴格驗證每一個原子與表面的位置。<br>
+            取得真正可直接用於高階 CADD 流程的高品質 3D 模型。
+          </p>
+          <a href="contact.html" class="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-molris-cyan text-molris-dark font-bold hover:bg-white hover:shadow-[0_0_20px_rgba(0,229,255,0.4)] transition-all text-lg">
+            立即啟動專案評估 <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== Footer ==================== -->
+  <footer class="bg-[#03060A] pt-16 pb-8 border-t border-gray-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-atom text-molris-cyan text-xl"></i>
+          <span class="text-xl font-bold tracking-widest text-white">Molris</span>
+        </div>
+        <div class="flex gap-6 text-sm text-gray-500">
+          <a href="#" class="hover:text-molris-cyan transition-colors">Privacy Policy</a>
+          <a href="#" class="hover:text-molris-cyan transition-colors">Terms of Service</a>
+        </div>
+      </div>
+      <div class="text-center text-gray-600 text-sm border-t border-gray-900 pt-8">
+        © 2026 Molris 默瑞思. All rights reserved. | 洞悉微觀規律，預見分子未來。
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
