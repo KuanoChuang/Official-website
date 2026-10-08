@@ -281,6 +281,94 @@
                 </mesh>
             );
         }
+
+        function ProbeScannerView({ atoms, visible }) {
+            const r_probe = 1.4;
+
+            // 動態尋找原子的相鄰點，生成一條局部的探針滾動軌跡
+            const sasCurve = useMemo(() => {
+                if (!atoms || atoms.length < 2) return null;
+
+                // 取出第一個原子
+                const a1 = atoms[0];
+                const p1 = new THREE.Vector3(...a1.pos);
+
+                // 尋找一個距離適中的相鄰原子 (模擬縫隙 Crevice)
+                let a2 = atoms[1];
+                let p2 = new THREE.Vector3(...a2.pos);
+                let minD = Infinity;
+
+                for (let i = 1; i < Math.min(atoms.length, 50); i++) {
+                    const dist = p1.distanceTo(new THREE.Vector3(...atoms[i].pos));
+                    // 找出距離約在 2~3.5Å 的相鄰原子
+                    if (dist > 2.0 && dist < 3.5 && dist < minD) {
+                        minD = dist;
+                        a2 = atoms[i];
+                        p2 = new THREE.Vector3(...a2.pos);
+                    }
+                }
+
+                // 計算探針軌跡 (SAS 半徑 = vdW + probe)
+                const r1 = a1.radius + r_probe;
+                const r2 = a2.radius + r_probe;
+
+                // 計算軌跡的控制點，讓探針從 a1 爬升，跨過縫隙，到達 a2
+                const up = new THREE.Vector3(0, 1, 0); // 假設向上的法向量
+                const p1_top = p1.clone().add(up.clone().multiplyScalar(r1));
+                const p2_top = p2.clone().add(up.clone().multiplyScalar(r2));
+                const mid_gap = p1.clone().lerp(p2, 0.5).add(up.clone().multiplyScalar((r1 + r2) * 0.4)); // 探針陷入兩原子之間的縫隙
+
+                return new THREE.CatmullRomCurve3([
+                    p1.clone().add(new THREE.Vector3(-r1, r1 * 0.5, 0)), // 進入點
+                    p1_top,                                            // A1 頂部
+                    mid_gap,                                           // 兩原子間的縫隙 (生成 SES 的關鍵)
+                    p2_top,                                            // A2 頂部
+                    p2.clone().add(new THREE.Vector3(r2, r2 * 0.5, 0))   // 離開點
+                ]);
+            }, [atoms]);
+
+            if (!visible || !sasCurve) return null;
+
+            return (
+                <group>
+                    {/* 繪製探針中心的虛線軌跡 (SAS) */}
+                    <Line
+                        points={sasCurve.getPoints(50)}
+                        color="#ffffff"
+                        lineWidth={2}
+                        dashed={true}
+                        dashSize={0.5}
+                        gapSize={0.2}
+                    />
+                    {/* 獨立渲染動態探針 */}
+                    <AnimatedProbe curve={sasCurve} radius={r_probe} />
+                </group>
+            );
+        }
+        function AnimatedProbe({ curve, radius }) {
+            const probeRef = useRef();
+
+            useFrame(({ clock }) => {
+                if (!probeRef.current || !curve) return;
+                // 來回滾動 (0 -> 1 -> 0)
+                const t = (Math.sin(clock.elapsedTime * 1.5) + 1) / 2;
+                const position = curve.getPointAt(t);
+                probeRef.current.position.copy(position);
+            });
+
+            return (
+                <Sphere ref={probeRef} args={[radius, 32, 32]}>
+                    <meshPhysicalMaterial
+                        color="#00ffff"
+                        transmission={0.9}
+                        opacity={1}
+                        transparent
+                        roughness={0.0}
+                        thickness={1.5}
+                    />
+                </Sphere>
+            );
+        }
         // Phase 2: 全空間 3D 網格陣列 (覆蓋整個 Bounding Box)
         function GridWireframe({ algoData, atoms, visible, bounds }) {
             // 1. 主網格 (Macro Grid) - 2.5Å
@@ -517,13 +605,13 @@
                         <bufferGeometry ref={activeGeoRef} key={`active-${scanAxis}`}>
                             <bufferAttribute attach="attributes-position" count={currentData.active.count} array={currentData.active.array} itemSize={3} />
                         </bufferGeometry>
-                        <pointsMaterial 
-                            color={scanAxis === 'x' ? "#4db8ff" : scanAxis === 'y' ? "#00F200" : "#F3E91F"} 
-                            size={0.75} 
-                            transparent={true} 
-                            opacity={0.8} 
-                            toneMapped={false} 
-                            depthWrite={false} 
+                        <pointsMaterial
+                            color={scanAxis === 'x' ? "#4db8ff" : scanAxis === 'y' ? "#00F200" : "#F3E91F"}
+                            size={0.75}
+                            transparent={true}
+                            opacity={0.8}
+                            toneMapped={false}
+                            depthWrite={false}
                         />
                     </points>
 
@@ -1010,12 +1098,12 @@
                     </div>
 
                     {(phase === 3 || phase === 4) && (
-                        <div 
-                            className="legend" 
-                            style={{ 
-                                display: 'grid', 
+                        <div
+                            className="legend"
+                            style={{
+                                display: 'grid',
                                 // Phase 3 只需要 1 欄，Phase 4 需要 2 欄
-                                gridTemplateColumns: phase === 4 ? 'auto auto' : 'auto', 
+                                gridTemplateColumns: phase === 4 ? 'auto auto' : 'auto',
                                 gap: '10px 30px', // 上下間距 10px，左右間距 30px
                                 alignItems: 'center'
                             }}
@@ -1099,6 +1187,11 @@
                                     atoms={data.atoms}
                                     visible={(phase === 1 && phase1Opts.vdw) || phase === 2 || phase === 3}
                                     dimmed={phase === 2 || phase === 3} />
+
+                                <ProbeScannerView
+                                    atoms={data.atoms}
+                                    visible={phase === 1 && phase1Opts.probe}
+                                />
                                 {/* Phase 1,5: SES */}
                                 <SESView visible={(phase === 1 && phase1Opts.ses) || phase === 5} />
                                 {/* Phase 2: 空間網格化 */}
