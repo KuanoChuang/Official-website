@@ -628,6 +628,7 @@
             // ==========================================
             const activeMaterial = useMemo(() => {
                 return new THREE.ShaderMaterial({
+                    toneMapped: false,
                     uniforms: {
                         currentProbePos: { value: new THREE.Vector3(0, -999, 0) },
                         scanAxis: { value: 0 },
