@@ -843,17 +843,21 @@
                 }
 
                 scanState.current.timer += delta;
-                if (scanState.current.timer > 0.01) {
-                    const step = Math.max(1, Math.floor(currentPath.length / 120));
-                    scanState.current.globalIdx += step;
-                    scanState.current.timer = 0;
-
-                    // 該軸掃描到底了
-                    if (scanState.current.globalIdx >= currentPath.length) {
-                        scanState.current.globalIdx = 0;
-                        setScanAxis(prev => prev + 1); // 0->1, 1->2, 2->3(進入展示期)
-                    }
+                if (scanState.current.globalIdx >= currentPath.length) {
+                // 【終極殺招】：切換軸向之前，強制把探針球順移到極遠處 (超過 1000 確保 isPast 絕對成立)，
+                // 這樣 Shader 就會在這一幀把所有點強迫結算！
+                if (scanAxis === 0) probeRef.current.position.x = 1000;
+                if (scanAxis === 1) probeRef.current.position.y = 1000;
+                if (scanAxis === 2) probeRef.current.position.z = 1000;
+                
+                // 強制更新 Shader Uniform
+                if (activeMaterial) {
+                    activeMaterial.uniforms.currentProbePos.value.copy(probeRef.current.position);
                 }
+
+                scanState.current.globalIdx = 0;
+                setScanAxis(prev => prev + 1); // 0->1, 1->2, 2->3(進入展示期)
+            }
             });
 
             if (!visible || !sortedData) return null;
