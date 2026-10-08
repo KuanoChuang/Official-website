@@ -517,7 +517,7 @@
                         <bufferGeometry ref={activeGeoRef} key={`active-${scanAxis}`}>
                             <bufferAttribute attach="attributes-position" count={currentData.active.count} array={currentData.active.array} itemSize={3} />
                         </bufferGeometry>
-                        <pointsMaterial color="#4db8ff" size={0.8} transparent={true} opacity={1.0} toneMapped={false} depthWrite={false} />
+                        <pointsMaterial color="#4db8ff" size={0.75} transparent={true} opacity={1.0} toneMapped={false} depthWrite={false} />
                     </points>
 
                     {/* 掃描平面 (Plane) */}
