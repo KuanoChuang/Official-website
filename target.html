@@ -695,38 +695,40 @@
                     bool inSliceZ = abs(vWorldPosition.z - currentProbePos.z) < layerThickness;
 
                     int unlockedLevel = 0;
-                    bool isScanningNow = false;
+                    
+                    // 【關鍵修正】：預設為不掃描。只有在明確符合條件時才開啟白光。
+                    bool isScanningNow = false; 
 
-                    // 【重點修改】：當 scanAxis >= 3 時，代表展示期，取消所有白光，直接強制解鎖到 Level 3
                     if (scanAxis >= 3) {
+                        // 展示期：直接結算，絕不顯示白光
                         if (vHitX > 0.5) unlockedLevel = 1;
                         if (vHitY > 0.5) unlockedLevel = 2;
                         if (vHitZ > 0.5) unlockedLevel = 3;
                     } 
-                    else {
-                        if (scanAxis == 0) {
-                            if (vHitX > 0.5) {
-                                if (inSliceX) isScanningNow = true;
-                                if (isPastX) unlockedLevel = 1;
-                            }
-                        } else if (scanAxis == 1) {
-                            if (vHitX > 0.5) unlockedLevel = 1; 
-                            if (vHitY > 0.5) {
-                                if (inSliceY) isScanningNow = true;
-                                if (isPastY) unlockedLevel = 2;
-                            }
-                        } else if (scanAxis == 2) {
-                            if (vHitX > 0.5) unlockedLevel = 1;
-                            if (vHitY > 0.5) unlockedLevel = 2;
-                            if (vHitZ > 0.5) {
-                                if (inSliceZ) isScanningNow = true;
-                                if (isPastZ) unlockedLevel = 3;
-                            }
+                    else if (scanAxis == 0) {
+                        if (vHitX > 0.5) {
+                            if (inSliceX) isScanningNow = true;
+                            if (isPastX && !inSliceX) unlockedLevel = 1; // 確保不在切面內才算過去
+                        }
+                    } 
+                    else if (scanAxis == 1) {
+                        if (vHitX > 0.5) unlockedLevel = 1; 
+                        if (vHitY > 0.5) {
+                            if (inSliceY) isScanningNow = true;
+                            if (isPastY && !inSliceY) unlockedLevel = 2;
+                        }
+                    } 
+                    else if (scanAxis == 2) {
+                        if (vHitX > 0.5) unlockedLevel = 1;
+                        if (vHitY > 0.5) unlockedLevel = 2;
+                        if (vHitZ > 0.5) {
+                            if (inSliceZ) isScanningNow = true;
+                            if (isPastZ && !inSliceZ) unlockedLevel = 3;
                         }
                     }
 
+                    // 命運分配
                     int destiny = 0;
-                    
                     if (vHitX > 0.5) {
                         if (vIsProbeX > 0.5) destiny = 1;
                         else destiny = 11;
