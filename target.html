@@ -637,14 +637,15 @@
                         colorIdle: { value: new THREE.Color("#1a2b3c") },
                         colorScanning: { value: new THREE.Color("#ffffff") },
 
-                        colorL1_Cavity_X: { value: new THREE.Color("#4db8ff") },
-                        colorL1_Probe: { value: new THREE.Color("#8a4d8f") },
+                        // 外殼色彩 (維持原本的青、綠、黃，辨識度極高)
+                        colorL1_Cavity_X: { value: new THREE.Color("#4db8ff") }, // 青色 (X軸淘汰)
+                        colorL2_Cavity_Y: { value: new THREE.Color("#00cc66") }, // 綠色 (Y軸淘汰)
+                        colorL3_Cavity_Z: { value: new THREE.Color("#ffff00") }, // 黃色 (Z軸淘汰)
 
-                        colorL2_Cavity_Y: { value: new THREE.Color("#00cc66") },
-                        colorL2_Probe: { value: new THREE.Color("#cc44aa") },
-
-                        colorL3_Cavity_Z: { value: new THREE.Color("#ffff00") },
-                        colorL3_Probe: { value: new THREE.Color("#ff33cc") }
+                        // 【重新設計的紫色三階段：由暗到亮、層層遞進】
+                        colorL1_Probe: { value: new THREE.Color("#b15eff") },    // 第一階段：薰衣草亮紫
+                        colorL2_Probe: { value: new THREE.Color("#e040fb") },    // 第二階段：電光亮紫
+                        colorL3_Probe: { value: new THREE.Color("#ff00ff") }     // 第三階段：高光霓虹紫
                     },
                     vertexShader: `
                 uniform float worldSize;
@@ -851,9 +852,6 @@
 
                     // 該軸掃描到底了
                     if (scanState.current.globalIdx >= currentPath.length) {
-
-                        // 【白光消除法】：切換軸向之前，不直接修改 probe 實體，
-                        // 而是強制把極遠的座標傳給 Shader，瞬間結算該軸所有點！
                         if (activeMaterial) {
                             const farPos = new THREE.Vector3().copy(probeRef.current.position);
                             if (scanAxis === 0) farPos.x += 1000;
