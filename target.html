@@ -686,57 +686,55 @@
                     vec2 coord = gl_PointCoord - vec2(0.5);
                     if(length(coord) > 0.5) discard;
 
-                    // 1. 空間位置判定
-                    bool isPastX = vWorldPosition.x <= (currentProbePos.x + 0.01);
-                    bool isPastY = vWorldPosition.y <= (currentProbePos.y + 0.01);
-                    bool isPastZ = vWorldPosition.z <= (currentProbePos.z + 0.01);
+                    // 1. 判定是否已經過去了 (加入 0.1 的稍大容差，對付 lerp 未到達的問題)
+                    bool isPastX = vWorldPosition.x < (currentProbePos.x + 0.1);
+                    bool isPastY = vWorldPosition.y < (currentProbePos.y + 0.1);
+                    bool isPastZ = vWorldPosition.z < (currentProbePos.z + 0.1);
 
+                    // 判定是否在切面內 (探針的光環範圍)
                     bool inSliceX = abs(vWorldPosition.x - currentProbePos.x) < layerThickness;
                     bool inSliceY = abs(vWorldPosition.y - currentProbePos.y) < layerThickness;
                     bool inSliceZ = abs(vWorldPosition.z - currentProbePos.z) < layerThickness;
 
+                    // 【核心互斥】：如果點已經被判定為「過去了」，就絕對不能在「切面內」發光！
+                    if (isPastX) inSliceX = false;
+                    if (isPastY) inSliceY = false;
+                    if (isPastZ) inSliceZ = false;
+
                     int unlockedLevel = 0;
                     bool isScanningNow = false; 
 
-                    // 2. 解鎖進度與白光判定 (嚴格互斥)
+                    // 2. 解鎖進度
                     if (scanAxis >= 3) {
-                        // 展示期：直接結算，絕不顯示白光
+                        // 展示期：所有人無條件結算，絕對不允許任何人發白光
                         if (vHitX > 0.5) unlockedLevel = 1;
                         if (vHitY > 0.5) unlockedLevel = 2;
                         if (vHitZ > 0.5) unlockedLevel = 3;
+                        isScanningNow = false; 
                     } 
                     else if (scanAxis == 0) {
                         if (vHitX > 0.5) {
-                            if (isPastX) {
-                                unlockedLevel = 1; // 只要過去了，就絕對解鎖
-                            } else if (inSliceX) {
-                                isScanningNow = true; // 還沒過去，但在切面內，才亮白光
-                            }
+                            if (isPastX) unlockedLevel = 1; 
+                            else if (inSliceX) isScanningNow = true;
                         }
                     } 
                     else if (scanAxis == 1) {
                         if (vHitX > 0.5) unlockedLevel = 1; 
                         if (vHitY > 0.5) {
-                            if (isPastY) {
-                                unlockedLevel = 2;
-                            } else if (inSliceY) {
-                                isScanningNow = true;
-                            }
+                            if (isPastY) unlockedLevel = 2;
+                            else if (inSliceY) isScanningNow = true;
                         }
                     } 
                     else if (scanAxis == 2) {
                         if (vHitX > 0.5) unlockedLevel = 1;
                         if (vHitY > 0.5) unlockedLevel = 2;
                         if (vHitZ > 0.5) {
-                            if (isPastZ) {
-                                unlockedLevel = 3; // 只要探針過去了，立刻結算為 Z 軸最終顏色！
-                            } else if (inSliceZ) {
-                                isScanningNow = true; // 探針還沒過去，但在切面內，亮白光
-                            }
+                            if (isPastZ) unlockedLevel = 3;
+                            else if (inSliceZ) isScanningNow = true;
                         }
                     }
 
-                    // 3. 命運分配 (計算它最終會死在第幾關)
+                    // 3. 命運分配
                     int destiny = 0;
                     if (vHitX > 0.5) {
                         if (vIsProbeX > 0.5) destiny = 1;
@@ -751,7 +749,7 @@
                         else destiny = 13;
                     }
 
-                    // 4. 上色邏輯
+                    // 4. 上色
                     vec3 finalColor = colorIdle;
                     float alpha = 0.05; 
 
