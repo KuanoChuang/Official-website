@@ -686,6 +686,7 @@
                     vec2 coord = gl_PointCoord - vec2(0.5);
                     if(length(coord) > 0.5) discard;
 
+                    // 1. 空間位置判定
                     bool isPastX = vWorldPosition.x < currentProbePos.x;
                     bool isPastY = vWorldPosition.y < currentProbePos.y;
                     bool isPastZ = vWorldPosition.z < currentProbePos.z;
@@ -695,10 +696,9 @@
                     bool inSliceZ = abs(vWorldPosition.z - currentProbePos.z) < layerThickness;
 
                     int unlockedLevel = 0;
-                    
-                    // 【關鍵修正】：預設為不掃描。只有在明確符合條件時才開啟白光。
                     bool isScanningNow = false; 
 
+                    // 2. 解鎖進度與白光判定 (嚴格互斥)
                     if (scanAxis >= 3) {
                         // 展示期：直接結算，絕不顯示白光
                         if (vHitX > 0.5) unlockedLevel = 1;
@@ -707,27 +707,36 @@
                     } 
                     else if (scanAxis == 0) {
                         if (vHitX > 0.5) {
-                            if (inSliceX) isScanningNow = true;
-                            if (isPastX && !inSliceX) unlockedLevel = 1; // 確保不在切面內才算過去
+                            if (isPastX) {
+                                unlockedLevel = 1; // 只要過去了，就絕對解鎖
+                            } else if (inSliceX) {
+                                isScanningNow = true; // 還沒過去，但在切面內，才亮白光
+                            }
                         }
                     } 
                     else if (scanAxis == 1) {
                         if (vHitX > 0.5) unlockedLevel = 1; 
                         if (vHitY > 0.5) {
-                            if (inSliceY) isScanningNow = true;
-                            if (isPastY && !inSliceY) unlockedLevel = 2;
+                            if (isPastY) {
+                                unlockedLevel = 2;
+                            } else if (inSliceY) {
+                                isScanningNow = true;
+                            }
                         }
                     } 
                     else if (scanAxis == 2) {
                         if (vHitX > 0.5) unlockedLevel = 1;
                         if (vHitY > 0.5) unlockedLevel = 2;
                         if (vHitZ > 0.5) {
-                            if (inSliceZ) isScanningNow = true;
-                            if (isPastZ && !inSliceZ) unlockedLevel = 3;
+                            if (isPastZ) {
+                                unlockedLevel = 3; // 只要探針過去了，立刻結算為 Z 軸最終顏色！
+                            } else if (inSliceZ) {
+                                isScanningNow = true; // 探針還沒過去，但在切面內，亮白光
+                            }
                         }
                     }
 
-                    // 命運分配
+                    // 3. 命運分配 (計算它最終會死在第幾關)
                     int destiny = 0;
                     if (vHitX > 0.5) {
                         if (vIsProbeX > 0.5) destiny = 1;
@@ -742,6 +751,7 @@
                         else destiny = 13;
                     }
 
+                    // 4. 上色邏輯
                     vec3 finalColor = colorIdle;
                     float alpha = 0.05; 
 
