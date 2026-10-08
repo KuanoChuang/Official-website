@@ -285,66 +285,88 @@
         function ProbeScannerView({ atoms, visible }) {
             const r_probe = 1.4;
 
-            // 生成環繞整個蛋白質表面的漫遊軌跡
             const sasCurve = useMemo(() => {
                 if (!atoms || atoms.length < 10) return null;
 
                 const pathPoints = [];
-                const numPoints = 20; // 決定探針要經過幾個「導航點」 (越多越複雜)
+                const numPoints = 60; // 增加控制點，讓軌跡更貼合複雜表面
 
-                // 1. 先計算蛋白質的大致中心點 (Center of Mass)
+                // 1. 計算蛋白質的幾何中心
                 const center = new THREE.Vector3();
                 atoms.forEach(atom => {
                     center.add(new THREE.Vector3(...atom.pos));
                 });
                 center.divideScalar(atoms.length);
 
-                // 2. 挑選「表面」原子作為軌跡基準
-                // 簡單的演算法：找距離中心點較遠的原子，它們通常在表面
-                const sortedAtoms = [...atoms].sort((a, b) => {
-                    const distA = new THREE.Vector3(...a.pos).distanceToSquared(center);
-                    const distB = new THREE.Vector3(...b.pos).distanceToSquared(center);
-                    return distB - distA; // 距離遠的排前面
-                });
+                // 2. 使用 Fibonacci Sphere 演算法生成均勻分佈在 3D 空間的「方向向量」
+                // 這能確保我們從四面八方 (360度立體) 來探測蛋白質表面
+                const directions = [];
+                const phi = Math.PI * (3 - Math.sqrt(5)); // 黃金角
 
-                // 取前 50 個最外圍的原子作為候選池
-                const surfaceCandidates = sortedAtoms.slice(0, 50);
-
-                // 3. 在候選池中隨機挑選導航點，並將點向外推 (原子半徑 + 探針半徑)
                 for (let i = 0; i < numPoints; i++) {
-                    // 隨機選一個表面原子
-                    const randomIdx = Math.floor(Math.random() * surfaceCandidates.length);
-                    const targetAtom = surfaceCandidates[randomIdx];
-                    const pos = new THREE.Vector3(...targetAtom.pos);
+                    const y = 1 - (i / (numPoints - 1)) * 2; // y 從 1 到 -1
+                    const radius = Math.sqrt(1 - y * y);
+                    const theta = phi * i;
 
-                    // 計算從中心點指向該原子的方向向量 (法線)
-                    const normal = pos.clone().sub(center).normalize();
+                    const x = Math.cos(theta) * radius;
+                    const z = Math.sin(theta) * radius;
 
-                    // 將軌跡點往外推：原座標 + 方向向量 * (原子半徑 + 探針半徑)
-                    // 再多加一點點 tolerance (0.2) 確保不會卡進原子裡
-                    const offsetDist = targetAtom.radius + r_probe + 0.2;
-                    const finalPoint = pos.add(normal.multiplyScalar(offsetDist));
-
-                    pathPoints.push(finalPoint);
+                    directions.push(new THREE.Vector3(x, y, z).normalize());
                 }
 
-                // 4. 建立一條封閉的平滑曲線 (Closed = true)
-                return new THREE.CatmullRomCurve3(pathPoints, true); // true 表示頭尾相連
+                // 3. 從每個方向，尋找該方向上「最外層」的原子
+                directions.forEach(dir => {
+                    let maxProjection = -Infinity;
+                    let outermostAtom = null;
+
+                    // 尋找在該射線方向上，投影距離最遠的原子
+                    atoms.forEach(atom => {
+                        const vec = new THREE.Vector3(...atom.pos).sub(center);
+                        const projection = vec.dot(dir); // 計算向量在方向上的投影長度
+                        if (projection > maxProjection) {
+                            maxProjection = projection;
+                            outermostAtom = atom;
+                        }
+                    });
+
+                    if (outermostAtom) {
+                        // 將原子位置沿著「從中心向外的方向」往外推
+                        const atomPos = new THREE.Vector3(...outermostAtom.pos);
+                        // 這裡的法線我們採用「中心點指向該原子的方向」，雖然不是絕對精確的表面法線，但對示意動畫足夠平滑
+                        const normal = atomPos.clone().sub(center).normalize();
+
+                        // 往外推的距離：原子半徑 + 探針半徑 (1.4) + 微小緩衝
+                        const offsetDist = outermostAtom.radius + r_probe + 0.3;
+                        const finalPoint = atomPos.add(normal.multiplyScalar(offsetDist));
+
+                        pathPoints.push(finalPoint);
+                    }
+                });
+
+                // 4. 因為 Fibonacci Sphere 產生的點在空間中是螺旋下降的，
+                // 這些點按照順序連起來，剛好會形成一條「像毛線球一樣繞滿整個蛋白質」的連續軌跡！
+                // 我們使用 CatmullRomCurve3，並設為 closed (true) 讓頭尾相連
+                // 參數：points, closed, curveType, tension
+                return new THREE.CatmullRomCurve3(pathPoints, true, 'centripetal', 0.5);
             }, [atoms]);
 
             if (!visible || !sasCurve) return null;
 
             return (
                 <group>
-                    {/* 繪製全域的漫遊軌跡 */}
-                    <Line
-                        points={sasCurve.getPoints(200)} // 點數增多讓曲線更平滑
-                        color="#ffffff"
-                        lineWidth={1}
-                        dashed={true}
-                        dashSize={0.5}
-                        gapSize={0.2}
-                    />
+                    {/* 繪製全域漫遊軌跡 */}
+                    <mesh>
+                        {/* 改用 TubeGeometry，因為當曲線很長很複雜時，Line 容易看起來凌亂 */}
+                        {/* tubeGeometry args: [path, tubularSegments, radius, radialSegments, closed] */}
+                        <tubeGeometry args={[sasCurve, 300, 0.08, 8, true]} />
+                        <meshBasicMaterial
+                            color="#ffffff"
+                            transparent={true}
+                            opacity={0.3}
+                            depthWrite={false}
+                        />
+                    </mesh>
+
                     {/* 獨立渲染動態探針 */}
                     <AnimatedProbe curve={sasCurve} radius={r_probe} />
                 </group>
