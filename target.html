@@ -634,6 +634,7 @@
                         scanAxis: { value: 0 },
                         layerThickness: { value: 0.8 },
                         worldSize: { value: 0.8 },
+                        windowHeight: { value: window.innerHeight },
 
                         colorIdle: { value: new THREE.Color("#3a5a78") },
                         colorScanning: { value: new THREE.Color("#ffffff") },
@@ -666,7 +667,7 @@
                     vWorldPosition = worldPosition.xyz;
                     vec4 mvPosition = viewMatrix * worldPosition;
                     
-                    gl_PointSize = worldSize * (projectionMatrix[1][1] * 400.0 / -mvPosition.z);
+                    l_PointSize = worldSize * ( windowHeight / 2.0 ) * projectionMatrix[1][1] / -mvPosition.z;
                     gl_Position = projectionMatrix * mvPosition;
                 }
             `,
@@ -844,6 +845,7 @@
                 if (activeMaterial && probeRef.current) {
                     activeMaterial.uniforms.scanAxis.value = scanAxis;
                     activeMaterial.uniforms.currentProbePos.value.copy(probeRef.current.position);
+                    activeMaterial.uniforms.windowHeight.value = window.innerHeight;
                 }
 
                 // 4. 推進進度 (不管有沒有 currentPoint，時間都要繼續走！)
