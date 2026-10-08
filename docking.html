@@ -1,1 +1,682 @@
-123
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>分子對接 (Molecular Docking) | Molris 默瑞思</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+            sans: ['"Noto Sans TC"', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
+          },
+          colors: {
+            molris: {
+              cyan: '#00E5FF',
+              blue: '#0A2463',
+              dark: '#030509',
+              gray: '#8A9BAE',
+              neonpink: '#F000FF',
+              orange: '#F97316'
+          }
+        }
+      }
+    }
+  }  
+  </script>
+
+  <script>
+    // === Pin & Menu Logic ===
+    function togglePin(element) {
+      element.dataset.pinned = element.dataset.pinned === "true" ? "false" : "true";
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const backdrop = document.getElementById('mobile-menu-backdrop');
+      if (menu.classList.contains('translate-x-full')) {
+        menu.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      } else {
+        menu.classList.add('translate-x-full');
+        backdrop.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    }
+
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 768) {
+        const menu = document.getElementById('mobile-menu');
+        if (menu && !menu.classList.contains('translate-x-full')) toggleMobileMenu();
+      }
+    });
+
+    // 產生動態背景 (分子對接漂浮粒子)
+    function generateDockingBackground() {
+      const container = document.getElementById('dynamic-hero-bg');
+      if (!container) return;
+      container.innerHTML = '';
+      
+      // 隨機生成微小粒子，模擬在溶劑中漂浮的配體分子
+      for (let i = 0; i < 40; i++) {
+        const node = document.createElement('div');
+        const isMagenta = Math.random() > 0.8;
+        const size = isMagenta ? 'w-2 h-2 bg-[#D946EF]' : 'w-1.5 h-1.5 bg-molris-cyan';
+        const shadow = isMagenta ? 'shadow-[0_0_10px_#D946EF]' : 'shadow-[0_0_8px_#00E5FF]';
+        
+        node.className = `absolute rounded-full ${size} ${shadow} opacity-40 animate-pulse`;
+        node.style.left = `${Math.random() * 100}%`;
+        node.style.top = `${Math.random() * 100}%`;
+        node.style.animationDuration = `${Math.random() * 4 + 2}s`;
+        node.style.animationDelay = `${Math.random() * 3}s`;
+        
+        container.appendChild(node);
+      }
+    }
+
+    window.onload = () => {
+      generateDockingBackground();
+    };
+  </script>
+  
+  <style>
+    body { background-color: #030509; color: #E2E8F0; }
+    .glass-nav {
+      background: rgba(3, 5, 9, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+    }
+    .dropdown:hover .dropdown-content { display: block; animation: fadeIn 0.2s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-slide-down { animation: slideDown 0.4s ease-out forwards; }
+    
+    .glass-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
+    .glass-panel { background: rgba(3, 5, 9, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(16px); }
+    
+    .expand-container { grid-template-rows: 0fr; transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    .group:hover .expand-container { grid-template-rows: 1fr; }
+
+  </style>
+</head>
+
+<body class="font-sans antialiased overflow-x-hidden selection:bg-molris-cyan selection:text-white">
+  
+  <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="index.html" class="text-2xl font-bold tracking-wider text-white flex items-center gap-2 group">
+        <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i> Molris
+      </a>
+      <nav class="hidden md:flex items-center gap-8 text-[16px] font-medium">
+        <div class="relative group dropdown py-8">
+          <a href="index.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">關於Molris <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+        </div>
+        <div class="relative group dropdown py-8">
+          <a href="platform.html" class="text-molris-cyan transition-colors flex items-center gap-1">技術平台 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-44 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="msa.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多序列比對</a>
+            <a href="modeling.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多尺度建模</a>
+            <a href="target.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">靶點探索</a>
+            <a href="docking.html" class="block px-4 py-2 text-molris-cyan bg-gray-800 font-bold transition-colors flex items-center gap-2 whitespace-nowrap"><i class="fa-solid fa-caret-right text-xs"></i> 分子對接</a>
+            <a href="dynamics.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子動力學</a>
+            <a href="optimize.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子結構設計</a>
+          </div>
+        </div>
+        <div class="relative group dropdown py-8">
+          <a href="project.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">專案介紹 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+        </div>
+        <div class="relative group dropdown py-8">
+          <a href="pricing.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">方案介紹 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+        </div>
+        <div class="relative group dropdown py-8">
+          <a href="contact.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">聯絡我們 <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+        </div>
+        <div class="flex items-center gap-2 pl-4 border-l border-gray-700">
+          <i class="fa-solid fa-globe text-gray-400"></i>
+          <span class="text-gray-300 hover:text-white cursor-pointer transition-colors">中文</span>
+        </div>
+      </nav>
+      <button onclick="toggleMobileMenu()" class="md:hidden text-gray-300 hover:text-white z-50 relative p-2">
+        <i class="fa-solid fa-bars text-2xl"></i>
+      </button>
+    </div>
+  </header>
+
+  <div id="mobile-menu-backdrop" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden transition-opacity md:hidden"></div>
+  <div id="mobile-menu" class="fixed top-0 right-0 h-[100dvh] w-[260px] bg-[#0A111A] border-l border-gray-800 transform translate-x-full transition-transform duration-300 ease-in-out z-[70] flex flex-col md:hidden shadow-[[-20px_0_40px_rgba(0,0,0,0.8)]]">
+    <div class="h-20 flex items-center justify-between px-6 border-b border-gray-800/80 shrink-0">
+      <a href="index.html" class="text-lg font-bold tracking-wider text-white flex items-center gap-2 group">
+        <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i> Molris
+      </a>
+      <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800 transition-colors">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+    </div>
+    <div class="flex-1 overflow-y-auto py-8 px-6 flex flex-col gap-6 text-[16px]">
+      <div data-open="true" class="group">
+        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+          <span>技術平台</span>
+          <i class="fa-solid fa-chevron-down text-xs opacity-100 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+        </button>
+        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div class="overflow-hidden">
+            <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-molris-cyan/30">
+              <a href="msa.html" class="text-sm text-gray-400 hover:text-molris-cyan">多序列比對</a>
+              <a href="modeling.html" class="text-sm text-gray-400 hover:text-molris-cyan">多尺度建模</a>
+              <a href="target.html" class="text-sm text-gray-400 hover:text-molris-cyan">靶點探索</a>
+              <a href="docking.html" class="text-sm text-molris-cyan font-medium flex items-center gap-2"><i class="fa-solid fa-caret-right text-xs"></i> 分子對接</a>
+              <a href="dynamics.html" class="text-sm text-gray-400 hover:text-molris-cyan">分子動力學</a>
+              <a href="optimize.html" class="text-sm text-gray-400 hover:text-molris-cyan">分子結構設計</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="pt-20">
+    
+    <section class="relative min-h-[90vh] flex flex-col justify-center overflow-hidden border-b border-gray-800/80 bg-molris-dark">
+      
+      <!-- Ambient Glows -->
+      <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#D946EF]/20 rounded-full blur-[180px] pointer-events-none z-0"></div>
+      <div class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-molris-cyan/20 rounded-full blur-[180px] pointer-events-none z-0"></div>
+
+      <!-- UI Corners -->
+      <div class="absolute top-8 left-8 w-12 h-12 border-t-2 border-l-2 border-molris-cyan/30 pointer-events-none z-0"></div>
+      <div class="absolute bottom-8 right-8 w-12 h-12 border-b-2 border-r-2 border-[#D946EF]/30 pointer-events-none z-0"></div>
+
+      <!-- Dynamic Docking Engine Background -->
+      <div id="dynamic-hero-bg" class="absolute inset-0 z-0 pointer-events-none w-full h-full"></div>
+
+      <!-- Center Vignette -->
+      <div class="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(3,5,9,0.85)_15%,rgba(3,5,9,0.7)_50%,transparent_100%)]"></div>
+
+      <div class="max-w-4xl mx-auto px-6 relative z-10 text-center">
+        <span class="inline-block py-1 px-3 rounded-full border border-molris-cyan/30 bg-molris-cyan/10 text-molris-cyan text-sm font-inter tracking-widest mb-6 shadow-[0_0_15px_rgba(0,229,255,0.15)]">
+          VIRTUAL SCREENING & BINDING
+        </span>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-wide text-white drop-shadow-lg">
+          分子對接與虛擬篩選 <br>
+          <span class="text-2xl md:text-3xl text-gray-400 font-light mt-4 inline-block tracking-widest font-inter">Molecular Docking</span>
+        </h1>
+        <p class="text-lg text-gray-400 leading-relaxed max-w-3xl mx-auto mb-10 drop-shadow-md text-justify md:text-center">
+          整合最先進的 AI 深度學習評分 (GNINA) 與強大的雲端任務排程系統。<br>
+          在浩瀚的化學空間中，極速精確地鎖定具備高親和力與成藥潛力的先導化合物。
+        </p>
+        
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="contact.html" class="px-8 py-3.5 rounded-full bg-molris-cyan text-molris-dark font-bold hover:bg-white hover:shadow-[0_0_20px_rgba(0,229,255,0.4)] transition-all w-full sm:w-auto">
+            啟動虛擬篩選專案
+          </a>
+          <a href="#core-algorithms" class="px-8 py-3.5 rounded-full border border-gray-600 text-white hover:border-molris-cyan hover:text-molris-cyan hover:bg-molris-cyan/5 transition-all w-full sm:w-auto">
+            解析核心對接演算法
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-24 relative bg-[#050B14] border-y border-gray-800 overflow-hidden">
+      <!-- Glows -->
+      <div class="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-molris-cyan/5 to-transparent pointer-events-none"></div>
+      
+      <div class="max-w-6xl mx-auto px-6 relative z-10">
+        
+        <div class="text-center mb-16">
+          <span class="text-molris-cyan text-sm font-bold tracking-widest uppercase mb-2 block font-inter">Next-Generation Docking</span>
+          <h2 class="text-3xl md:text-4xl font-bold text-white">AI 賦能與高通量工程</h2>
+        </div>
+
+        <div class="flex flex-col gap-16">
+          <!-- GNINA Section -->
+          <div class="flex flex-col md:flex-row gap-10 items-center">
+            <div class="md:w-1/2 order-2 md:order-1">
+              <div class="flex items-center gap-3 mb-4">
+                <i class="fa-solid fa-microchip text-2xl text-molris-cyan"></i>
+                <h3 class="text-2xl font-bold text-white">GNINA: 深度學習對接架構</h3>
+              </div>
+              <p class="text-gray-400 text-[16px] leading-relaxed text-justify mb-4">
+                傳統對接軟體 (如 AutoDock Vina) 依賴預設的經驗公式評分，常在處理特定受體或複雜水合網絡時遭遇瓶頸。<br><br>
+                Molris 深度整合 <strong class="text-molris-cyan">GNINA</strong> 架構，這是一種結合經典搜尋演算法與 <strong class="text-white">3D 卷積神經網路 (3D-CNN)</strong> 的先進技術。系統會將蛋白質-配體的結合構象轉換為 3D 體素 (Voxel) 網格，讓 AI 直接「看見」原子間的空間幾何與物理化學分佈，從而給出逼近實驗值的結合親和力預測。
+              </p>
+              <ul class="space-y-2 text-sm text-gray-300">
+                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-molris-cyan"></i> 顯著提升 Active/Decoy 分辨率 (AUC 提升)</li>
+                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-molris-cyan"></i> 改善 Pose 預測的 RMSD 精準度</li>
+                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-molris-cyan"></i> 支援自定義網路架構與遷移學習</li>
+              </ul>
+            </div>
+            
+            <div class="md:w-1/2 order-1 md:order-2 flex justify-center">
+              <!-- CNN Visualization Abstraction -->
+              <div class="w-full max-w-[400px] h-[250px] bg-gray-900/50 rounded-2xl border border-gray-800 relative overflow-hidden flex items-center justify-center p-6 shadow-[inset_0_0_30px_rgba(0,0,0,0.5)]">
+                 <div class="flex items-center justify-between w-full h-full relative z-10">
+                    <!-- Voxel Input -->
+                    <div class="w-16 h-16 border border-molris-cyan/50 bg-molris-cyan/10 grid grid-cols-3 grid-rows-3 gap-[1px] p-[1px] transform -skew-x-12">
+                      <div class="bg-molris-cyan/80"></div><div class="bg-transparent"></div><div class="bg-molris-cyan/40"></div>
+                      <div class="bg-transparent"></div><div class="bg-[#D946EF]/80"></div><div class="bg-transparent"></div>
+                      <div class="bg-molris-cyan/50"></div><div class="bg-transparent"></div><div class="bg-molris-cyan/90"></div>
+                    </div>
+                    
+                    <!-- CNN Layers -->
+                    <div class="flex gap-4">
+                      <div class="w-4 h-24 bg-gray-700 rounded-full anim-cnn-1"></div>
+                      <div class="w-4 h-20 bg-gray-700 rounded-full anim-cnn-2"></div>
+                      <div class="w-4 h-16 bg-gray-700 rounded-full anim-cnn-3"></div>
+                      <div class="w-4 h-8 bg-gray-700 rounded-full anim-cnn-4"></div>
+                    </div>
+
+                    <!-- Output Score -->
+                    <div class="text-center">
+                      <span class="block text-xs text-gray-500 mb-1">CNN Affinity</span>
+                      <strong class="text-2xl text-molris-cyan font-mono drop-shadow-[0_0_8px_rgba(0,229,255,0.8)]">8.75</strong>
+                      <span class="block text-[10px] text-gray-500">pK<sub class="text-[8px]">d</sub></span>
+                    </div>
+                 </div>
+                 
+                 <!-- Flow lines -->
+                 <svg class="absolute inset-0 w-full h-full z-0 opacity-30" preserveAspectRatio="none">
+                   <path d="M 80 125 C 120 125, 120 125, 160 125" fill="none" stroke="#00E5FF" stroke-width="2" stroke-dasharray="4 4" class="anim-particle-flow" />
+                   <path d="M 240 125 C 280 125, 280 125, 320 125" fill="none" stroke="#D946EF" stroke-width="2" stroke-dasharray="4 4" class="anim-particle-flow" />
+                 </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Scheduling Section -->
+          <div class="flex flex-col md:flex-row gap-10 items-center">
+            <div class="md:w-1/2 flex justify-center">
+              <!-- Scheduling Visualization -->
+              <div class="w-full max-w-[400px] h-[250px] bg-gray-900/50 rounded-2xl border border-gray-800 relative overflow-hidden flex flex-col p-6 shadow-[inset_0_0_30px_rgba(0,0,0,0.5)]">
+                
+                <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                  <span class="text-xs text-gray-400 font-mono">Job Queue (ZINC DB)</span>
+                  <span class="text-xs text-[#10B981] font-mono px-2 py-0.5 bg-[#10B981]/10 rounded">ACTIVE</span>
+                </div>
+                
+                <div class="flex-1 relative">
+                  <!-- Processing Nodes -->
+                  <div class="absolute right-0 top-0 bottom-0 w-24 flex flex-col justify-between z-10">
+                    <div class="h-[28%] bg-gray-800 border border-gray-600 rounded flex items-center justify-center text-[10px] text-gray-400 font-mono"><i class="fa-solid fa-microchip text-molris-cyan mr-1"></i> GPU Node 1</div>
+                    <div class="h-[28%] bg-gray-800 border border-gray-600 rounded flex items-center justify-center text-[10px] text-gray-400 font-mono"><i class="fa-solid fa-microchip text-molris-cyan mr-1"></i> GPU Node 2</div>
+                    <div class="h-[28%] bg-gray-800 border border-gray-600 rounded flex items-center justify-center text-[10px] text-gray-400 font-mono"><i class="fa-solid fa-microchip text-molris-cyan mr-1"></i> GPU Node 3</div>
+                  </div>
+                  
+                  <!-- Queue Items -->
+                  <div class="absolute left-0 top-[5%] w-6 h-6 bg-molris-orange/80 rounded shadow-[0_0_8px_#F97316] anim-queue-item" style="animation-delay: 0s;"></div>
+                  <div class="absolute left-0 top-[40%] w-6 h-6 bg-molris-orange/80 rounded shadow-[0_0_8px_#F97316] anim-queue-item" style="animation-delay: 1.2s;"></div>
+                  <div class="absolute left-0 top-[75%] w-6 h-6 bg-molris-orange/80 rounded shadow-[0_0_8px_#F97316] anim-queue-item" style="animation-delay: 2.4s;"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="md:w-1/2">
+              <div class="flex items-center gap-3 mb-4">
+                <i class="fa-solid fa-network-wired text-2xl text-molris-orange"></i>
+                <h3 class="text-2xl font-bold text-white">任務排程與高通量篩選</h3>
+              </div>
+              <p class="text-gray-400 text-[16px] leading-relaxed text-justify mb-4">
+                當面臨百萬至千萬等級的小分子庫（如 ZINC, Enamine REAL）時，單機運算已不敷使用。Molris 開發專屬的 <strong class="text-molris-orange">叢集任務排程系統 (Task Scheduler)</strong>，將巨量配體庫智慧分塊 (Chunking)。<br><br>
+                系統會即時監控雲端或本地 GPU/CPU 節點的負載狀態，動態派發運算任務。這不僅確保了 100% 的資源利用率，更具備容錯重試機制。對接完成後，排程系統會自動進行數據清洗、歸總與排序，將耗時數月的篩選任務壓縮至數天內完成。
+              </p>
+              <ul class="space-y-2 text-sm text-gray-300">
+                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-molris-orange"></i> 支援百萬級別 (HTVS) 虛擬篩選</li>
+                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-molris-orange"></i> 動態資源分配與斷點續傳機制</li>
+                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-molris-orange"></i> 自動化 Hit 化合物聚合與分析報告生成</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="core-algorithms" class="py-24 relative bg-[#0A111A]">
+      <div class="max-w-7xl mx-auto px-6">
+        
+        <div class="text-center mb-16">
+          <h2 class="text-3xl font-bold text-white mb-4">核心對接演算法剖析</h2>
+          <p class="text-gray-400 max-w-3xl mx-auto text-[16px] text-justify md:text-center">
+            分子對接的本質是一個「最佳化問題」。它由兩大引擎驅動：<strong class="text-white">搜尋方式 (Search Algorithm)</strong> 負責在龐大的幾何空間中探索可能的構象，而 <strong class="text-white">評分方式 (Scoring Function)</strong> 負責評估該構象的穩定性與親和力。
+          </p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-12">
+          
+          <!-- 1. 搜尋方式 (Search Methods) -->
+          <div class="glass-card p-8 rounded-3xl border border-gray-800/80 relative overflow-hidden group hover:border-molris-cyan/50 transition-colors duration-500">
+            <div class="absolute top-0 right-0 w-48 h-48 bg-molris-cyan/10 blur-[60px] rounded-full pointer-events-none transition-opacity group-hover:opacity-100 opacity-50"></div>
+            
+            <div class="flex items-center gap-4 mb-8 relative z-10 border-b border-gray-800 pb-4">
+              <div class="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center text-molris-cyan border border-gray-700 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
+                <i class="fa-solid fa-magnifying-glass-location text-xl"></i>
+              </div>
+              <h3 class="text-2xl font-bold text-white">1. 構象搜尋方式 (Search Algorithms)</h3>
+            </div>
+
+            <div class="space-y-6 relative z-10">
+              
+              <!-- Monte Carlo -->
+              <div class="flex items-start gap-4">
+                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 shrink-0 mt-1 border border-gray-700"><i class="fa-solid fa-dice text-sm"></i></div>
+                <div>
+                  <h4 class="text-lg font-bold text-white mb-1">蒙地卡羅 (Monte Carlo, MC)</h4>
+                  <p class="text-sm text-gray-400 text-justify leading-relaxed">
+                    對配體進行隨機的平移、旋轉與扭轉角改變。若新構象能量較低則接受；若較高，則根據 Boltzmann 分佈機率決定是否接受 (Metropolis 準則)，藉此跳出局部能量陷阱。
+                  </p>
+                </div>
+              </div>
+
+              <!-- Darwinian GA -->
+              <div class="flex items-start gap-4">
+                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 shrink-0 mt-1 border border-gray-700"><i class="fa-solid fa-dna text-sm"></i></div>
+                <div>
+                  <h4 class="text-lg font-bold text-white mb-1">達爾文遺傳演算法 (Darwinian GA)</h4>
+                  <p class="text-sm text-gray-400 text-justify leading-relaxed">
+                    將配體的空間參數編碼為「基因」。產生初始族群後，透過「突變」與「交配」產生子代，並依據評分函數計算「適應度」(Fitness)，淘汰劣勢構象，保留優勢構象。
+                  </p>
+                </div>
+              </div>
+
+              <!-- Lamarckian GA -->
+              <div class="flex items-start gap-4">
+                <div class="w-8 h-8 rounded-full bg-molris-cyan/20 flex items-center justify-center text-molris-cyan shrink-0 mt-1 border border-molris-cyan/50"><i class="fa-solid fa-code-branch text-sm"></i></div>
+                <div>
+                  <h4 class="text-lg font-bold text-molris-cyan mb-1">拉馬克遺傳演算法 (Lamarckian GA)</h4>
+                  <p class="text-sm text-gray-400 text-justify leading-relaxed">
+                    AutoDock 等主流軟體核心。在達爾文 GA 的基礎上，加入「局部搜索」(能量最小化)。子代不僅繼承基因，還能將後天努力獲得的「優化特徵」寫回基因中遺傳給下一代，大幅提升收斂速度與精確度。
+                  </p>
+                </div>
+              </div>
+
+              <!-- Simulated Annealing -->
+              <div class="flex items-start gap-4">
+                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 shrink-0 mt-1 border border-gray-700"><i class="fa-solid fa-temperature-arrow-down text-sm"></i></div>
+                <div>
+                  <h4 class="text-lg font-bold text-white mb-1">退火演算法 (Simulated Annealing)</h4>
+                  <p class="text-sm text-gray-400 text-justify leading-relaxed">
+                    模擬物理冶金的退火過程。初期設定極高「溫度」，允許配體進行大幅度的高能量隨機跳躍；隨著時間推移緩慢「降溫」，逐漸縮小變異範圍，最終穩定停留在全域最低能量構象。
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 2. 評分方式 (Scoring Functions) -->
+          <div class="glass-card p-8 rounded-3xl border border-gray-800/80 relative overflow-hidden group hover:border-[#D946EF]/50 transition-colors duration-500">
+            <div class="absolute top-0 left-0 w-48 h-48 bg-[#D946EF]/10 blur-[60px] rounded-full pointer-events-none transition-opacity group-hover:opacity-100 opacity-50"></div>
+            
+            <div class="flex items-center gap-4 mb-8 relative z-10 border-b border-gray-800 pb-4">
+              <div class="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center text-[#D946EF] border border-gray-700 shadow-[0_0_15px_rgba(217,70,239,0.2)]">
+                <i class="fa-solid fa-chart-line text-xl"></i>
+              </div>
+              <h3 class="text-2xl font-bold text-white">2. 評分方式 (Scoring Functions)</h3>
+            </div>
+
+            <div class="space-y-6 relative z-10">
+              
+              <!-- Empirical -->
+              <div class="flex items-start gap-4">
+                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 shrink-0 mt-1 border border-gray-700"><i class="fa-solid fa-scale-balanced text-sm"></i></div>
+                <div>
+                  <h4 class="text-lg font-bold text-white mb-1">經驗型評分 (Empirical Scoring)</h4>
+                  <p class="text-sm text-gray-400 text-justify leading-relaxed">
+                    將結合自由能分解為多項物理交互作用 (如氫鍵數量、疏水接觸面積、旋轉鍵懲罰等)。透過大量已知實驗親和力 (Ki/Kd) 的複合物結構進行多元線性迴歸，擬合出各項目的權重係數。計算速度極快。
+                  </p>
+                </div>
+              </div>
+
+              <!-- Knowledge-based -->
+              <div class="flex items-start gap-4">
+                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 shrink-0 mt-1 border border-gray-700"><i class="fa-solid fa-database text-sm"></i></div>
+                <div>
+                  <h4 class="text-lg font-bold text-white mb-1">知識型評分 (Knowledge-based Scoring)</h4>
+                  <p class="text-sm text-gray-400 text-justify leading-relaxed">
+                    基於統計力學原理 (PMF)。不預先假設交互作用類型，而是從 PDB 資料庫中大量挖掘已知複合物結構，統計各種特定原子對 (如 O-N, C-C) 在特定距離下出現的頻率。頻率越高的距離代表能量越穩定。
+                  </p>
+                </div>
+              </div>
+
+              <!-- Force-field -->
+              <div class="flex items-start gap-4">
+                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 shrink-0 mt-1 border border-gray-700"><i class="fa-solid fa-bolt text-sm"></i></div>
+                <div>
+                  <h4 class="text-lg font-bold text-white mb-1">力場型評分 (Force-field Scoring)</h4>
+                  <p class="text-sm text-gray-400 text-justify leading-relaxed">
+                    基於經典分子力學 (如 AMBER, CHARMM)。利用物理方程式精確計算凡得瓦力 (Lennard-Jones potential) 與靜電作用力 (Coulomb's law)。物理意義最嚴謹，但計算消耗大，需妥善處理溶劑化效應。
+                  </p>
+                </div>
+              </div>
+
+              <!-- AI Extension -->
+              <div class="flex items-start gap-4 pt-2 border-t border-gray-800/80">
+                <div class="w-8 h-8 rounded-full bg-[#D946EF]/20 flex items-center justify-center text-[#D946EF] shrink-0 mt-1 border border-[#D946EF]/50"><i class="fa-solid fa-brain text-sm"></i></div>
+                <div>
+                  <h4 class="text-lg font-bold text-[#D946EF] mb-1">AI 深度學習評分 (Deep Learning)</h4>
+                  <p class="text-sm text-gray-400 text-justify leading-relaxed">
+                    突破傳統限制，利用 3D-CNN 等網路直接從空間學習隱含的物理化學特徵。不需人工定義特徵或力場參數，能自動捕捉非線性關聯，顯著提升 Active/Decoy 分辨率。
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="py-24 pt-16 bg-[#03060A] border-t border-gray-800">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-12">
+          <span class="text-molris-cyan text-sm font-bold tracking-widest uppercase mb-2 block font-inter">Data Extraction & Validation</span>
+          <h2 class="text-3xl font-bold text-white mb-4">後續分析與多層次過濾引擎</h2>
+          <p class="text-gray-400 max-w-3xl mx-auto text-lg text-justify md:text-center">
+            對接完成後，Molris 提供全面的數據萃取面板，將評分、幾何與微觀作用力解構為三大過濾層，協助精準圈選最具潛力的先導化合物：
+          </p>
+        </div>
+
+        <!-- 3-Column Dashboard Layout -->
+        <div class="grid lg:grid-cols-3 gap-6 relative">
+          
+          <!-- Background connect lines -->
+          <div class="hidden lg:block absolute top-[40px] left-[15%] right-[15%] h-[2px] bg-gray-800 z-0"></div>
+
+          <!-- Layer 1: 分數與能量篩選 -->
+          <div class="glass-panel rounded-2xl border-t-4 border-t-molris-cyan shadow-xl relative z-10 flex flex-col h-[550px]">
+            <div class="p-5 border-b border-gray-800 bg-gray-900/50 flex items-center gap-3 shrink-0">
+              <div class="w-8 h-8 rounded bg-molris-cyan/10 flex items-center justify-center text-molris-cyan font-mono font-bold border border-molris-cyan/30">L1</div>
+              <h4 class="text-white font-bold text-lg">分數與能量篩選</h4>
+            </div>
+            
+            <div class="p-5 flex-1 overflow-y-auto custom-scrollbar space-y-4">
+              <!-- Item -->
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">Vina Score (Rank):</span>
+                <span class="text-molris-cyan font-mono font-medium bg-molris-cyan/10 px-2 py-0.5 rounded">-9.4 kcal/mol</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">CNN Score:</span>
+                <span class="text-white font-mono font-medium">0.998</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">CNN Affinity:</span>
+                <span class="text-white font-mono font-medium">8.42 pKd</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">構象扭轉懲罰 (Strain):</span>
+                <span class="text-white font-mono font-medium">1.2 kcal/mol</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">自由能計算 (Free Energy):</span>
+                <span class="text-white font-mono font-medium">-10.1 kcal/mol</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-400 text-sm">配體效率 (LE):</span>
+                <span class="text-white font-mono font-medium">0.38</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Layer 2: 幾何與匹配性篩選 -->
+          <div class="glass-panel rounded-2xl border-t-4 border-t-[#D946EF] shadow-xl relative z-10 flex flex-col h-[550px]">
+            <div class="p-5 border-b border-gray-800 bg-gray-900/50 flex items-center gap-3 shrink-0">
+              <div class="w-8 h-8 rounded bg-[#D946EF]/10 flex items-center justify-center text-[#D946EF] font-mono font-bold border border-[#D946EF]/30">L2</div>
+              <h4 class="text-white font-bold text-lg">幾何與匹配性篩選</h4>
+            </div>
+            
+            <div class="p-5 flex-1 overflow-y-auto custom-scrollbar space-y-4">
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">口袋空間利用率:</span>
+                <span class="text-[#D946EF] font-mono font-medium bg-[#D946EF]/10 px-2 py-0.5 rounded">78.5 %</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">形狀互補性:</span>
+                <span class="text-white font-mono font-medium">0.86 Sc</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">埋藏表面積 (Ligand SASA):</span>
+                <span class="text-white font-mono font-medium">210 Å²</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">構象分群 (RMSD/Pop):</span>
+                <span class="text-white font-mono font-medium">Clst 1 (14/20)</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">藥效團匹配 / FTmap:</span>
+                <span class="text-white font-mono font-medium">4/5 Features</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">藥效網絡重合率:</span>
+                <span class="text-white font-mono font-medium">82 %</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">疏水性匹配:</span>
+                <span class="text-white font-mono font-medium">High</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-gray-800/60 pb-2">
+                <span class="text-gray-400 text-sm">靜電場匹配:</span>
+                <span class="text-white font-mono font-medium">Optimal</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-400 text-sm">口袋水分子相容性:</span>
+                <span class="text-white font-mono font-medium">Displaced (2)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Layer 3: 作用力分析 -->
+          <div class="glass-panel rounded-2xl border-t-4 border-t-[#10B981] shadow-xl relative z-10 flex flex-col h-[550px]">
+            <div class="p-5 border-b border-gray-800 bg-gray-900/50 flex flex-col gap-3 shrink-0">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded bg-[#10B981]/10 flex items-center justify-center text-[#10B981] font-mono font-bold border border-[#10B981]/30">L3</div>
+                  <h4 class="text-white font-bold text-lg">作用力分析</h4>
+                </div>
+                <!-- Visual Toggles -->
+                <div class="flex bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
+                  <button class="px-3 py-1 text-xs font-bold bg-gray-700 text-white">2D</button>
+                  <button class="px-3 py-1 text-xs font-bold text-gray-400 hover:text-white transition-colors">3D</button>
+                  <button class="px-3 py-1 text-xs font-bold text-gray-400 hover:text-white transition-colors">熱圖</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-5 flex-1 overflow-y-auto custom-scrollbar">
+              
+              <!-- 3.1 直接作用力 -->
+              <h5 class="text-xs text-[#10B981] font-bold tracking-widest uppercase mb-3 border-b border-gray-800 pb-1">直接作用力 (數量/細節)</h5>
+              <div class="space-y-3 mb-6">
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Hydrogen bond:</span><span class="text-white font-mono text-sm">3 (ASP24, GLY27)</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Hydrophobic interaction:</span><span class="text-white font-mono text-sm">5 contacts</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">π–π interaction:</span><span class="text-white font-mono text-sm">1 (TRP84)</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">π–cation & Cation–π:</span><span class="text-white font-mono text-sm">None</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Salt bridge:</span><span class="text-white font-mono text-sm">1 (GLU199)</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Sulfur interaction:</span><span class="text-gray-500 font-mono text-sm">N/A</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Halogen bond:</span><span class="text-gray-500 font-mono text-sm">N/A</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Metal coordination:</span><span class="text-gray-500 font-mono text-sm">N/A</span></div>
+              </div>
+
+              <!-- 3.2 作用力組成 -->
+              <h5 class="text-xs text-[#10B981] font-bold tracking-widest uppercase mb-3 border-b border-gray-800 pb-1">作用力拆解</h5>
+              <div class="space-y-3 mb-6">
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Electrostatic:</span><span class="text-white font-mono text-sm">-4.2 kcal/mol</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">van der Waals:</span><span class="text-white font-mono text-sm">-5.8 kcal/mol</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Polar solvation:</span><span class="text-white font-mono text-sm">+2.1 kcal/mol</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Non-polar solvation:</span><span class="text-white font-mono text-sm">-1.5 kcal/mol</span></div>
+              </div>
+
+              <!-- 3.3 Residue 分析 -->
+              <h5 class="text-xs text-[#10B981] font-bold tracking-widest uppercase mb-3 border-b border-gray-800 pb-1">Residue 分析</h5>
+              <div class="space-y-3 mb-6">
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Key residues:</span><span class="text-white font-mono text-sm">ASP24, GLY27</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Interaction frequency:</span><span class="text-white font-mono text-sm">High (95%)</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Residue contrib.:</span><span class="text-white font-mono text-sm">-2.4 kcal/mol</span></div>
+              </div>
+
+              <!-- 3.4 對接指紋 -->
+              <h5 class="text-xs text-[#10B981] font-bold tracking-widest uppercase mb-3 border-b border-gray-800 pb-1">對接指紋 (Fingerprint)</h5>
+              <div class="space-y-3">
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">PLIF:</span><span class="text-white font-mono text-sm">010110...10</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Interaction similarity:</span><span class="text-white font-mono text-sm">0.89 (vs Ref)</span></div>
+                <div class="flex justify-between items-center"><span class="text-gray-400 text-sm">Ligand–residue contact:</span><span class="text-white font-mono text-sm">Matches Profile</span></div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="py-24 relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-[#050B14] to-[#0A2463]/20"></div>
+      <div class="max-w-5xl mx-auto px-6 relative z-10">
+        <div class="glass-card p-10 md:p-16 rounded-3xl border border-[#D946EF]/30 text-center relative shadow-[0_0_50px_rgba(217,70,239,0.1)]">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+            準備好篩選您的千萬級資料庫了嗎？
+          </h2>
+          <p class="text-gray-400 mb-10 max-w-2xl mx-auto text-[16px] leading-relaxed text-justify md:text-center">
+            傳統軟體耗時數月的虛擬篩選流程，在 Molris 的高通量排程與 GNINA 深度學習加持下，能以更高精度、更短週期完成。<br>
+            讓計算資源發揮最大效益，加速先導化合物的發現。
+          </p>
+          <a href="contact.html" class="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-[#D946EF] text-white font-bold hover:bg-white hover:text-molris-dark hover:shadow-[0_0_20px_rgba(217,70,239,0.4)] transition-all text-lg">
+            立即啟動專案評估 <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-[#03060A] pt-16 pb-8 border-t border-gray-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-atom text-molris-cyan text-xl"></i>
+          <span class="text-xl font-bold tracking-widest text-white">Molris</span>
+        </div>
+        <div class="flex gap-6 text-sm text-gray-500">
+          <a href="#" class="hover:text-molris-cyan transition-colors">Privacy Policy</a>
+          <a href="#" class="hover:text-molris-cyan transition-colors">Terms of Service</a>
+        </div>
+      </div>
+      <div class="text-center text-gray-600 text-sm border-t border-gray-900 pt-8">
+        © 2026 Molris 默瑞思. All rights reserved. | 洞悉微觀規律，預見分子未來。
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
