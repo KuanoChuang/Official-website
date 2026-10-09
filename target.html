@@ -273,12 +273,12 @@
                     shader.vertexShader = `
                 varying vec3 vPosition;
                 ${shader.vertexShader}
-            `.replace(
+                `.replace(
                         `#include <begin_vertex>`,
                         `
-                #include <begin_vertex>
-                vPosition = position; // 取得頂點的真實局部座標
-                `
+                        #include <begin_vertex>
+                        vPosition = position;
+                        `
                     );
 
                     shader.fragmentShader = `
@@ -331,7 +331,6 @@
             const sasCurve = useMemo(() => {
                 if (!probePath || probePath.length < 2) return null;
                 const pathPoints = probePath.map(p => new THREE.Vector3(p[0], p[1], p[2]));
-                // 這裡可以改為 false，因為 Z-slice 通常不會回到原點
                 return new THREE.CatmullRomCurve3(pathPoints, false, 'centripetal', 0.2);
             }, [probePath]);
 
@@ -359,8 +358,6 @@
                 // 取得探針在 t 時刻的真實 3D 座標
                 const position = curve.getPointAt(t);
                 probeRef.current.position.copy(position);
-
-                // 🌟 關鍵修改：我們不再傳遞 t (進度)，而是傳遞真實的 Z 座標
                 if (probeProgressRef && probeProgressRef.current) {
                     probeProgressRef.current.currentY = position.y;
                 }
