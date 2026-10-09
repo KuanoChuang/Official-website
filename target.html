@@ -1166,7 +1166,7 @@
 
                 // 動畫化 Mesh
                 if (meshMatRef.current && meshRef.current) {
-                    meshMatRef.current.opacity = newProgress * 1.0;
+                    meshMatRef.current.opacity = newProgress * 0.6;
                     const scale = 0.95 + (newProgress * 0.05); // 從 0.95 膨脹到 1.0
                     meshRef.current.scale.set(scale, scale, scale);
                 }
@@ -1174,7 +1174,7 @@
 
             return (
                 <group>
-                    {/* 活躍探針點 (只剩真核心) */}
+                    {/* 核心活躍探針點 */}
                     {sortedData && sortedData.activeCount > 0 && progress < 1 && (
                         <points renderOrder={1}>
                             <bufferGeometry>
