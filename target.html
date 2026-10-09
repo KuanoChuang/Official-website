@@ -255,7 +255,6 @@
         function SESView({ visible, probeProgressRef, phase }) {
             const gltf = useGLTF('./protein_ses.glb');
 
-            // 建立一個自訂材質，加入 Shader 邏輯
             const customMaterial = useMemo(() => {
                 const mat = new THREE.MeshPhysicalMaterial({
                     color: "#00aaff",
@@ -268,14 +267,10 @@
                     depthWrite: false,
                 });
 
-                // 注入自訂 Shader：根據頂點的 Z 座標或繪製進度來顯示/隱藏
                 mat.onBeforeCompile = (shader) => {
-                    shader.uniforms.uProgress = { value: 0.0 };
-                    shader.uniforms.uMaxZ = { value: 100.0 }; // 假設最高點
-                    shader.uniforms.uMinZ = { value: -100.0 }; // 假設最低點
+                    // 🌟 關鍵修改：將 uniform 改為接收探針的絕對 Z 座標
+                    shader.uniforms.uProbeZ = { value: -9999.0 };
 
-                    // 這裡我們用一個簡單的假設：因為軌跡是由下往上 (Z-slice)，
-                    // 所以我們可以根據 Z 軸高度來決定顯現的程度。
                     shader.vertexShader = `
                 varying vec3 vPosition;
                 ${shader.vertexShader}
@@ -283,14 +278,12 @@
                         `#include <begin_vertex>`,
                         `
                 #include <begin_vertex>
-                vPosition = position;
+                vPosition = position; // 取得頂點的真實局部座標
                 `
                     );
 
                     shader.fragmentShader = `
-                uniform float uProgress; // 0.0 ~ 1.0
-                uniform float uMaxZ;
-                uniform float uMinZ;
+                uniform float uProbeZ; 
                 varying vec3 vPosition;
                 ${shader.fragmentShader}
             `.replace(
@@ -298,12 +291,9 @@
                         `
                 #include <dithering_fragment>
                 
-                // 算出目前高度佔總高度的比例
-                float currentZRatio = (vPosition.z - uMinZ) / (uMaxZ - uMinZ);
-                
-                // 如果目前像素的高度大於探針進度，就讓它透明
-                // 加上一點平滑過渡 (smoothstep) 讓邊緣像掃描一樣
-                float alpha = 1.0 - smoothstep(uProgress - 0.05, uProgress + 0.05, currentZRatio);
+                // 如果目前像素的 Z 座標 > 探針的 Z 座標，就讓它透明
+                // 使用 smoothstep 創造 0.5Å 寬度的柔和顯現邊緣
+                float alpha = 1.0 - smoothstep(uProbeZ - 0.5, uProbeZ + 0.5, vPosition.z);
                 
                 gl_FragColor.a *= alpha;
                 `
@@ -319,39 +309,26 @@
                 if (meshNode && meshNode.geometry) {
                     const geo = meshNode.geometry.clone();
                     geo.computeVertexNormals();
-                    geo.computeBoundingBox();
-
-                    // 更新材質中的最大最小 Z 值
-                    if (customMaterial.userData.shader) {
-                        customMaterial.userData.shader.uniforms.uMaxZ.value = geo.boundingBox.max.z;
-                        customMaterial.userData.shader.uniforms.uMinZ.value = geo.boundingBox.min.z;
-                    }
                     return geo;
                 }
                 return null;
-            }, [gltf, customMaterial]);
+            }, [gltf]);
 
-            // 每幀更新 Shader 的進度
             useFrame(() => {
-        if (!customMaterial.userData.shader) return;
+                if (!customMaterial.userData.shader) return;
 
-        // 1. 防禦性檢查：如果沒有傳 ref，至少要讓它全顯現才不會一片黑
-        if (!probeProgressRef || !probeProgressRef.current) {
-            customMaterial.userData.shader.uniforms.uProgress.value = 1.0;
-            return;
-        }
+                // 確保非 Phase 1 時，SES 完全顯現
+                if (phase !== 1) {
+                    // 設一個極大的 Z 值，確保所有頂點都顯示
+                    customMaterial.userData.shader.uniforms.uProbeZ.value = 9999.0;
+                } else if (probeProgressRef && probeProgressRef.current && probeProgressRef.current.currentZ !== undefined) {
+                    // 在 Phase 1 時，跟隨探針的 Z 座標
+                    customMaterial.userData.shader.uniforms.uProbeZ.value = probeProgressRef.current.currentZ;
+                }
+            });
 
-        // 2. 如果是 Phase 5 (或是任何非 Phase 1 的情況)，自動把進度推到 1.0 (100% 顯現)
-        // 只有在 Phase 1 且有掃描時，才順著 ref 的 progress 走
-        if (phase !== 1) {
-            customMaterial.userData.shader.uniforms.uProgress.value = 1.0;
-        } else {
-            customMaterial.userData.shader.uniforms.uProgress.value = probeProgressRef.current.progress;
-        }
-    });
-
-    if (!visible || !geometry) return null;
-    return <mesh geometry={geometry} material={customMaterial} />;
+            if (!visible || !geometry) return null;
+            return <mesh geometry={geometry} material={customMaterial} />;
         }
 
         function ProbeScannerView({ probePath, visible, probeProgressRef }) {
@@ -384,17 +361,16 @@
                 if (!probeRef.current || !curve) return;
 
                 const speed = 0.05;
-                // 這裡不再 % 1，我們讓它從 0 走到 1 就停止，或者反覆
-                // 使用一個 clamp 來確保它在 0~1 之間
                 let t = (clock.elapsedTime * speed) % 1;
 
-                // 更新全局進度，讓 SESView 可以讀取
-                if (probeProgressRef.current) {
-                    probeProgressRef.current.progress = t;
-                }
-
+                // 取得探針在 t 時刻的真實 3D 座標
                 const position = curve.getPointAt(t);
                 probeRef.current.position.copy(position);
+
+                // 🌟 關鍵修改：我們不再傳遞 t (進度)，而是傳遞真實的 Z 座標
+                if (probeProgressRef && probeProgressRef.current) {
+                    probeProgressRef.current.currentZ = position.z;
+                }
             });
 
             return (
