@@ -282,7 +282,7 @@
                     );
 
                     shader.fragmentShader = `
-                uniform float uProbeZ; 
+                uniform float uProbeY; 
                 varying vec3 vPosition;
                 ${shader.fragmentShader}
             `.replace(
@@ -313,13 +313,11 @@
 
             useFrame(() => {
                 if (!customMaterial.userData.shader) return;
-
-                // 確保非 Phase 1 時，SES 完全顯現
                 if (phase !== 1) {
-                    customMaterial.userData.shader.uniforms.uProbeZ.value = 9999.0;
+                    customMaterial.userData.shader.uniforms.uProbeY.value = 9999.0;
                 } else if (probeProgressRef && probeProgressRef.current && probeProgressRef.current.currentY !== undefined) {
 
-                    customMaterial.userData.shader.uniforms.uProbeZ.value = probeProgressRef.current.currentY;
+                    customMaterial.userData.shader.uniforms.uProbeY.value = probeProgressRef.current.currentY;
                 }
             });
 
