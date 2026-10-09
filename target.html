@@ -268,8 +268,7 @@
                 });
 
                 mat.onBeforeCompile = (shader) => {
-                    // 🌟 關鍵修改：將 uniform 改為接收探針的絕對 Z 座標
-                    shader.uniforms.uProbeZ = { value: -9999.0 };
+                    shader.uniforms.uProbeY = { value: -9999.0 };
 
                     shader.vertexShader = `
                 varying vec3 vPosition;
@@ -291,10 +290,9 @@
                         `
                 #include <dithering_fragment>
                 
-                // 如果目前像素的 Z 座標 > 探針的 Z 座標，就讓它透明
                 // 使用 smoothstep 創造 0.5Å 寬度的柔和顯現邊緣
                 float alpha = 1.0 - smoothstep(uProbeY - 0.5, uProbeY + 0.5, vPosition.y);
-gl_FragColor.a *= alpha;
+                gl_FragColor.a *= alpha;
                 `
                     );
                     mat.userData.shader = shader;
@@ -318,10 +316,9 @@ gl_FragColor.a *= alpha;
 
                 // 確保非 Phase 1 時，SES 完全顯現
                 if (phase !== 1) {
-                    // 設一個極大的 Z 值，確保所有頂點都顯示
                     customMaterial.userData.shader.uniforms.uProbeZ.value = 9999.0;
                 } else if (probeProgressRef && probeProgressRef.current && probeProgressRef.current.currentY !== undefined) {
-                    // 在 Phase 1 時，跟隨探針的 Z 座標
+
                     customMaterial.userData.shader.uniforms.uProbeZ.value = probeProgressRef.current.currentY;
                 }
             });
@@ -367,8 +364,8 @@ gl_FragColor.a *= alpha;
 
                 // 🌟 關鍵修改：我們不再傳遞 t (進度)，而是傳遞真實的 Z 座標
                 if (probeProgressRef && probeProgressRef.current) {
-    probeProgressRef.current.currentY = position.y; 
-}
+                    probeProgressRef.current.currentY = position.y;
+                }
             });
 
             return (
