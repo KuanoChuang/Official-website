@@ -355,7 +355,6 @@
                 const speed = 0.05;
                 let t = (clock.elapsedTime * speed) % 1;
 
-                // 取得探針在 t 時刻的真實 3D 座標
                 const position = curve.getPointAt(t);
                 probeRef.current.position.copy(position);
                 if (probeProgressRef && probeProgressRef.current) {
@@ -741,7 +740,7 @@
                         colorIdle: { value: new THREE.Color("#3a5a78") },
                         colorScanning: { value: new THREE.Color("#ffffff") },
 
-                        // 外殼色彩 (維持原本的青、綠、黃，辨識度極高)
+                        // 外殼色彩
                         colorL1_Cavity_X: { value: new THREE.Color("#4db8ff") }, // 青色 (X軸淘汰)
                         colorL2_Cavity_Y: { value: new THREE.Color("#00F200") }, // 綠色 (Y軸淘汰)
                         colorL3_Cavity_Z: { value: new THREE.Color("#F3E91F") }, // 黃色 (Z軸淘汰)
@@ -800,7 +799,6 @@
                     bool inSliceY = abs(vWorldPosition.y - currentProbePos.y) < layerThickness;
                     bool inSliceZ = abs(vWorldPosition.z - currentProbePos.z) < layerThickness;
 
-                    // 【核心互斥】：如果點已經被判定為「過去了」，就絕對不能在「切面內」發光！
                     if (isPastX) inSliceX = false;
                     if (isPastY) inSliceY = false;
                     if (isPastZ) inSliceZ = false;
@@ -810,7 +808,6 @@
 
                     // 2. 解鎖進度
                     if (scanAxis >= 3) {
-                        // 展示期：所有人無條件結算，絕對不允許任何人發白光
                         if (vHitX > 0.5) unlockedLevel = 1;
                         if (vHitY > 0.5) unlockedLevel = 2;
                         if (vHitZ > 0.5) unlockedLevel = 3;
@@ -838,7 +835,7 @@
                         }
                     }
 
-                    // 3. 命運分配
+                    // 3. 分配
                     int destiny = 0;
                     if (vHitX > 0.5) {
                         if (vIsProbeX > 0.5) destiny = 1;
