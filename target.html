@@ -343,9 +343,6 @@
             );
         }
 
-        // --------------------------------------------------------
-        // 3. 動態探針
-        // --------------------------------------------------------
         function AnimatedProbe({ curve, radius, probeProgressRef }) {
             const probeRef = useRef();
 
@@ -1081,7 +1078,7 @@
                         <h2>Pocket Algorithm</h2>
 
                         <button className={`phase-btn ${phase === 1 ? 'active' : ''}`} onClick={() => setPhase(1)}>
-                            Phase 1: 結構視覺化
+                            Phase 1: 蛋白實體掃描
                         </button>
                         {phase === 1 && (
                             <div className="sub-options">
@@ -1096,7 +1093,7 @@
                             Phase 3: 距離場切面掃描
                         </button>
                         <button className={`phase-btn ${phase === 4 ? 'active' : ''}`} onClick={() => setPhase(4)}>
-                            Phase 4: 探針球侵蝕掃描
+                            Phase 4: 口袋探針球掃描
                         </button>
                         <button className={`phase-btn ${phase === 5 ? 'active' : ''}`} onClick={() => setPhase(5)}>
                             Phase 5: 表面平滑化
