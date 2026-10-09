@@ -1168,15 +1168,13 @@
             // --------------------------------------------------------
             // 4. 網格材質形變邏輯：透過 onBeforeCompile 插入自訂 Uniforms
             // --------------------------------------------------------
-            const handleMaterialCompile = (shader) => {
-                // 綁定所有自訂 Uniforms
-                shader.uniforms.uMorphProgress = customUniforms.uMorphProgress;
-                shader.uniforms.colorVoxel = customUniforms.colorVoxel;
-                shader.uniforms.colorSmooth = customUniforms.colorSmooth;
-                shader.uniforms.emissiveVoxel = customUniforms.emissiveVoxel;
-                shader.uniforms.emissiveSmooth = customUniforms.emissiveSmooth;
+            const customUniforms = useMemo(() => ({
+                uMorphProgress: { value: 0.0 } // 0: 階梯狀(Voxel), 1: 平滑(Smooth)
+            }), []);
 
-                // --- Vertex Shader 修改 (與之前相同) ---
+            const handleMaterialCompile = (shader) => {
+                shader.uniforms.uMorphProgress = customUniforms.uMorphProgress;
+
                 shader.vertexShader = shader.vertexShader.replace(
                     '#include <common>',
                     `
@@ -1185,45 +1183,14 @@
             attribute vec3 voxelPosition;
             `
                 );
+
                 shader.vertexShader = shader.vertexShader.replace(
                     '#include <begin_vertex>',
                     `
+            // 平滑過渡曲線
             float morphEased = smoothstep(0.0, 1.0, uMorphProgress);
+            // 根據進度在 階梯狀位置 與 平滑位置 之間插值
             vec3 transformed = mix(voxelPosition, position, morphEased);
-            `
-                );
-
-                // --- 【新增】Fragment Shader 修改：動態顏色與發光 ---
-                shader.fragmentShader = shader.fragmentShader.replace(
-                    '#include <common>',
-                    `
-            #include <common>
-            uniform float uMorphProgress;
-            uniform vec3 colorVoxel;
-            uniform vec3 colorSmooth;
-            uniform vec3 emissiveVoxel;
-            uniform vec3 emissiveSmooth;
-            `
-                );
-
-                // 攔截並替換 diffuse 顏色
-                shader.fragmentShader = shader.fragmentShader.replace(
-                    'vec4 diffuseColor = vec4( diffuse, opacity );',
-                    `
-            // 利用 smoothstep 讓顏色變化更柔和
-            float colorEased = smoothstep(0.2, 0.8, uMorphProgress);
-            vec3 dynamicDiffuse = mix(colorVoxel, colorSmooth, colorEased);
-            vec4 diffuseColor = vec4( dynamicDiffuse, opacity );
-            `
-                );
-
-                // 攔截並替換 emissive 發光色
-                shader.fragmentShader = shader.fragmentShader.replace(
-                    'vec3 totalEmissiveRadiance = emissive;',
-                    `
-            float emissiveEased = smoothstep(0.4, 0.9, uMorphProgress); // 發光較晚啟動
-            vec3 dynamicEmissive = mix(emissiveVoxel, emissiveSmooth, emissiveEased);
-            vec3 totalEmissiveRadiance = dynamicEmissive;
             `
                 );
             };
