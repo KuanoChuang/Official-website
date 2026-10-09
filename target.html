@@ -1155,29 +1155,29 @@
             useFrame((state, delta) => {
                 if (!startAnim || progress >= 1) return;
 
-                // 稍微調慢一點點動畫，讓過渡的細節能被看清楚 (0.4 改 0.35)
                 const newProgress = Math.min(progress + delta * 0.35, 1);
                 setProgress(newProgress);
 
-                // 計算平滑曲線 (Smoothstep) 用於縮放，產生 Q 彈的張力感
-                // 公式：3t^2 - 2t^3
                 const smoothProgress = newProgress * newProgress * (3 - 2 * newProgress);
 
                 // 動畫化 Points (ShaderMaterial)
                 if (pointsMatRef.current) {
-                    // 【優化 1】點的透明度：使用 1 - x^2，讓它前半段保持可見，最後才急速歸零(完全消失)
                     pointsMatRef.current.uniforms.uOpacity.value = 1 - Math.pow(newProgress, 2);
-
-                    // 【優化 2】點的膨脹：使用 x^1.5，讓膨脹有加速炸開的感覺，最大放大 6 倍
                     pointsMatRef.current.uniforms.uSize.value = 1 + Math.pow(newProgress, 1.5) * 6;
                 }
 
                 // 動畫化 Mesh
                 if (meshMatRef.current && meshRef.current) {
-                    // 【優化 3】Mesh透明度：使用 x^1.5，讓表面在前半段幾乎隱形，等到點夠大了才迅速凝結至 0.6
+                    // 透明度：使用 x^1.5 讓浮現時間延後
                     meshMatRef.current.opacity = Math.pow(newProgress, 1.5) * 0.6;
 
-                    // 【優化 4】Mesh縮放：從更小的 0.85 開始，跟著 SmoothProgress 撐開到 1.0
+                    // 【新增 1】動態粗糙度：剛開始是 1.0 (完全粗糙，無反光)，最後變成 0.15 (光滑表面)
+                    meshMatRef.current.roughness = 1.0 - (smoothProgress * 0.85);
+
+                    // 【新增 2】動態透光度：剛開始是 0.0 (純透明，無玻璃折射)，最後變成 0.8 (玻璃感)
+                    meshMatRef.current.transmission = smoothProgress * 0.8;
+
+                    // 縮放：從更小的 0.85 開始撐開
                     const scale = 0.85 + (smoothProgress * 0.15);
                     meshRef.current.scale.set(scale, scale, scale);
                 }
