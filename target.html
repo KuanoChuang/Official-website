@@ -252,7 +252,7 @@
             );
         }
         // Phase 1 & 5: SES 半透明膜渲染
-        function SESView({ visible, probeProgressRef, curveLength }) {
+        function SESView({ visible, probeProgressRef, phase }) {
             const gltf = useGLTF('./protein_ses.glb');
 
             // 建立一個自訂材質，加入 Shader 邏輯
@@ -333,16 +333,25 @@
 
             // 每幀更新 Shader 的進度
             useFrame(() => {
-                if (customMaterial.userData.shader && probeProgressRef.current) {
-                    customMaterial.userData.shader.uniforms.uProgress.value = probeProgressRef.current.progress;
-                }
-            });
+        if (!customMaterial.userData.shader) return;
 
-            if (!visible || !geometry) return null;
+        // 1. 防禦性檢查：如果沒有傳 ref，至少要讓它全顯現才不會一片黑
+        if (!probeProgressRef || !probeProgressRef.current) {
+            customMaterial.userData.shader.uniforms.uProgress.value = 1.0;
+            return;
+        }
 
-            return (
-                <mesh geometry={geometry} material={customMaterial} />
-            );
+        // 2. 如果是 Phase 5 (或是任何非 Phase 1 的情況)，自動把進度推到 1.0 (100% 顯現)
+        // 只有在 Phase 1 且有掃描時，才順著 ref 的 progress 走
+        if (phase !== 1) {
+            customMaterial.userData.shader.uniforms.uProgress.value = 1.0;
+        } else {
+            customMaterial.userData.shader.uniforms.uProgress.value = probeProgressRef.current.progress;
+        }
+    });
+
+    if (!visible || !geometry) return null;
+    return <mesh geometry={geometry} material={customMaterial} />;
         }
 
         function ProbeScannerView({ probePath, visible, probeProgressRef }) {
@@ -1233,6 +1242,7 @@
                                 <SESView
                                     visible={(phase === 1 && phase1Opts.ses) || phase === 5}
                                     probeProgressRef={probeProgressRef}
+                                    phase={phase}
                                 />
                                 {/* Phase 2: 空間網格化 */}
                                 <GridWireframe algoData={data.algo_data} atoms={data.atoms} visible={phase === 2} bounds={bounds} />
