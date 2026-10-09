@@ -201,7 +201,6 @@
             const cz = (maxZ + minZ) / 2;
             return { sizeX, sizeY, sizeZ, cx, cy, cz };
         }
-
         // Phase 1, 2, 3: 實體原子渲染
         function AtomView({ atoms, visible, dimmed = false }) {
             const meshRef = useRef();
@@ -324,7 +323,6 @@
             if (!visible || !geometry) return null;
             return <mesh geometry={geometry} material={customMaterial} />;
         }
-
         function ProbeScannerView({ probePath, visible, probeProgressRef }) {
             const r_probe = 1.4;
 
@@ -342,7 +340,6 @@
                 </group>
             );
         }
-
         function AnimatedProbe({ curve, radius, probeProgressRef }) {
             const probeRef = useRef();
 
@@ -372,7 +369,6 @@
                 </mesh>
             );
         }
-
         // Phase 2: 全空間 3D 網格陣列 (覆蓋整個 Bounding Box)
         function GridWireframe({ algoData, atoms, visible, bounds }) {
             // 1. 主網格 (Macro Grid) - 2.5Å
@@ -1027,12 +1023,20 @@
         function PocketMesh({ meshData, visible }) {
             const geometry = useMemo(() => {
                 if (!meshData || !meshData.vertices || meshData.vertices.length === 0) return null;
-                const geo = new THREE.BufferGeometry();
+
+                let geo = new THREE.BufferGeometry();
                 const verts = new Float32Array(meshData.vertices.flat());
                 const indices = new Uint16Array(meshData.faces.flat());
+
                 geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
                 geo.setIndex(new THREE.BufferAttribute(indices, 1));
+
+                // 【關鍵修復】：合併重疊的頂點，容差值可根據模型大小微調（預設為 1e-4）
+                geo = BufferGeometryUtils.mergeVertices(geo, 1e-4);
+
+                // 合併頂點後再計算平滑法線
                 geo.computeVertexNormals();
+
                 return geo;
             }, [meshData]);
 
@@ -1041,8 +1045,16 @@
             return (
                 <mesh geometry={geometry}>
                     <meshPhysicalMaterial
-                        color="#00ffcc" transmission={0.6} opacity={1} transparent={true}
-                        roughness={0.2} thickness={1.5} emissive="#004433" side={THREE.DoubleSide}
+                        color="#00ffcc"
+                        transmission={0.6}
+                        opacity={1}
+                        transparent={true}
+                        roughness={0.2}
+                        thickness={1.5}
+                        emissive="#004433"
+                        side={THREE.DoubleSide}
+                        // 確保 flatShading 為 false（預設即為 false）
+                        flatShading={false}
                     />
                 </mesh>
             );
