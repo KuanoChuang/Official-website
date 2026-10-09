@@ -1061,13 +1061,41 @@
                 </mesh>
             );
         }
-        function PocketAnimationSequence({ sortedData, meshData }) {
+        function PocketAnimationSequence({ algoData, meshData }) {
             const [progress, setProgress] = useState(0);
             const [startAnim, setStartAnim] = useState(false);
 
             const pointsMatRef = useRef();
             const meshMatRef = useRef();
             const meshRef = useRef();
+
+            // 【新增】：將 algoData 轉換為 BufferAttribute 需要的陣列
+            const sortedData = useMemo(() => {
+                if (!algoData || !algoData.voxels) return null;
+
+                const rawActive = algoData.voxels.active_voxels || [];
+                const activeCount = rawActive.length;
+
+                const activeFlat = new Float32Array(activeCount * 3);
+                const isProbeZArray = new Float32Array(activeCount);
+
+                for (let i = 0; i < activeCount; i++) {
+                    const p = rawActive[i];
+                    // 取出 x, y, z
+                    activeFlat[i * 3] = Number(p[0]) || 0;
+                    activeFlat[i * 3 + 1] = Number(p[1]) || 0;
+                    activeFlat[i * 3 + 2] = Number(p[2]) || 0;
+
+                    // 取出 isProbeZ (索引 8 根據你之前的結構)
+                    isProbeZArray[i] = Number(p[8]) || 0;
+                }
+
+                return {
+                    activeCount,
+                    activeArray: activeFlat,
+                    isProbeZArray
+                };
+            }, [algoData]);
 
             // 1. 建立ShaderMaterial (只顯示真核心)
             const ActiveMaterial = useMemo(() => {
@@ -1151,7 +1179,6 @@
                         <points renderOrder={1}>
                             <bufferGeometry>
                                 <bufferAttribute attach="attributes-position" count={sortedData.activeCount} array={sortedData.activeArray} itemSize={3} />
-                                {/* Phase 5 只需要判斷 isProbeZ，但為了避免警告，其他屬性若需要也可傳 */}
                                 <bufferAttribute attach="attributes-isProbeZ" count={sortedData.activeCount} array={sortedData.isProbeZArray} itemSize={1} />
                             </bufferGeometry>
                             <primitive
@@ -1345,7 +1372,6 @@
                                 {/* Phase 4: 探針掃描動畫 */}
                                 <ProbeScanner algoData={data.algo_data} phase={phase} />
                                 {/* Phase 5: 口袋 Mesh 呈現 */}
-                                <PocketMesh meshData={data.algo_data.pocket_mesh} visible={phase === 5} />
                                 {phase === 5 && (
                                     <PocketAnimationSequence
                                         algoData={data.algo_data}
