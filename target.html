@@ -293,9 +293,8 @@
                 
                 // 如果目前像素的 Z 座標 > 探針的 Z 座標，就讓它透明
                 // 使用 smoothstep 創造 0.5Å 寬度的柔和顯現邊緣
-                float alpha = 1.0 - smoothstep(uProbeZ - 0.5, uProbeZ + 0.5, vPosition.z);
-                
-                gl_FragColor.a *= alpha;
+                float alpha = 1.0 - smoothstep(uProbeY - 0.5, uProbeY + 0.5, vPosition.y);
+gl_FragColor.a *= alpha;
                 `
                     );
                     mat.userData.shader = shader;
@@ -321,9 +320,9 @@
                 if (phase !== 1) {
                     // 設一個極大的 Z 值，確保所有頂點都顯示
                     customMaterial.userData.shader.uniforms.uProbeZ.value = 9999.0;
-                } else if (probeProgressRef && probeProgressRef.current && probeProgressRef.current.currentZ !== undefined) {
+                } else if (probeProgressRef && probeProgressRef.current && probeProgressRef.current.currentY !== undefined) {
                     // 在 Phase 1 時，跟隨探針的 Z 座標
-                    customMaterial.userData.shader.uniforms.uProbeZ.value = probeProgressRef.current.currentZ;
+                    customMaterial.userData.shader.uniforms.uProbeZ.value = probeProgressRef.current.currentY;
                 }
             });
 
@@ -345,7 +344,6 @@
 
             return (
                 <group>
-                    {/* 這裡把軌跡管子拿掉，只留探針和發光的殘影 */}
                     <AnimatedProbe curve={sasCurve} radius={r_probe} probeProgressRef={probeProgressRef} />
                 </group>
             );
@@ -369,8 +367,8 @@
 
                 // 🌟 關鍵修改：我們不再傳遞 t (進度)，而是傳遞真實的 Z 座標
                 if (probeProgressRef && probeProgressRef.current) {
-                    probeProgressRef.current.currentZ = position.z;
-                }
+    probeProgressRef.current.currentY = position.y; 
+}
             });
 
             return (
