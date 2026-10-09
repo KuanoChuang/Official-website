@@ -1168,13 +1168,15 @@
             // --------------------------------------------------------
             // 4. 網格材質形變邏輯：透過 onBeforeCompile 插入自訂 Uniforms
             // --------------------------------------------------------
-            const customUniforms = useMemo(() => ({
-                uMorphProgress: { value: 0.0 } // 0: 階梯狀(Voxel), 1: 平滑(Smooth)
-            }), []);
-
             const handleMaterialCompile = (shader) => {
+                // 綁定所有自訂 Uniforms
                 shader.uniforms.uMorphProgress = customUniforms.uMorphProgress;
+                shader.uniforms.colorVoxel = customUniforms.colorVoxel;
+                shader.uniforms.colorSmooth = customUniforms.colorSmooth;
+                shader.uniforms.emissiveVoxel = customUniforms.emissiveVoxel;
+                shader.uniforms.emissiveSmooth = customUniforms.emissiveSmooth;
 
+                // --- Vertex Shader 修改 (與之前相同) ---
                 shader.vertexShader = shader.vertexShader.replace(
                     '#include <common>',
                     `
@@ -1183,14 +1185,45 @@
             attribute vec3 voxelPosition;
             `
                 );
-
                 shader.vertexShader = shader.vertexShader.replace(
                     '#include <begin_vertex>',
                     `
-            // 平滑過渡曲線
             float morphEased = smoothstep(0.0, 1.0, uMorphProgress);
-            // 根據進度在 階梯狀位置 與 平滑位置 之間插值
             vec3 transformed = mix(voxelPosition, position, morphEased);
+            `
+                );
+
+                // --- 【新增】Fragment Shader 修改：動態顏色與發光 ---
+                shader.fragmentShader = shader.fragmentShader.replace(
+                    '#include <common>',
+                    `
+            #include <common>
+            uniform float uMorphProgress;
+            uniform vec3 colorVoxel;
+            uniform vec3 colorSmooth;
+            uniform vec3 emissiveVoxel;
+            uniform vec3 emissiveSmooth;
+            `
+                );
+
+                // 攔截並替換 diffuse 顏色
+                shader.fragmentShader = shader.fragmentShader.replace(
+                    'vec4 diffuseColor = vec4( diffuse, opacity );',
+                    `
+            // 利用 smoothstep 讓顏色變化更柔和
+            float colorEased = smoothstep(0.2, 0.8, uMorphProgress);
+            vec3 dynamicDiffuse = mix(colorVoxel, colorSmooth, colorEased);
+            vec4 diffuseColor = vec4( dynamicDiffuse, opacity );
+            `
+                );
+
+                // 攔截並替換 emissive 發光色
+                shader.fragmentShader = shader.fragmentShader.replace(
+                    'vec3 totalEmissiveRadiance = emissive;',
+                    `
+            float emissiveEased = smoothstep(0.4, 0.9, uMorphProgress); // 發光較晚啟動
+            vec3 dynamicEmissive = mix(emissiveVoxel, emissiveSmooth, emissiveEased);
+            vec3 totalEmissiveRadiance = dynamicEmissive;
             `
                 );
             };
@@ -1206,7 +1239,6 @@
             useFrame((state, delta) => {
                 if (!startAnim || progress >= 1) return;
 
-                // 稍微放慢動畫速度 (0.25)，讓形變過程更清晰
                 const newProgress = Math.min(progress + delta * 0.25, 1);
                 setProgress(newProgress);
 
@@ -1222,18 +1254,22 @@
                     // Mesh 在前段迅速浮現
                     const meshAppear = Math.min(newProgress * 5, 1.0);
 
-                    // 形變與材質變化在後段進行 (Progress 0.2 ~ 0.8)
+                    // 形變進度 (Progress 0.2 ~ 0.8)
                     const morphProgress = Math.max(0, Math.min((newProgress - 0.2) / 0.6, 1.0));
                     customUniforms.uMorphProgress.value = morphProgress;
 
-                    // 透明度：由不透明的實體(1.0) 漸變為半透明(0.4)
-                    meshMatRef.current.opacity = meshAppear * (1.0 - morphProgress * 0.6);
+                    // 使用二次方曲線讓透明度下降更平緩
+                    const easeOutProgress = 1.0 - Math.pow(1.0 - morphProgress, 2);
 
-                    // 粗糙度：由完全粗糙無反光(1.0) 漸變為光滑表面(0.15)
-                    meshMatRef.current.roughness = 1.0 - (morphProgress * 0.85);
+                    // 透明度：由不透明實體(1.0) 漸變為半透明(0.5)
+                    meshMatRef.current.opacity = meshAppear * (1.0 - easeOutProgress * 0.5);
 
-                    // 透光度：由無折射(0.0) 漸變為玻璃折射質感(0.8)
-                    meshMatRef.current.transmission = morphProgress * 0.8;
+                    // 粗糙度：保持粗糙(1.0)久一點，最後才變光滑(0.15)
+                    const roughEase = Math.pow(morphProgress, 2); // 延後變光滑的時機
+                    meshMatRef.current.roughness = 1.0 - (roughEase * 0.85);
+
+                    // 透光度：隨平滑度增加而增加 (0.0 -> 0.8)
+                    meshMatRef.current.transmission = roughEase * 0.8;
                 }
             });
 
