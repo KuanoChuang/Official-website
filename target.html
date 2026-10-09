@@ -1173,7 +1173,7 @@ gl_FragColor.a *= alpha;
                     )}
                     <Canvas camera={{ position: [0, 0, 75], fov: 45 }}>
                         <color attach="background" args={['#030508']} />
-                        <OrbitControls autoRotate={phase === 5 || phase === 1} autoRotateSpeed={0.5} makeDefault />
+                        <OrbitControls makeDefault />
 
                         {/* 1. 環境光 */}
                         <ambientLight intensity={0.6} />
