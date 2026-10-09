@@ -252,80 +252,137 @@
             );
         }
         // Phase 1 & 5: SES 半透明膜渲染
-        function SESView({ visible }) {
+        function SESView({ visible, probeProgressRef, curveLength }) {
             const gltf = useGLTF('./protein_ses.glb');
+
+            // 建立一個自訂材質，加入 Shader 邏輯
+            const customMaterial = useMemo(() => {
+                const mat = new THREE.MeshPhysicalMaterial({
+                    color: "#00aaff",
+                    transparent: true,
+                    transmission: 0.8,
+                    opacity: 1.0,
+                    roughness: 0.1,
+                    thickness: 0.5,
+                    side: THREE.DoubleSide,
+                    depthWrite: false,
+                });
+
+                // 注入自訂 Shader：根據頂點的 Z 座標或繪製進度來顯示/隱藏
+                mat.onBeforeCompile = (shader) => {
+                    shader.uniforms.uProgress = { value: 0.0 };
+                    shader.uniforms.uMaxZ = { value: 100.0 }; // 假設最高點
+                    shader.uniforms.uMinZ = { value: -100.0 }; // 假設最低點
+
+                    // 這裡我們用一個簡單的假設：因為軌跡是由下往上 (Z-slice)，
+                    // 所以我們可以根據 Z 軸高度來決定顯現的程度。
+                    shader.vertexShader = `
+                varying vec3 vPosition;
+                ${shader.vertexShader}
+            `.replace(
+                        `#include <begin_vertex>`,
+                        `
+                #include <begin_vertex>
+                vPosition = position;
+                `
+                    );
+
+                    shader.fragmentShader = `
+                uniform float uProgress; // 0.0 ~ 1.0
+                uniform float uMaxZ;
+                uniform float uMinZ;
+                varying vec3 vPosition;
+                ${shader.fragmentShader}
+            `.replace(
+                        `#include <dithering_fragment>`,
+                        `
+                #include <dithering_fragment>
+                
+                // 算出目前高度佔總高度的比例
+                float currentZRatio = (vPosition.z - uMinZ) / (uMaxZ - uMinZ);
+                
+                // 如果目前像素的高度大於探針進度，就讓它透明
+                // 加上一點平滑過渡 (smoothstep) 讓邊緣像掃描一樣
+                float alpha = 1.0 - smoothstep(uProgress - 0.05, uProgress + 0.05, currentZRatio);
+                
+                gl_FragColor.a *= alpha;
+                `
+                    );
+                    mat.userData.shader = shader;
+                };
+                return mat;
+            }, []);
+
             const geometry = useMemo(() => {
                 if (!gltf.nodes) return null;
                 const meshNode = Object.values(gltf.nodes).find(n => n.isMesh);
                 if (meshNode && meshNode.geometry) {
                     const geo = meshNode.geometry.clone();
                     geo.computeVertexNormals();
+                    geo.computeBoundingBox();
+
+                    // 更新材質中的最大最小 Z 值
+                    if (customMaterial.userData.shader) {
+                        customMaterial.userData.shader.uniforms.uMaxZ.value = geo.boundingBox.max.z;
+                        customMaterial.userData.shader.uniforms.uMinZ.value = geo.boundingBox.min.z;
+                    }
                     return geo;
                 }
                 return null;
-            }, [gltf]);
+            }, [gltf, customMaterial]);
+
+            // 每幀更新 Shader 的進度
+            useFrame(() => {
+                if (customMaterial.userData.shader && probeProgressRef.current) {
+                    customMaterial.userData.shader.uniforms.uProgress.value = probeProgressRef.current.progress;
+                }
+            });
 
             if (!visible || !geometry) return null;
 
             return (
-                <mesh geometry={geometry}>
-                    <meshPhongMaterial
-                        color="#00aaff"           /* 賦予 SES 表面明顯的顏色 */
-                        transparent={true}
-                        opacity={0.4}             /* 明確的半透明度 */
-                        shininess={15}
-                        specular="#222222"
-                        side={THREE.FrontSide}
-                        depthWrite={false}        /* 關閉深度寫入以確保內部原子不被遮擋 */
-                    />
-                </mesh>
+                <mesh geometry={geometry} material={customMaterial} />
             );
         }
 
-        function ProbeScannerView({ probePath, visible }) {
+        function ProbeScannerView({ probePath, visible, probeProgressRef }) {
             const r_probe = 1.4;
 
             const sasCurve = useMemo(() => {
-                // 確認資料存在且大於 2 個點
                 if (!probePath || probePath.length < 2) return null;
-
-                // 將 JSON 裡的 [x,y,z] 陣列轉換為 THREE.Vector3 物件
                 const pathPoints = probePath.map(p => new THREE.Vector3(p[0], p[1], p[2]));
-
-                // 建立閉合的 3D 平滑曲線 (closed = true)
-                return new THREE.CatmullRomCurve3(pathPoints, true, 'centripetal', 0.5);
+                // 這裡可以改為 false，因為 Z-slice 通常不會回到原點
+                return new THREE.CatmullRomCurve3(pathPoints, false, 'centripetal', 0.2);
             }, [probePath]);
 
             if (!visible || !sasCurve) return null;
 
             return (
                 <group>
-                    {/* 繪製全域漫遊軌跡 */}
-                    <mesh>
-                        <tubeGeometry args={[sasCurve, 300, 0.08, 8, true]} />
-                        <meshBasicMaterial
-                            color="#ffffff"
-                            transparent={true}
-                            opacity={0.3}
-                            depthWrite={false}
-                        />
-                    </mesh>
-
-                    {/* 動態探針 */}
-                    <AnimatedProbe curve={sasCurve} radius={r_probe} />
+                    {/* 這裡把軌跡管子拿掉，只留探針和發光的殘影 */}
+                    <AnimatedProbe curve={sasCurve} radius={r_probe} probeProgressRef={probeProgressRef} />
                 </group>
             );
         }
-        function AnimatedProbe({ curve, radius }) {
+
+        // --------------------------------------------------------
+        // 3. 動態探針
+        // --------------------------------------------------------
+        function AnimatedProbe({ curve, radius, probeProgressRef }) {
             const probeRef = useRef();
 
             useFrame(({ clock }) => {
                 if (!probeRef.current || !curve) return;
 
-                // 讓探針沿著閉合曲線持續往前進
-                // 將經過的時間取小數部分 (% 1)，保持在 0.0 ~ 1.0 之間循環
-                const speed = 0.001; // 調整這個數值來改變掃描速度
-                const t = (clock.elapsedTime * speed) % 1;
+                const speed = 0.05;
+                // 這裡不再 % 1，我們讓它從 0 走到 1 就停止，或者反覆
+                // 使用一個 clamp 來確保它在 0~1 之間
+                let t = (clock.elapsedTime * speed) % 1;
+
+                // 更新全局進度，讓 SESView 可以讀取
+                if (probeProgressRef.current) {
+                    probeProgressRef.current.progress = t;
+                }
 
                 const position = curve.getPointAt(t);
                 probeRef.current.position.copy(position);
@@ -338,12 +395,13 @@
                         color="#ffffff"
                         wireframe={true}
                         transparent={true}
-                        opacity={0.4}
+                        opacity={0.8}
                         depthTest={false}
                     />
                 </mesh>
             );
         }
+
         // Phase 2: 全空間 3D 網格陣列 (覆蓋整個 Bounding Box)
         function GridWireframe({ algoData, atoms, visible, bounds }) {
             // 1. 主網格 (Macro Grid) - 2.5Å
@@ -1030,6 +1088,7 @@
                 if (!data || !data.atoms) return null;
                 return computeTightBounds(data.atoms);
             }, [data]);
+            const probeProgressRef = useRef({ progress: 0 });
 
             useEffect(() => {
                 fetch('./precomputed_data.json')
@@ -1163,10 +1222,13 @@
                                     visible={(phase === 1 && phase1Opts.vdw) || phase === 2 || phase === 3}
                                     dimmed={phase === 2 || phase === 3} />
 
+                                {/* Phase 1: 探針 */}
                                 <ProbeScannerView
                                     probePath={data.probe_path}
                                     visible={phase === 1}
+                                    probeProgressRef={probeProgressRef} // 傳入 ref
                                 />
+
                                 {/* Phase 1,5: SES */}
                                 <SESView visible={(phase === 1 && phase1Opts.ses) || phase === 5} />
                                 {/* Phase 2: 空間網格化 */}
