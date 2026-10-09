@@ -1230,7 +1230,10 @@
                                 />
 
                                 {/* Phase 1,5: SES */}
-                                <SESView visible={(phase === 1 && phase1Opts.ses) || phase === 5} />
+                                <SESView
+                                    visible={(phase === 1 && phase1Opts.ses) || phase === 5}
+                                    probeProgressRef={probeProgressRef}
+                                />
                                 {/* Phase 2: 空間網格化 */}
                                 <GridWireframe algoData={data.algo_data} atoms={data.atoms} visible={phase === 2} bounds={bounds} />
                                 {/* Phase 3: 距離場掃描動畫 */}
