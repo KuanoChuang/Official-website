@@ -1831,6 +1831,12 @@
                                         onFinish={handleAnimationFinish}
                                     />
                                 )}
+                                <PocketAlgorithmPanel
+                                    phase={phase}
+                                    handleManualPhaseChange={handleManualPhaseChange}
+                                    phase1Opts={phase1Opts}
+                                    setPhase1Opts={setPhase1Opts}
+                                />
                             </group>
                         </Suspense>
                     </Canvas>
