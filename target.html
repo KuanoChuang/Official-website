@@ -184,19 +184,19 @@
         function PocketAlgorithmPanel({ phase, handleManualPhaseChange, phase1Opts, setPhase1Opts }) {
             // 控制手機版是否展開選單（預設收合）
             const [isOpen, setIsOpen] = useState(false);
+
+            // 視窗變大時自動收合手機選單
             useEffect(() => {
                 const handleResize = () => {
                     if (window.innerWidth >= 768) {
-                        // 如果視窗大於 768px，且當前是開著的，就把它關掉（或重置）
                         setIsOpen(false);
                     }
                 };
 
                 window.addEventListener('resize', handleResize);
-
-                // 清理監聽器
                 return () => window.removeEventListener('resize', handleResize);
             }, []);
+
             return (
                 <>
                     {/* 1. 手機版收合時的浮動按鈕（僅在手機版且未展開時顯示） */}
@@ -205,22 +205,22 @@
                         className="md:hidden fixed top-4 right-4 z-50 bg-white/90 backdrop-blur-md p-3 rounded-full shadow-lg border border-gray-200 text-gray-700 hover:bg-gray-100 transition-transform active:scale-95"
                         aria-label="打開選單"
                     >
-                        {/* 簡單的選單/齒輪 SVG 圖示 */}
+                        {/* 漢堡選單 SVG 圖示 */}
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
 
-                    {/* 2. 主面板：電腦版正常顯示；手機版在 isOpen 為 true 時以彈跳/固定視窗顯示 */}
+                    {/* 2. 主面板：手機版抽屜開合 / 電腦版固定顯示 */}
                     <div className={`
                 ui-panel transition-all duration-300 z-50
                 fixed top-4 right-4 w-72 max-w-[90vw] max-h-[85vh] overflow-y-auto bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl p-4 border border-gray-100
                 ${isOpen ? 'translate-x-0 opacity-100 pointer-events-auto' : 'translate-x-full opacity-0 pointer-events-none'} 
                 md:translate-x-0 md:opacity-100 md:pointer-events-auto md:relative md:top-auto md:right-auto md:w-auto md:max-h-none
             `}>
-                        {/* 標題與手機版專用的「關閉按鈕」 */}
+                        {/* 標題與手機版專用關閉按鈕 */}
                         <div className="flex justify-between items-center mb-3">
-                            <h2 className="text-base font-bold text-gray-800 m-0">Pocket Algorithm</h2>
+                            <h2 className="text-lg font-bold text-gray-800 m-0">Pocket Algorithm</h2>
                             <button
                                 onClick={() => setIsOpen(false)}
                                 className="md:hidden text-gray-400 hover:text-gray-600 p-1 rounded-lg"
@@ -232,25 +232,26 @@
                             </button>
                         </div>
 
-                        {/* Phase 1 按鈕與子選項 */}
                         <div className="flex flex-col gap-2">
+                            {/* Phase 1 按鈕 */}
                             <button
-                                className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-colors ${phase === 1 ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                                className={`w-full text-left px-3 py-2 rounded-lg transition-colors font-medium text-sm ${phase === 1 ? 'bg-blue-500 text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                                 onClick={() => handleManualPhaseChange(1)}
                             >
                                 Phase 1: 蛋白實體掃描
                             </button>
 
+                            {/* Phase 1 子選項 */}
                             {phase === 1 && (
                                 <div className="sub-options flex gap-2 pl-2 mb-1">
                                     <button
-                                        className={`sub-btn px-3 py-1.5 text-xs rounded-lg font-medium transition-colors ${phase1Opts.vdw ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-600'}`}
+                                        className={`sub-btn px-3 py-1.5 text-xs rounded-lg font-medium transition-colors ${phase1Opts.vdw ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'}`}
                                         onClick={() => setPhase1Opts(p => ({ ...p, vdw: !p.vdw }))}
                                     >
                                         VDW 原子
                                     </button>
                                     <button
-                                        className={`sub-btn px-3 py-1.5 text-xs rounded-lg font-medium transition-colors ${phase1Opts.ses ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-600'}`}
+                                        className={`sub-btn px-3 py-1.5 text-xs rounded-lg font-medium transition-colors ${phase1Opts.ses ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'}`}
                                         onClick={() => setPhase1Opts(p => ({ ...p, ses: !p.ses }))}
                                     >
                                         SES 表面
@@ -267,7 +268,7 @@
                             ].map(item => (
                                 <button
                                     key={item.id}
-                                    className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-colors ${phase === item.id ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors font-medium text-sm ${phase === item.id ? 'bg-blue-500 text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                                     onClick={() => handleManualPhaseChange(item.id)}
                                 >
                                     {item.label}
@@ -1677,35 +1678,28 @@
 
             return (
                 <Boundary>
-                    <div className="fixed top-4 right-4 z-50 w-72 max-w-[90vw] ui-panel bg-white/90 backdrop-blur-md shadow-xl rounded-2xl p-4 transition-all duration-300 md:relative md:top-auto md:right-auto md:w-auto">
-                        <h2 className="text-lg font-bold mb-3">Pocket Algorithm</h2>
+                    <div className="ui-panel">
+                        <h2>Pocket Algorithm</h2>
 
-                        {/* Phase 1 按鈕 */}
-                        <button
-                            className={`w-full text-left px-3 py-2 rounded-lg mb-2 transition-colors ${phase === 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
-                            onClick={() => handleManualPhaseChange(1)}
-                        >
+                        <button className={`phase-btn ${phase === 1 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(1)}>
                             Phase 1: 蛋白實體掃描
                         </button>
-
                         {phase === 1 && (
-                            <div className="sub-options flex gap-2 pl-4 mb-2">
-                                <button className={`sub-btn px-2 py-1 text-sm rounded ${phase1Opts.vdw ? 'bg-green-500 text-white' : 'bg-gray-200'}`} onClick={() => setPhase1Opts(p => ({ ...p, vdw: !p.vdw }))}>VDW 原子</button>
-                                <button className={`sub-btn px-2 py-1 text-sm rounded ${phase1Opts.ses ? 'bg-green-500 text-white' : 'bg-gray-200'}`} onClick={() => setPhase1Opts(p => ({ ...p, ses: !p.ses }))}>SES 表面</button>
+                            <div className="sub-options">
+                                <button className={`sub-btn ${phase1Opts.vdw ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({ ...p, vdw: !p.vdw }))}>VDW 原子</button>
+                                <button className={`sub-btn ${phase1Opts.ses ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({ ...p, ses: !p.ses }))}>SES 表面</button>
                             </div>
                         )}
-
-                        {/* 其它 Phase 按鈕以此類推 */}
-                        <button className={`w-full text-left px-3 py-2 rounded-lg mb-2 ${phase === 2 ? 'bg-blue-500 text-white' : 'bg-gray-100'}`} onClick={() => handleManualPhaseChange(2)}>
+                        <button className={`phase-btn ${phase === 2 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(2)}>
                             Phase 2: 空間網格化
                         </button>
-                        <button className={`w-full text-left px-3 py-2 rounded-lg mb-2 ${phase === 3 ? 'bg-blue-500 text-white' : 'bg-gray-100'}`} onClick={() => handleManualPhaseChange(3)}>
+                        <button className={`phase-btn ${phase === 3 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(3)}>
                             Phase 3: 距離場切面掃描
                         </button>
-                        <button className={`w-full text-left px-3 py-2 rounded-lg mb-2 ${phase === 4 ? 'bg-blue-500 text-white' : 'bg-gray-100'}`} onClick={() => handleManualPhaseChange(4)}>
+                        <button className={`phase-btn ${phase === 4 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(4)}>
                             Phase 4: 口袋探針球掃描
                         </button>
-                        <button className={`w-full text-left px-3 py-2 rounded-lg ${phase === 5 ? 'bg-blue-500 text-white' : 'bg-gray-100'}`} onClick={() => handleManualPhaseChange(5)}>
+                        <button className={`phase-btn ${phase === 5 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(5)}>
                             Phase 5: 表面平滑化
                         </button>
                     </div>
