@@ -1243,7 +1243,11 @@
                         uOpacity: { value: 1.0 },
                         uSize: { value: 1.0 },
                         worldSize: { value: 0.8 },
-                        coreColor: { value: new THREE.Color("#ff00ff") } // 亮紫色
+                        // 一開始使用淡雅、帶灰調的淺粉紫，避免過於濃烈
+                        startColor: { value: new THREE.Color("#b58cd6") },
+                        // 擴散後的目標顏色，對齊粗糙表面的中紫色
+                        targetColor: { value: new THREE.Color("#9944cc") },
+                        uColorProgress: { value: 0.0 } // 控制顏色轉變的進度
                     },
                     vertexShader: `
                 uniform float worldSize;
@@ -1256,18 +1260,23 @@
                     vec4 mvPosition = viewMatrix * worldPosition;
                     float sizeAttenuation = 450.0 / max(-mvPosition.z, 0.1);
                     
-                    // 非真核心點直接將大小設為 0
+                    // 點雲稍微膨脹，保持細小邊界
                     gl_PointSize = (isProbeZ > 0.5) ? (worldSize * uSize * sizeAttenuation) : 0.0;
                     gl_Position = projectionMatrix * mvPosition;
                 }
             `,
                     fragmentShader: `
                 uniform float uOpacity;
-                uniform vec3 coreColor;
+                uniform vec3 startColor;
+                uniform vec3 targetColor;
+                uniform float uColorProgress;
                 varying float vIsProbeZ;
                 void main() {
                     if (vIsProbeZ < 0.5) discard; 
-                    gl_FragColor = vec4(coreColor, uOpacity);
+                    
+                    // 【關鍵修正】顏色往粗糙表面顏色 (#9944cc) 平滑漸變
+                    vec3 finalColor = mix(startColor, targetColor, uColorProgress);
+                    gl_FragColor = vec4(finalColor, uOpacity);
                 }
             `,
                     transparent: true,
