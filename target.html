@@ -1346,53 +1346,42 @@
             // --------------------------------------------------------
             // 5. 動畫排程邏輯
             // --------------------------------------------------------
-            useEffect(() => {
-                const timer = setTimeout(() => setStartAnim(true), 800);
-                return () => clearTimeout(timer);
-            }, []);
-
             useFrame((state, delta) => {
                 if (!startAnim || progress >= 1) return;
 
                 const newProgress = Math.min(progress + delta * 0.25, 1);
                 setProgress(newProgress);
 
-                // --------------------------------------------------------
-                // 階段一：探針點雲 (漸淡與色彩漸變至目標網格色)
-                // --------------------------------------------------------
+                // pointFade 是 0.0 到 1.0 的第一階段進度 (Progress 0.0 ~ 0.2)
+                const pointFade = Math.min(newProgress * 5, 1.0);
+
+                // 階段一：探針點雲 (擴張並變色)
                 if (pointsMatRef.current) {
-                    // pointFade 為 0.0 到 1.0 之間
-                    const pointFade = Math.min(newProgress * 5, 1.0);
+                    // 【關鍵修改】：保持完全不透明 (1.0)，直到最後一刻 (pointFade 接近 1) 才瞬間消失
+                    pointsMatRef.current.uniforms.uOpacity.value = 1.0 - Math.pow(pointFade, 10);
 
-                    // 使用 1.5 次方曲線使淡出迅速自然，避免刺眼
-                    pointsMatRef.current.uniforms.uOpacity.value = 1.0 - Math.pow(pointFade, 1.5);
+                    // 點雲擴張到粗糙表面的大小
+                    pointsMatRef.current.uniforms.uSize.value = 1.0 + pointFade * 1.5;
 
-                    // 探針點擴散/稍微膨脹，保持邊界清晰
-                    pointsMatRef.current.uniforms.uSize.value = 1.0 + pointFade * 1.0;
-
-                    // 【新增顏色轉變】點雲在膨脹的同時，顏色迅速由淡粉紫過渡至粗糙網格的中紫色 (#9944cc)
-                    // 加上 smoothstep 或單純 pointFade 讓轉換看起來平滑自然
-                    pointsMatRef.current.uniforms.uColorProgress.value = Math.min(pointFade * 1.2, 1.0);
+                    // 顏色完全跟著進度從 #ff00ff 走到 #a855d4
+                    pointsMatRef.current.uniforms.uColorProgress.value = pointFade;
                 }
 
-                // --------------------------------------------------------
                 // 階段二與三：形變與材質實體化
-                // --------------------------------------------------------
                 if (meshMatRef.current && meshRef.current) {
-                    const meshAppear = Math.min(newProgress * 5, 1.0);
-                    const morphProgress = Math.max(0, Math.min((newProgress - 0.2) / 0.6, 1.0));
+                    // 【關鍵修改】：Mesh 也是在最後一刻瞬間完全浮現，剛好接手消失的點雲
+                    const meshAppear = Math.pow(pointFade, 10);
 
+                    const morphProgress = Math.max(0, Math.min((newProgress - 0.2) / 0.6, 1.0));
                     customUniforms.uMorphProgress.value = morphProgress;
 
-                    // 一開始為 1.0 (不透明 Voxel)，隨形變平滑化降至 0.6 (半透明 Smooth mesh)
+                    // 最終透明度降至 0.6，保持透徹但不暗沉
                     const targetOpacity = 1.0 - (morphProgress * 0.4);
                     meshMatRef.current.opacity = meshAppear * targetOpacity;
 
-                    // 粗糙度：從粗糙 (0.9) 平滑化為有質感的實體表面 (0.3)
+                    // 粗糙度：0.9 -> 0.3 (無玻璃折射感)
                     const roughEase = Math.pow(morphProgress, 2);
                     meshMatRef.current.roughness = 0.9 - (roughEase * 0.6);
-
-                    // 保持無透光折射 (0.0)，避免玻璃感和變暗沉，保留亮麗色彩
                     meshMatRef.current.transmission = 0.0;
                 }
             });
