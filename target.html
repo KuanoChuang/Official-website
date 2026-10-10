@@ -1246,21 +1246,22 @@
             // --------------------------------------------------------
             const customUniforms = useMemo(() => ({
                 uMorphProgress: { value: 0.0 },
-                colorVoxel: { value: new THREE.Color("#4a004a") },      // 暗紫色 (Voxel期)
-                colorSmooth: { value: new THREE.Color("#ff33cc") },     // 亮紫紅色 (Smooth期)
-                emissiveVoxel: { value: new THREE.Color("#110011") },   // 極弱發光 (Voxel期)
-                emissiveSmooth: { value: new THREE.Color("#440044") }   // 強烈發光 (Smooth期)
+
+                // 色彩差距縮小，讓變化更自然、貼近最終表面
+                colorVoxel: { value: new THREE.Color("#9944cc") },      // 稍暗一點的中紫色
+                colorSmooth: { value: new THREE.Color("#cc88ff") },     // 明亮的淺紫色
+                emissiveVoxel: { value: new THREE.Color("#110022") },   // 極弱發光
+                emissiveSmooth: { value: new THREE.Color("#220044") }   // 微光增加實體立體感
             }), []);
 
             const handleMaterialCompile = (shader) => {
-                // 綁定穩定的 Reference 到 Shader 內部
                 shader.uniforms.uMorphProgress = customUniforms.uMorphProgress;
                 shader.uniforms.colorVoxel = customUniforms.colorVoxel;
                 shader.uniforms.colorSmooth = customUniforms.colorSmooth;
                 shader.uniforms.emissiveVoxel = customUniforms.emissiveVoxel;
                 shader.uniforms.emissiveSmooth = customUniforms.emissiveSmooth;
 
-                // --- 處理 Vertex Shader (頂點位置形變) ---
+                // Vertex Shader：頂點位置形變
                 shader.vertexShader = shader.vertexShader.replace(
                     '#include <common>',
                     `
@@ -1272,13 +1273,13 @@
                 shader.vertexShader = shader.vertexShader.replace(
                     '#include <begin_vertex>',
                     `
+            // 使用平滑曲線推演形變
             float morphEased = smoothstep(0.0, 1.0, uMorphProgress);
-            // 在 voxelPosition 與原始平滑 position 間插值
             vec3 transformed = mix(voxelPosition, position, morphEased);
             `
                 );
 
-                // --- 處理 Fragment Shader (顏色與發光過渡) ---
+                // Fragment Shader：顏色漸變
                 shader.fragmentShader = shader.fragmentShader.replace(
                     '#include <common>',
                     `
@@ -1290,7 +1291,6 @@
             uniform vec3 emissiveSmooth;
             `
                 );
-                // 使用更安全的 Chunk 掛載點覆寫顏色
                 shader.fragmentShader = shader.fragmentShader.replace(
                     '#include <color_fragment>',
                     `
@@ -1310,7 +1310,7 @@
             };
 
             // --------------------------------------------------------
-            // 5. 動畫排程與更新邏輯
+            // 5. 動畫排程邏輯
             // --------------------------------------------------------
             useEffect(() => {
                 const timer = setTimeout(() => setStartAnim(true), 800);
@@ -1320,38 +1320,34 @@
             useFrame((state, delta) => {
                 if (!startAnim || progress >= 1) return;
 
-                // 動畫總時長控制 (數值越小，動畫越慢越優雅)
                 const newProgress = Math.min(progress + delta * 0.25, 1);
                 setProgress(newProgress);
 
-                // 階段一：點雲快速膨脹並淡出 (Progress 0.0 ~ 0.2)
+                // 階段一：探針點雲
                 if (pointsMatRef.current) {
                     const pointFade = Math.min(newProgress * 5, 1.0);
                     pointsMatRef.current.uniforms.uOpacity.value = 1 - pointFade;
-                    pointsMatRef.current.uniforms.uSize.value = 1 + pointFade * 3;
+
+                    // 【優化】大幅降低膨脹倍率，避免模糊邊界，保持探針點細小 (從原本的 * 5 降至 * 1)
+                    pointsMatRef.current.uniforms.uSize.value = 1 + pointFade * 1.0;
                 }
 
-                // 階段二：Mesh 動態形變與物理材質變化
+                // 階段二與三：形變與材質實體化
                 if (meshMatRef.current && meshRef.current) {
-                    // Mesh 實體化速度 (迅速浮現)
                     const meshAppear = Math.min(newProgress * 5, 1.0);
-
-                    // 形變進度 (在 0.2 到 0.8 之間完成過渡)
                     const morphProgress = Math.max(0, Math.min((newProgress - 0.2) / 0.6, 1.0));
 
-                    // 更新傳給 Shader 的 Uniform 值，觸發頂點與色彩形變
                     customUniforms.uMorphProgress.value = morphProgress;
 
-                    // 物理材質：透明度 (不透明實體 -> 最終半透明 0.5)
-                    const easeOutProgress = 1.0 - Math.pow(1.0 - morphProgress, 2);
-                    meshMatRef.current.opacity = meshAppear * (1.0 - easeOutProgress * 0.5);
+                    // 【優化】取消玻璃感，保持完全不透明 (1.0)，讓顏色非常飽滿明亮
+                    meshMatRef.current.opacity = meshAppear;
 
-                    // 物理材質：粗糙度 (粗糙積木塊 1.0 -> 最終玻璃感 0.15)
+                    // 【優化】粗糙度變化：從剛生成的粗糙表面 (0.9) 平滑化為有質感的實體表面 (0.3)
                     const roughEase = Math.pow(morphProgress, 2);
-                    meshMatRef.current.roughness = 1.0 - (roughEase * 0.85);
+                    meshMatRef.current.roughness = 0.9 - (roughEase * 0.6);
 
-                    // 物理材質：透光折射率 (無折射 0.0 -> 最終高折射 0.8)
-                    meshMatRef.current.transmission = roughEase * 0.8;
+                    // 【優化】完全關閉透光折射，強調實體表面的形變張力
+                    meshMatRef.current.transmission = 0.0;
                 }
             });
 
