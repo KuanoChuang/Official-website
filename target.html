@@ -184,7 +184,19 @@
         function PocketAlgorithmPanel({ phase, handleManualPhaseChange, phase1Opts, setPhase1Opts }) {
             // 控制手機版是否展開選單（預設收合）
             const [isOpen, setIsOpen] = useState(false);
+            useEffect(() => {
+                const handleResize = () => {
+                    if (window.innerWidth >= 768) {
+                        // 如果視窗大於 768px，且當前是開著的，就把它關掉（或重置）
+                        setIsOpen(false);
+                    }
+                };
 
+                window.addEventListener('resize', handleResize);
+
+                // 清理監聽器
+                return () => window.removeEventListener('resize', handleResize);
+            }, []);
             return (
                 <>
                     {/* 1. 手機版收合時的浮動按鈕（僅在手機版且未展開時顯示） */}
