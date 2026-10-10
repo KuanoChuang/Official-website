@@ -1329,25 +1329,28 @@
                 const newProgress = Math.min(progress + delta * 0.25, 1);
                 setProgress(newProgress);
 
-                const pointFade = Math.min(newProgress * 5, 1.0);
+                // 定義階段時間點： 0.0 ~ 0.2 為點雲膨脹期
+                const isPointsPhase = newProgress < 0.2;
+                const phase1Progress = Math.min(newProgress * 5, 1.0); // 0.0 -> 1.0
 
                 // 階段一：探針點雲
                 if (pointsMatRef.current) {
-                    pointsMatRef.current.uniforms.uOpacity.value = 1.0 - Math.pow(pointFade, 10);
-                    pointsMatRef.current.uniforms.uSize.value = 1.0 + pointFade * 1.5;
-                    pointsMatRef.current.uniforms.uColorProgress.value = pointFade;
+                    // 【關鍵 1】永遠保持 100% 不透明，絕對不變暗！
+                    pointsMatRef.current.uniforms.uOpacity.value = 1.0;
+
+                    // 點雲膨脹，邊緣保持清晰
+                    pointsMatRef.current.uniforms.uSize.value = 1.0 + phase1Progress * 1.5;
+
+                    // 顏色從亮粉紫平滑過渡到 Voxel 的中紫色
+                    pointsMatRef.current.uniforms.uColorProgress.value = smoothstep(0.0, 1.0, phase1Progress);
                 }
 
                 // 階段二與三：形變與材質實體化
                 if (meshMatRef.current && meshRef.current) {
-                    const meshAppear = Math.pow(pointFade, 10);
                     const morphProgress = Math.max(0, Math.min((newProgress - 0.2) / 0.6, 1.0));
-
-                    // 更新頂點形變 Shader
                     customUniforms.uMorphProgress.value = morphProgress;
 
-                    // 【關鍵修正】：使用 JavaScript 原生計算顏色，然後直接更新給 Material
-                    // 這樣可以保證得到原汁原味的、受光照影響的明亮表面
+                    // 色彩與發光漸變
                     const colorEased = smoothstep(0.2, 0.8, morphProgress);
                     currentColor.lerpColors(voxelColor, smoothColor, colorEased);
                     meshMatRef.current.color.copy(currentColor);
@@ -1356,17 +1359,19 @@
                     currentEmissive.lerpColors(voxelEmissive, smoothEmissive, emissiveEased);
                     meshMatRef.current.emissive.copy(currentEmissive);
 
-                    // 透明度與粗糙度
+                    // 【關鍵 2】網格透明度：點雲階段直接隱藏(0)，一進入網格階段直接 100% 顯現(1.0)，
+                    // 隨後才慢慢平滑降低到 0.6
                     const targetOpacity = 1.0 - (morphProgress * 0.4);
-                    meshMatRef.current.opacity = meshAppear * targetOpacity;
+                    meshMatRef.current.opacity = isPointsPhase ? 0.0 : targetOpacity;
 
+                    // 粗糙度
                     const roughEase = Math.pow(morphProgress, 2);
                     meshMatRef.current.roughness = 0.9 - (roughEase * 0.6);
                     meshMatRef.current.transmission = 0.0;
                 }
             });
 
-            // 輔助函式：模仿 GLSL 的 smoothstep 在 JS 中的實作
+            // 輔助函式：平滑過渡
             function smoothstep(min, max, value) {
                 let x = Math.max(0, Math.min(1, (value - min) / (max - min)));
                 return x * x * (3 - 2 * x);
@@ -1374,7 +1379,7 @@
 
             return (
                 <group>
-                    {/* 第一層：將消失的真核心點雲 */}
+                    {/* 第一層：點雲 (只在 isPointsPhase 渲染) */}
                     {sortedData && sortedData.activeCount > 0 && progress < 0.2 && (
                         <points renderOrder={1}>
                             <bufferGeometry>
@@ -1385,21 +1390,20 @@
                         </points>
                     )}
 
-                    {/* 第二層：動態形變的口袋網格 (Voxel -> Smooth) */}
+                    {/* 第二層：口袋網格 */}
                     {pocketGeometry && progress > 0 && (
                         <mesh geometry={pocketGeometry} ref={meshRef}>
                             <meshPhysicalMaterial
                                 ref={meshMatRef}
-                                // 初始先給 Voxel 的顏色，避免黑屏
                                 color="#a855d4"
                                 emissive="#331155"
                                 transmission={0.0}
-                                opacity={0} // 在 useFrame 裡會瞬間變回 meshAppear 的值
+                                opacity={0} // 會被 useFrame 瞬間蓋過
                                 transparent={true}
                                 roughness={0.9}
                                 thickness={2.0}
-                                side={THREE.DoubleSide}
-                                depthWrite={false}
+                                // 【關鍵 3】拿掉 side={THREE.DoubleSide} 與 depthWrite={false}
+                                // 使用預設的單面渲染與深度寫入，讓實體感最乾淨、最亮！
                                 onBeforeCompile={handleMaterialCompile}
                             />
                         </mesh>
