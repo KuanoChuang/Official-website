@@ -1239,7 +1239,7 @@
                         worldSize: { value: 0.8 },
                         startColor: { value: new THREE.Color("#ff00ff") },
                         // 【修改】：點雲擴張目標顏色改為較淺亮的紫色
-                        targetColor: { value: new THREE.Color("#ca7df5") },
+                        targetColor: { value: new THREE.Color("#fa8eec") },
                         uColorProgress: { value: 0.0 }
                     },
                     vertexShader: `
@@ -1281,11 +1281,10 @@
             }), []);
 
             // 【修改】：整體色彩提亮，避免變暗沉
-            const voxelColor = useMemo(() => new THREE.Color("#ca7df5"), []);      // 中間積木期：淺亮紫
-            const smoothColor = useMemo(() => new THREE.Color("#e5b3ff"), []);     // 最終平滑期：更淺的仙氣粉紫
-            const voxelEmissive = useMemo(() => new THREE.Color("#552277"), []);   // 提亮中間期發光，避免黑影
-            const smoothEmissive = useMemo(() => new THREE.Color("#331155"), []);
-
+            const voxelColor = useMemo(() => new THREE.Color("#fa8eec"), []);      // 中間積木期：飽滿粉紫
+            const smoothColor = useMemo(() => new THREE.Color("#ffb3f0"), []);     // 最終平滑期：櫻花淺粉紫
+            const voxelEmissive = useMemo(() => new THREE.Color("#661144"), []);   // 提亮發光，配合粉色調
+            const smoothEmissive = useMemo(() => new THREE.Color("#330a22"), []);  // 平滑期的微弱暖光
             const currentColor = useMemo(() => new THREE.Color(), []);
             const currentEmissive = useMemo(() => new THREE.Color(), []);
 
@@ -1399,14 +1398,13 @@
                         <mesh geometry={pocketGeometry} ref={meshRef} renderOrder={999}>
                             <meshPhysicalMaterial
                                 ref={meshMatRef}
-                                color="#ca7df5"
-                                emissive="#552277"
+                                color="#fa8eec"
+                                emissive="#661144"
                                 transmission={0.0}
                                 opacity={0}
                                 transparent={true}
                                 roughness={0.9}
                                 thickness={2.0}
-                                // 【刪除了 DoubleSide】：讓內壁不再互相疊加產生黑影
                                 depthWrite={false}
                                 depthTest={false}
                                 onBeforeCompile={handleMaterialCompile}
