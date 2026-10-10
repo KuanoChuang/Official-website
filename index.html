@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh-Hant" class="scroll-smooth">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Molris 默瑞思 | 以智慧推演分子世界，洞悉微觀規律</title>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap"
+    rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -39,10 +42,10 @@
 
   <style>
     body {
-      background-color: #030509; 
+      background-color: #030509;
       color: #E2E8F0;
     }
-    
+
     /* === 導覽列與下拉選單 === */
     .glass-nav {
       background: rgba(3, 5, 9, 0.85);
@@ -50,18 +53,36 @@
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(0, 229, 255, 0.1);
     }
+
     .dropdown:hover .dropdown-content {
       display: block;
       animation: fadeIn 0.2s ease-in-out;
     }
+
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-15px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     .animate-slide-down {
       animation: slideDown 0.4s ease-out forwards;
     }
@@ -70,13 +91,16 @@
     ::-webkit-scrollbar {
       width: 8px;
     }
+
     ::-webkit-scrollbar-track {
       background: #030712;
     }
+
     ::-webkit-scrollbar-thumb {
       background: #374151;
       border-radius: 4px;
     }
+
     ::-webkit-scrollbar-thumb:hover {
       background: #00b7c3;
     }
@@ -101,8 +125,15 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Canvas background for molecular network */
@@ -134,56 +165,83 @@
       </a>
       <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-8 text-[16px] font-medium">
-        
+
         <!-- 關於Molris -->
         <div class="relative group dropdown py-8">
-          <a href="index.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">關於Molris <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
-          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="index.html#vision" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心價值</a>
-            <a href="index.html#advantages" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心優勢</a>
-            <a href="index.html#tech" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心技術</a>
-            <a href="index.html#team" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">團隊架構</a>
-            <a href="index.html#story" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">品牌故事</a>
+          <a href="index.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">關於Molris <i
+              class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div
+            class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="index.html#vision"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心價值</a>
+            <a href="index.html#advantages"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心優勢</a>
+            <a href="index.html#tech"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心技術</a>
+            <a href="index.html#team"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">團隊架構</a>
+            <a href="index.html#story"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">品牌故事</a>
           </div>
         </div>
 
         <!-- 技術平台 -->
         <div class="relative group dropdown py-8">
-          <div class="flex items-center gap-1 cursor-default">技術平台<i class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
-          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-44 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="msa.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多序列比對</a>
-            <a href="modeling.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多尺度建模</a>
-            <a href="target.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">靶點探索</a>
-            <a href="docking.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子對接</a>
-            <a href="dynamics.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子動力學</a>
-            <a href="optimize.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子結構設計</a>
+          <div class="flex items-center gap-1 cursor-default">技術平台<i
+              class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
+          <div
+            class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-44 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="msa.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多序列比對</a>
+            <a href="modeling.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多尺度建模</a>
+            <a href="target.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">靶點探索</a>
+            <a href="docking.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子對接</a>
+            <a href="dynamics.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子動力學</a>
+            <a href="optimize.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子結構設計</a>
           </div>
         </div>
 
         <!-- 應用領域 -->
         <div class="relative group dropdown py-8">
-          <div class="flex items-center gap-1 cursor-default">應用領域<i class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
-          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="biotech.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">生技與新藥開發</a>
-            <a href="materials.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">化學與材料科學</a>
+          <div class="flex items-center gap-1 cursor-default">應用領域<i
+              class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
+          <div
+            class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="biotech.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">生技與新藥開發</a>
+            <a href="materials.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">化學與材料科學</a>
           </div>
         </div>
 
         <!-- 服務方案 -->
         <div class="relative group dropdown py-8">
-          <div class="flex items-center gap-1 cursor-default">服務方案<i class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
-          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="pricing.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">方案價格</a>
-            <a href="modules.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">功能模組</a>
+          <div class="flex items-center gap-1 cursor-default">服務方案<i
+              class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
+          <div
+            class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="pricing.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">方案價格</a>
+            <a href="modules.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">功能模組</a>
           </div>
         </div>
 
         <!-- 聯絡我們 -->
         <div class="relative group dropdown py-8">
-          <div class="flex items-center gap-1 cursor-default">聯絡我們<i class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
-          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="contact.html#info" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">聯絡資訊</a>
-            <a href="contact.html#joinus" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">加入我們</a>
+          <div class="flex items-center gap-1 cursor-default">聯絡我們<i
+              class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
+          <div
+            class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="contact.html#info"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">聯絡資訊</a>
+            <a href="contact.html#joinus"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">加入我們</a>
           </div>
         </div>
 
@@ -199,31 +257,43 @@
     </div>
   </header>
 
-  <div id="mobile-menu-backdrop" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden transition-opacity md:hidden"></div>
+  <div id="mobile-menu-backdrop" onclick="toggleMobileMenu()"
+    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden transition-opacity md:hidden"></div>
 
   <!-- 2. 右側滑出面板 (覆蓋全螢幕) -->
-  <div id="mobile-menu" class="fixed top-0 right-0 h-[100dvh] w-[260px] bg-[#0A111A] border-l border-gray-800 transform translate-x-full transition-transform duration-300 ease-in-out z-[70] flex flex-col md:hidden shadow-[[-20px_0_40px_rgba(0,0,0,0.8)]]">
-    
+  <div id="mobile-menu"
+    class="fixed top-0 right-0 h-[100dvh] w-[260px] bg-[#0A111A] border-l border-gray-800 transform translate-x-full transition-transform duration-300 ease-in-out z-[70] flex flex-col md:hidden shadow-[[-20px_0_40px_rgba(0,0,0,0.8)]]">
+
     <!-- 側邊欄頭部：Logo 與關閉按鈕 -->
     <div class="h-20 flex items-center justify-between px-6 border-b border-gray-800/80 shrink-0">
       <a href="index.html" class="text-lg font-bold tracking-wider text-white flex items-center gap-2 group">
-        <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i> Molris
+        <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i>
+        Molris
       </a>
-      <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800 transition-colors">
+      <button onclick="toggleMobileMenu()"
+        class="text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800 transition-colors">
         <i class="fa-solid fa-xmark text-xl"></i>
       </button>
     </div>
-    
+
     <!-- 側邊欄連結列表 -->
     <div class="flex-1 overflow-y-auto py-8 px-6 flex flex-col gap-6 text-[16px]">
-      
+
       <!-- 關於 Molris -->
-      <div data-open="false" class="group">
-        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
-          <span>關於 Molris</span>
-          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+      <div data-open="true" class="group">
+        <button
+          onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'"
+          class="w-full flex items-center justify-between text-molris-cyan font-medium transition-colors">
+
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-caret-right text-xs"></i>
+            <span>關於 Molris</span>
+          </div>
+          <i
+            class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
         </button>
-        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+        <div
+          class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
           <div class="overflow-hidden">
             <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
               <a href="index.html#vision" class="text-sm text-gray-400 hover:text-molris-cyan">核心價值</a>
@@ -236,16 +306,21 @@
         </div>
       </div>
 
-      <!-- 技術平台 (預設展開 - 提示目前頁面位置) -->
-      <div data-open="true" class="group">
-        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+      <!-- 技術平台 -->
+      <div data-open="false" class="group">
+        <button
+          onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'"
+          class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>技術平台</span>
-          <i class="fa-solid fa-chevron-down text-xs opacity-100 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+          <i
+            class="fa-solid fa-chevron-down text-xs opacity-100 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
         </button>
-        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+        <div
+          class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
           <div class="overflow-hidden">
             <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-molris-cyan/30">
-              <a href="msa.html" class="text-sm text-molris-cyan font-medium flex items-center gap-2"><i class="fa-solid fa-caret-right text-xs"></i> 多序列比對</a>
+              <a href="msa.html" class="text-sm text-molris-cyan font-medium flex items-center gap-2"><i
+                  class="fa-solid fa-caret-right text-xs"></i> 多序列比對</a>
               <a href="modeling.html" class="text-sm text-gray-400 hover:text-molris-cyan">多尺度建模</a>
               <a href="target.html" class="text-sm text-gray-400 hover:text-molris-cyan">靶點探索</a>
               <a href="docking.html" class="text-sm text-gray-400 hover:text-molris-cyan">分子對接</a>
@@ -258,11 +333,15 @@
 
       <!-- 應用領域 -->
       <div data-open="false" class="group">
-        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+        <button
+          onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'"
+          class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>應用領域</span>
-          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+          <i
+            class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
         </button>
-        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+        <div
+          class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
           <div class="overflow-hidden">
             <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
               <a href="biotech.html" class="text-sm text-gray-400 hover:text-molris-cyan">生技與新藥開發</a>
@@ -274,11 +353,15 @@
 
       <!-- 方案介紹 -->
       <div data-open="false" class="group">
-        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+        <button
+          onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'"
+          class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>服務方案</span>
-          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+          <i
+            class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
         </button>
-        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+        <div
+          class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
           <div class="overflow-hidden">
             <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
               <a href="pricing.html" class="text-sm text-gray-400 hover:text-molris-cyan">方案價格</a>
@@ -290,11 +373,15 @@
 
       <!-- 聯絡我們 -->
       <div data-open="false" class="group">
-        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+        <button
+          onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'"
+          class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>聯絡我們</span>
-          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+          <i
+            class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
         </button>
-        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+        <div
+          class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
           <div class="overflow-hidden">
             <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
               <a href="contact.html#info" class="text-sm text-gray-400 hover:text-molris-cyan">聯絡資訊</a>
@@ -303,9 +390,10 @@
           </div>
         </div>
       </div>
-      
+
       <!-- 語言切換底部 -->
-      <div class="border-t border-gray-800/80 pt-6 mt-4 flex items-center gap-2 text-gray-300 hover:text-white cursor-pointer transition-colors shrink-0">
+      <div
+        class="border-t border-gray-800/80 pt-6 mt-4 flex items-center gap-2 text-gray-300 hover:text-white cursor-pointer transition-colors shrink-0">
         <i class="fa-solid fa-globe text-gray-400"></i>
         <span class="text-sm font-bold">中文</span>
       </div>
@@ -317,14 +405,18 @@
     <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       <!-- 動態分子網狀背景 Canvas -->
       <canvas id="network-canvas"></canvas>
-      <div class="absolute inset-0 bg-gradient-to-b from-[#030712]/60 via-[#030712]/80 to-[#030712] pointer-events-none"></div>
-      
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-[#030712]/60 via-[#030712]/80 to-[#030712] pointer-events-none">
+      </div>
+
       <div class="hero-content text-center px-6 max-w-5xl mx-auto relative z-10">
-        <span class="inline-block py-1 px-3 rounded-full border border-molris-cyan/30 bg-molris-cyan/10 text-molris-cyan text-sm font-medium tracking-widest mb-6 backdrop-blur-sm">
+        <span
+          class="inline-block py-1 px-3 rounded-full border border-molris-cyan/30 bg-molris-cyan/10 text-molris-cyan text-sm font-medium tracking-widest mb-6 backdrop-blur-sm">
           COMPUTATIONAL DISCOVERY ENGINE
         </span>
         <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-wide leading-snug">
-          以智慧推演 <span class="text-transparent bg-clip-text bg-gradient-to-r from-molris-cyan to-blue-400">分子世界</span><br/>
+          以智慧推演 <span
+            class="text-transparent bg-clip-text bg-gradient-to-r from-molris-cyan to-blue-400">分子世界</span><br />
           <span class="inline-block mt-2 md:mt-4">洞悉微觀規律</span>
         </h1>
         <p class="text-lg text-molris-textMuted mb-10 font-light max-w-3xl mx-auto leading-relaxed">
@@ -334,17 +426,21 @@
 
         <!-- 按鈕區塊 (左右並排) -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-          <a href="#vision" class="px-8 py-4 rounded-full bg-molris-cyan text-molris-dark font-bold hover:bg-white hover:shadow-[0_0_20px_rgba(0,183,195,0.4)] transition-all w-full sm:w-auto text-center">
+          <a href="#vision"
+            class="px-8 py-4 rounded-full bg-molris-cyan text-molris-dark font-bold hover:bg-white hover:shadow-[0_0_20px_rgba(0,183,195,0.4)] transition-all w-full sm:w-auto text-center">
             探索核心價值
           </a>
-          
-          <a href="platform.html" class="px-8 py-4 rounded-full border border-gray-600 text-white hover:border-molris-cyan hover:text-molris-cyan transition-all w-full sm:w-auto text-center">
+
+          <a href="platform.html"
+            class="px-8 py-4 rounded-full border border-gray-600 text-white hover:border-molris-cyan hover:text-molris-cyan transition-all w-full sm:w-auto text-center">
             了解技術平台
           </a>
         </div>
 
         <!-- 向下探索動畫箭頭 (按鈕正下方置中) -->
-        <div class="flex flex-col items-center animate-bounce text-gray-500 cursor-pointer hover:text-molris-cyan transition-colors z-20" onclick="document.getElementById('vision').scrollIntoView({behavior: 'smooth'})">
+        <div
+          class="flex flex-col items-center animate-bounce text-gray-500 cursor-pointer hover:text-molris-cyan transition-colors z-20"
+          onclick="document.getElementById('vision').scrollIntoView({behavior: 'smooth'})">
           <span class="text-xs tracking-widest mb-2">向下探索</span>
           <i class="fa-solid fa-arrow-down"></i>
         </div>
@@ -358,10 +454,11 @@
           <h2 class="text-sm font-bold text-molris-cyan tracking-widest uppercase mb-2">Core Vision</h2>
           <h3 class="text-3xl md:text-4xl font-bold text-white">創新研發的核心能力</h3>
         </div>
-        
+
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div class="glass-card p-8 rounded-2xl hover:-translate-y-2 transition-transform duration-300 group">
-            <div class="w-14 h-14 rounded-xl bg-gray-800/50 flex items-center justify-center text-molris-cyan text-2xl mb-6 group-hover:bg-molris-cyan/10 transition-colors">
+            <div
+              class="w-14 h-14 rounded-xl bg-gray-800/50 flex items-center justify-center text-molris-cyan text-2xl mb-6 group-hover:bg-molris-cyan/10 transition-colors">
               <i class="fa-solid fa-microscope"></i>
             </div>
             <h3 class="text-2xl font-bold text-white mb-2">Understand</h3>
@@ -370,9 +467,10 @@
               不只解析複雜數據，更深入理解分子間的交互作用、因果關係與物理化學機制。
             </p>
           </div>
-          
+
           <div class="glass-card p-8 rounded-2xl hover:-translate-y-2 transition-transform duration-300 group">
-            <div class="w-14 h-14 rounded-xl bg-gray-800/50 flex items-center justify-center text-molris-cyan text-2xl mb-6 group-hover:bg-molris-cyan/10 transition-colors">
+            <div
+              class="w-14 h-14 rounded-xl bg-gray-800/50 flex items-center justify-center text-molris-cyan text-2xl mb-6 group-hover:bg-molris-cyan/10 transition-colors">
               <i class="fa-solid fa-cubes"></i>
             </div>
             <h3 class="text-2xl font-bold text-white mb-2">Visualize</h3>
@@ -381,9 +479,10 @@
               將抽象數據轉化為直觀的三維結構與動態過程，協助研究者快速洞察關鍵訊息。
             </p>
           </div>
-          
+
           <div class="glass-card p-8 rounded-2xl hover:-translate-y-2 transition-transform duration-300 group">
-            <div class="w-14 h-14 rounded-xl bg-gray-800/50 flex items-center justify-center text-molris-cyan text-2xl mb-6 group-hover:bg-molris-cyan/10 transition-colors">
+            <div
+              class="w-14 h-14 rounded-xl bg-gray-800/50 flex items-center justify-center text-molris-cyan text-2xl mb-6 group-hover:bg-molris-cyan/10 transition-colors">
               <i class="fa-solid fa-chart-line"></i>
             </div>
             <h3 class="text-2xl font-bold text-white mb-2">Predict</h3>
@@ -394,7 +493,8 @@
           </div>
 
           <div class="glass-card p-8 rounded-2xl hover:-translate-y-2 transition-transform duration-300 group">
-            <div class="w-14 h-14 rounded-xl bg-gray-800/50 flex items-center justify-center text-molris-cyan text-2xl mb-6 group-hover:bg-molris-cyan/10 transition-colors">
+            <div
+              class="w-14 h-14 rounded-xl bg-gray-800/50 flex items-center justify-center text-molris-cyan text-2xl mb-6 group-hover:bg-molris-cyan/10 transition-colors">
               <i class="fa-solid fa-rocket"></i>
             </div>
             <h3 class="text-2xl font-bold text-white mb-2">Accelerate</h3>
@@ -417,15 +517,18 @@
             <p class="text-gray-400 mb-8 leading-relaxed">
               我們深知研發的痛點。Molris 提供的不是冰冷的數據報表，而是經得起驗證、能直接推動研發進程的深度洞察。
             </p>
-            <a href="contact.html" class="inline-flex items-center gap-2 text-molris-cyan hover:text-white transition-colors font-medium">
+            <a href="contact.html"
+              class="inline-flex items-center gap-2 text-molris-cyan hover:text-white transition-colors font-medium">
               與我們的專家討論 <i class="fa-solid fa-arrow-right"></i>
             </a>
           </div>
-          
+
           <div class="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
             <!-- Feature 1 -->
-            <div class="p-6 bg-gray-900/40 border border-gray-800 rounded-2xl hover:border-molris-cyan/40 transition-colors flex items-start gap-4 group">
-              <div class="w-12 h-12 rounded-xl bg-gray-900 flex items-center justify-center text-molris-cyan shrink-0 border border-gray-700 group-hover:bg-molris-cyan/10 transition-colors">
+            <div
+              class="p-6 bg-gray-900/40 border border-gray-800 rounded-2xl hover:border-molris-cyan/40 transition-colors flex items-start gap-4 group">
+              <div
+                class="w-12 h-12 rounded-xl bg-gray-900 flex items-center justify-center text-molris-cyan shrink-0 border border-gray-700 group-hover:bg-molris-cyan/10 transition-colors">
                 <i class="fa-solid fa-check-double"></i>
               </div>
               <div>
@@ -435,8 +538,10 @@
             </div>
 
             <!-- Feature 2 -->
-            <div class="p-6 bg-gray-900/40 border border-gray-800 rounded-2xl hover:border-molris-cyan/40 transition-colors flex items-start gap-4 group">
-              <div class="w-12 h-12 rounded-xl bg-gray-900 flex items-center justify-center text-molris-cyan shrink-0 border border-gray-700 group-hover:bg-molris-cyan/10 transition-colors">
+            <div
+              class="p-6 bg-gray-900/40 border border-gray-800 rounded-2xl hover:border-molris-cyan/40 transition-colors flex items-start gap-4 group">
+              <div
+                class="w-12 h-12 rounded-xl bg-gray-900 flex items-center justify-center text-molris-cyan shrink-0 border border-gray-700 group-hover:bg-molris-cyan/10 transition-colors">
                 <i class="fa-solid fa-link"></i>
               </div>
               <div>
@@ -446,8 +551,10 @@
             </div>
 
             <!-- Feature 3 -->
-            <div class="p-6 bg-gray-900/40 border border-gray-800 rounded-2xl hover:border-molris-cyan/40 transition-colors flex items-start gap-4 group">
-              <div class="w-12 h-12 rounded-xl bg-gray-900 flex items-center justify-center text-molris-cyan shrink-0 border border-gray-700 group-hover:bg-molris-cyan/10 transition-colors">
+            <div
+              class="p-6 bg-gray-900/40 border border-gray-800 rounded-2xl hover:border-molris-cyan/40 transition-colors flex items-start gap-4 group">
+              <div
+                class="w-12 h-12 rounded-xl bg-gray-900 flex items-center justify-center text-molris-cyan shrink-0 border border-gray-700 group-hover:bg-molris-cyan/10 transition-colors">
                 <i class="fa-solid fa-chart-pie"></i>
               </div>
               <div>
@@ -457,8 +564,10 @@
             </div>
 
             <!-- Feature 4 -->
-            <div class="p-6 bg-gray-900/40 border border-gray-800 rounded-2xl hover:border-molris-cyan/40 transition-colors flex items-start gap-4 group">
-              <div class="w-12 h-12 rounded-xl bg-gray-900 flex items-center justify-center text-molris-cyan shrink-0 border border-gray-700 group-hover:bg-molris-cyan/10 transition-colors">
+            <div
+              class="p-6 bg-gray-900/40 border border-gray-800 rounded-2xl hover:border-molris-cyan/40 transition-colors flex items-start gap-4 group">
+              <div
+                class="w-12 h-12 rounded-xl bg-gray-900 flex items-center justify-center text-molris-cyan shrink-0 border border-gray-700 group-hover:bg-molris-cyan/10 transition-colors">
                 <i class="fa-solid fa-crosshairs"></i>
               </div>
               <div>
@@ -468,8 +577,10 @@
             </div>
 
             <!-- Feature 5 -->
-            <div class="p-6 bg-gray-900/40 border border-gray-800 rounded-2xl hover:border-molris-cyan/40 transition-colors flex items-start gap-4 group">
-              <div class="w-12 h-12 rounded-xl bg-gray-900 flex items-center justify-center text-molris-cyan shrink-0 border border-gray-700 group-hover:bg-molris-cyan/10 transition-colors">
+            <div
+              class="p-6 bg-gray-900/40 border border-gray-800 rounded-2xl hover:border-molris-cyan/40 transition-colors flex items-start gap-4 group">
+              <div
+                class="w-12 h-12 rounded-xl bg-gray-900 flex items-center justify-center text-molris-cyan shrink-0 border border-gray-700 group-hover:bg-molris-cyan/10 transition-colors">
                 <i class="fa-solid fa-cube"></i>
               </div>
               <div>
@@ -479,8 +590,10 @@
             </div>
 
             <!-- Feature 6 -->
-            <div class="p-6 bg-gray-900/40 border border-gray-800 rounded-2xl hover:border-molris-cyan/40 transition-colors flex items-start gap-4 group">
-              <div class="w-12 h-12 rounded-xl bg-gray-900 flex items-center justify-center text-molris-cyan shrink-0 border border-gray-700 group-hover:bg-molris-cyan/10 transition-colors">
+            <div
+              class="p-6 bg-gray-900/40 border border-gray-800 rounded-2xl hover:border-molris-cyan/40 transition-colors flex items-start gap-4 group">
+              <div
+                class="w-12 h-12 rounded-xl bg-gray-900 flex items-center justify-center text-molris-cyan shrink-0 border border-gray-700 group-hover:bg-molris-cyan/10 transition-colors">
                 <i class="fa-solid fa-sliders"></i>
               </div>
               <div>
@@ -503,22 +616,27 @@
 
         <!-- 應用領域 Tabs (視覺呈現) -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-          <div class="glass-card p-6 text-center rounded-xl border-t-2 border-t-molris-cyan group hover:bg-gray-800/40 transition-colors">
+          <div
+            class="glass-card p-6 text-center rounded-xl border-t-2 border-t-molris-cyan group hover:bg-gray-800/40 transition-colors">
             <i class="fa-solid fa-dna text-3xl text-gray-400 group-hover:text-molris-cyan transition-colors mb-3"></i>
             <h4 class="font-bold text-white">生技醫藥</h4>
             <p class="text-xs text-gray-500 mt-2">小分子藥物、蛋白質交互作用</p>
           </div>
-          <div class="glass-card p-6 text-center rounded-xl border-t-2 border-t-transparent hover:border-t-molris-cyan group hover:bg-gray-800/40 transition-colors">
-            <i class="fa-solid fa-layer-group text-3xl text-gray-400 group-hover:text-molris-cyan transition-colors mb-3"></i>
+          <div
+            class="glass-card p-6 text-center rounded-xl border-t-2 border-t-transparent hover:border-t-molris-cyan group hover:bg-gray-800/40 transition-colors">
+            <i
+              class="fa-solid fa-layer-group text-3xl text-gray-400 group-hover:text-molris-cyan transition-colors mb-3"></i>
             <h4 class="font-bold text-white">超分子材料</h4>
             <p class="text-xs text-gray-500 mt-2">自組裝、主客體化學</p>
           </div>
-          <div class="glass-card p-6 text-center rounded-xl border-t-2 border-t-transparent hover:border-t-molris-cyan group hover:bg-gray-800/40 transition-colors">
+          <div
+            class="glass-card p-6 text-center rounded-xl border-t-2 border-t-transparent hover:border-t-molris-cyan group hover:bg-gray-800/40 transition-colors">
             <i class="fa-solid fa-atom text-3xl text-gray-400 group-hover:text-molris-cyan transition-colors mb-3"></i>
             <h4 class="font-bold text-white">前瞻材料</h4>
             <p class="text-xs text-gray-500 mt-2">奈米載體、高分子聚合物</p>
           </div>
-          <div class="glass-card p-6 text-center rounded-xl border-t-2 border-t-transparent hover:border-t-molris-cyan group hover:bg-gray-800/40 transition-colors">
+          <div
+            class="glass-card p-6 text-center rounded-xl border-t-2 border-t-transparent hover:border-t-molris-cyan group hover:bg-gray-800/40 transition-colors">
             <i class="fa-solid fa-gem text-3xl text-gray-400 group-hover:text-molris-cyan transition-colors mb-3"></i>
             <h4 class="font-bold text-white">無機與界面</h4>
             <p class="text-xs text-gray-500 mt-2">晶體表面、固液界面反應</p>
@@ -554,7 +672,8 @@
             </div>
           </div>
           <div class="mt-10 text-center">
-             <a href="platform.html" class="inline-block px-6 py-2 border border-gray-600 rounded-full text-sm text-gray-300 hover:bg-gray-800 transition-colors">探索完整技術細節</a>
+            <a href="platform.html"
+              class="inline-block px-6 py-2 border border-gray-600 rounded-full text-sm text-gray-300 hover:bg-gray-800 transition-colors">探索完整技術細節</a>
           </div>
         </div>
       </div>
@@ -570,24 +689,27 @@
             Molris 團隊集結了計算化學、結構生物學、材料科學與資料工程領域的專家。我們不僅懂程式碼，更懂您的科學實驗。
           </p>
         </div>
-        
+
         <div class="grid md:grid-cols-3 gap-8">
           <div class="glass-card p-8 rounded-2xl text-center">
-            <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-gray-700 to-gray-900 border border-gray-600 flex items-center justify-center mb-6">
+            <div
+              class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-gray-700 to-gray-900 border border-gray-600 flex items-center justify-center mb-6">
               <i class="fa-solid fa-laptop-code text-2xl text-gray-400"></i>
             </div>
             <h4 class="text-lg font-bold text-white mb-2">計算化學家</h4>
             <p class="text-sm text-gray-400">精通量子化學與分子力場，確保每一次能量計算的精準度與合理性。</p>
           </div>
           <div class="glass-card p-8 rounded-2xl text-center">
-            <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-gray-700 to-gray-900 border border-gray-600 flex items-center justify-center mb-6">
+            <div
+              class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-gray-700 to-gray-900 border border-gray-600 flex items-center justify-center mb-6">
               <i class="fa-solid fa-dna text-2xl text-gray-400"></i>
             </div>
             <h4 class="text-lg font-bold text-white mb-2">結構生物 / 材料專家</h4>
             <p class="text-sm text-gray-400">具備深厚的實驗背景，能準確將模擬結果與實際的生化與材料實驗對接。</p>
           </div>
           <div class="glass-card p-8 rounded-2xl text-center">
-            <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-gray-700 to-gray-900 border border-gray-600 flex items-center justify-center mb-6">
+            <div
+              class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-gray-700 to-gray-900 border border-gray-600 flex items-center justify-center mb-6">
               <i class="fa-solid fa-server text-2xl text-gray-400"></i>
             </div>
             <h4 class="text-lg font-bold text-white mb-2">HPC 系統工程師</h4>
@@ -600,14 +722,18 @@
     <!-- ==================== 品牌故事 (Brand Story) ==================== -->
     <section id="story" class="py-24 relative overflow-hidden bg-[#050B14]">
       <!-- 背景光暈裝飾 -->
-      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-molris-cyan/5 blur-[150px] rounded-full pointer-events-none"></div>
+      <div
+        class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-molris-cyan/5 blur-[150px] rounded-full pointer-events-none">
+      </div>
 
       <!-- Story Block 1: Cinematic Intro -->
       <div class="max-w-5xl mx-auto px-6 mb-32 relative z-10">
         <div class="mb-16">
           <h2 class="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-4">
-            <span class="text-white">物質</span><span class="text-gray-500 font-light">，構築於分子的</span> <span class="text-white">結構</span><br>
-            <span class="text-molris-cyan">世界</span><span class="text-gray-500 font-light">，由分子的</span> <span class="text-molris-cyan">交互作用</span> <span class="text-gray-500 font-light">驅動</span>
+            <span class="text-white">物質</span><span class="text-gray-500 font-light">，構築於分子的</span> <span
+              class="text-white">結構</span><br>
+            <span class="text-molris-cyan">世界</span><span class="text-gray-500 font-light">，由分子的</span> <span
+              class="text-molris-cyan">交互作用</span> <span class="text-gray-500 font-light">驅動</span>
           </h2>
         </div>
 
@@ -647,7 +773,8 @@
           <div>
             <p class="text-xl md:text-2xl text-gray-300 font-light leading-relaxed">
               在微觀世界裡，每一次結合，都始於一次<span class="text-white font-medium">接觸</span>。<br class="hidden md:block">
-              而真正發生接觸的，往往不是分子的內部，而是它的<span class="text-white font-medium border-b-2 border-molris-cyan/30 pb-1">表面</span>。
+              而真正發生接觸的，往往不是分子的內部，而是它的<span
+                class="text-white font-medium border-b-2 border-molris-cyan/30 pb-1">表面</span>。
             </p>
           </div>
 
@@ -663,7 +790,8 @@
           <!-- Concept 3 -->
           <div>
             <p class="text-lg md:text-xl text-gray-300 font-light leading-relaxed">
-              我們專注於解析 <span class="text-gray-200 font-medium tracking-wide">分子表面的每一次交會</span>，<br class="hidden md:block">
+              我們專注於解析 <span class="text-gray-200 font-medium tracking-wide">分子表面的每一次交會</span>，<br
+                class="hidden md:block">
               將複雜的交互作用，轉化為可視化、可推演、可預測的精準洞察。
             </p>
           </div>
@@ -691,15 +819,19 @@
           </div>
           <!-- 瑞 -->
           <div class="glass-card p-10 rounded-2xl relative overflow-hidden group bg-black/40">
-            <div class="absolute top-0 left-0 w-1 h-full bg-molris-cyan transition-all duration-300 shadow-[0_0_15px_rgba(0,229,255,0.5)]"></div>
-            <h4 class="text-6xl font-black text-molris-cyan/10 mb-6 group-hover:text-molris-cyan/20 transition-colors">瑞</h4>
+            <div
+              class="absolute top-0 left-0 w-1 h-full bg-molris-cyan transition-all duration-300 shadow-[0_0_15px_rgba(0,229,255,0.5)]">
+            </div>
+            <h4 class="text-6xl font-black text-molris-cyan/10 mb-6 group-hover:text-molris-cyan/20 transition-colors">瑞
+            </h4>
             <h5 class="text-xl font-bold text-white mb-4">洞察分子作用規律</h5>
             <p class="text-gray-400 leading-relaxed text-sm">
               以精準的眼光預見未知可能，洞察數據矩陣背後的可驗證規律。
             </p>
           </div>
           <!-- 思 -->
-          <div class="glass-card p-10 rounded-2xl relative overflow-hidden group bg-gray-800/50 border border-gray-700/50">
+          <div
+            class="glass-card p-10 rounded-2xl relative overflow-hidden group bg-gray-800/50 border border-gray-700/50">
             <div class="absolute top-0 left-0 w-1 h-full bg-blue-500 transition-all duration-300"></div>
             <h4 class="text-6xl font-black text-blue-500/10 mb-6 group-hover:text-blue-500/20 transition-colors">思</h4>
             <h5 class="text-xl font-bold text-white mb-4">推演未來決策方向</h5>
@@ -712,7 +844,7 @@
 
       <!-- Story Block 4 (Core Engine - Visualized) -->
       <div class="max-w-4xl mx-auto px-6 relative z-10 text-center">
-        
+
         <!-- 引擎大標題 -->
         <div class="mb-12">
           <h3 class="text-3xl md:text-4xl font-bold text-white mb-2 tracking-widest">
@@ -726,13 +858,16 @@
         <!-- 圖表區塊 -->
         <div class="glass-card p-8 md:p-12 rounded-3xl border border-gray-700/50 relative overflow-hidden">
           <!-- 裝飾背景線 -->
-          <div class="absolute top-1/2 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent -translate-y-1/2 hidden md:block z-0"></div>
-          
+          <div
+            class="absolute top-1/2 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent -translate-y-1/2 hidden md:block z-0">
+          </div>
+
           <div class="flex flex-col md:flex-row items-center justify-between relative z-10 gap-8 md:gap-0">
-            
+
             <!-- 左側：輸入 -->
             <div class="flex flex-col items-center">
-              <div class="w-20 h-20 rounded-2xl bg-gray-800 border border-gray-600 flex items-center justify-center mb-4 shadow-lg">
+              <div
+                class="w-20 h-20 rounded-2xl bg-gray-800 border border-gray-600 flex items-center justify-center mb-4 shadow-lg">
                 <i class="fa-solid fa-database text-3xl text-gray-400"></i>
               </div>
               <span class="text-sm font-medium text-gray-300 tracking-wide">分子結構 / 資料庫</span>
@@ -749,9 +884,12 @@
             <!-- 中央：核心引擎 -->
             <div class="flex flex-col items-center relative group">
               <!-- 光暈特效 -->
-              <div class="absolute inset-0 bg-molris-cyan opacity-20 blur-xl rounded-full group-hover:opacity-40 transition-opacity duration-500"></div>
-              
-              <div class="w-28 h-28 rounded-full bg-[#0A111A] border-2 border-molris-cyan flex items-center justify-center mb-4 relative z-10 shadow-[0_0_30px_rgba(0,229,255,0.2)]">
+              <div
+                class="absolute inset-0 bg-molris-cyan opacity-20 blur-xl rounded-full group-hover:opacity-40 transition-opacity duration-500">
+              </div>
+
+              <div
+                class="w-28 h-28 rounded-full bg-[#0A111A] border-2 border-molris-cyan flex items-center justify-center mb-4 relative z-10 shadow-[0_0_30px_rgba(0,229,255,0.2)]">
                 <i class="fa-solid fa-microchip text-4xl text-molris-cyan"></i>
               </div>
               <span class="text-base font-bold text-white tracking-widest">核心引擎</span>
@@ -768,7 +906,8 @@
 
             <!-- 右側：輸出 -->
             <div class="flex flex-col items-center">
-              <div class="w-20 h-20 rounded-2xl bg-gray-800 border border-gray-600 flex items-center justify-center mb-4 shadow-lg relative overflow-hidden">
+              <div
+                class="w-20 h-20 rounded-2xl bg-gray-800 border border-gray-600 flex items-center justify-center mb-4 shadow-lg relative overflow-hidden">
                 <div class="absolute inset-0 bg-blue-500/10 blur-md"></div>
                 <i class="fa-regular fa-lightbulb text-3xl text-blue-400 relative z-10"></i>
               </div>
@@ -836,10 +975,10 @@
         let dx = p.x - mouse.x;
         let dy = p.y - mouse.y;
         let distance = Math.sqrt(dx * dx + dy * dy);
-        
+
         // 爆炸範圍與推力
         if (distance < 400) {
-          let force = (400 - distance) / 20; 
+          let force = (400 - distance) / 20;
           let forceX = (dx / distance) * force;
           let forceY = (dy / distance) * force;
           p.directionX += forceX;
@@ -852,10 +991,10 @@
       constructor(x, y, directionX, directionY, size, opacity) {
         this.x = x;
         this.y = y;
-        this.baseDirectionX = directionX; 
-        this.baseDirectionY = directionY; 
-        this.directionX = directionX;     
-        this.directionY = directionY;     
+        this.baseDirectionX = directionX;
+        this.baseDirectionY = directionY;
+        this.directionX = directionX;
+        this.directionY = directionY;
         this.size = size;
         this.opacity = opacity; // 每個粒子有不同的初始亮度
       }
@@ -865,10 +1004,10 @@
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
         // 【亮度提升】使用最亮的純青色 (Pure Cyan)
         ctx.fillStyle = `rgba(0, 255, 255, ${this.opacity})`;
-        
+
         // 【亮度提升】增強高亮度粒子的光暈半徑與強度
         if (this.opacity > 0.6) {
-          ctx.shadowBlur = 18; 
+          ctx.shadowBlur = 18;
           ctx.shadowColor = '#00FFFF';
         } else {
           ctx.shadowBlur = 0;
@@ -892,12 +1031,12 @@
           let dx = mouse.x - this.x;
           let dy = mouse.y - this.y;
           let distance = Math.sqrt(dx * dx + dy * dy);
-          
+
           if (distance < mouse.radius) {
             let forceDirectionX = dx / distance;
             let forceDirectionY = dy / distance;
             let force = (mouse.radius - distance) / mouse.radius;
-            
+
             // 往滑鼠方向吸過去
             this.x += forceDirectionX * force * 1.5;
             this.y += forceDirectionY * force * 1.5;
@@ -917,16 +1056,16 @@
     function init() {
       particlesArray = [];
       // 【效能優化】1. 降低粒子密度 (7000 -> 15000) 2. 設定最大數量上限 (120)，避免 4K 大螢幕算繪崩潰
-      let numberOfParticles = Math.min(Math.floor((canvas.height * canvas.width) / 15000), 120); 
+      let numberOfParticles = Math.min(Math.floor((canvas.height * canvas.width) / 15000), 120);
       for (let i = 0; i < numberOfParticles; i++) {
-        let size = (Math.random() * 2.5) + 0.5; 
+        let size = (Math.random() * 2.5) + 0.5;
         let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
         let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
         // 【效能與視覺優化】稍微調降粒子的移動速度，讓動畫更優雅且省效能
-        let directionX = (Math.random() * 0.8) - 0.4; 
+        let directionX = (Math.random() * 0.8) - 0.4;
         let directionY = (Math.random() * 0.8) - 0.4;
         // 【亮度提升】將基礎透明度大幅拉高到 0.5 ~ 1.0 (原本是 0.3~1.0)
-        let opacity = Math.random() * 0.5 + 0.5; 
+        let opacity = Math.random() * 0.5 + 0.5;
 
         particlesArray.push(new Particle(x, y, directionX, directionY, size, opacity));
       }
@@ -941,8 +1080,8 @@
           let distance = dx * dx + dy * dy; // 提取共用變數，減少重複計算
 
           // 1. 粒子之間的連線
-          if (distance < 22000) { 
-            let opacityValue = 1 - (distance / 22000); 
+          if (distance < 22000) {
+            let opacityValue = 1 - (distance / 22000);
             if (opacityValue > 0) {
               ctx.strokeStyle = `rgba(0, 255, 255, ${opacityValue})`;
               ctx.beginPath();
@@ -952,16 +1091,16 @@
             }
           }
         }
-        
+
         // 2. 粒子與滑鼠的超亮牽引網
         if (mouse.x != undefined) {
           let dx = mouse.x - particlesArray[a].x;
           let dy = mouse.y - particlesArray[a].y;
           let mouseDistance = dx * dx + dy * dy;
-          
-          if (mouseDistance < 35000) { 
+
+          if (mouseDistance < 35000) {
             let mouseOpacity = 1 - (mouseDistance / 35000);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${mouseOpacity})`; 
+            ctx.strokeStyle = `rgba(255, 255, 255, ${mouseOpacity})`;
             ctx.lineWidth = 2.0; // 滑鼠牽引線加粗
             ctx.beginPath();
             ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
@@ -977,7 +1116,7 @@
     function toggleMobileMenu() {
       const menu = document.getElementById('mobile-menu');
       const backdrop = document.getElementById('mobile-menu-backdrop');
-      
+
       // 判斷選單是否在隱藏狀態 (包含 translate-x-full 類別)
       if (menu.classList.contains('translate-x-full')) {
         // 展開選單
@@ -992,7 +1131,7 @@
       }
     }
     // 監聽視窗縮放：如果放大到桌面尺寸 (768px 以上，對應 md: 斷點) 且側邊欄還開著，自動關閉並解鎖畫面
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
       if (window.innerWidth >= 768) {
         const menu = document.getElementById('mobile-menu');
         // 檢查如果沒有 'translate-x-full'，代表選單正處於開啟狀態
@@ -1014,7 +1153,7 @@
     let resizeTimeout;
     window.addEventListener('resize', function () {
       clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(function() {
+      resizeTimeout = setTimeout(function () {
         canvas.width = innerWidth;
         canvas.height = innerHeight;
         init();
@@ -1025,4 +1164,5 @@
     animate();
   </script>
 </body>
+
 </html>
