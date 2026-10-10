@@ -603,7 +603,7 @@
             );
         }
         // Phase 3: 網格動畫掃描器
-        function AlgorithmScanner({ algoData, phase, bounds }) {
+        function AlgorithmScanner({ algoData, phase, bounds, onFinish }) {
             const [scanAxis, setScanAxis] = useState('x');
             const solventGeoRef = useRef();
             const proteinGeoRef = useRef();
@@ -611,6 +611,14 @@
             const scanPlaneRef = useRef();
             const scanState = useRef({ pos: -9999, phase: 'scanning', timer: 0 });
             const visible = phase === 3;
+            const hasFinishedRef = useRef(false);
+            useEffect(() => {
+                if (visible) {
+                    setScanAxis('x');
+                    scanState.current = { pos: -9999, phase: 'scanning', timer: 0 };
+                    hasFinishedRef.current = false;
+                }
+            }, [visible]);
             const sortedData = useMemo(() => {
                 if (!algoData || !algoData.voxels || !bounds) return null;
                 const minX = bounds.cx - bounds.sizeX / 2; const maxX = bounds.cx + bounds.sizeX / 2;
@@ -669,7 +677,6 @@
                 if (activeGeoRef.current) activeGeoRef.current.setDrawRange(0, 0);
             }, [scanAxis]);
 
-            // 效能優化：二分搜尋找出在目前掃描平面「之前」的點數
             const findVisibleCount = (array, totalCount, currentPos, axisOffset) => {
                 let left = 0; let right = totalCount - 1; let ans = 0;
                 while (left <= right) {
@@ -733,6 +740,15 @@
                 } else if (scanState.current.phase === 'pausing') {
                     scanState.current.timer += delta;
                     if (scanState.current.timer > 0.6) {
+                        if (scanAxis === 'z') {
+                            if (!hasFinishedRef.current) {
+                                hasFinishedRef.current = true;
+                                if (onFinish) {
+                                    onFinish(); // 【通知 App 動畫結束，啟動 1.5 秒倒數準備進入 Phase 4】
+                                }
+                            }
+                            return; // 停在 Z 軸完成畫面，不再切換軸向
+                        }
                         scanState.current.phase = 'scanning';
                         const nextAxis = axes[(axisIdx + 1) % 3];
                         scanState.current.pos = startVals[nextAxis];
