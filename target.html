@@ -1678,7 +1678,7 @@
 
             return (
                 <Boundary>
-                    {/* 1. 將剛剛寫好的 PocketAlgorithmPanel 放在 Canvas 外面 */}
+                    {/* 1. PocketAlgorithmPanel */}
                     <div className="absolute top-4 right-4 z-50">
                         <PocketAlgorithmPanel
                             phase={phase}
@@ -1688,7 +1688,7 @@
                         />
                     </div>
 
-                    {/* 2. 圖例 (legend) 也必須放在 Canvas 外面，才能正確用 HTML 顯示 */}
+                    {/* 2. 圖例 (legend) */}
                     {(phase === 3 || phase === 4) && (
                         <div
                             className="legend absolute bottom-4 left-4 z-40 bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg"
@@ -1738,7 +1738,7 @@
                         </div>
                     )}
 
-                    {/* 3. Canvas 內部只放純粹的 3D 物件（保持乾淨） */}
+                    {/* 3. Canvas 內部只放純粹的 3D 物件*/}
                     <Canvas camera={{ position: [0, 0, 75], fov: 45 }}>
                         <color attach="background" args={['#030508']} />
                         <OrbitControls makeDefault />
