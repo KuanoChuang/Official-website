@@ -1678,49 +1678,31 @@
 
             return (
                 <Boundary>
-                    <div className="ui-panel">
-                        <h2>Pocket Algorithm</h2>
-
-                        <button className={`phase-btn ${phase === 1 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(1)}>
-                            Phase 1: 蛋白實體掃描
-                        </button>
-                        {phase === 1 && (
-                            <div className="sub-options">
-                                <button className={`sub-btn ${phase1Opts.vdw ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({ ...p, vdw: !p.vdw }))}>VDW 原子</button>
-                                <button className={`sub-btn ${phase1Opts.ses ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({ ...p, ses: !p.ses }))}>SES 表面</button>
-                            </div>
-                        )}
-                        <button className={`phase-btn ${phase === 2 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(2)}>
-                            Phase 2: 空間網格化
-                        </button>
-                        <button className={`phase-btn ${phase === 3 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(3)}>
-                            Phase 3: 距離場切面掃描
-                        </button>
-                        <button className={`phase-btn ${phase === 4 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(4)}>
-                            Phase 4: 口袋探針球掃描
-                        </button>
-                        <button className={`phase-btn ${phase === 5 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(5)}>
-                            Phase 5: 表面平滑化
-                        </button>
+                    {/* 1. 將剛剛寫好的 PocketAlgorithmPanel 放在 Canvas 外面 */}
+                    <div className="absolute top-4 right-4 z-50">
+                        <PocketAlgorithmPanel
+                            phase={phase}
+                            handleManualPhaseChange={handleManualPhaseChange}
+                            phase1Opts={phase1Opts}
+                            setPhase1Opts={setPhase1Opts}
+                        />
                     </div>
 
+                    {/* 2. 圖例 (legend) 也必須放在 Canvas 外面，才能正確用 HTML 顯示 */}
                     {(phase === 3 || phase === 4) && (
                         <div
-                            className="legend"
+                            className="legend absolute bottom-4 left-4 z-40 bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg"
                             style={{
                                 display: 'grid',
-                                // Phase 3 只需要 1 欄，Phase 4 需要 2 欄
                                 gridTemplateColumns: phase === 4 ? 'auto auto' : 'auto',
-                                gap: '10px 30px', // 上下間距 10px，左右間距 30px
+                                gap: '10px 30px',
                                 alignItems: 'center'
                             }}
                         >
-                            {/* 第一排：溶劑 */}
+                            {/* 你的圖例項目維持不變 */}
                             <div className="legend-item" style={{ gridRow: 1, gridColumn: 1 }}>
                                 <div className="color-box" style={{ background: '#88ccff' }}></div> 溶劑區
                             </div>
-
-                            {/* 第二排：蛋白 + 掃描(如果有的話) */}
                             <div className="legend-item" style={{ gridRow: 2, gridColumn: 1 }}>
                                 <div className="color-box" style={{ background: '#ff9933' }}></div> 蛋白區
                             </div>
@@ -1729,8 +1711,6 @@
                                     <div className="color-box" style={{ background: '#ffffff' }}></div> 掃描中
                                 </div>
                             )}
-
-                            {/* 第三排：X 軸相關 */}
                             <div className="legend-item" style={{ gridRow: 3, gridColumn: 1 }}>
                                 <div className="color-box" style={{ background: '#4db8ff' }}></div> X軸 空腔
                             </div>
@@ -1739,8 +1719,6 @@
                                     <div className="color-box" style={{ background: '#DB5BBD' }}></div> X軸 探針
                                 </div>
                             )}
-
-                            {/* 第四排：Y 軸相關 */}
                             <div className="legend-item" style={{ gridRow: 4, gridColumn: 1 }}>
                                 <div className="color-box" style={{ background: '#00F200' }}></div> Y軸 空腔
                             </div>
@@ -1749,8 +1727,6 @@
                                     <div className="color-box" style={{ background: '#E16DE1' }}></div> Y軸 探針
                                 </div>
                             )}
-
-                            {/* 第五排：Z 軸相關 */}
                             <div className="legend-item" style={{ gridRow: 5, gridColumn: 1 }}>
                                 <div className="color-box" style={{ background: '#F3E91F' }}></div> Z軸 空腔
                             </div>
@@ -1761,6 +1737,8 @@
                             )}
                         </div>
                     )}
+
+                    {/* 3. Canvas 內部只放純粹的 3D 物件（保持乾淨） */}
                     <Canvas camera={{ position: [0, 0, 75], fov: 45 }}>
                         <color attach="background" args={['#030508']} />
                         <OrbitControls makeDefault />
@@ -1786,8 +1764,6 @@
                                     atoms={data.atoms}
                                     visible={(phase === 1 && phase1Opts.vdw) || phase === 2 || phase === 3}
                                     dimmed={phase === 2 || phase === 3} />
-
-                                {/* 【重點：每個會跑動畫的子元件都要加上 onFinish={handleAnimationFinish}】 */}
 
                                 <ProbeScannerView
                                     probePath={data.probe_path}
@@ -1831,12 +1807,6 @@
                                         onFinish={handleAnimationFinish}
                                     />
                                 )}
-                                <PocketAlgorithmPanel
-                                    phase={phase}
-                                    handleManualPhaseChange={handleManualPhaseChange}
-                                    phase1Opts={phase1Opts}
-                                    setPhase1Opts={setPhase1Opts}
-                                />
                             </group>
                         </Suspense>
                     </Canvas>
