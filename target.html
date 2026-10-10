@@ -1239,7 +1239,7 @@
                         worldSize: { value: 0.8 },
                         startColor: { value: new THREE.Color("#ff00ff") },
                         // 【修改】：點雲擴張目標顏色改為較淺亮的紫色
-                        targetColor: { value: new THREE.Color("#fa8eec") },
+                        targetColor: { value: new THREE.Color("#fcacf2") },
                         uColorProgress: { value: 0.0 }
                     },
                     vertexShader: `
@@ -1280,11 +1280,11 @@
                 uMorphProgress: { value: 0.0 }
             }), []);
 
-            // 【修改】：整體色彩提亮，避免變暗沉
-            const voxelColor = useMemo(() => new THREE.Color("#fa8eec"), []);      // 中間積木期：飽滿粉紫
-            const smoothColor = useMemo(() => new THREE.Color("#ffb3f0"), []);     // 最終平滑期：櫻花淺粉紫
-            const voxelEmissive = useMemo(() => new THREE.Color("#661144"), []);   // 提亮發光，配合粉色調
-            const smoothEmissive = useMemo(() => new THREE.Color("#330a22"), []);  // 平滑期的微弱暖光
+
+            const voxelColor = useMemo(() => new THREE.Color("#fcacf2"), []);      // 中間積木期：淺粉紫
+            const smoothColor = useMemo(() => new THREE.Color("#ffdbf9"), []);     // 最終平滑期：更透亮的珍珠淺粉
+            const voxelEmissive = useMemo(() => new THREE.Color("#6b215c"), []);   // Voxel陰影光：深玫瑰紫 (避免變黑)
+            const smoothEmissive = useMemo(() => new THREE.Color("#360d2d"), []);  // 平滑期的微弱暖暗光
             const currentColor = useMemo(() => new THREE.Color(), []);
             const currentEmissive = useMemo(() => new THREE.Color(), []);
 
@@ -1371,7 +1371,7 @@
                     currentEmissive.lerpColors(voxelEmissive, smoothEmissive, emissiveEased);
                     meshMatRef.current.emissive.copy(currentEmissive);
 
-                    // 【修改】：最終透明度保持在 0.85，防止被外層 SES 藍色吃掉弄髒！
+                    // 最終透明度保持在 0.85，防止被外層 SES 藍色吃掉！
                     const targetOpacity = 1.0 - (morphProgress * 0.15);
                     meshMatRef.current.opacity = isPointsPhase ? 0.0 : targetOpacity;
 
@@ -1398,8 +1398,8 @@
                         <mesh geometry={pocketGeometry} ref={meshRef} renderOrder={999}>
                             <meshPhysicalMaterial
                                 ref={meshMatRef}
-                                color="#fa8eec"
-                                emissive="#661144"
+                                color="#fcacf2"
+                                emissive="#6b215c"
                                 transmission={0.0}
                                 opacity={0}
                                 transparent={true}
