@@ -411,6 +411,17 @@
         function GridWireframe({ algoData, atoms, visible, bounds }) {
             const microMatRef = useRef();
             const macroMatRef = useRef();
+            const progressRef = useRef(0);
+            const hasFinishedRef = useRef(false);
+            const animationDuration = 4.0; // 整個網格化雷射動畫歷時 4 秒
+
+            // 每次進入這個 Phase，重置動畫狀態
+            useEffect(() => {
+                if (visible) {
+                    progressRef.current = 0;
+                    hasFinishedRef.current = false;
+                }
+            }, [visible]);
 
             // 1. 主網格 (Macro Grid) - 2.5Å
             const macroGeo = useMemo(() => {
@@ -455,7 +466,7 @@
             const uniforms = useMemo(() => {
                 if (!bounds) return {};
                 return {
-                    uTime: { value: 0 },
+                    uProgress: { value: 0 },
                     uBoundingBox: { value: new THREE.Vector3(bounds.sizeX, bounds.sizeY, bounds.sizeZ) },
                     uLaserColor: { value: new THREE.Color("#00c3ff") }, // 強烈雷射青藍
                     uLaserOpacity: { value: 0.6 },
@@ -464,13 +475,28 @@
                 };
             }, [bounds]);
 
-            useFrame((state) => {
-                const time = state.clock.elapsedTime;
-                if (microMatRef.current) microMatRef.current.uniforms.uTime.value = time;
-                if (macroMatRef.current) macroMatRef.current.uniforms.uTime.value = time;
+            useFrame((state, delta) => {
+                if (!visible) return;
+
+                // 如果還沒播完，繼續累積進度
+                if (!hasFinishedRef.current) {
+                    progressRef.current += delta / animationDuration;
+                    if (progressRef.current >= 1.0) {
+                        progressRef.current = 1.0;
+                        hasFinishedRef.current = true;
+                        if (onFinish) {
+                            onFinish(); // 【動畫播完，通知 App 啟動 3 秒倒數】
+                        }
+                    }
+                }
+
+                // 將進度傳給 Shader
+                const currentProg = progressRef.current;
+                if (microMatRef.current) microMatRef.current.uniforms.uProgress.value = currentProg;
+                if (macroMatRef.current) macroMatRef.current.uniforms.uProgress.value = currentProg;
             });
 
-            // 核心 Shader：控制推進面、留下平滑漸退的殘影軌跡
+            // 核心 Shader：根據 uProgress 單次推進掃描面
             const laserShader = {
                 vertexShader: `
             varying vec3 vPos;
@@ -480,7 +506,7 @@
             }
         `,
                 fragmentShader: `
-            uniform float uTime;
+            uniform float uProgress; // 接收 0.0 到 1.0 的進度
             uniform vec3 uBoundingBox;
             uniform vec3 uLaserColor;
             uniform vec3 uAfterglowColor;
@@ -492,29 +518,23 @@
             varying vec3 vPos;
 
             void main() {
-                // 1. 週期剛好等於 BoundingBox 大小，消除框外等待時間
                 float cycleX = uBoundingBox.x;
                 float cycleY = uBoundingBox.y;
                 float cycleZ = uBoundingBox.z;
 
-                // 2. 速度設定為質數比例，防止週期頻繁重合
-                float speedX = 13.0;
-                float speedY = 11.0;
-                float speedZ = 17.0;
+                // 【修改】：將進度轉換成實際的座標掃描位置 (從負邊界掃到正邊界)
+                float scanX = (uProgress * cycleX) - (cycleX * 0.5);
+                float scanY = (cycleY * 0.5) - (uProgress * cycleY); 
+                float scanZ = (uProgress * cycleZ) - (cycleZ * 0.5);
 
-                // 3. 加入相位偏移 (例如 + cycleY * 0.3)，讓三軸從不同位置開始掃描
-                float scanX = mod(uTime * speedX, cycleX) - (cycleX * 0.5);
-                float scanY = (cycleY * 0.5) - mod(uTime * speedY + (cycleY * 0.33), cycleY); 
-                float scanZ = mod(uTime * speedZ + (cycleZ * 0.66), cycleZ) - (cycleZ * 0.5);
-
-                // ============ 1. 第一核心：計算雷射最前線 (強光) ============
+                // ============ 1. 雷射最前線 (強光) ============
                 float thickness = 0.25;
                 float laserX = 1.0 - smoothstep(0.0, thickness, abs(vPos.x - scanX));
                 float laserY = 1.0 - smoothstep(0.0, thickness, abs(vPos.y - scanY));
                 float laserZ = 1.0 - smoothstep(0.0, thickness, abs(vPos.z - scanZ));
                 float laserIntensity = max(max(laserX, laserY), laserZ);
 
-                // ============ 2. 第二核心：計算經過後的殘像 ============
+                // ============ 2. 經過後的殘像 ============
                 float distToTrailX = (vPos.x < scanX) ? (scanX - vPos.x) : 9999.0;
                 float distToTrailY = (vPos.y > scanY) ? (vPos.y - scanY) : 9999.0;
                 float distToTrailZ = (vPos.z < scanZ) ? (scanZ - vPos.z) : 9999.0;
@@ -525,7 +545,7 @@
 
                 float trailIntensity = max(max(trailFadeX, trailFadeY), trailFadeZ);
 
-                // 邊緣漸隱防穿幫 (外圍淡出)
+                // 邊緣漸隱防穿幫
                 vec3 normPos = abs(vPos) / (uBoundingBox / 2.0);
                 float maxDist = max(max(normPos.x, normPos.y), normPos.z);
                 float edgeFade = 1.0 - smoothstep(0.7, 1.0, maxDist);
