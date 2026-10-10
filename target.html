@@ -1250,13 +1250,24 @@
                 </mesh>
             );
         }
-        function PocketAnimationSequence({ algoData, meshData }) {
+        function PocketAnimationSequence({ algoData, meshData, onFinish }) {
             const [progress, setProgress] = useState(0);
             const [startAnim, setStartAnim] = useState(false);
 
             const pointsMatRef = useRef();
             const meshMatRef = useRef();
             const meshRef = useRef();
+            const hasFinishedRef = useRef(false);
+
+            // 每次進入這個 Phase 時，重置動畫狀態
+            useEffect(() => {
+                setProgress(0);
+                setStartAnim(false);
+                hasFinishedRef.current = false;
+
+                const timer = setTimeout(() => setStartAnim(true), 800);
+                return () => clearTimeout(timer);
+            }, [meshData]);
 
             // --------------------------------------------------------
             // 1. 資料處理：解析真核心點雲
@@ -1435,6 +1446,15 @@
 
                 const newProgress = Math.min(progress + delta * 0.25, 1);
                 setProgress(newProgress);
+
+                if (newProgress >= 1.0) {
+                    if (!hasFinishedRef.current) {
+                        hasFinishedRef.current = true;
+                        if (onFinish) {
+                            onFinish();
+                        }
+                    }
+                }
 
                 const isPointsPhase = newProgress < 0.2;
                 const phase1Progress = Math.min(newProgress * 5, 1.0);
