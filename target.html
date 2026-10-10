@@ -1588,7 +1588,7 @@
                         </button>
                         {phase === 1 && (
                             <div className="sub-options">
-                                <button className={`sub-btn ${phase1Opts.vdw ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({ ...p, vdw: !p.vdw }))}>VDW 原子</button>
+                                <button className={`sub-btn ${phase1Opts.vdw ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({ ...p, vdw: !p.vdw }))}>vdW 原子</button>
                                 <button className={`sub-btn ${phase1Opts.ses ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({ ...p, ses: !p.ses }))}>SES 表面</button>
                             </div>
                         )}
