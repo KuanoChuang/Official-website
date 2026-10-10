@@ -1236,11 +1236,7 @@
                         uOpacity: { value: 1.0 },
                         uSize: { value: 1.0 },
                         worldSize: { value: 0.8 },
-                        // 初始為你原本濃烈的亮紫粉紅
-                        startColor: { value: new THREE.Color("#ff00ff") },
-                        // 目標顏色，完全對齊粗糙表面 (Voxel) 的顏色
-                        targetColor: { value: new THREE.Color("#a855d4") },
-                        uColorProgress: { value: 0.0 }
+                        coreColor: { value: new THREE.Color("#ff00ff") } // 亮紫色
                     },
                     vertexShader: `
                 uniform float worldSize;
@@ -1253,22 +1249,18 @@
                     vec4 mvPosition = viewMatrix * worldPosition;
                     float sizeAttenuation = 450.0 / max(-mvPosition.z, 0.1);
                     
+                    // 非真核心點直接將大小設為 0
                     gl_PointSize = (isProbeZ > 0.5) ? (worldSize * uSize * sizeAttenuation) : 0.0;
                     gl_Position = projectionMatrix * mvPosition;
                 }
             `,
                     fragmentShader: `
                 uniform float uOpacity;
-                uniform vec3 startColor;
-                uniform vec3 targetColor;
-                uniform float uColorProgress;
+                uniform vec3 coreColor;
                 varying float vIsProbeZ;
                 void main() {
                     if (vIsProbeZ < 0.5) discard; 
-                    
-                    // 顏色純粹地從 #ff00ff 過渡到 #a855d4，無灰調
-                    vec3 finalColor = mix(startColor, targetColor, uColorProgress);
-                    gl_FragColor = vec4(finalColor, uOpacity);
+                    gl_FragColor = vec4(coreColor, uOpacity);
                 }
             `,
                     transparent: true,
@@ -1279,24 +1271,23 @@
             // --------------------------------------------------------
             // 4. 網格材質形變邏輯：使用穩定的 customUniforms 確保編譯成功
             // --------------------------------------------------------
-            const voxelColor = useMemo(() => new THREE.Color("#a855d4"), []);
-            const smoothColor = useMemo(() => new THREE.Color("#cc88ff"), []);
-            const voxelEmissive = useMemo(() => new THREE.Color("#331155"), []);
-            const smoothEmissive = useMemo(() => new THREE.Color("#441166"), []);
-
-            // 這個物件用來存放每幀計算出來的中間色，避免一直 new THREE.Color
-            const currentColor = useMemo(() => new THREE.Color(), []);
-            const currentEmissive = useMemo(() => new THREE.Color(), []);
-
-            // 只需要傳遞形變進度給 Shader
             const customUniforms = useMemo(() => ({
-                uMorphProgress: { value: 0.0 }
+                uMorphProgress: { value: 0.0 },
+                colorVoxel: { value: new THREE.Color("#4a004a") },      // 暗紫色 (Voxel期)
+                colorSmooth: { value: new THREE.Color("#ff33cc") },     // 亮紫紅色 (Smooth期)
+                emissiveVoxel: { value: new THREE.Color("#110011") },   // 極弱發光 (Voxel期)
+                emissiveSmooth: { value: new THREE.Color("#440044") }   // 強烈發光 (Smooth期)
             }), []);
 
             const handleMaterialCompile = (shader) => {
+                // 綁定穩定的 Reference 到 Shader 內部
                 shader.uniforms.uMorphProgress = customUniforms.uMorphProgress;
+                shader.uniforms.colorVoxel = customUniforms.colorVoxel;
+                shader.uniforms.colorSmooth = customUniforms.colorSmooth;
+                shader.uniforms.emissiveVoxel = customUniforms.emissiveVoxel;
+                shader.uniforms.emissiveSmooth = customUniforms.emissiveSmooth;
 
-                // Vertex Shader：只做頂點位置形變
+                // --- 處理 Vertex Shader (頂點位置形變) ---
                 shader.vertexShader = shader.vertexShader.replace(
                     '#include <common>',
                     `
@@ -1309,14 +1300,44 @@
                     '#include <begin_vertex>',
                     `
             float morphEased = smoothstep(0.0, 1.0, uMorphProgress);
+            // 在 voxelPosition 與原始平滑 position 間插值
             vec3 transformed = mix(voxelPosition, position, morphEased);
             `
                 );
-                // Fragment Shader 完全不碰，保持原生 MeshPhysicalMaterial 的完美光照！
+
+                // --- 處理 Fragment Shader (顏色與發光過渡) ---
+                shader.fragmentShader = shader.fragmentShader.replace(
+                    '#include <common>',
+                    `
+            #include <common>
+            uniform float uMorphProgress;
+            uniform vec3 colorVoxel;
+            uniform vec3 colorSmooth;
+            uniform vec3 emissiveVoxel;
+            uniform vec3 emissiveSmooth;
+            `
+                );
+                // 使用更安全的 Chunk 掛載點覆寫顏色
+                shader.fragmentShader = shader.fragmentShader.replace(
+                    '#include <color_fragment>',
+                    `
+            #include <color_fragment>
+            float colorEased = smoothstep(0.2, 0.8, uMorphProgress);
+            diffuseColor.rgb = mix(colorVoxel, colorSmooth, colorEased);
+            `
+                );
+                shader.fragmentShader = shader.fragmentShader.replace(
+                    '#include <emissivemap_fragment>',
+                    `
+            #include <emissivemap_fragment>
+            float emissiveEased = smoothstep(0.4, 0.9, uMorphProgress);
+            totalEmissiveRadiance = mix(emissiveVoxel, emissiveSmooth, emissiveEased);
+            `
+                );
             };
 
             // --------------------------------------------------------
-            // 5. 動畫排程邏輯
+            // 5. 動畫排程與更新邏輯
             // --------------------------------------------------------
             useEffect(() => {
                 const timer = setTimeout(() => setStartAnim(true), 800);
@@ -1326,60 +1347,44 @@
             useFrame((state, delta) => {
                 if (!startAnim || progress >= 1) return;
 
+                // 動畫總時長控制 (數值越小，動畫越慢越優雅)
                 const newProgress = Math.min(progress + delta * 0.25, 1);
                 setProgress(newProgress);
 
-                // 定義階段時間點： 0.0 ~ 0.2 為點雲膨脹期
-                const isPointsPhase = newProgress < 0.2;
-                const phase1Progress = Math.min(newProgress * 5, 1.0); // 0.0 -> 1.0
-
-                // 階段一：探針點雲
+                // 階段一：點雲快速膨脹並淡出 (Progress 0.0 ~ 0.2)
                 if (pointsMatRef.current) {
-                    // 【關鍵 1】永遠保持 100% 不透明，絕對不變暗！
-                    pointsMatRef.current.uniforms.uOpacity.value = 1.0;
-
-                    // 點雲膨脹，邊緣保持清晰
-                    pointsMatRef.current.uniforms.uSize.value = 1.0 + phase1Progress * 1.5;
-
-                    // 顏色從亮粉紫平滑過渡到 Voxel 的中紫色
-                    pointsMatRef.current.uniforms.uColorProgress.value = smoothstep(0.0, 1.0, phase1Progress);
+                    const pointFade = Math.min(newProgress * 5, 1.0);
+                    pointsMatRef.current.uniforms.uOpacity.value = 1 - pointFade;
+                    pointsMatRef.current.uniforms.uSize.value = 1 + pointFade * 3;
                 }
 
-                // 階段二與三：形變與材質實體化
+                // 階段二：Mesh 動態形變與物理材質變化
                 if (meshMatRef.current && meshRef.current) {
+                    // Mesh 實體化速度 (迅速浮現)
+                    const meshAppear = Math.min(newProgress * 5, 1.0);
+
+                    // 形變進度 (在 0.2 到 0.8 之間完成過渡)
                     const morphProgress = Math.max(0, Math.min((newProgress - 0.2) / 0.6, 1.0));
+
+                    // 更新傳給 Shader 的 Uniform 值，觸發頂點與色彩形變
                     customUniforms.uMorphProgress.value = morphProgress;
 
-                    // 色彩與發光漸變
-                    const colorEased = smoothstep(0.2, 0.8, morphProgress);
-                    currentColor.lerpColors(voxelColor, smoothColor, colorEased);
-                    meshMatRef.current.color.copy(currentColor);
+                    // 物理材質：透明度 (不透明實體 -> 最終半透明 0.5)
+                    const easeOutProgress = 1.0 - Math.pow(1.0 - morphProgress, 2);
+                    meshMatRef.current.opacity = meshAppear * (1.0 - easeOutProgress * 0.5);
 
-                    const emissiveEased = smoothstep(0.4, 0.9, morphProgress);
-                    currentEmissive.lerpColors(voxelEmissive, smoothEmissive, emissiveEased);
-                    meshMatRef.current.emissive.copy(currentEmissive);
-
-                    // 【關鍵 2】網格透明度：點雲階段直接隱藏(0)，一進入網格階段直接 100% 顯現(1.0)，
-                    // 隨後才慢慢平滑降低到 0.6
-                    const targetOpacity = 1.0 - (morphProgress * 0.4);
-                    meshMatRef.current.opacity = isPointsPhase ? 0.0 : targetOpacity;
-
-                    // 粗糙度
+                    // 物理材質：粗糙度 (粗糙積木塊 1.0 -> 最終玻璃感 0.15)
                     const roughEase = Math.pow(morphProgress, 2);
-                    meshMatRef.current.roughness = 0.9 - (roughEase * 0.6);
-                    meshMatRef.current.transmission = 0.0;
+                    meshMatRef.current.roughness = 1.0 - (roughEase * 0.85);
+
+                    // 物理材質：透光折射率 (無折射 0.0 -> 最終高折射 0.8)
+                    meshMatRef.current.transmission = roughEase * 0.8;
                 }
             });
 
-            // 輔助函式：平滑過渡
-            function smoothstep(min, max, value) {
-                let x = Math.max(0, Math.min(1, (value - min) / (max - min)));
-                return x * x * (3 - 2 * x);
-            }
-
             return (
                 <group>
-                    {/* 第一層：點雲 (只在 isPointsPhase 渲染) */}
+                    {/* 第一層：將消失的真核心點雲 */}
                     {sortedData && sortedData.activeCount > 0 && progress < 0.2 && (
                         <points renderOrder={1}>
                             <bufferGeometry>
@@ -1390,20 +1395,20 @@
                         </points>
                     )}
 
-                    {/* 第二層：口袋網格 */}
+                    {/* 第二層：動態形變的口袋網格 (Voxel -> Smooth) */}
                     {pocketGeometry && progress > 0 && (
                         <mesh geometry={pocketGeometry} ref={meshRef}>
                             <meshPhysicalMaterial
                                 ref={meshMatRef}
-                                color="#a855d4"
-                                emissive="#331155"
+                                color="#ffffff" // 實際顏色由 Shader 的 customUniforms 覆寫
                                 transmission={0.0}
-                                opacity={0} // 會被 useFrame 瞬間蓋過
+                                opacity={0}
                                 transparent={true}
-                                roughness={0.9}
+                                roughness={1.0}
                                 thickness={2.0}
-                                // 【關鍵 3】拿掉 side={THREE.DoubleSide} 與 depthWrite={false}
-                                // 使用預設的單面渲染與深度寫入，讓實體感最乾淨、最亮！
+                                emissive="#000000" // 實際發光由 Shader 的 customUniforms 覆寫
+                                side={THREE.DoubleSide}
+                                depthWrite={false}
                                 onBeforeCompile={handleMaterialCompile}
                             />
                         </mesh>
