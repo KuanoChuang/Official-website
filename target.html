@@ -1237,7 +1237,7 @@
                     uniforms: {
                         uSize: { value: 0.8 },
                         worldSize: { value: 0.8 },
-                        startColor: { value: new THREE.Color("#ff00ff") },
+                        startColor: { value: new THREE.Color("#eabded") },
                         // 【修改】：點雲擴張目標顏色改為較淺亮的紫色
                         targetColor: { value: new THREE.Color("#ffcceb") },
                         uColorProgress: { value: 0.0 }
@@ -1282,9 +1282,9 @@
 
 
             const voxelColor = useMemo(() => new THREE.Color("#ffcceb"), []);      // 中間積木期：櫻花淡粉
-            const smoothColor = useMemo(() => new THREE.Color("#fff0fa"), []);     // 最終平滑期：珍珠透白粉
+            const smoothColor = useMemo(() => new THREE.Color("#f7a6de"), []);     // 最終平滑期：珍珠透白粉
             const voxelEmissive = useMemo(() => new THREE.Color("#7a2963"), []);   // Voxel陰影光：玫瑰粉暗部
-            const smoothEmissive = useMemo(() => new THREE.Color("#3d1431"), []);  // 平滑期的微弱暖暗光
+            const smoothEmissive = useMemo(() => new THREE.Color("#591a45"), []);  // 平滑期的微弱暖暗光
             const currentColor = useMemo(() => new THREE.Color(), []);
             const currentEmissive = useMemo(() => new THREE.Color(), []);
 
