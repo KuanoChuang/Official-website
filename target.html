@@ -743,7 +743,7 @@
                         if (scanAxis === 'z') {
                             if (scanPlaneRef.current) {
                                 scanPlaneRef.current.visible = false;
-                            }       
+                            }
                             if (!hasFinishedRef.current) {
                                 hasFinishedRef.current = true;
                                 if (onFinish) {
@@ -815,7 +815,7 @@
             );
         }
         // Phase 4: 網格動畫掃描器
-        function ProbeScanner({ algoData, phase }) {
+        function ProbeScanner({ algoData, phase, onFinish }) {
             const visible = phase === 4;
             const probeRef = useRef();
             const activeInstancedRef = useRef(null);
@@ -823,6 +823,16 @@
             // scanAxis: 0=X, 1=Y, 2=Z, 3=展示最終結果(暫停)
             const [scanAxis, setScanAxis] = useState(0);
             const scanState = useRef({ globalIdx: 0, timer: 0, displayTimer: 0 });
+            const hasFinishedRef = useRef(false);
+
+            // 每次進入這個 Phase 時，重置動畫狀態
+            useEffect(() => {
+                if (visible) {
+                    setScanAxis(0);
+                    scanState.current = { globalIdx: 0, timer: 0 };
+                    hasFinishedRef.current = false;
+                }
+            }, [visible]);
 
             // ==========================================
             // 1. 解析資料 (不變)
@@ -1094,12 +1104,11 @@
 
                 // 1. 如果進入展示期 (scanAxis === 3)，計時後重置
                 if (scanAxis >= 3) {
-                    scanState.current.displayTimer += delta;
-                    if (scanState.current.displayTimer > 3.0) { // 停留 3 秒
-                        setScanAxis(0);
-                        scanState.current.globalIdx = 0;
-                        scanState.current.timer = 0;
-                        scanState.current.displayTimer = 0;
+                    if (!hasFinishedRef.current) {
+                        hasFinishedRef.current = true;
+                        if (onFinish) {
+                            onFinish(); // 【通知 App 動畫完成，準備進入 Phase 5】
+                        }
                     }
                     return;
                 }
