@@ -1236,11 +1236,11 @@
                         uOpacity: { value: 1.0 },
                         uSize: { value: 1.0 },
                         worldSize: { value: 0.8 },
-                        // 一開始使用淡雅、帶灰調的淺粉紫，避免過於濃烈
+                        // 初始為你原本濃烈的亮紫粉紅
                         startColor: { value: new THREE.Color("#ff00ff") },
-                        // 擴散後的目標顏色，對齊粗糙表面的中紫色
-                        targetColor: { value: new THREE.Color("#9944cc") },
-                        uColorProgress: { value: 0.0 } // 控制顏色轉變的進度
+                        // 目標顏色，完全對齊粗糙表面 (Voxel) 的顏色
+                        targetColor: { value: new THREE.Color("#a855d4") },
+                        uColorProgress: { value: 0.0 }
                     },
                     vertexShader: `
                 uniform float worldSize;
@@ -1253,7 +1253,6 @@
                     vec4 mvPosition = viewMatrix * worldPosition;
                     float sizeAttenuation = 450.0 / max(-mvPosition.z, 0.1);
                     
-                    // 點雲稍微膨脹，保持細小邊界
                     gl_PointSize = (isProbeZ > 0.5) ? (worldSize * uSize * sizeAttenuation) : 0.0;
                     gl_Position = projectionMatrix * mvPosition;
                 }
@@ -1267,7 +1266,7 @@
                 void main() {
                     if (vIsProbeZ < 0.5) discard; 
                     
-                    // 顏色往粗糙表面顏色 (#9944cc) 平滑漸變
+                    // 顏色純粹地從 #ff00ff 過渡到 #a855d4，無灰調
                     vec3 finalColor = mix(startColor, targetColor, uColorProgress);
                     gl_FragColor = vec4(finalColor, uOpacity);
                 }
@@ -1283,11 +1282,10 @@
             const customUniforms = useMemo(() => ({
                 uMorphProgress: { value: 0.0 },
 
-                // 色彩差距縮小，讓變化更自然、貼近最終表面
-                colorVoxel: { value: new THREE.Color("#9944cc") },      // 稍暗一點的中紫色
-                colorSmooth: { value: new THREE.Color("#cc88ff") },     // 明亮的淺紫色
-                emissiveVoxel: { value: new THREE.Color("#110022") },   // 極弱發光
-                emissiveSmooth: { value: new THREE.Color("#220044") }   // 微光增加實體立體感
+                colorVoxel: { value: new THREE.Color("#a855d4") },      // 明亮的粗糙面中紫色
+                colorSmooth: { value: new THREE.Color("#cc88ff") },     // 最終平滑面的淺紫明亮色
+                emissiveVoxel: { value: new THREE.Color("#331155") },   // 提亮發光，消除暗沉
+                emissiveSmooth: { value: new THREE.Color("#441166") }   // 保持立體感微光
             }), []);
 
             const handleMaterialCompile = (shader) => {
