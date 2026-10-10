@@ -372,8 +372,7 @@
             );
         }
         // Phase 2: 全空間 3D 網格陣列 (覆蓋整個 Bounding Box)
-        export function GridWireframe({ algoData, atoms, visible, bounds }) {
-            // 建立材質參考，以便在每一幀更新時間
+        function GridWireframe({ algoData, atoms, visible, bounds }) {
             const microMatRef = useRef();
             const macroMatRef = useRef();
 
@@ -393,7 +392,7 @@
                 return new THREE.BufferGeometry().setFromPoints(pts);
             }, [bounds]);
 
-            // 2. 副網格 (Micro Grid) - 0.5Å (移除原本的靜態 vertex color，交給 Shader 處理)
+            // 2. 副網格 (Micro Grid) - 0.5Å
             const microGeo = useMemo(() => {
                 if (!bounds) return null;
                 const spacing = 0.5;
@@ -422,18 +421,18 @@
                 return {
                     uTime: { value: 0 },
                     uBoundingBox: { value: new THREE.Vector3(bounds.sizeX, bounds.sizeY, bounds.sizeZ) },
-                    uLaserColor: { value: new THREE.Color("#00ffff") }, // 雷射光顏色 (青色)
+                    uLaserColor: { value: new THREE.Color("#00aaff") }, // 改為稍微柔和的科技藍
+                    uLaserOpacity: { value: 0.5 }, // 控制雷射最高透明度，避免過亮
                 };
             }, [bounds]);
 
-            // 動畫迴圈：每一幀更新 uTime
             useFrame((state) => {
                 const time = state.clock.elapsedTime;
                 if (microMatRef.current) microMatRef.current.uniforms.uTime.value = time;
                 if (macroMatRef.current) macroMatRef.current.uniforms.uTime.value = time;
             });
 
-            // 核心 Shader：實現雷射掃描與切割感
+            // 核心 Shader：實現「單面掃描、俐落切割」的效果
             const laserShader = {
                 vertexShader: `
             varying vec3 vPos;
@@ -448,30 +447,48 @@
             uniform vec3 uLaserColor;
             uniform vec3 uBaseColor;
             uniform float uBaseOpacity;
+            uniform float uLaserOpacity;
             
             varying vec3 vPos;
 
             void main() {
-                // 1. 雷射掃描波 (Scanner waves) - 使用高次方的 sin 波製造銳利的雷射線條
-                float speed = 4.0;
-                float frequency = 1.2;
-                
-                // 計算 XYZ 三個方向的動態脈衝
-                float scanX = pow(sin(vPos.x * frequency - uTime * speed) * 0.5 + 0.5, 30.0);
-                float scanY = pow(sin(vPos.y * frequency - uTime * speed) * 0.5 + 0.5, 30.0);
-                float scanZ = pow(sin(vPos.z * frequency - uTime * speed) * 0.5 + 0.5, 30.0);
-                
-                // 結合成單一雷射強度
-                float laserIntensity = max(max(scanX, scanY), scanZ);
+                // 設定雷射切割的移動週期範圍 (乘以 1.5 讓雷射在框外有時間重置，產生「發射」的間斷感)
+                float cycleX = uBoundingBox.x * 1.5;
+                float cycleY = uBoundingBox.y * 1.5;
+                float cycleZ = uBoundingBox.z * 1.5;
 
-                // 2. 邊緣淡化 (保留原本微網格向外漸層感，但改為中心向外平滑淡出)
+                // 速度設定 (讓三軸切割有不同節奏)
+                float speedX = 12.0;
+                float speedY = 10.0;
+                float speedZ = 15.0;
+
+                // 計算當前切割面的座標
+                // mod 計算會讓切割面走到底後，瞬間回到起點 (因為發生在框外所以看起來像新的發射)
+                float scanX = mod(uTime * speedX, cycleX) - cycleX * 0.5;
+                float scanY = cycleY * 0.5 - mod(uTime * speedY, cycleY); // Y軸反向掃描(由上往下切)
+                float scanZ = mod(uTime * speedZ, cycleZ) - cycleZ * 0.5;
+
+                // 判斷當前像素距離切割面的距離，小於 thickness 就發光
+                float thickness = 0.2; // 雷射切線的厚度，越小越銳利
+                
+                // smoothstep 製造銳利的光束邊緣
+                float laserX = 1.0 - smoothstep(0.0, thickness, abs(vPos.x - scanX));
+                float laserY = 1.0 - smoothstep(0.0, thickness, abs(vPos.y - scanY));
+                float laserZ = 1.0 - smoothstep(0.0, thickness, abs(vPos.z - scanZ));
+
+                // 取得三軸雷射的最高亮度
+                float laserIntensity = max(max(laserX, laserY), laserZ);
+
+                // 邊緣淡化 (維持空間立體感，中心亮、邊緣暗)
                 vec3 normPos = abs(vPos) / (uBoundingBox / 2.0);
                 float maxDist = max(max(normPos.x, normPos.y), normPos.z);
-                float edgeFade = 1.0 - smoothstep(0.7, 1.0, maxDist);
+                float edgeFade = 1.0 - smoothstep(0.6, 1.0, maxDist);
 
-                // 3. 混合顏色與透明度
+                // 混合顏色 (底色 -> 雷射色)
                 vec3 finalColor = mix(uBaseColor, uLaserColor, laserIntensity);
-                float finalOpacity = (uBaseOpacity + laserIntensity * 0.8) * edgeFade;
+                
+                // 計算透明度，並套用邊緣淡化
+                float finalOpacity = (uBaseOpacity + laserIntensity * uLaserOpacity) * edgeFade;
 
                 gl_FragColor = vec4(finalColor, finalOpacity);
             }
@@ -488,11 +505,11 @@
                             ref={microMatRef}
                             transparent={true}
                             depthWrite={false}
-                            blending={THREE.AdditiveBlending}
+                            blending={THREE.NormalBlending} // 改用 NormalBlending 避免交疊處過曝太亮
                             uniforms={{
                                 ...uniforms,
                                 uBaseColor: { value: new THREE.Color("#224466") },
-                                uBaseOpacity: { value: 0.05 } // 底網格非常暗
+                                uBaseOpacity: { value: 0.04 } // 底網格維持極低存在感
                             }}
                             vertexShader={laserShader.vertexShader}
                             fragmentShader={laserShader.fragmentShader}
@@ -505,11 +522,11 @@
                             ref={macroMatRef}
                             transparent={true}
                             depthWrite={false}
-                            blending={THREE.AdditiveBlending}
+                            blending={THREE.NormalBlending}
                             uniforms={{
                                 ...uniforms,
                                 uBaseColor: { value: new THREE.Color("#113355") },
-                                uBaseOpacity: { value: 0.2 } // 主網格稍亮
+                                uBaseOpacity: { value: 0.15 } // 主網格底色稍微清楚一點
                             }}
                             vertexShader={laserShader.vertexShader}
                             fragmentShader={laserShader.fragmentShader}
@@ -1337,9 +1354,6 @@
 
                     customUniforms.uMorphProgress.value = morphProgress;
 
-                    // 【調整透明度】：讓 Mesh 一開始迅速浮現 (opacity 上升)，
-                    // 隨著形變進行 (morphProgress)，逐漸變得半透明，最終停在 0.6
-                    // 公式： 1.0 - (形變進度 * 0.4) = 最終 0.6
                     const targetOpacity = 1.0 - (morphProgress * 0.4);
                     meshMatRef.current.opacity = meshAppear * targetOpacity;
 
