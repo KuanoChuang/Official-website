@@ -1220,7 +1220,6 @@
                     const vy = Math.round(py / voxelSize) * voxelSize;
                     const vz = Math.round(pz / voxelSize) * voxelSize;
 
-                    // 保留 5% 原始形狀，防止三角形面積變 0 而破洞
                     voxelPos[i * 3] = vx * 0.95 + px * 0.05;
                     voxelPos[i * 3 + 1] = vy * 0.95 + py * 0.05;
                     voxelPos[i * 3 + 2] = vz * 0.95 + pz * 0.05;
@@ -1231,7 +1230,7 @@
             }, [meshData]);
 
             // --------------------------------------------------------
-            // 3. 點雲材質：X-Ray 透視模式
+            // 3. 點雲材質：X-Ray 透視模式 + 更淺的目標色
             // --------------------------------------------------------
             const ActiveMaterial = useMemo(() => {
                 return new THREE.ShaderMaterial({
@@ -1239,7 +1238,8 @@
                         uSize: { value: 0.8 },
                         worldSize: { value: 0.8 },
                         startColor: { value: new THREE.Color("#ff00ff") },
-                        targetColor: { value: new THREE.Color("#a855d4") },
+                        // 【修改】：點雲擴張目標顏色改為較淺亮的紫色
+                        targetColor: { value: new THREE.Color("#ca7df5") },
                         uColorProgress: { value: 0.0 }
                     },
                     vertexShader: `
@@ -1267,10 +1267,9 @@
                     gl_FragColor = vec4(finalColor, 1.0); 
                 }
             `,
-                    // 【修正陷阱 1】強制設為 true 進入透明序列，靠 renderOrder 蓋過 SES
                     transparent: true,
-                    depthWrite: false, // 配合 depthTest false，必須關閉寫入
-                    depthTest: false,  // X-Ray 穿透
+                    depthWrite: false,
+                    depthTest: false,
                 });
             }, []);
 
@@ -1281,10 +1280,11 @@
                 uMorphProgress: { value: 0.0 }
             }), []);
 
-            const voxelColor = useMemo(() => new THREE.Color("#a855d4"), []);
-            const smoothColor = useMemo(() => new THREE.Color("#cc88ff"), []);
-            const voxelEmissive = useMemo(() => new THREE.Color("#331155"), []);
-            const smoothEmissive = useMemo(() => new THREE.Color("#220044"), []);
+            // 【修改】：整體色彩提亮，避免變暗沉
+            const voxelColor = useMemo(() => new THREE.Color("#ca7df5"), []);      // 中間積木期：淺亮紫
+            const smoothColor = useMemo(() => new THREE.Color("#e5b3ff"), []);     // 最終平滑期：更淺的仙氣粉紫
+            const voxelEmissive = useMemo(() => new THREE.Color("#552277"), []);   // 提亮中間期發光，避免黑影
+            const smoothEmissive = useMemo(() => new THREE.Color("#331155"), []);
 
             const currentColor = useMemo(() => new THREE.Color(), []);
             const currentEmissive = useMemo(() => new THREE.Color(), []);
@@ -1372,7 +1372,8 @@
                     currentEmissive.lerpColors(voxelEmissive, smoothEmissive, emissiveEased);
                     meshMatRef.current.emissive.copy(currentEmissive);
 
-                    const targetOpacity = 1.0 - (morphProgress * 0.4);
+                    // 【修改】：最終透明度保持在 0.85，防止被外層 SES 藍色吃掉弄髒！
+                    const targetOpacity = 1.0 - (morphProgress * 0.15);
                     meshMatRef.current.opacity = isPointsPhase ? 0.0 : targetOpacity;
 
                     const roughEase = Math.pow(morphProgress, 2);
@@ -1398,15 +1399,15 @@
                         <mesh geometry={pocketGeometry} ref={meshRef} renderOrder={999}>
                             <meshPhysicalMaterial
                                 ref={meshMatRef}
-                                color="#a855d4"
-                                emissive="#331155"
+                                color="#ca7df5"
+                                emissive="#552277"
                                 transmission={0.0}
                                 opacity={0}
                                 transparent={true}
                                 roughness={0.9}
                                 thickness={2.0}
-                                side={THREE.DoubleSide}
-                                depthWrite={false} // 【修正陷阱 2】搭配 depthTest false，必須關閉深度寫入防 GPU 崩潰
+                                // 【刪除了 DoubleSide】：讓內壁不再互相疊加產生黑影
+                                depthWrite={false}
                                 depthTest={false}
                                 onBeforeCompile={handleMaterialCompile}
                             />
