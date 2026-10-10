@@ -1270,6 +1270,7 @@
             `,
                     transparent: false,
                     depthWrite: true,
+                    depthTest: false,
                 });
             }, []);
 
@@ -1388,20 +1389,16 @@
 
             return (
                 <group>
-                    {/* 第一階段實體點雲 */}
+                    {/* 第一階段實體點雲：拉高 renderOrder */}
                     {sortedData && sortedData.activeCount > 0 && progress < 0.2 && (
-                        <points renderOrder={1}>
-                            <bufferGeometry>
-                                <bufferAttribute attach="attributes-position" count={sortedData.activeCount} array={sortedData.activeArray} itemSize={3} />
-                                <bufferAttribute attach="attributes-isProbeZ" count={sortedData.activeCount} array={sortedData.isProbeZArray} itemSize={1} />
-                            </bufferGeometry>
-                            <primitive object={ActiveMaterial} attach="material" ref={pointsMatRef} />
+                        <points renderOrder={999}>
+                            {/* ... */}
                         </points>
                     )}
 
-                    {/* 第二階段無縫接軌網格 */}
+                    {/* 第二階段無縫接軌網格：拉高 renderOrder 並關閉深度測試 */}
                     {pocketGeometry && (
-                        <mesh geometry={pocketGeometry} ref={meshRef}>
+                        <mesh geometry={pocketGeometry} ref={meshRef} renderOrder={999}>
                             <meshPhysicalMaterial
                                 ref={meshMatRef}
                                 color="#a855d4"
@@ -1413,6 +1410,7 @@
                                 thickness={2.0}
                                 side={THREE.DoubleSide}
                                 depthWrite={true}
+                                depthTest={false} // 【新增】：無視外部 SES 遮擋
                                 onBeforeCompile={handleMaterialCompile}
                             />
                         </mesh>
