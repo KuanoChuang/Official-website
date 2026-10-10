@@ -90,17 +90,32 @@
   </script>
   
   <style>
-    body { background-color: #030509; color: #E2E8F0; }
+    body {
+      background-color: #030509; 
+      color: #E2E8F0;
+    }
     .glass-nav {
       background: rgba(3, 5, 9, 0.85);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(0, 229, 255, 0.1);
     }
-    .dropdown:hover .dropdown-content { display: block; animation: fadeIn 0.2s ease-in-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-slide-down { animation: slideDown 0.4s ease-out forwards; }
+    .dropdown:hover .dropdown-content {
+      display: block;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide-down {
+      animation: slideDown 0.4s ease-out forwards;
+    }
     
     .glass-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
     .glass-panel { background: rgba(3, 5, 9, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(16px); }
