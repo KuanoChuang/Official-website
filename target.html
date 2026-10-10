@@ -1343,7 +1343,7 @@
                 // 階段一：探針點雲
                 if (pointsMatRef.current) {
                     const pointFade = Math.min(newProgress * 5, 1.0);
-                    pointsMatRef.current.uniforms.uOpacity.value = 1 - pointFade;
+                   pointsMatRef.current.uniforms.uOpacity.value = 1.0 - Math.pow(pointFade, 1.5);
                     pointsMatRef.current.uniforms.uSize.value = 1 + pointFade * 1.0;
                 }
 
