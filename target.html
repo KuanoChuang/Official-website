@@ -1244,7 +1244,7 @@
                         uSize: { value: 1.0 },
                         worldSize: { value: 0.8 },
                         // 一開始使用淡雅、帶灰調的淺粉紫，避免過於濃烈
-                        startColor: { value: new THREE.Color("#b58cd6") },
+                        startColor: { value: new THREE.Color("#ff00ff") },
                         // 擴散後的目標顏色，對齊粗糙表面的中紫色
                         targetColor: { value: new THREE.Color("#9944cc") },
                         uColorProgress: { value: 0.0 } // 控制顏色轉變的進度
@@ -1366,28 +1366,42 @@
                 const newProgress = Math.min(progress + delta * 0.25, 1);
                 setProgress(newProgress);
 
-                // 階段一：探針點雲
+                // --------------------------------------------------------
+                // 階段一：探針點雲 (漸淡與色彩漸變至目標網格色)
+                // --------------------------------------------------------
                 if (pointsMatRef.current) {
+                    // pointFade 為 0.0 到 1.0 之間
                     const pointFade = Math.min(newProgress * 5, 1.0);
+                    
+                    // 使用 1.5 次方曲線使淡出迅速自然，避免刺眼
                     pointsMatRef.current.uniforms.uOpacity.value = 1.0 - Math.pow(pointFade, 1.5);
-                    pointsMatRef.current.uniforms.uSize.value = 1 + pointFade * 1.0;
+                    
+                    // 探針點擴散/稍微膨脹，保持邊界清晰
+                    pointsMatRef.current.uniforms.uSize.value = 1.0 + pointFade * 1.0;
+
+                    // 【新增顏色轉變】點雲在膨脹的同時，顏色迅速由淡粉紫過渡至粗糙網格的中紫色 (#9944cc)
+                    // 加上 smoothstep 或單純 pointFade 讓轉換看起來平滑自然
+                    pointsMatRef.current.uniforms.uColorProgress.value = Math.min(pointFade * 1.2, 1.0);
                 }
 
+                // --------------------------------------------------------
                 // 階段二與三：形變與材質實體化
+                // --------------------------------------------------------
                 if (meshMatRef.current && meshRef.current) {
                     const meshAppear = Math.min(newProgress * 5, 1.0);
                     const morphProgress = Math.max(0, Math.min((newProgress - 0.2) / 0.6, 1.0));
 
                     customUniforms.uMorphProgress.value = morphProgress;
 
+                    // 一開始為 1.0 (不透明 Voxel)，隨形變平滑化降至 0.6 (半透明 Smooth mesh)
                     const targetOpacity = 1.0 - (morphProgress * 0.4);
                     meshMatRef.current.opacity = meshAppear * targetOpacity;
 
-                    // 粗糙度：從粗糙 (0.9) 平滑化為拋光表面 (0.3)
+                    // 粗糙度：從粗糙 (0.9) 平滑化為有質感的實體表面 (0.3)
                     const roughEase = Math.pow(morphProgress, 2);
                     meshMatRef.current.roughness = 0.9 - (roughEase * 0.6);
 
-                    // 保持無透光折射 (0.0)，避免顏色變暗或產生玻璃錯覺
+                    // 保持無透光折射 (0.0)，避免玻璃感和變暗沉，保留亮麗色彩
                     meshMatRef.current.transmission = 0.0;
                 }
             });
