@@ -345,10 +345,8 @@
         function AnimatedProbe({ curve, radius, probeProgressRef, onFinish }) {
             const probeRef = useRef();
             const hasFinishedRef = useRef(false);
-
-            // 【新增】：用來手動累積動畫播放的時間 (秒)
+            const [isCompleted, setIsCompleted] = useState(false);
             const animTimeRef = useRef(0);
-            // 假設整趟動畫總共需要花多少秒播完（您可以調整這個數值，例如 4.0 秒）
             const totalDuration = 4.0;
 
             // 每次進入這個 Phase，重置進度與完成狀態
@@ -377,6 +375,7 @@
                     // 當動畫跑完且還沒呼叫過 onFinish 時
                     if (!hasFinishedRef.current) {
                         hasFinishedRef.current = true;
+                        setIsCompleted(true);
                         if (onFinish) {
                             onFinish(); // 【觸發 App 的 3 秒倒數，準備跳轉 Phase 2】
                         }
@@ -393,6 +392,7 @@
                     probeProgressRef.current.currentY = position.y;
                 }
             });
+            if (isCompleted) return null;
 
             return (
                 <mesh ref={probeRef}>
@@ -1501,7 +1501,7 @@
                 setPhase(newPhase);
             };
 
-            // 【核心邏輯】：當 isWaitingToAdvance 變成 true 時，開始倒數 3 秒跳轉
+            // 【核心邏輯】：當 isWaitingToAdvance 變成 true 時，開始倒數 1.5 秒跳轉
             useEffect(() => {
                 if (!isWaitingToAdvance) return;
 
@@ -1512,7 +1512,7 @@
                     });
                     // 跳轉後，關閉等待狀態。等下一個元件的動畫跑完，會再次觸發 onFinish 把它設回 true
                     setIsWaitingToAdvance(false);
-                }, 3000);
+                }, 1500);
 
                 return () => {
                     if (timeoutRef.current) clearTimeout(timeoutRef.current);
