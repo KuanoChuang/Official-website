@@ -372,7 +372,11 @@
             );
         }
         // Phase 2: 全空間 3D 網格陣列 (覆蓋整個 Bounding Box)
-        function GridWireframe({ algoData, atoms, visible, bounds }) {
+        export function GridWireframe({ algoData, atoms, visible, bounds }) {
+            // 建立材質參考，以便在每一幀更新時間
+            const microMatRef = useRef();
+            const macroMatRef = useRef();
+
             // 1. 主網格 (Macro Grid) - 2.5Å
             const macroGeo = useMemo(() => {
                 if (!bounds) return null;
@@ -389,34 +393,18 @@
                 return new THREE.BufferGeometry().setFromPoints(pts);
             }, [bounds]);
 
-            // 2. 副網格 (Micro Grid) - 0.5Å
+            // 2. 副網格 (Micro Grid) - 0.5Å (移除原本的靜態 vertex color，交給 Shader 處理)
             const microGeo = useMemo(() => {
                 if (!bounds) return null;
                 const spacing = 0.5;
                 const pts = [];
-                const colors = [];
-
-                const baseColor = new THREE.Color("#224466");
-                const maxOpacity = 0.08;
 
                 const halfX = bounds.sizeX / 2; const halfY = bounds.sizeY / 2; const halfZ = bounds.sizeZ / 2;
                 const numX = Math.floor(bounds.sizeX / spacing); const numY = Math.floor(bounds.sizeY / spacing); const numZ = Math.floor(bounds.sizeZ / spacing);
                 const startX = - (numX * spacing) / 2; const startY = - (numY * spacing) / 2; const startZ = - (numZ * spacing) / 2;
 
-                const getFade = (x, y, z) => {
-                    const fx = Math.abs(x) / halfX;
-                    const fy = Math.abs(y) / halfY;
-                    const fz = Math.abs(z) / halfZ;
-                    const maxDist = Math.max(fx, fy, fz);
-                    return Math.pow(maxDist, 4);
-                };
-
                 const addLine = (x1, y1, z1, x2, y2, z2) => {
                     pts.push(x1, y1, z1, x2, y2, z2);
-                    const fade1 = getFade(x1, y1, z1);
-                    const fade2 = getFade(x2, y2, z2);
-                    colors.push(baseColor.r, baseColor.g, baseColor.b, fade1 * maxOpacity);
-                    colors.push(baseColor.r, baseColor.g, baseColor.b, fade2 * maxOpacity);
                 };
 
                 for (let j = 0; j <= numY; j++) for (let k = 0; k <= numZ; k++) addLine(-halfX, startY + j * spacing, startZ + k * spacing, halfX, startY + j * spacing, startZ + k * spacing);
@@ -425,19 +413,107 @@
 
                 const geo = new THREE.BufferGeometry();
                 geo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
-                geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4));
                 return geo;
             }, [bounds]);
+
+            // Shader 共用變數
+            const uniforms = useMemo(() => {
+                if (!bounds) return {};
+                return {
+                    uTime: { value: 0 },
+                    uBoundingBox: { value: new THREE.Vector3(bounds.sizeX, bounds.sizeY, bounds.sizeZ) },
+                    uLaserColor: { value: new THREE.Color("#00ffff") }, // 雷射光顏色 (青色)
+                };
+            }, [bounds]);
+
+            // 動畫迴圈：每一幀更新 uTime
+            useFrame((state) => {
+                const time = state.clock.elapsedTime;
+                if (microMatRef.current) microMatRef.current.uniforms.uTime.value = time;
+                if (macroMatRef.current) macroMatRef.current.uniforms.uTime.value = time;
+            });
+
+            // 核心 Shader：實現雷射掃描與切割感
+            const laserShader = {
+                vertexShader: `
+            varying vec3 vPos;
+            void main() {
+                vPos = position;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+                fragmentShader: `
+            uniform float uTime;
+            uniform vec3 uBoundingBox;
+            uniform vec3 uLaserColor;
+            uniform vec3 uBaseColor;
+            uniform float uBaseOpacity;
+            
+            varying vec3 vPos;
+
+            void main() {
+                // 1. 雷射掃描波 (Scanner waves) - 使用高次方的 sin 波製造銳利的雷射線條
+                float speed = 4.0;
+                float frequency = 1.2;
+                
+                // 計算 XYZ 三個方向的動態脈衝
+                float scanX = pow(sin(vPos.x * frequency - uTime * speed) * 0.5 + 0.5, 30.0);
+                float scanY = pow(sin(vPos.y * frequency - uTime * speed) * 0.5 + 0.5, 30.0);
+                float scanZ = pow(sin(vPos.z * frequency - uTime * speed) * 0.5 + 0.5, 30.0);
+                
+                // 結合成單一雷射強度
+                float laserIntensity = max(max(scanX, scanY), scanZ);
+
+                // 2. 邊緣淡化 (保留原本微網格向外漸層感，但改為中心向外平滑淡出)
+                vec3 normPos = abs(vPos) / (uBoundingBox / 2.0);
+                float maxDist = max(max(normPos.x, normPos.y), normPos.z);
+                float edgeFade = 1.0 - smoothstep(0.7, 1.0, maxDist);
+
+                // 3. 混合顏色與透明度
+                vec3 finalColor = mix(uBaseColor, uLaserColor, laserIntensity);
+                float finalOpacity = (uBaseOpacity + laserIntensity * 0.8) * edgeFade;
+
+                gl_FragColor = vec4(finalColor, finalOpacity);
+            }
+        `
+            };
 
             if (!visible || !bounds) return null;
 
             return (
                 <group position={[bounds.cx, bounds.cy, bounds.cz]}>
+                    {/* 副網格 (Micro Grid) */}
                     <lineSegments geometry={microGeo} renderOrder={-1}>
-                        <lineBasicMaterial vertexColors={true} transparent={true} blending={THREE.NormalBlending} depthWrite={false} />
+                        <shaderMaterial
+                            ref={microMatRef}
+                            transparent={true}
+                            depthWrite={false}
+                            blending={THREE.AdditiveBlending}
+                            uniforms={{
+                                ...uniforms,
+                                uBaseColor: { value: new THREE.Color("#224466") },
+                                uBaseOpacity: { value: 0.05 } // 底網格非常暗
+                            }}
+                            vertexShader={laserShader.vertexShader}
+                            fragmentShader={laserShader.fragmentShader}
+                        />
                     </lineSegments>
+
+                    {/* 主網格 (Macro Grid) */}
                     <lineSegments geometry={macroGeo} renderOrder={-1}>
-                        <lineBasicMaterial color="#113355" transparent={true} opacity={0.12} depthWrite={false} />
+                        <shaderMaterial
+                            ref={macroMatRef}
+                            transparent={true}
+                            depthWrite={false}
+                            blending={THREE.AdditiveBlending}
+                            uniforms={{
+                                ...uniforms,
+                                uBaseColor: { value: new THREE.Color("#113355") },
+                                uBaseOpacity: { value: 0.2 } // 主網格稍亮
+                            }}
+                            vertexShader={laserShader.vertexShader}
+                            fragmentShader={laserShader.fragmentShader}
+                        />
                     </lineSegments>
                 </group>
             );
