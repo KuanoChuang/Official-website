@@ -325,7 +325,7 @@
             if (!visible || !geometry) return null;
             return <mesh geometry={geometry} material={customMaterial} />;
         }
-        function ProbeScannerView({ probePath, visible, probeProgressRef }) {
+        function ProbeScannerView({ probePath, visible, probeProgressRef, onFinish }) {
             const r_probe = 1.4;
 
             const sasCurve = useMemo(() => {
@@ -338,22 +338,58 @@
 
             return (
                 <group>
-                    <AnimatedProbe curve={sasCurve} radius={r_probe} probeProgressRef={probeProgressRef} />
+                    <AnimatedProbe curve={sasCurve} radius={r_probe} probeProgressRef={probeProgressRef} onFinish={onFinish} />
                 </group>
             );
         }
-        function AnimatedProbe({ curve, radius, probeProgressRef }) {
+        function AnimatedProbe({ curve, radius, probeProgressRef, onFinish }) {
             const probeRef = useRef();
+            const hasFinishedRef = useRef(false);
 
-            useFrame(({ clock }) => {
+            // 【新增】：用來手動累積動畫播放的時間 (秒)
+            const animTimeRef = useRef(0);
+            // 假設整趟動畫總共需要花多少秒播完（您可以調整這個數值，例如 4.0 秒）
+            const totalDuration = 4.0;
+
+            // 每次進入這個 Phase，重置進度與完成狀態
+            useEffect(() => {
+                hasFinishedRef.current = false;
+                animTimeRef.current = 0; // 重置計時
+                if (probeProgressRef && probeProgressRef.current) {
+                    probeProgressRef.current.progress = 0;
+                }
+            }, []);
+
+            useFrame((state, delta) => {
                 if (!probeRef.current || !curve) return;
 
-                const speed = 0.05;
-                let t = (clock.elapsedTime * speed) % 1;
+                // 如果還沒播完，就繼續累積時間
+                if (!hasFinishedRef.current) {
+                    animTimeRef.current += delta;
+                }
 
+                // 計算當前進度 t (介於 0.0 到 1.0 之間)
+                let t = animTimeRef.current / totalDuration;
+
+                if (t >= 1.0) {
+                    t = 1.0; // 夾在終點，防止超過 1
+
+                    // 當動畫跑完且還沒呼叫過 onFinish 時
+                    if (!hasFinishedRef.current) {
+                        hasFinishedRef.current = true;
+                        if (onFinish) {
+                            onFinish(); // 【觸發 App 的 3 秒倒數，準備跳轉 Phase 2】
+                        }
+                    }
+                }
+
+                // 取得路徑上的座標並更新探針位置
                 const position = curve.getPointAt(t);
                 probeRef.current.position.copy(position);
+
+                // 同步進度給 ref（如果其他元件有需要讀取）
                 if (probeProgressRef && probeProgressRef.current) {
+                    probeProgressRef.current.progress = t;
                     probeProgressRef.current.currentY = position.y;
                 }
             });
@@ -1419,6 +1455,8 @@
             const [error, setError] = useState(null);
             const [phase, setPhase] = useState(1);
             const [phase1Opts, setPhase1Opts] = useState({ vdw: true, ses: true });
+            const [isWaitingToAdvance, setIsWaitingToAdvance] = useState(false);
+            const timeoutRef = useRef(null);
             const bounds = useMemo(() => {
                 if (!data || !data.atoms) return null;
                 return computeTightBounds(data.atoms);
@@ -1435,6 +1473,37 @@
                     .catch(err => setError(err.toString()));
             }, []);
 
+            // 手動切換 Phase，打斷所有計時與等待狀態
+            const handleManualPhaseChange = (newPhase) => {
+                if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                setIsWaitingToAdvance(false);
+                setPhase(newPhase);
+            };
+
+            // 【核心邏輯】：當 isWaitingToAdvance 變成 true 時，開始倒數 3 秒跳轉
+            useEffect(() => {
+                if (!isWaitingToAdvance) return;
+
+                timeoutRef.current = setTimeout(() => {
+                    setPhase(prevPhase => {
+                        const nextPhase = prevPhase >= 5 ? 1 : prevPhase + 1; // 1->2->3->4->5->1 循環
+                        return nextPhase;
+                    });
+                    // 跳轉後，關閉等待狀態。等下一個元件的動畫跑完，會再次觸發 onFinish 把它設回 true
+                    setIsWaitingToAdvance(false);
+                }, 3000);
+
+                return () => {
+                    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                };
+            }, [isWaitingToAdvance]);
+
+            // 【新增】：子元件專用的回呼函數
+            const handleAnimationFinish = () => {
+                // 收到子元件通知，動畫已結束，開始 3 秒倒數！
+                setIsWaitingToAdvance(true);
+            };
+
             if (error) return <div className="loading" style={{ color: '#ff4444' }}>載入失敗: {error}</div>;
             if (!data) return <div className="loading">載入中...</div>;
 
@@ -1443,7 +1512,7 @@
                     <div className="ui-panel">
                         <h2>Pocket Algorithm</h2>
 
-                        <button className={`phase-btn ${phase === 1 ? 'active' : ''}`} onClick={() => setPhase(1)}>
+                        <button className={`phase-btn ${phase === 1 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(1)}>
                             Phase 1: 蛋白實體掃描
                         </button>
                         {phase === 1 && (
@@ -1452,16 +1521,16 @@
                                 <button className={`sub-btn ${phase1Opts.ses ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({ ...p, ses: !p.ses }))}>SES 表面</button>
                             </div>
                         )}
-                        <button className={`phase-btn ${phase === 2 ? 'active' : ''}`} onClick={() => setPhase(2)}>
+                        <button className={`phase-btn ${phase === 2 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(2)}>
                             Phase 2: 空間網格化
                         </button>
-                        <button className={`phase-btn ${phase === 3 ? 'active' : ''}`} onClick={() => setPhase(3)}>
+                        <button className={`phase-btn ${phase === 3 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(3)}>
                             Phase 3: 距離場切面掃描
                         </button>
-                        <button className={`phase-btn ${phase === 4 ? 'active' : ''}`} onClick={() => setPhase(4)}>
+                        <button className={`phase-btn ${phase === 4 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(4)}>
                             Phase 4: 口袋探針球掃描
                         </button>
-                        <button className={`phase-btn ${phase === 5 ? 'active' : ''}`} onClick={() => setPhase(5)}>
+                        <button className={`phase-btn ${phase === 5 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(5)}>
                             Phase 5: 表面平滑化
                         </button>
                     </div>
@@ -1527,21 +1596,13 @@
                         <color attach="background" args={['#030508']} />
                         <OrbitControls makeDefault />
 
-                        {/* 1. 環境光 */}
                         <ambientLight intensity={0.6} />
-
-                        {/* 2. 主光源 - 提供立體感，不會將表面照到發白 */}
                         <directionalLight position={[20, 20, 20]} intensity={1.5} />
-
-                        {/* 3. 背面輪廓光 - 專門勾勒 SES 邊緣 */}
                         <directionalLight position={[-20, -10, -20]} intensity={0.8} color="#00f0ff" />
-
-                        {/* 4. 頂部輔助光 - 柔和提亮整體 */}
                         <pointLight position={[0, 20, 0]} intensity={0.8} color="#ffffff" />
 
                         <Suspense fallback={null}>
                             <group position={[0, 0, 0]}>
-                                {/* 統一呼叫的邊界框，在 Phase 2, 3, 4 顯示 */}
                                 {bounds && (phase === 2 || phase === 3 || phase === 4) && (
                                     <group position={[bounds.cx, bounds.cy, bounds.cz]}>
                                         <boxHelper
@@ -1551,36 +1612,54 @@
                                         />
                                     </group>
                                 )}
-                                {/* Phase 1, 2, 3: vdw */}
+
                                 <AtomView
                                     atoms={data.atoms}
                                     visible={(phase === 1 && phase1Opts.vdw) || phase === 2 || phase === 3}
                                     dimmed={phase === 2 || phase === 3} />
 
-                                {/* Phase 1: 探針 */}
+                                {/* 【重點：每個會跑動畫的子元件都要加上 onFinish={handleAnimationFinish}】 */}
+
                                 <ProbeScannerView
                                     probePath={data.probe_path}
                                     visible={phase === 1}
-                                    probeProgressRef={probeProgressRef} // 傳入 ref
+                                    probeProgressRef={probeProgressRef}
+                                    onFinish={handleAnimationFinish}
                                 />
 
-                                {/* Phase 1,5: SES */}
                                 <SESView
                                     visible={(phase === 1 && phase1Opts.ses) || phase === 5}
                                     probeProgressRef={probeProgressRef}
                                     phase={phase}
                                 />
-                                {/* Phase 2: 空間網格化 */}
-                                <GridWireframe algoData={data.algo_data} atoms={data.atoms} visible={phase === 2} bounds={bounds} />
-                                {/* Phase 3: 距離場掃描動畫 */}
-                                <AlgorithmScanner algoData={data.algo_data} atoms={data.atoms} phase={phase} bounds={bounds} />
-                                {/* Phase 4: 探針掃描動畫 */}
-                                <ProbeScanner algoData={data.algo_data} phase={phase} />
-                                {/* Phase 5: 口袋 Mesh 呈現 */}
+
+                                <GridWireframe
+                                    algoData={data.algo_data}
+                                    atoms={data.atoms}
+                                    visible={phase === 2}
+                                    bounds={bounds}
+                                    onFinish={handleAnimationFinish}
+                                />
+
+                                <AlgorithmScanner
+                                    algoData={data.algo_data}
+                                    atoms={data.atoms}
+                                    phase={phase}
+                                    bounds={bounds}
+                                    onFinish={handleAnimationFinish}
+                                />
+
+                                <ProbeScanner
+                                    algoData={data.algo_data}
+                                    phase={phase}
+                                    onFinish={handleAnimationFinish}
+                                />
+
                                 {phase === 5 && (
                                     <PocketAnimationSequence
                                         algoData={data.algo_data}
                                         meshData={data.algo_data.pocket_mesh}
+                                        onFinish={handleAnimationFinish}
                                     />
                                 )}
                             </group>
