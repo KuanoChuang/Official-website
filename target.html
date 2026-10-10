@@ -1327,8 +1327,6 @@
                 if (pointsMatRef.current) {
                     const pointFade = Math.min(newProgress * 5, 1.0);
                     pointsMatRef.current.uniforms.uOpacity.value = 1 - pointFade;
-
-                    // 【優化】大幅降低膨脹倍率，避免模糊邊界，保持探針點細小 (從原本的 * 5 降至 * 1)
                     pointsMatRef.current.uniforms.uSize.value = 1 + pointFade * 1.0;
                 }
 
@@ -1339,14 +1337,17 @@
 
                     customUniforms.uMorphProgress.value = morphProgress;
 
-                    // 【優化】取消玻璃感，保持完全不透明 (1.0)，讓顏色非常飽滿明亮
-                    meshMatRef.current.opacity = meshAppear;
+                    // 【調整透明度】：讓 Mesh 一開始迅速浮現 (opacity 上升)，
+                    // 隨著形變進行 (morphProgress)，逐漸變得半透明，最終停在 0.6
+                    // 公式： 1.0 - (形變進度 * 0.4) = 最終 0.6
+                    const targetOpacity = 1.0 - (morphProgress * 0.4);
+                    meshMatRef.current.opacity = meshAppear * targetOpacity;
 
-                    // 【優化】粗糙度變化：從剛生成的粗糙表面 (0.9) 平滑化為有質感的實體表面 (0.3)
+                    // 粗糙度：從粗糙 (0.9) 平滑化為拋光表面 (0.3)
                     const roughEase = Math.pow(morphProgress, 2);
                     meshMatRef.current.roughness = 0.9 - (roughEase * 0.6);
 
-                    // 【優化】完全關閉透光折射，強調實體表面的形變張力
+                    // 保持無透光折射 (0.0)，避免顏色變暗或產生玻璃錯覺
                     meshMatRef.current.transmission = 0.0;
                 }
             });
