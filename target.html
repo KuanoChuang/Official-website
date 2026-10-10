@@ -1553,6 +1553,8 @@
             useEffect(() => {
                 if (!isWaitingToAdvance) return;
 
+                const waitTime = phase === 5 ? 3000 : 1500;
+
                 timeoutRef.current = setTimeout(() => {
                     setPhase(prevPhase => {
                         const nextPhase = prevPhase >= 5 ? 1 : prevPhase + 1; // 1->2->3->4->5->1 循環
@@ -1560,7 +1562,7 @@
                     });
                     // 跳轉後，關閉等待狀態。等下一個元件的動畫跑完，會再次觸發 onFinish 把它設回 true
                     setIsWaitingToAdvance(false);
-                }, 1500);
+                }, waitTime);
 
                 return () => {
                     if (timeoutRef.current) clearTimeout(timeoutRef.current);
