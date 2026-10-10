@@ -407,8 +407,8 @@
                 </mesh>
             );
         }
-        // Phase 2: 全空間 3D 網格陣列 (覆蓋整個 Bounding Box)
-        function GridWireframe({ algoData, atoms, visible, bounds }) {
+        // Phase 2: 全空間 3D 網格陣列
+        function GridWireframe({ algoData, atoms, visible, bounds, onFinish }) {
             const microMatRef = useRef();
             const macroMatRef = useRef();
             const progressRef = useRef(0);
@@ -522,28 +522,26 @@
                 float cycleY = uBoundingBox.y;
                 float cycleZ = uBoundingBox.z;
 
-                // 【修改】：將進度轉換成實際的座標掃描位置 (從負邊界掃到正邊界)
+                // 將進度轉換成實際的座標掃描位置 (從負邊界掃到正邊界)
                 float scanX = (uProgress * cycleX) - (cycleX * 0.5);
                 float scanY = (cycleY * 0.5) - (uProgress * cycleY); 
                 float scanZ = (uProgress * cycleZ) - (cycleZ * 0.5);
 
-                // ============ 1. 雷射最前線 (強光) ============
-                float thickness = 0.25;
+                // ============ 1. 雷射最前線 (強光光束) ============
+                float thickness = 0.3;
                 float laserX = 1.0 - smoothstep(0.0, thickness, abs(vPos.x - scanX));
                 float laserY = 1.0 - smoothstep(0.0, thickness, abs(vPos.y - scanY));
                 float laserZ = 1.0 - smoothstep(0.0, thickness, abs(vPos.z - scanZ));
                 float laserIntensity = max(max(laserX, laserY), laserZ);
 
-                // ============ 2. 經過後的殘像 ============
-                float distToTrailX = (vPos.x < scanX) ? (scanX - vPos.x) : 9999.0;
-                float distToTrailY = (vPos.y > scanY) ? (vPos.y - scanY) : 9999.0;
-                float distToTrailZ = (vPos.z < scanZ) ? (scanZ - vPos.z) : 9999.0;
+                // ============ 2. 判斷是否已經被掃描過 (留下不變的殘影) ============
+                // 只要當前像素的位置小於或等於當前掃描線，就視為已經掃描過 (穿過去了)
+                float isScannedX = step(vPos.x, scanX + 0.1);
+                float isScannedY = step(scanY - 0.1, vPos.y); // Y軸是由上往下掃
+                float isScannedZ = step(vPos.z, scanZ + 0.1);
 
-                float trailFadeX = clamp(1.0 - (distToTrailX / uBoundingBox.x), 0.0, 1.0);
-                float trailFadeY = clamp(1.0 - (distToTrailY / uBoundingBox.y), 0.0, 1.0);
-                float trailFadeZ = clamp(1.0 - (distToTrailZ / uBoundingBox.z), 0.0, 1.0);
-
-                float trailIntensity = max(max(trailFadeX, trailFadeY), trailFadeZ);
+                // 三軸只要有任何一軸被掃過，該網格線就進入殘留狀態
+                float trailIntensity = max(max(isScannedX, isScannedY), isScannedZ);
 
                 // 邊緣漸隱防穿幫
                 vec3 normPos = abs(vPos) / (uBoundingBox / 2.0);
@@ -551,10 +549,13 @@
                 float edgeFade = 1.0 - smoothstep(0.7, 1.0, maxDist);
 
                 // ============ 3. 混合運算 ============
+                // 未掃描用 uBaseColor，掃描過後直接用 uAfterglowColor (不再隨距離變淡)
                 vec3 mixedColor = mix(uBaseColor, uAfterglowColor, trailIntensity);
                 vec3 finalColor = mix(mixedColor, uLaserColor, laserIntensity);
 
-                float finalOpacity = (uBaseOpacity + (trailIntensity * uAfterglowOpacity) + (laserIntensity * uLaserOpacity)) * edgeFade;
+                // 計算最終透明度：掃描過後的殘影會維持固定且清晰的 uAfterglowOpacity
+                float opacityAfterglow = trailIntensity * uAfterglowOpacity;
+                float finalOpacity = (uBaseOpacity + opacityAfterglow + (laserIntensity * uLaserOpacity)) * edgeFade;
 
                 gl_FragColor = vec4(finalColor, finalOpacity);
             }
