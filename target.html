@@ -1239,7 +1239,7 @@
                         worldSize: { value: 0.8 },
                         startColor: { value: new THREE.Color("#ff00ff") },
                         // 【修改】：點雲擴張目標顏色改為較淺亮的紫色
-                        targetColor: { value: new THREE.Color("#fcacf2") },
+                        targetColor: { value: new THREE.Color("#ffcceb") },
                         uColorProgress: { value: 0.0 }
                     },
                     vertexShader: `
@@ -1281,10 +1281,10 @@
             }), []);
 
 
-            const voxelColor = useMemo(() => new THREE.Color("#fcacf2"), []);      // 中間積木期：淺粉紫
-            const smoothColor = useMemo(() => new THREE.Color("#ffdbf9"), []);     // 最終平滑期：更透亮的珍珠淺粉
-            const voxelEmissive = useMemo(() => new THREE.Color("#6b215c"), []);   // Voxel陰影光：深玫瑰紫 (避免變黑)
-            const smoothEmissive = useMemo(() => new THREE.Color("#360d2d"), []);  // 平滑期的微弱暖暗光
+            const voxelColor = useMemo(() => new THREE.Color("#ffcceb"), []);      // 中間積木期：櫻花淡粉
+            const smoothColor = useMemo(() => new THREE.Color("#fff0fa"), []);     // 最終平滑期：珍珠透白粉
+            const voxelEmissive = useMemo(() => new THREE.Color("#7a2963"), []);   // Voxel陰影光：玫瑰粉暗部
+            const smoothEmissive = useMemo(() => new THREE.Color("#3d1431"), []);  // 平滑期的微弱暖暗光
             const currentColor = useMemo(() => new THREE.Color(), []);
             const currentEmissive = useMemo(() => new THREE.Color(), []);
 
@@ -1398,8 +1398,8 @@
                         <mesh geometry={pocketGeometry} ref={meshRef} renderOrder={999}>
                             <meshPhysicalMaterial
                                 ref={meshMatRef}
-                                color="#fcacf2"
-                                emissive="#6b215c"
+                                color="#ffcceb"
+                                emissive="#7a2963"
                                 transmission={0.0}
                                 opacity={0}
                                 transparent={true}
