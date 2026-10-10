@@ -1346,6 +1346,11 @@
             // --------------------------------------------------------
             // 5. 動畫排程邏輯
             // --------------------------------------------------------
+            useEffect(() => {
+                const timer = setTimeout(() => setStartAnim(true), 800);
+                return () => clearTimeout(timer);
+            }, []);
+
             useFrame((state, delta) => {
                 if (!startAnim || progress >= 1) return;
 
