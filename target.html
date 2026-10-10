@@ -1271,6 +1271,7 @@
                     transparent: true,
                     depthWrite: false, // 配合 depthTest false，必須關閉寫入
                     depthTest: false,  // X-Ray 穿透
+                    blending: THREE.AdditiveBlending,
                 });
             }, []);
 
@@ -1406,8 +1407,9 @@
                                 roughness={0.9}
                                 thickness={2.0}
                                 side={THREE.DoubleSide}
-                                depthWrite={false} // 【修正陷阱 2】搭配 depthTest false，必須關閉深度寫入防 GPU 崩潰
+                                depthWrite={false} // 搭配 depthTest false，必須關閉深度寫入防 GPU 崩潰
                                 depthTest={false}
+                                blending={THREE.AdditiveBlending}
                                 onBeforeCompile={handleMaterialCompile}
                             />
                         </mesh>
