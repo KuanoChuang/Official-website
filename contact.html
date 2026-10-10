@@ -39,13 +39,30 @@
 
   <style>
     body {
-      background-color: #030712;
-      color: #e5e7eb;
-      overflow-x: hidden;
-      /* Ensure the body takes at least full height but doesn't force scroll if content fits */
-      min-height: 100vh; 
-      display: flex;
-      flex-direction: column;
+      background-color: #030509; 
+      color: #E2E8F0;
+    }
+    .glass-nav {
+      background: rgba(3, 5, 9, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide-down {
+      animation: slideDown 0.4s ease-out forwards;
     }
 
     ::-webkit-scrollbar { width: 6px; }
