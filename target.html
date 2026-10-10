@@ -181,84 +181,6 @@
                 return this.props.children;
             }
         }
-        function PocketAlgorithmPanel({ phase, handleManualPhaseChange, phase1Opts, setPhase1Opts }) {
-            const [isOpen, setIsOpen] = useState(false);
-            const isMobile = window.innerWidth < 768;
-
-            useEffect(() => {
-                const handleResize = () => {
-                    if (window.innerWidth >= 768) setIsOpen(false);
-                };
-                window.addEventListener('resize', handleResize);
-                return () => window.removeEventListener('resize', handleResize);
-            }, []);
-
-            return (
-                <>
-                    {/* 手機版：未展開時顯示的漢堡按鈕 */}
-                    <button
-                        className="mobile-toggle-btn"
-                        style={{
-                            display: isMobile && !isOpen ? 'block' : 'none',
-                            padding: '10px 15px',
-                            background: 'rgba(255,255,255,0.9)',
-                            border: '1px solid #ccc',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
-                        }}
-                        onClick={() => setIsOpen(true)}
-                    >
-                        ☰ 演算法選單
-                    </button>
-
-                    {/* 這是你「原汁原味」的控制面板，保留了 ui-panel, phase-btn 等類別 */}
-                    <div
-                        className="ui-panel"
-                        style={{
-                            // 如果是手機版且未展開，則隱藏；否則正常顯示
-                            display: isMobile && !isOpen ? 'none' : 'block'
-                        }}
-                    >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h2>Pocket Algorithm</h2>
-                            {/* 手機版：展開時顯示關閉按鈕 */}
-                            {isMobile && isOpen && (
-                                <button
-                                    onClick={() => setIsOpen(false)}
-                                    style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer' }}
-                                >
-                                    ✕
-                                </button>
-                            )}
-                        </div>
-
-                        <button className={`phase-btn ${phase === 1 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(1)}>
-                            Phase 1: 蛋白實體掃描
-                        </button>
-                        {phase === 1 && (
-                            <div className="sub-options">
-                                <button className={`sub-btn ${phase1Opts.vdw ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({ ...p, vdw: !p.vdw }))}>VDW 原子</button>
-                                <button className={`sub-btn ${phase1Opts.ses ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({ ...p, ses: !p.ses }))}>SES 表面</button>
-                            </div>
-                        )}
-
-                        <button className={`phase-btn ${phase === 2 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(2)}>
-                            Phase 2: 空間網格化
-                        </button>
-                        <button className={`phase-btn ${phase === 3 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(3)}>
-                            Phase 3: 距離場切面掃描
-                        </button>
-                        <button className={`phase-btn ${phase === 4 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(4)}>
-                            Phase 4: 口袋探針球掃描
-                        </button>
-                        <button className={`phase-btn ${phase === 5 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(5)}>
-                            Phase 5: 表面平滑化
-                        </button>
-                    </div>
-                </>
-            );
-        }
         // 計算box邊界
         function computeTightBounds(atoms, padding = 2.0) {
             if (!atoms || atoms.length === 0) return { sizeX: 20, sizeY: 20, sizeZ: 20, cx: 0, cy: 0, cz: 0 };
@@ -1658,140 +1580,162 @@
 
             return (
                 <Boundary>
-                    {/* 1. PocketAlgorithmPanel */}
-                    <div style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 50, pointerEvents: 'auto' }}>
-                        {/* 1. PocketAlgorithmPanel (浮動於右上角) */}
-                        <div className="absolute top-4 right-4 z-50 pointer-events-auto">
-                            <PocketAlgorithmPanel
-                                phase={phase}
-                                handleManualPhaseChange={handleManualPhaseChange}
-                                phase1Opts={phase1Opts}
-                                setPhase1Opts={setPhase1Opts}
-                            />
-                        </div>
+                    <div className="ui-panel">
+                        <h2>Pocket Algorithm</h2>
 
-                        {/* 2. 圖例 (legend) (浮動於左下角) */}
-                        {(phase === 3 || phase === 4) && (
-                            <div
-                                className="legend absolute bottom-4 left-4 z-40 bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg pointer-events-auto"
-                                style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: phase === 4 ? 'auto auto' : 'auto',
-                                    gap: '10px 30px',
-                                    alignItems: 'center'
-                                }}
-                            >
-                                <div className="legend-item" style={{ gridRow: 1, gridColumn: 1 }}>
-                                    <div className="color-box" style={{ background: '#88ccff' }}></div> 溶劑區
-                                </div>
-                                <div className="legend-item" style={{ gridRow: 2, gridColumn: 1 }}>
-                                    <div className="color-box" style={{ background: '#ff9933' }}></div> 蛋白區
-                                </div>
-                                {phase === 4 && (
-                                    <div className="legend-item" style={{ gridRow: 2, gridColumn: 2 }}>
-                                        <div className="color-box" style={{ background: '#ffffff' }}></div> 掃描中
-                                    </div>
-                                )}
-                                <div className="legend-item" style={{ gridRow: 3, gridColumn: 1 }}>
-                                    <div className="color-box" style={{ background: '#4db8ff' }}></div> X軸 空腔
-                                </div>
-                                {phase === 4 && (
-                                    <div className="legend-item" style={{ gridRow: 3, gridColumn: 2 }}>
-                                        <div className="color-box" style={{ background: '#DB5BBD' }}></div> X軸 探針
-                                    </div>
-                                )}
-                                <div className="legend-item" style={{ gridRow: 4, gridColumn: 1 }}>
-                                    <div className="color-box" style={{ background: '#00F200' }}></div> Y軸 空腔
-                                </div>
-                                {phase === 4 && (
-                                    <div className="legend-item" style={{ gridRow: 4, gridColumn: 2 }}>
-                                        <div className="color-box" style={{ background: '#E16DE1' }}></div> Y軸 探針
-                                    </div>
-                                )}
-                                <div className="legend-item" style={{ gridRow: 5, gridColumn: 1 }}>
-                                    <div className="color-box" style={{ background: '#F3E91F' }}></div> Z軸 空腔
-                                </div>
-                                {phase === 4 && (
-                                    <div className="legend-item" style={{ gridRow: 5, gridColumn: 2 }}>
-                                        <div className="color-box" style={{ background: '#ff00ff' }}></div> Z軸 探針
-                                    </div>
-                                )}
+                        <button className={`phase-btn ${phase === 1 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(1)}>
+                            Phase 1: 蛋白實體掃描
+                        </button>
+                        {phase === 1 && (
+                            <div className="sub-options">
+                                <button className={`sub-btn ${phase1Opts.vdw ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({ ...p, vdw: !p.vdw }))}>VDW 原子</button>
+                                <button className={`sub-btn ${phase1Opts.ses ? 'active' : ''}`} onClick={() => setPhase1Opts(p => ({ ...p, ses: !p.ses }))}>SES 表面</button>
                             </div>
                         )}
-
-                        {/* 3. Canvas 內部只放純粹的 3D 物件*/}
-                        <Canvas style={{ width: '100%', height: '100%' }} camera={{ position: [0, 0, 75], fov: 45 }}>
-                            <color attach="background" args={['#030508']} />
-                            <OrbitControls makeDefault />
-
-                            <ambientLight intensity={0.6} />
-                            <directionalLight position={[20, 20, 20]} intensity={1.5} />
-                            <directionalLight position={[-20, -10, -20]} intensity={0.8} color="#00f0ff" />
-                            <pointLight position={[0, 20, 0]} intensity={0.8} color="#ffffff" />
-
-                            <Suspense fallback={null}>
-                                <group position={[0, 0, 0]}>
-                                    {bounds && (phase === 2 || phase === 3 || phase === 4) && (
-                                        <group position={[bounds.cx, bounds.cy, bounds.cz]}>
-                                            <boxHelper
-                                                args={[new THREE.Mesh(new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ))]}
-                                                color="#ffee00"
-                                                renderOrder={-1}
-                                            />
-                                        </group>
-                                    )}
-
-                                    <AtomView
-                                        atoms={data.atoms}
-                                        visible={(phase === 1 && phase1Opts.vdw) || phase === 2 || phase === 3}
-                                        dimmed={phase === 2 || phase === 3} />
-
-                                    <ProbeScannerView
-                                        probePath={data.probe_path}
-                                        visible={phase === 1}
-                                        probeProgressRef={probeProgressRef}
-                                        onFinish={handleAnimationFinish}
-                                    />
-
-                                    <SESView
-                                        visible={(phase === 1 && phase1Opts.ses) || phase === 5}
-                                        probeProgressRef={probeProgressRef}
-                                        phase={phase}
-                                    />
-
-                                    <GridWireframe
-                                        algoData={data.algo_data}
-                                        atoms={data.atoms}
-                                        visible={phase === 2}
-                                        bounds={bounds}
-                                        onFinish={handleAnimationFinish}
-                                    />
-
-                                    <AlgorithmScanner
-                                        algoData={data.algo_data}
-                                        atoms={data.atoms}
-                                        phase={phase}
-                                        bounds={bounds}
-                                        onFinish={handleAnimationFinish}
-                                    />
-
-                                    <ProbeScanner
-                                        algoData={data.algo_data}
-                                        phase={phase}
-                                        onFinish={handleAnimationFinish}
-                                    />
-
-                                    {phase === 5 && (
-                                        <PocketAnimationSequence
-                                            algoData={data.algo_data}
-                                            meshData={data.algo_data.pocket_mesh}
-                                            onFinish={handleAnimationFinish}
-                                        />
-                                    )}
-                                </group>
-                            </Suspense>
-                        </Canvas>
+                        <button className={`phase-btn ${phase === 2 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(2)}>
+                            Phase 2: 空間網格化
+                        </button>
+                        <button className={`phase-btn ${phase === 3 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(3)}>
+                            Phase 3: 距離場切面掃描
+                        </button>
+                        <button className={`phase-btn ${phase === 4 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(4)}>
+                            Phase 4: 口袋探針球掃描
+                        </button>
+                        <button className={`phase-btn ${phase === 5 ? 'active' : ''}`} onClick={() => handleManualPhaseChange(5)}>
+                            Phase 5: 表面平滑化
+                        </button>
                     </div>
+
+                    {(phase === 3 || phase === 4) && (
+                        <div
+                            className="legend"
+                            style={{
+                                display: 'grid',
+                                // Phase 3 只需要 1 欄，Phase 4 需要 2 欄
+                                gridTemplateColumns: phase === 4 ? 'auto auto' : 'auto',
+                                gap: '10px 30px', // 上下間距 10px，左右間距 30px
+                                alignItems: 'center'
+                            }}
+                        >
+                            {/* 第一排：溶劑 */}
+                            <div className="legend-item" style={{ gridRow: 1, gridColumn: 1 }}>
+                                <div className="color-box" style={{ background: '#88ccff' }}></div> 溶劑區
+                            </div>
+
+                            {/* 第二排：蛋白 + 掃描(如果有的話) */}
+                            <div className="legend-item" style={{ gridRow: 2, gridColumn: 1 }}>
+                                <div className="color-box" style={{ background: '#ff9933' }}></div> 蛋白區
+                            </div>
+                            {phase === 4 && (
+                                <div className="legend-item" style={{ gridRow: 2, gridColumn: 2 }}>
+                                    <div className="color-box" style={{ background: '#ffffff' }}></div> 掃描中
+                                </div>
+                            )}
+
+                            {/* 第三排：X 軸相關 */}
+                            <div className="legend-item" style={{ gridRow: 3, gridColumn: 1 }}>
+                                <div className="color-box" style={{ background: '#4db8ff' }}></div> X軸 空腔
+                            </div>
+                            {phase === 4 && (
+                                <div className="legend-item" style={{ gridRow: 3, gridColumn: 2 }}>
+                                    <div className="color-box" style={{ background: '#DB5BBD' }}></div> X軸 探針
+                                </div>
+                            )}
+
+                            {/* 第四排：Y 軸相關 */}
+                            <div className="legend-item" style={{ gridRow: 4, gridColumn: 1 }}>
+                                <div className="color-box" style={{ background: '#00F200' }}></div> Y軸 空腔
+                            </div>
+                            {phase === 4 && (
+                                <div className="legend-item" style={{ gridRow: 4, gridColumn: 2 }}>
+                                    <div className="color-box" style={{ background: '#E16DE1' }}></div> Y軸 探針
+                                </div>
+                            )}
+
+                            {/* 第五排：Z 軸相關 */}
+                            <div className="legend-item" style={{ gridRow: 5, gridColumn: 1 }}>
+                                <div className="color-box" style={{ background: '#F3E91F' }}></div> Z軸 空腔
+                            </div>
+                            {phase === 4 && (
+                                <div className="legend-item" style={{ gridRow: 5, gridColumn: 2 }}>
+                                    <div className="color-box" style={{ background: '#ff00ff' }}></div> Z軸 探針
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    <Canvas camera={{ position: [0, 0, 75], fov: 45 }}>
+                        <color attach="background" args={['#030508']} />
+                        <OrbitControls makeDefault />
+
+                        <ambientLight intensity={0.6} />
+                        <directionalLight position={[20, 20, 20]} intensity={1.5} />
+                        <directionalLight position={[-20, -10, -20]} intensity={0.8} color="#00f0ff" />
+                        <pointLight position={[0, 20, 0]} intensity={0.8} color="#ffffff" />
+
+                        <Suspense fallback={null}>
+                            <group position={[0, 0, 0]}>
+                                {bounds && (phase === 2 || phase === 3 || phase === 4) && (
+                                    <group position={[bounds.cx, bounds.cy, bounds.cz]}>
+                                        <boxHelper
+                                            args={[new THREE.Mesh(new THREE.BoxGeometry(bounds.sizeX, bounds.sizeY, bounds.sizeZ))]}
+                                            color="#ffee00"
+                                            renderOrder={-1}
+                                        />
+                                    </group>
+                                )}
+
+                                <AtomView
+                                    atoms={data.atoms}
+                                    visible={(phase === 1 && phase1Opts.vdw) || phase === 2 || phase === 3}
+                                    dimmed={phase === 2 || phase === 3} />
+
+                                {/* 【重點：每個會跑動畫的子元件都要加上 onFinish={handleAnimationFinish}】 */}
+
+                                <ProbeScannerView
+                                    probePath={data.probe_path}
+                                    visible={phase === 1}
+                                    probeProgressRef={probeProgressRef}
+                                    onFinish={handleAnimationFinish}
+                                />
+
+                                <SESView
+                                    visible={(phase === 1 && phase1Opts.ses) || phase === 5}
+                                    probeProgressRef={probeProgressRef}
+                                    phase={phase}
+                                />
+
+                                <GridWireframe
+                                    algoData={data.algo_data}
+                                    atoms={data.atoms}
+                                    visible={phase === 2}
+                                    bounds={bounds}
+                                    onFinish={handleAnimationFinish}
+                                />
+
+                                <AlgorithmScanner
+                                    algoData={data.algo_data}
+                                    atoms={data.atoms}
+                                    phase={phase}
+                                    bounds={bounds}
+                                    onFinish={handleAnimationFinish}
+                                />
+
+                                <ProbeScanner
+                                    algoData={data.algo_data}
+                                    phase={phase}
+                                    onFinish={handleAnimationFinish}
+                                />
+
+                                {phase === 5 && (
+                                    <PocketAnimationSequence
+                                        algoData={data.algo_data}
+                                        meshData={data.algo_data.pocket_mesh}
+                                        onFinish={handleAnimationFinish}
+                                    />
+                                )}
+                            </group>
+                        </Suspense>
+                    </Canvas>
                 </Boundary>
             );
         }
