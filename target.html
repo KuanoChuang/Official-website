@@ -741,10 +741,13 @@
                     scanState.current.timer += delta;
                     if (scanState.current.timer > 0.6) {
                         if (scanAxis === 'z') {
+                            if (scanPlaneRef.current) {
+                                scanPlaneRef.current.visible = false;
+                            }       
                             if (!hasFinishedRef.current) {
                                 hasFinishedRef.current = true;
                                 if (onFinish) {
-                                    onFinish(); // 【通知 App 動畫結束，啟動 1.5 秒倒數準備進入 Phase 4】
+                                    onFinish();
                                 }
                             }
                             return; // 停在 Z 軸完成畫面，不再切換軸向
