@@ -1731,13 +1731,14 @@
         successContent.classList.remove('flex');
       }
 
+      
       let actualPlanToSelect = planName;
       if (planName === 'Academic') {
         actualPlanToSelect = 'Pro';
       }
 
-      if (planSelect && MOLRIS_PLANS[planName]) {
-        planSelect.value = planName;
+      if (planSelect && MOLRIS_PLANS[actualPlanToSelect]) {
+        planSelect.value = actualPlanToSelect;
       }
 
       if (academicCheckbox) {
