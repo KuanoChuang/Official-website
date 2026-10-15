@@ -1731,6 +1731,11 @@
         successContent.classList.remove('flex');
       }
 
+      let actualPlanToSelect = planName;
+      if (planName === 'Academic') {
+        actualPlanToSelect = 'Pro';
+      }
+
       if (planSelect && MOLRIS_PLANS[planName]) {
         planSelect.value = planName;
       }
@@ -1740,8 +1745,11 @@
       }
 
       if (billingSelect) {
-        // 判斷邏輯：優先讀取主頁的 toggle checkbox，若無則依據 btnAnnual / btnMonthly 的顏色 class 判斷
-        if (billingToggle) {
+        // 如果是點擊學術方案進來，強制預設為年費制
+        if (planName === 'Academic') {
+          billingSelect.value = 'annual';
+        } else if (billingToggle) {
+          // 否則判斷主頁 toggle 狀態
           billingSelect.value = billingToggle.checked ? 'annual' : 'monthly';
         } else if (btnAnnual && btnAnnual.classList.contains('text-[#0A1628]')) {
           billingSelect.value = 'annual';
