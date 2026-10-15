@@ -1830,9 +1830,7 @@
         titlePlanSpan.textContent = planName;
       }
 
-      // ------------------------------------------------------------------------
-      // 需求 1 & 2：終止日計算邏輯
-      // ------------------------------------------------------------------------
+      // 終止日計算邏輯
       if (startDateInput && startDateInput.value && endDateInput) {
         const parts = startDateInput.value.split('-');
         if (parts.length === 3) {
@@ -1870,10 +1868,7 @@
         if (estimatedCostInput) estimatedCostInput.value = planInfo.costText;
         return;
       }
-
-      // ------------------------------------------------------------------------
-      // 需求 4：年費制與混算邏輯 (≥12個月以年繳計，未滿12個月以月繳計)
-      // ------------------------------------------------------------------------
+      // 年費制與混算邏輯 (≥12個月以年繳計，未滿12個月以月繳計)
       let totalCost = 0;
       let annualYears = 0;
       let remainingMonths = 0;
@@ -1889,9 +1884,7 @@
       const standardMonthlyCost = months * planInfo.monthlyPrice;
       const totalSaved = standardMonthlyCost - totalCost;
 
-      // ------------------------------------------------------------------------
-      // 需求 2 & 4：信用點計算與學術專案一次性發放
-      // ------------------------------------------------------------------------
+      // 信用點計算與學術專案一次性發放
       let baseCredits = planInfo.monthlyCredits * months;
       let bonusCredits = 0;
       let bonusNote = '';
