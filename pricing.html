@@ -487,7 +487,7 @@
             <!-- 方案、計費週期、購買月數 (3 欄) -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label for="modal-plan" class="block text-xs font-medium text-gray-400 mb-1">選擇方案</label>
+                <label for="modal-plan" class="block text-sm font-medium text-gray-400 mb-1">選擇方案</label>
                 <div class="relative">
                   <select id="modal-plan" onchange="handlePlanOrBillingChange('plan')" class="w-full bg-[#0A1628] border border-molris-cyan/40 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-molris-cyan appearance-none cursor-pointer">
                     <option value="Trial">Trial</option>
@@ -502,7 +502,7 @@
               </div>
 
               <div>
-                <label for="modal-billing" class="block text-xs font-medium text-gray-400 mb-1">計費週期</label>
+                <label for="modal-billing" class="block text-sm font-medium text-gray-400 mb-1">計費週期</label>
                 <div class="relative">
                   <select id="modal-billing" onchange="handlePlanOrBillingChange('billing')" class="w-full bg-[#0A1628] border border-molris-cyan/40 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-molris-cyan appearance-none cursor-pointer">
                     <option value="monthly">月費制</option>
@@ -513,7 +513,7 @@
               </div>
 
               <div>
-                <label for="modal-months" class="block text-xs font-medium text-gray-400 mb-1">購買月數</label>
+                <label for="modal-months" class="block text-sm font-medium text-gray-400 mb-1">購買月數</label>
                 <input type="number" id="modal-months" min="1" max="999" value="12" oninput="updateModalCalculations()" class="w-full bg-[#0A1628] border border-molris-cyan/40 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-molris-cyan transition-colors">
               </div>
             </div>
@@ -521,17 +521,17 @@
             <!-- 日期與信用點 -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label for="modal-start-date" class="block text-xs font-medium text-gray-400 mb-1">預計起始日</label>
+                <label for="modal-start-date" class="block text-sm font-medium text-gray-400 mb-1">預計起始日</label>
                 <input type="date" id="modal-start-date" onchange="updateModalCalculations()" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-molris-cyan transition-colors cursor-pointer">
               </div>
 
               <div>
-                <label for="modal-end-date" class="block text-xs font-medium text-gray-400 mb-1">預計終止日</label>
+                <label for="modal-end-date" class="block text-sm font-medium text-gray-400 mb-1">預計終止日</label>
                 <input type="text" id="modal-end-date" readonly tabindex="-1" class="w-full bg-gray-950/90 border border-gray-800 rounded-xl px-3.5 py-2 text-sm text-gray-400 font-mono cursor-not-allowed select-none">
               </div>
 
               <div>
-                <label for="modal-total-credits" class="block text-xs font-medium text-gray-400 mb-1">總信用點 <span id="modal-credits-hint" class="text-molris-cyan text-[11px]"></span></label>
+                <label for="modal-total-credits" class="block text-sm font-medium text-gray-400 mb-1">總獲得信用點 <span id="modal-credits-hint" class="text-molris-cyan text-[11px]"></span></label>
                 <input type="text" id="modal-total-credits" readonly tabindex="-1" class="w-full bg-gray-950/90 border border-gray-800 rounded-xl px-3.5 py-2 text-sm font-bold text-molris-cyan cursor-not-allowed select-none">
               </div>
             </div>
@@ -1934,7 +1934,7 @@
       } else if (isAnnualCycle && annualYears > 0 && planInfo.annualBonusCredits > 0) {
         // 年費方案贈點 (依年數給予)
         bonusCredits = annualYears * planInfo.annualBonusCredits;
-        bonusNote = `(含年費贈點 +${bonusCredits.toLocaleString()})`;
+        bonusNote = `(年費贈點 +${bonusCredits.toLocaleString()})`;
       }
 
       const finalCredits = baseCredits + bonusCredits;
