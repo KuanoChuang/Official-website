@@ -1714,6 +1714,11 @@
       const monthsInput = document.getElementById('modal-months');
       const startDateInput = document.getElementById('modal-start-date');
 
+      // 偵測主頁面的月費/年費切換狀態元件
+      const billingToggle = document.getElementById('billing-toggle');
+      const btnMonthly = document.getElementById('btn-monthly');
+      const btnAnnual = document.getElementById('btn-annual');
+
       if (!backdrop || !modal) return;
 
       const formContent = document.getElementById('modal-form-content');
@@ -1729,7 +1734,16 @@
       }
 
       if (billingSelect) {
-        billingSelect.value = 'annual';
+        // 判斷邏輯：優先讀取主頁的 toggle checkbox，若無則依據 btnAnnual / btnMonthly 的顏色 class 判斷
+        if (billingToggle) {
+          billingSelect.value = billingToggle.checked ? 'annual' : 'monthly';
+        } else if (btnAnnual && btnAnnual.classList.contains('text-[#0A1628]')) {
+          billingSelect.value = 'annual';
+        } else if (btnMonthly && btnMonthly.classList.contains('text-[#0A1628]')) {
+          billingSelect.value = 'monthly';
+        } else {
+          billingSelect.value = 'annual'; // 預設值
+        }
       }
 
       if (monthsInput) {
@@ -1868,6 +1882,7 @@
         if (estimatedCostInput) estimatedCostInput.value = planInfo.costText;
         return;
       }
+
       // 年費制與混算邏輯 (≥12個月以年繳計，未滿12個月以月繳計)
       let totalCost = 0;
       let annualYears = 0;
@@ -1884,6 +1899,7 @@
       const standardMonthlyCost = months * planInfo.monthlyPrice;
       const totalSaved = standardMonthlyCost - totalCost;
 
+
       // 信用點計算與學術專案一次性發放
       let baseCredits = planInfo.monthlyCredits * months;
       let bonusCredits = 0;
@@ -1891,7 +1907,7 @@
 
       const academicTiers = Math.floor(totalCost / 50000);
       if (isAcademic && academicTiers > 0) {
-        // 學術方案：點數一次性發放（滿 5 万送 6 個月等值信用點）
+        // 學術方案：點數一次性發放（滿 5萬 送 6 個月等值信用點）
         bonusCredits = academicTiers * 6 * planInfo.monthlyCredits;
         bonusNote = `(學術方案 +${bonusCredits.toLocaleString()})`;
       } else if (isAnnualCycle && annualYears > 0 && planInfo.annualBonusCredits > 0) {
