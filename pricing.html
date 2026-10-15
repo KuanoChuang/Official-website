@@ -426,6 +426,218 @@
       </div>
     </div>
   </div>
+  <div id="plan-modal-backdrop" onclick="handleBackdropClick(event)" class="fixed inset-0 bg-black/75 backdrop-blur-md z-[80] hidden items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-300">
+    
+    <div id="plan-modal" class="relative w-full max-w-3xl bg-[#0A111A] border border-gray-700/80 rounded-3xl shadow-[0_0_50px_rgba(0,229,255,0.15)] overflow-hidden transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col">
+      
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-1 bg-gradient-to-r from-transparent via-molris-cyan to-transparent"></div>
+
+      <div class="flex items-center justify-between px-6 sm:px-8 py-5 border-b border-gray-800 bg-[#070C14]/90 shrink-0 relative z-50">
+        <div>
+          <span class="text-[11px] font-bold tracking-widest uppercase text-molris-cyan block mb-0.5">PLAN RESERVATION & EVALUATION</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+            預約 <span id="modal-title-plan" class="text-molris-cyan">Pro</span> 方案評估
+          </h3>
+        </div>
+        <button type="button" onclick="closePlanModal()" aria-label="關閉視窗" class="w-10 h-10 rounded-full bg-gray-800/80 border border-gray-700 text-gray-400 hover:text-white hover:bg-red-500/20 hover:border-red-500/50 flex items-center justify-center transition-all cursor-pointer">
+          <i class="fa-solid fa-xmark text-lg pointer-events-none"></i>
+        </button>
+      </div>
+
+      <div id="modal-form-content" class="overflow-y-auto modal-scroll p-6 sm:p-8 space-y-6">
+        <form id="plan-reservation-form" onsubmit="submitPlanForm(event)" class="space-y-6">
+          
+          <!-- 區塊 1：基本聯絡資訊 -->
+          <div>
+            <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-user-astronaut text-molris-cyan"></i> 基本聯絡資訊
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="modal-name" class="block text-xs font-medium text-gray-400 mb-1">姓名 <span class="text-red-400">*</span></label>
+                <input type="text" id="modal-name" required placeholder="請輸入您的姓名" class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
+              </div>
+              <div>
+                <label for="modal-org" class="block text-xs font-medium text-gray-400 mb-1">單位名稱 <span class="text-red-400">*</span></label>
+                <input type="text" id="modal-org" required placeholder="學校 / 實驗室 / 公司名稱" class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
+              </div>
+              <div>
+                <label for="modal-phone" class="block text-xs font-medium text-gray-400 mb-1">聯絡電話 <span class="text-red-400">*</span></label>
+                <input type="tel" id="modal-phone" required placeholder="0912-345-678 或分機" class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
+              </div>
+              <div>
+                <label for="modal-email" class="block text-xs font-medium text-gray-400 mb-1">聯絡信箱 <span class="text-red-400">*</span></label>
+                <input type="email" id="modal-email" required placeholder="name@organization.edu.tw" class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
+              </div>
+            </div>
+          </div>
+
+          <!-- 區塊 2：方案與預估資訊 -->
+          <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-5 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-3">
+              <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-calculator text-molris-cyan"></i> 方案與預估資訊
+              </h4>
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-molris-cyan/10 border border-molris-cyan/30 px-3 py-1.5 rounded-lg hover:bg-molris-cyan/20 transition-colors">
+                <input type="checkbox" id="modal-academic" onchange="updateModalCalculations()" class="w-4 h-4 accent-[#00E5FF] rounded cursor-pointer">
+                <span class="text-xs font-bold text-molris-cyan">採用首年學術方案</span>
+              </label>
+            </div>
+
+            <!-- 方案、計費週期、購買月數 (3 欄) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label for="modal-plan" class="block text-xs font-medium text-gray-400 mb-1">選擇方案</label>
+                <div class="relative">
+                  <select id="modal-plan" onchange="handlePlanOrBillingChange('plan')" class="w-full bg-[#0A1628] border border-molris-cyan/40 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-molris-cyan appearance-none cursor-pointer">
+                    <option value="Trial">Trial</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Plus">Plus</option>
+                    <option value="Pro">Pro</option>
+                    <option value="Special Edition">Special Edition</option>
+                    <option value="Enterprise">Enterprise</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down text-xs text-molris-cyan absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                </div>
+              </div>
+
+              <div>
+                <label for="modal-billing" class="block text-xs font-medium text-gray-400 mb-1">計費週期</label>
+                <div class="relative">
+                  <select id="modal-billing" onchange="handlePlanOrBillingChange('billing')" class="w-full bg-[#0A1628] border border-molris-cyan/40 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-molris-cyan appearance-none cursor-pointer">
+                    <option value="monthly">月費制</option>
+                    <option value="annual">年費制</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down text-xs text-molris-cyan absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                </div>
+              </div>
+
+              <div>
+                <label for="modal-months" class="block text-xs font-medium text-gray-400 mb-1">購買月數</label>
+                <input type="number" id="modal-months" min="1" max="999" value="12" oninput="updateModalCalculations()" class="w-full bg-[#0A1628] border border-molris-cyan/40 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-molris-cyan transition-colors">
+              </div>
+            </div>
+
+            <!-- 日期與信用點 -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label for="modal-start-date" class="block text-xs font-medium text-gray-400 mb-1">預計起始日</label>
+                <input type="date" id="modal-start-date" onchange="updateModalCalculations()" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-molris-cyan transition-colors cursor-pointer">
+              </div>
+
+              <div>
+                <label for="modal-end-date" class="block text-xs font-medium text-gray-400 mb-1">預計終止日</label>
+                <input type="text" id="modal-end-date" readonly tabindex="-1" class="w-full bg-gray-950/90 border border-gray-800 rounded-xl px-3.5 py-2 text-sm text-gray-400 font-mono cursor-not-allowed select-none">
+              </div>
+
+              <div>
+                <label for="modal-total-credits" class="block text-xs font-medium text-gray-400 mb-1">總信用點 <span id="modal-credits-hint" class="text-molris-cyan text-[11px]"></span></label>
+                <input type="text" id="modal-total-credits" readonly tabindex="-1" class="w-full bg-gray-950/90 border border-gray-800 rounded-xl px-3.5 py-2 text-sm font-bold text-molris-cyan cursor-not-allowed select-none">
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-gray-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="text-xs text-gray-400">
+              </div>
+              <div class="flex items-baseline gap-2 self-end sm:self-auto">
+                <span class="text-xs text-gray-400">預計費用：</span>
+                <input type="text" id="modal-estimated-cost" readonly tabindex="-1" class="bg-transparent text-right font-black text-lg text-white focus:outline-none cursor-default w-64" value="$ 0">
+              </div>
+            </div>
+          </div>
+
+          <!-- 區塊 3：研究領域與服務 -->
+          <div class="space-y-4">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-flask text-molris-cyan"></i> 研究需求與預計使用服務
+            </h4>
+
+            <div>
+              <label for="modal-field" class="block text-xs font-medium text-gray-400 mb-1">研究領域 <span class="text-red-400">*</span></label>
+              <div class="relative">
+                <select id="modal-field" required class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-molris-cyan appearance-none cursor-pointer">
+                  <option value="" disabled selected>請選擇您的主要研究領域</option>
+                  <option value="生技與新藥開發">生技與新藥開發 (蛋白質 / 抗體 / 小分子藥物)</option>
+                  <option value="超分子與自組裝">超分子與自組裝系統</option>
+                  <option value="化學與高分子材料">化學與高分子材料</option>
+                  <option value="無機材料與固態化學">無機材料、奈米粒子與界面化學</option>
+                  <option value="其他前瞻領域">其他前瞻科學研究領域</option>
+                </select>
+                <i class="fa-solid fa-chevron-down text-xs text-gray-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-400 mb-2">預計使用服務 (可複選)</label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                  <input type="checkbox" name="services" value="MSA" class="accent-[#00E5FF] rounded">
+                  <span class="text-gray-200">多序列比對</span>
+                </label>
+                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                  <input type="checkbox" name="services" value="modeling" class="accent-[#00E5FF] rounded">
+                  <span class="text-gray-200">分子建模</span>
+                </label>
+                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                  <input type="checkbox" name="services" value="prepare" class="accent-[#00E5FF] rounded">
+                  <span class="text-gray-200">結構處理</span>
+                </label>
+                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                  <input type="checkbox" name="services" value="search" class="accent-[#00E5FF] rounded">
+                  <span class="text-gray-200">靶點搜尋</span>
+                </label>
+                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                  <input type="checkbox" name="services" value="docking" class="accent-[#00E5FF] rounded">
+                  <span class="text-gray-200">分子對接</span>
+                </label>
+                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                  <input type="checkbox" name="services" value="dynamics" class="accent-[#00E5FF] rounded">
+                  <span class="text-gray-200">分子動力學</span>
+                </label>
+                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                  <input type="checkbox" name="services" value="學術圖表" class="accent-[#00E5FF] rounded">
+                  <span class="text-gray-200">學術圖表</span>
+                </label>
+                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                  <input type="checkbox" name="services" value="動態展示" class="accent-[#00E5FF] rounded">
+                  <span class="text-gray-200">動態展示</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label for="modal-direction" class="block text-xs font-medium text-gray-400 mb-1">研究方向與需求簡述</label>
+              <textarea id="modal-direction" rows="3" placeholder="請簡述您的研究目標、感興趣的靶點或材料系統..." class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors resize-none"></textarea>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-800">
+            <button type="button" onclick="closePlanModal()" class="px-5 py-2.5 rounded-xl border border-gray-700 text-sm font-bold text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+              取消
+            </button>
+            <button type="submit" class="px-8 py-2.5 rounded-xl bg-molris-cyan text-[#0A1628] text-sm font-bold hover:bg-white transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+              送出預約申請
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div id="modal-success-content" class="hidden flex-col items-center justify-center p-12 text-center min-h-[360px]">
+        <div class="w-20 h-20 rounded-full bg-molris-cyan/20 border-2 border-molris-cyan flex items-center justify-center text-molris-cyan text-4xl mb-6 animate-bounce">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <h4 class="text-2xl font-bold text-white mb-2">預約資料已成功送出！</h4>
+        <p class="text-gray-400 text-sm max-w-md leading-relaxed mb-8">
+          感謝您選擇 Molris。我們的科學計算專員已收到您的方案配置與需求，將於 1～2 個工作日內與您聯繫。
+        </p>
+        <button type="button" onclick="closePlanModal()" class="px-6 py-2.5 rounded-xl border border-molris-cyan text-molris-cyan text-sm font-bold hover:bg-molris-cyan hover:text-[#0A1628] transition-colors">
+          完成並關閉視窗
+        </button>
+      </div>
+
+    </div>
+  </div>
+
 
   <main class="pt-32 pb-24 relative">
 
@@ -486,9 +698,9 @@
             </ul>
           </div>
 
-          <button
+          <button type="button" onclick="openPlanModal('Trial')"
             class="w-full py-3 rounded-xl border border-gray-600 text-white font-bold hover:bg-gray-800 transition-colors mt-8">
-            開始體驗
+            預約體驗
           </button>
         </div>
 
