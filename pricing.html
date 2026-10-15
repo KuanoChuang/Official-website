@@ -1106,10 +1106,10 @@
 
         <!-- 右側：升級立體漸層按鈕 -->
         <div class="flex justify-center xl:justify-end shrink-0 mt-4 xl:mt-0">
-          <a href="contact.html"
+          <button type="button" onclick="openPlanModal('Academic')"
             class="px-7 py-3.5 rounded-full btn-sweep text-white font-bold whitespace-nowrap shadow-lg">
             了解學術方案
-          </a>
+          </button>
         </div>
       </div>
 
@@ -1695,6 +1695,7 @@
       'Regular': { monthlyPrice: 1000, annualPrice: 1000, monthlyCredits: 1250, isSingleUse: false },
       'Plus': { monthlyPrice: 1999, annualPrice: 1899, monthlyCredits: 3000, annualBonusCredits: 3000, isSingleUse: false },
       'Pro': { monthlyPrice: 7699, annualPrice: 6999, monthlyCredits: 12000, annualBonusCredits: 12000, isSingleUse: false },
+      'Academic': { monthlyPrice: 7699, annualPrice: 6999, monthlyCredits: 12000, annualBonusCredits: 12000, isSingleUse: false },
       'Special Edition': { custom: true, creditsText: '客製化額度分配', costText: '諮詢報價' },
       'Enterprise': { custom: true, creditsText: '專案獨立運作', costText: '專案報價' }
     };
@@ -1713,6 +1714,7 @@
       const billingSelect = document.getElementById('modal-billing');
       const monthsInput = document.getElementById('modal-months');
       const startDateInput = document.getElementById('modal-start-date');
+      const academicCheckbox = document.getElementById('modal-academic');
 
       // 偵測主頁面的月費/年費切換狀態元件
       const billingToggle = document.getElementById('billing-toggle');
@@ -1731,6 +1733,10 @@
 
       if (planSelect && MOLRIS_PLANS[planName]) {
         planSelect.value = planName;
+      }
+
+      if (academicCheckbox) {
+        academicCheckbox.checked = (planName === 'Academic');
       }
 
       if (billingSelect) {
@@ -1800,16 +1806,7 @@
       }
     });
 
-    function handlePlanOrBillingChange(source) {
-      const billingSelect = document.getElementById('modal-billing');
-      const monthsInput = document.getElementById('modal-months');
-
-      if (source === 'billing' && billingSelect && monthsInput) {
-        let currentMonths = parseInt(monthsInput.value, 10) || 1;
-        if (billingSelect.value === 'annual' && currentMonths < 12) {
-          monthsInput.value = 12;
-        }
-      }
+    function handlePlanOrBillingChange() {
       updateModalCalculations();
     }
 
@@ -1844,31 +1841,41 @@
         titlePlanSpan.textContent = planName;
       }
 
-      // 終止日計算邏輯
+      // ------------------------------------------------------------------------
+      // 終止日計算邏輯 (精準跨月 / 跨年推算)
+      // ------------------------------------------------------------------------
       if (startDateInput && startDateInput.value && endDateInput) {
         const parts = startDateInput.value.split('-');
         if (parts.length === 3) {
           const y = parseInt(parts[0], 10);
           const m = parseInt(parts[1], 10) - 1;
           const d = parseInt(parts[2], 10);
-          const startDate = new Date(y, m, d);
 
-          let endDate = new Date(startDate);
+          let offsetMonths = 0;
 
           if (isAcademic) {
-            // 學術專案：一律起始日 + 12 個月 - 1 天
-            endDate.setFullYear(endDate.getFullYear() + 1);
-            endDate.setDate(endDate.getDate() - 1);
-          } else {
-            // 一般專案：若購買 N 個月，則終止日為「最後一次發放點數日 + 12 個月 - 1 天」
-            // 邏輯：基於起始日先加 (N - 1) 個月作為最後發放點數日，再從該天往後推 12 個月，最後減 1 天
-            const lastGrantDate = new Date(startDate);
-            lastGrantDate.setMonth(lastGrantDate.getMonth() + (months - 1));
+            // 學術專案：一律起始日 + 12 個月 - 1 天 (一次性發放，不受月數影響)
+            offsetMonths = 0;
+          } else if (isAnnualCycle && months >= 12) {
+            // 年費制且 >= 12個月：將每 12 個月視為該週期的第一個月一次發放
+            const annualYears = Math.floor(months / 12);
+            const remainingMonths = months % 12;
             
-            endDate = new Date(lastGrantDate);
-            endDate.setFullYear(endDate.getFullYear() + 1);
-            endDate.setDate(endDate.getDate() - 1);
+            if (remainingMonths === 0) {
+              // 剛好滿年 (如 12, 24)，最後一次發放是在最後一年的第一個月
+              offsetMonths = (annualYears - 1) * 12;
+            } else {
+              // 有零頭月數 (如 13, 15)，最後一次發放是在最後一個零頭月
+              offsetMonths = (annualYears * 12) + (remainingMonths - 1);
+            }
+          } else {
+            // 一般專案 / 月費制 / 年費但未滿12個月：最後發放點數日為 起始日 + (months - 1) 個月
+            offsetMonths = months - 1;
           }
+          
+          // 終止日 = 最後發放點數日 (m + offsetMonths) + 12 個月 - 1 天
+          // 使用 Date 內建的溢位處理，完美解決跨年與閏年 2 月 29 日的問題
+          const endDate = new Date(y, m + offsetMonths + 12, d - 1);
 
           endDateInput.value = formatDateStr(endDate, '/');
         }
@@ -1883,7 +1890,9 @@
         return;
       }
 
+      // ------------------------------------------------------------------------
       // 年費制與混算邏輯 (≥12個月以年繳計，未滿12個月以月繳計)
+      // ------------------------------------------------------------------------
       let totalCost = 0;
       let annualYears = 0;
       let remainingMonths = 0;
@@ -1891,26 +1900,30 @@
       if (isAnnualCycle && months >= 12) {
         annualYears = Math.floor(months / 12);
         remainingMonths = months % 12;
+        // 費用混算，例如 15個月 Plus = 1 * (1899*12) + 3 * 1999
         totalCost = (annualYears * planInfo.annualPrice * 12) + (remainingMonths * planInfo.monthlyPrice);
       } else {
+        // 如果是月費制，或是選年費制但輸入小於 12 個月，一律以月費價格計算
         totalCost = months * planInfo.monthlyPrice;
       }
 
       const standardMonthlyCost = months * planInfo.monthlyPrice;
       const totalSaved = standardMonthlyCost - totalCost;
 
-
-      // 信用點計算與學術專案一次性發放
+      // ------------------------------------------------------------------------
+      // 總信用點計算與學術專案發放
+      // ------------------------------------------------------------------------
       let baseCredits = planInfo.monthlyCredits * months;
       let bonusCredits = 0;
       let bonusNote = '';
 
       const academicTiers = Math.floor(totalCost / 50000);
       if (isAcademic && academicTiers > 0) {
-        // 學術方案：點數一次性發放（滿 5萬 送 6 個月等值信用點）
+        // 學術方案：滿 5 萬送 6 個月等值信用點
         bonusCredits = academicTiers * 6 * planInfo.monthlyCredits;
         bonusNote = `(學術方案 +${bonusCredits.toLocaleString()})`;
       } else if (isAnnualCycle && annualYears > 0 && planInfo.annualBonusCredits > 0) {
+        // 年費方案贈點 (依年數給予)
         bonusCredits = annualYears * planInfo.annualBonusCredits;
         bonusNote = `(含年費贈點 +${bonusCredits.toLocaleString()})`;
       }
@@ -1942,6 +1955,16 @@
         formContent.classList.add('hidden');
         successContent.classList.remove('hidden');
         successContent.classList.add('flex');
+        
+        // 2.5 秒後自動關閉彈窗並重置
+        setTimeout(() => {
+          closePlanModal();
+          setTimeout(() => {
+            formContent.classList.remove('hidden');
+            successContent.classList.add('hidden');
+            successContent.classList.remove('flex');
+          }, 300);
+        }, 2500);
       }
     }
   </script>
