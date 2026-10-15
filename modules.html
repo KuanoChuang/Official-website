@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>功能模組 | Molris 默瑞思</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+            sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+          },
+          colors: {
+            molris: {
+              cyan: '#00E5FF',
+              blue: '#0A2463',
+              dark: '#030509',
+              gray: '#8A9BAE',
+              neonpink: '#F000FF',
+              orange: '#F97316'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #030509;
+      color: #E2E8F0;
+    }
+
+    .glass-nav {
+      background: rgba(3, 5, 9, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .glass-card {
+      background: rgba(17, 24, 39, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* 模組表格列的懸浮與邊框樣式 */
+    .module-row {
+      transition: background-color 0.2s ease;
+    }
+    .module-row:hover {
+      background-color: rgba(0, 229, 255, 0.04);
+    }
+
+    /* 分類標籤按鈕激活狀態 */
+    .category-tab.active {
+      background-color: #00E5FF;
+      color: #0A1628;
+      border-color: #00E5FF;
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+    }
+  </style>
+</head>
+
+<body class="font-sans antialiased overflow-x-hidden selection:bg-molris-cyan selection:text-white">
+
+  <!-- ==================== Header ==================== -->
+  <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="index.html" class="text-2xl font-bold tracking-wider text-white flex items-center gap-2 group">
+        <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i>
+        Molris
+      </a>
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-8 text-[16px] font-medium">
+        
+        <!-- 關於Molris -->
+        <div class="relative group dropdown py-8">
+          <a href="index.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">關於Molris <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="index.html#vision" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心價值</a>
+            <a href="index.html#advantages" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心優勢</a>
+            <a href="index.html#tech" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心技術</a>
+            <a href="index.html#team" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">團隊架構</a>
+            <a href="index.html#story" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">品牌故事</a>
+          </div>
+        </div>
+
+        <!-- 技術平台 -->
+        <div class="relative group dropdown py-8">
+          <div class="flex items-center gap-1 cursor-default">技術平台<i class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-44 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="msa.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多序列比對</a>
+            <a href="modeling.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多尺度建模</a>
+            <a href="target.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">靶點探索</a>
+            <a href="docking.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子對接</a>
+            <a href="dynamics.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子動力學</a>
+            <a href="optimize.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子結構設計</a>
+          </div>
+        </div>
+
+        <!-- 應用領域 -->
+        <div class="relative group dropdown py-8">
+          <div class="flex items-center gap-1 cursor-default">應用領域<i class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="biotech.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">生技與新藥開發</a>
+            <a href="materials.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">化學與材料科學</a>
+          </div>
+        </div>
+
+        <!-- 服務方案 -->
+        <div class="relative group dropdown py-8">
+          <div class="flex items-center gap-1 cursor-default text-molris-cyan">服務方案<i class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="pricing.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">方案價格</a>
+            <a href="modules.html" class="block px-4 py-2 text-molris-cyan bg-gray-800/50 font-bold transition-colors whitespace-nowrap">功能模組</a>
+          </div>
+        </div>
+
+        <!-- 聯絡我們 -->
+        <div class="relative group dropdown py-8">
+          <div class="flex items-center gap-1 cursor-default">聯絡我們<i class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
+          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="contact.html#info" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">聯絡資訊</a>
+            <a href="contact.html#joinus" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">加入我們</a>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pl-4 border-l border-gray-700">
+          <i class="fa-solid fa-globe text-gray-400"></i>
+          <span class="text-gray-300 hover:text-white cursor-pointer transition-colors">中文</span>
+        </div>
+      </nav>
+
+      <button onclick="toggleMobileMenu()" class="md:hidden text-gray-300 hover:text-white z-50 relative p-2">
+        <i class="fa-solid fa-bars text-2xl"></i>
+      </button>
+    </div>
+  </header>
+
+  <div id="mobile-menu-backdrop" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden transition-opacity md:hidden"></div>
+
+  <div id="mobile-menu" class="fixed top-0 right-0 h-[100dvh] w-[260px] bg-[#0A111A] border-l border-gray-800 transform translate-x-full transition-transform duration-300 ease-in-out z-[70] flex flex-col md:hidden shadow-[[-20px_0_40px_rgba(0,0,0,0.8)]]">
+    <div class="h-20 flex items-center justify-between px-6 border-b border-gray-800/80 shrink-0">
+      <a href="index.html" class="text-lg font-bold tracking-wider text-white flex items-center gap-2 group">
+        <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i> Molris
+      </a>
+      <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800 transition-colors">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto py-8 px-6 flex flex-col gap-6 text-[16px]">
+      <!-- 關於 Molris -->
+      <div data-open="false" class="group">
+        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+          <span>關於 Molris</span>
+          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+        </button>
+        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div class="overflow-hidden">
+            <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
+              <a href="index.html#vision" class="text-sm text-gray-400 hover:text-molris-cyan">核心價值</a>
+              <a href="index.html#advantages" class="text-sm text-gray-400 hover:text-molris-cyan">核心優勢</a>
+              <a href="index.html#tech" class="text-sm text-gray-400 hover:text-molris-cyan">核心技術</a>
+              <a href="index.html#team" class="text-sm text-gray-400 hover:text-molris-cyan">團隊架構</a>
+              <a href="index.html#story" class="text-sm text-gray-400 hover:text-molris-cyan">品牌故事</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 技術平台 -->
+      <div data-open="false" class="group">
+        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+          <span>技術平台</span>
+          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+        </button>
+        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div class="overflow-hidden">
+            <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
+              <a href="msa.html" class="text-sm text-gray-400 hover:text-molris-cyan">多序列比對</a>
+              <a href="modeling.html" class="text-sm text-gray-400 hover:text-molris-cyan">多尺度建模</a>
+              <a href="target.html" class="text-sm text-gray-400 hover:text-molris-cyan">靶點探索</a>
+              <a href="docking.html" class="text-sm text-gray-400 hover:text-molris-cyan">分子對接</a>
+              <a href="dynamics.html" class="text-sm text-gray-400 hover:text-molris-cyan">分子動力學</a>
+              <a href="optimize.html" class="text-sm text-gray-400 hover:text-molris-cyan">分子結構設計</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 應用領域 -->
+      <div data-open="false" class="group">
+        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+          <span>應用領域</span>
+          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+        </button>
+        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div class="overflow-hidden">
+            <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
+              <a href="biotech.html" class="text-sm text-gray-400 hover:text-molris-cyan">生技與新藥開發</a>
+              <a href="materials.html" class="text-sm text-gray-400 hover:text-molris-cyan">化學與材料科學</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 服務方案 -->
+      <div data-open="true" class="group">
+        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+          <span>服務方案</span>
+          <i class="fa-solid fa-chevron-down text-xs opacity-100 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+        </button>
+        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div class="overflow-hidden">
+            <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-molris-cyan/30">
+              <a href="pricing.html" class="text-sm text-gray-400 hover:text-molris-cyan">方案價格</a>
+              <a href="modules.html" class="text-sm text-molris-cyan font-medium flex items-center gap-2"><i class="fa-solid fa-caret-right text-xs"></i> 功能模組</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 聯絡我們 -->
+      <div data-open="false" class="group">
+        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+          <span>聯絡我們</span>
+          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+        </button>
+        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div class="overflow-hidden">
+            <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
+              <a href="contact.html#info" class="text-sm text-gray-400 hover:text-molris-cyan">聯絡資訊</a>
+              <a href="contact.html#joinus" class="text-sm text-gray-400 hover:text-molris-cyan">加入我們</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-800/80 pt-6 mt-4 flex items-center gap-2 text-gray-300 hover:text-white cursor-pointer transition-colors shrink-0">
+        <i class="fa-solid fa-globe text-gray-400"></i>
+        <span class="text-sm font-bold">中文</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="pt-32 pb-24 relative min-h-screen">
+    <!-- 背景光暈裝飾 -->
+    <div class="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-molris-cyan/10 blur-[150px] rounded-full pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+
+      <!-- Page Header -->
+      <div class="text-center mb-12">
+        <span class="inline-block py-1 px-3.5 rounded-full border border-molris-cyan/30 bg-molris-cyan/10 text-molris-cyan text-xs font-bold tracking-widest uppercase mb-4">
+          COMPUTATIONAL MODULES & CREDITS
+        </span>
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 tracking-wide">功能模組與基礎信用點</h1>
+        <p class="text-gray-400 text-lg max-w-3xl mx-auto leading-relaxed">
+          涵蓋序列比對、結構準備、口袋探索與多尺度模擬工具。<br class="hidden sm:inline" />
+          依據您的方案等級（Regular / Plus / Pro）解鎖對應的參數權限與算力規模。
+        </p>
+
+        <!-- 信用點計費說明膠囊 -->
+        <div class="mt-8 inline-flex flex-wrap items-center justify-center gap-4 bg-gray-900/70 border border-gray-800 rounded-2xl px-6 py-3.5 shadow-lg">
+          <div class="flex items-center gap-2 text-sm">
+            <span class="text-gray-400">信用點計算公式：</span>
+            <span class="font-bold text-molris-cyan">分析模組基礎點數 × 執行時間 × 運算資源</span>
+          </div>
+          <span class="hidden sm:inline text-gray-700">|</span>
+          <div class="flex items-center gap-3 text-xs text-gray-400">
+            <span class="px-2.5 py-1 rounded-md bg-gray-800 text-gray-300 border border-gray-700">Regular：面板參數</span>
+            <span class="px-2.5 py-1 rounded-md bg-gray-800 text-gray-300 border border-gray-700">Plus：進階參數 (98折)</span>
+            <span class="px-2.5 py-1 rounded-md bg-molris-cyan/10 text-molris-cyan border border-molris-cyan/30 font-medium">Pro：延伸參數 / 無上限 (95折)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky 分類導覽與搜尋列 -->
+      <div class="sticky top-20 z-40 py-4 bg-[#030509]/95 backdrop-blur-md border-b border-gray-800/80 mb-12">
+        <div class="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-4">
+          
+          <!-- 類別切換 Tabs (採用 flex-wrap 自動換行，確保所有分類按鈕皆完整可見、不被裁切) -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" onclick="filterCategory('all', this)" class="category-tab active px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap">
+              全部模組
+            </button>
+            <button type="button" onclick="filterCategory('cat-alignment', this)" class="category-tab px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
+              <i class="fa-solid fa-align-left text-xs text-molris-cyan"></i> 序列與結構比對 Alignment
+            </button>
+            <button type="button" onclick="filterCategory('cat-prepare', this)" class="category-tab px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
+              <i class="fa-solid fa-sliders text-xs text-molris-cyan"></i> 結構處理 Prepare
+            </button>
+            <button type="button" onclick="filterCategory('cat-binding', this)" class="category-tab px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
+              <i class="fa-solid fa-bullseye text-xs text-molris-cyan"></i> 結合位點 Binding Sites
+            </button>
+            <button type="button" onclick="filterCategory('cat-docking', this)" class="category-tab px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
+              <i class="fa-solid fa-puzzle-piece text-xs text-molris-cyan"></i> 分子對接 Docking
+            </button>
+            <button type="button" onclick="filterCategory('cat-dynamics', this)" class="category-tab px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
+              <i class="fa-solid fa-wave-square text-xs text-molris-cyan"></i> 分子動力學 Dynamics
+            </button>
+          </div>
+
+          <!-- 即時關鍵字搜尋框 -->
+          <div class="relative w-full xl:w-64 shrink-0">
+            <i class="fa-solid fa-magnifying-glass text-gray-500 text-sm absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+            <input type="text" id="module-search" oninput="searchModules()" placeholder="搜尋模組名稱或功能描述..." class="w-full bg-gray-900/90 border border-gray-700 rounded-xl pl-10 pr-9 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
+            <button type="button" id="clear-search-btn" onclick="clearSearch()" class="hidden text-gray-500 hover:text-white absolute right-3 top-1/2 -translate-y-1/2">
+              <i class="fa-solid fa-circle-xmark text-sm"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 模組列表總容器 -->
+      <div id="modules-container" class="space-y-16">
+
+        <!-- ===================================================================== -->
+        <!-- 大類別 1：序列與結構比對 Alignment                                     -->
+        <!-- ===================================================================== -->
+        <section id="cat-alignment" class="module-category-section scroll-mt-40">
+          <!-- 類別大標題 -->
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-[#0A1628] border border-molris-cyan/40 flex items-center justify-center text-molris-cyan text-xl shadow-[0_0_20px_rgba(0,229,255,0.15)]">
+                <i class="fa-solid fa-dna"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2.5">
+                  <h2 class="text-2xl md:text-3xl font-bold text-white">序列與結構比對</h2>
+                  <span class="text-sm font-mono text-molris-cyan bg-molris-cyan/10 border border-molris-cyan/30 px-2.5 py-0.5 rounded-md">Alignment</span>
+                </div>
+                <p class="text-sm text-gray-400 mt-1">涵蓋多序列比對、組學搜尋、抗體編號、演化樹建構與三維結構疊合分析。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 表格外框 -->
+          <div class="rounded-2xl border border-gray-800 bg-[#0A111A] overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto hide-scrollbar">
+              <table class="w-full text-left border-collapse min-w-[760px]">
+                <thead>
+                  <tr class="bg-gray-950 text-gray-300 text-xs uppercase tracking-wider border-b-2 border-gray-800">
+                    <th class="py-4 px-6 font-bold w-[24%]">分析工具 (Module)</th>
+                    <th class="py-4 px-6 font-bold w-[46%]">功能簡述 (Description)</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-gray-300">Regular</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-molris-cyan">Plus</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-molris-cyan bg-molris-cyan/5">Pro</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800/60 text-sm">
+
+                  <!-- 子分類 1-1: 多重序列比對 (Multiple Sequence Alignment) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-msa')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>多重序列比對 (Multiple Sequence Alignment)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-msa module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">MAFFT</td>
+                    <td class="py-4 px-6 text-gray-400">採用快速傅立葉轉換的高效比對工具。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-300">10</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-200 font-semibold">20</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan font-bold bg-molris-cyan/[0.02]">20</td>
+                  </tr>
+                  <tr class="sub-msa module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">MUSCLE v5</td>
+                    <td class="py-4 px-6 text-gray-400">基於對數期望的多序列比對。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-300">15</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-200 font-semibold">30</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan font-bold bg-molris-cyan/[0.02]">30</td>
+                  </tr>
+                  <tr class="sub-msa module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Clustal Omega</td>
+                    <td class="py-4 px-6 text-gray-400">利用種子引導樹和成對 HMM 進行多序列比對。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-300">10</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-200 font-semibold">10</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan font-bold bg-molris-cyan/[0.02]">10</td>
+                  </tr>
+                  <tr class="sub-msa module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">T-Coffee</td>
+                    <td class="py-4 px-6 text-gray-400">漸進式多序列比對方法。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-300">10</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-200 font-semibold">25</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan font-bold bg-molris-cyan/[0.02]">30</td>
+                  </tr>
+                  <tr class="sub-msa module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">ProbCons</td>
+                    <td class="py-4 px-6 text-gray-400">基於成對隱馬可夫模型的漸進式比對演算法，並且採用機率一致性整合多序列保守性資訊。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-300">12</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-200 font-semibold">25</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan font-bold bg-molris-cyan/[0.02]">25</td>
+                  </tr>
+                  <tr class="sub-msa module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">PRANK</td>
+                    <td class="py-4 px-6 text-gray-400">基於演化樹機率模型，能精準處理插入與缺失事件。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-300">12</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-200 font-semibold">25</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan font-bold bg-molris-cyan/[0.02]">25</td>
+                  </tr>
+                  <tr class="sub-msa module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Dialign-TX</td>
+                    <td class="py-4 px-6 text-gray-400">貪婪且漸進式的基於片段的多序列比對方法。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-300">12</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-200 font-semibold">25</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan font-bold bg-molris-cyan/[0.02]">25</td>
+                  </tr>
+                  <tr class="sub-msa module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">EMBOSS cons</td>
+                    <td class="py-4 px-6 text-gray-400">根據多序列比對結果產生共識序列。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-300">10</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-200 font-semibold">10</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan font-bold bg-molris-cyan/[0.02]">10</td>
+                  </tr>
+
+                  <!-- 子分類 1-2: 序列搜尋與組學分析 (Sequence Search & Omics) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-omics')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>序列搜尋與組學分析 (Sequence Search & Omics)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-omics module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">HMMER</td>
+                    <td class="py-4 px-6 text-gray-400">利用隱馬可夫模型進行敏感序列同源性搜尋。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-omics module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">MMseqs2</td>
+                    <td class="py-4 px-6 text-gray-400">大規模搜尋和聚類蛋白質或核苷酸序列，以發現同源性。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-omics module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">MUMmer4</td>
+                    <td class="py-4 px-6 text-gray-400">比對和比較全基因組，以檢測單核苷酸多態性、插入缺失和結構變異。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-omics module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Salmon</td>
+                    <td class="py-4 px-6 text-gray-400">選擇性比對進行轉錄本水平 RNA-seq 定量分析。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-omics module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">StringZilla v5</td>
+                    <td class="py-4 px-6 text-gray-400">高速計算編輯距離和全局或局部序列評分。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                  <!-- 子分類 1-3: 抗體與免疫分析 (Antibody & Immune Analysis) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-antibody')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>抗體與免疫分析 (Antibody & Immune Analysis)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-antibody module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">ANARCI</td>
+                    <td class="py-4 px-6 text-gray-400">對抗體和 T 細胞受體序列進行標準化編號。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-antibody module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">ANARC II</td>
+                    <td class="py-4 px-6 text-gray-400">抗體、T 細胞受體和 VNAR/VHH 結構域的語言模型編號。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-antibody module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">IgBLAST</td>
+                    <td class="py-4 px-6 text-gray-400">分析抗體和 T 細胞受體可變區 (V/D/J) 序列。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                  <!-- 子分類 1-4: 演化樹 (Phylogeny) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-phylogeny')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>演化樹 (Phylogeny)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-phylogeny module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">FastTree</td>
+                    <td class="py-4 px-6 text-gray-400">使用近似最大似然法，根據比對後的蛋白質或核苷酸序列建立系統發育樹。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                  <!-- 子分類 1-5: 三維結構比對 (3D Alignment) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-3dalign')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>三維結構比對 (3D Alignment)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-3dalign module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">USAlign</td>
+                    <td class="py-4 px-6 text-gray-400">蛋白質、RNA 和 DNA 分子的一般三維結構比對。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-3dalign module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">FoldSeek</td>
+                    <td class="py-4 px-6 text-gray-400">搜尋 AlphaFold 資料庫，比較結構，或按 3D 相似性聚類。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-3dalign module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">RNAalifold</td>
+                    <td class="py-4 px-6 text-gray-400">根據序列比對預測 RNA 二級結構共識。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-3dalign module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">3D Alignment</td>
+                    <td class="py-4 px-6 text-gray-400">多構象或跨物種三維分子結構空間疊合比對。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-3dalign module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">RMSD Calc</td>
+                    <td class="py-4 px-6 text-gray-400">計算分子結構間之均方根偏差 (Root-Mean-Square Deviation)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                  <!-- 子分類 1-6: 格式處理與圖表 (Format Processing & Visualization) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-format-align')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>格式處理與圖表 (Format Processing)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-format-align module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Format Converter</td>
+                    <td class="py-4 px-6 text-gray-400">提供 txt, csv, GenBank, FASTQ 至標準 FASTA 格式轉換。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-format-align module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Seq Splitter</td>
+                    <td class="py-4 px-6 text-gray-400">拆分 Multi-FASTA 檔案為獨立序列檔。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-format-align module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Seq Convert</td>
+                    <td class="py-4 px-6 text-gray-400">提供 DNA、RNA 與蛋白質序列間的轉錄與轉譯轉換。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-format-align module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Complement Seq</td>
+                    <td class="py-4 px-6 text-gray-400">生成核酸序列的互補鏈 (Complement) 或反向互補鏈 (Reverse Complement)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-format-align module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">GenBank Extractor</td>
+                    <td class="py-4 px-6 text-gray-400">快速解析 GenBank 檔案，精準提取 CDS、基因片段等關鍵註釋區塊。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-format-align module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">PDB Extractor</td>
+                    <td class="py-4 px-6 text-gray-400">針對複雜的 PDB 結構檔，獨立提取特定的蛋白質鏈 (Chain)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-format-align module-row">
+                    <td class="py-4 px-6 font-bold text-white">圖表 (Charts)</td>
+                    <td class="py-4 px-6 text-gray-400">BLOSUM62 相似度分類與序列保守性視覺化圖表。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- 大類別 2：結構處理 Prepare                                            -->
+        <!-- ===================================================================== -->
+        <section id="cat-prepare" class="module-category-section scroll-mt-40">
+          <!-- 類別大標題 -->
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-[#0A1628] border border-molris-cyan/40 flex items-center justify-center text-molris-cyan text-xl shadow-[0_0_20px_rgba(0,229,255,0.15)]">
+                <i class="fa-solid fa-cubes"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2.5">
+                  <h2 class="text-2xl md:text-3xl font-bold text-white">結構處理與特徵計算</h2>
+                  <span class="text-sm font-mono text-molris-cyan bg-molris-cyan/10 border border-molris-cyan/30 px-2.5 py-0.5 rounded-md">Prepare</span>
+                </div>
+                <p class="text-sm text-gray-400 mt-1">針對蛋白質與小分子進行結構清理、質子化、能量最小化，以及物理化學與表面性質計算。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 表格外框 -->
+          <div class="rounded-2xl border border-gray-800 bg-[#0A111A] overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto hide-scrollbar">
+              <table class="w-full text-left border-collapse min-w-[760px]">
+                <thead>
+                  <tr class="bg-gray-950 text-gray-300 text-xs uppercase tracking-wider border-b-2 border-gray-800">
+                    <th class="py-4 px-6 font-bold w-[24%]">分析工具 (Module)</th>
+                    <th class="py-4 px-6 font-bold w-[46%]">功能簡述 (Description)</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-gray-300">Regular</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-molris-cyan">Plus</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-molris-cyan bg-molris-cyan/5">Pro</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800/60 text-sm">
+
+                  <!-- 子分類 2-1: 結構處理 (Structure Preparation) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-struct-prep')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>結構處理 (Structure Preparation)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-struct-prep module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">OBB</td>
+                    <td class="py-4 px-6 text-gray-400">最小有向包圍盒計算，將分子主軸與 xyz 軸對齊。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-prep module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">中心化</td>
+                    <td class="py-4 px-6 text-gray-400">將分子或複合體結構幾何中心移至座標原點。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-prep module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Remove water</td>
+                    <td class="py-4 px-6 text-gray-400">移除水分子，支援自動區分結晶水、橋接水分子與環境溶劑水。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-prep module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Remove ligand</td>
+                    <td class="py-4 px-6 text-gray-400">辨識並移除結構中之原位配體 (Co-crystallized Ligand)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-prep module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Remove heteroatoms</td>
+                    <td class="py-4 px-6 text-gray-400">移除非共價鍵結雜原子、緩衝液離子或結晶添加劑。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-prep module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Hydrogen atoms</td>
+                    <td class="py-4 px-6 text-gray-400">添加/移除氫原子、添加極性氫原子、移除非極性氫原子。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-prep module-row">
+                    <td class="py-4 px-6 font-bold text-white">質子化</td>
+                    <td class="py-4 px-6 text-gray-400">根據指定力場與環境 pH 值預測酸鹼解離態並進行質子化配置。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-prep module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">PDBFixer</td>
+                    <td class="py-4 px-6 text-gray-400">自動偵測並修補缺失殘基、缺失重原子與非標準胺基酸替換。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-prep module-row">
+                    <td class="py-4 px-6 font-bold text-white">能量最小化</td>
+                    <td class="py-4 px-6 text-gray-400">利用分子力場進行幾何構象優化，消除原子間不合理碰撞 (Steric Clash)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                  <!-- 子分類 2-2: 分子資訊 (Molecular Information) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-mol-info')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>分子資訊 (Molecular Information)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-mol-info module-row">
+                    <td class="py-4 px-6 font-bold text-white">原子總數</td>
+                    <td class="py-4 px-6 text-gray-400">統計分子或複合體系統中之總原子數。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-mol-info module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">重原子數</td>
+                    <td class="py-4 px-6 text-gray-400">統計不包含氫原子之非氫重原子 (Heavy Atoms) 數量。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-mol-info module-row">
+                    <td class="py-4 px-6 font-bold text-white">價鍵狀態</td>
+                    <td class="py-4 px-6 text-gray-400">檢查並分析各原子之雜化軌域、價鍵狀態與形式電荷。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-mol-info module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">官能基計數</td>
+                    <td class="py-4 px-6 text-gray-400">自動辨識並量化統計結構中包含之各類化學官能基。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-mol-info module-row">
+                    <td class="py-4 px-6 font-bold text-white">精確分子量</td>
+                    <td class="py-4 px-6 text-gray-400">計算分子之平均分子量與單一同位素精確質量 (Exact Mass)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                  <!-- 子分類 2-3: 結構特徵 (Structural Features) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-struct-feat')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>結構特徵 (Structural Features)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-struct-feat module-row">
+                    <td class="py-4 px-6 font-bold text-white">幾何中心</td>
+                    <td class="py-4 px-6 text-gray-400">計算分子三維空間之幾何中心與質心座標。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-feat module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">邊界尺寸</td>
+                    <td class="py-4 px-6 text-gray-400">計算結構在三維空間中之長、寬、高邊界尺寸與跨度。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-feat module-row">
+                    <td class="py-4 px-6 font-bold text-white">異構數</td>
+                    <td class="py-4 px-6 text-gray-400">分析並枚舉分子潛在之立體異構物與互變異構體數量。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-feat module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">手性中心</td>
+                    <td class="py-4 px-6 text-gray-400">定位不對稱手性中心 (Chiral Centers) 並標註 R/S 構型。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-feat module-row">
+                    <td class="py-4 px-6 font-bold text-white">共軛系統</td>
+                    <td class="py-4 px-6 text-gray-400">辨識芳香環系統與 π 電子共軛區段分佈。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-feat module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">氫鍵供體/受體</td>
+                    <td class="py-4 px-6 text-gray-400">統計分子內氫鍵供體 (HBD) 與氫鍵受體 (HBA) 數量及空間分佈。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-struct-feat module-row">
+                    <td class="py-4 px-6 font-bold text-white">可旋轉鍵數</td>
+                    <td class="py-4 px-6 text-gray-400">計算影響分子構象柔順度之可旋轉單鍵 (Rotatable Bonds) 數量。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                  <!-- 子分類 2-4: 表面特徵與格式轉換 (Surface & Format Conversion) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-surface')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>表面特徵與格式轉換 (Surface & Format Conversion)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-surface module-row">
+                    <td class="py-4 px-6 font-bold text-white">表面特徵 Surface</td>
+                    <td class="py-4 px-6 text-gray-400">建構並計算溶劑排除表面 (SES)、溶劑可及表面 (SAS) 與范德華表面 (vdW)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-surface module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">表面性質</td>
+                    <td class="py-4 px-6 text-gray-400">計算原子溶劑參數 (ASP)、分子親脂性電位 (MLP)、TFE 與 APBS 靜電位分佈。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-surface module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">2D to 3D</td>
+                    <td class="py-4 px-6 text-gray-400">將二維化學結構式或 SMILES 轉換為合理的三維低能初始構象。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-surface module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Format Converter</td>
+                    <td class="py-4 px-6 text-gray-400">支援 CIF, PDB, PQR, MOL2, SDF 等多種三維分子結構格式互轉。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- 大類別 3：結合位點 Binding Sites                                      -->
+        <!-- ===================================================================== -->
+        <section id="cat-binding" class="module-category-section scroll-mt-40">
+          <!-- 類別大標題 -->
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-[#0A1628] border border-molris-cyan/40 flex items-center justify-center text-molris-cyan text-xl shadow-[0_0_20px_rgba(0,229,255,0.15)]">
+                <i class="fa-solid fa-crosshairs"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2.5">
+                  <h2 class="text-2xl md:text-3xl font-bold text-white">結合位點探索</h2>
+                  <span class="text-sm font-mono text-molris-cyan bg-molris-cyan/10 border border-molris-cyan/30 px-2.5 py-0.5 rounded-md">Binding Sites</span>
+                </div>
+                <p class="text-sm text-gray-400 mt-1">運用幾何探針、沃羅諾伊分割與能量熱點演算法，全方位定位活性口袋、隱密位點與成藥性指標。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 表格外框 -->
+          <div class="rounded-2xl border border-gray-800 bg-[#0A111A] overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto hide-scrollbar">
+              <table class="w-full text-left border-collapse min-w-[760px]">
+                <thead>
+                  <tr class="bg-gray-950 text-gray-300 text-xs uppercase tracking-wider border-b-2 border-gray-800">
+                    <th class="py-4 px-6 font-bold w-[24%]">分析工具 (Module)</th>
+                    <th class="py-4 px-6 font-bold w-[46%]">功能簡述 (Description)</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-gray-300">Regular</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-molris-cyan">Plus</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-molris-cyan bg-molris-cyan/5">Pro</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800/60 text-sm">
+
+                  <!-- 子分類 3-1: 口袋偵測與搜尋演算法 (Pocket Detection) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-pocket-detect')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>口袋偵測與搜尋演算法 (Pocket Detection)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-pocket-detect module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Grid Scanning</td>
+                    <td class="py-4 px-6 text-gray-400">利用大小探針空間相差搜尋口袋或表面凹陷。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-detect module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Inner boundary tracing</td>
+                    <td class="py-4 px-6 text-gray-400">利用大小探針的可及域差異與外部連通性描繪內部空腔邊界。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-detect module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Alpha sphere</td>
+                    <td class="py-4 px-6 text-gray-400">基於幾何 Alpha 球聚類演算法快速探測蛋白質表面空腔。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-detect module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Voronoi tessellation</td>
+                    <td class="py-4 px-6 text-gray-400">利用三維沃羅諾伊空間分割解析分子內部空隙與通道拓樸。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-detect module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">fpocket</td>
+                    <td class="py-4 px-6 text-gray-400">適合多聚體與大型複合體界面之結合口袋偵測。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-detect module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">FTMap</td>
+                    <td class="py-4 px-6 text-gray-400">利用 16 種有機小分子探針偵測結合熱點 (Hotspots)，進行口袋精細化。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-detect module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Cryptic Pocket</td>
+                    <td class="py-4 px-6 text-gray-400">偵測伴隨構象動態變化而開啟之隱密口袋 (Cryptic Binding Sites)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                  <!-- 子分類 3-2: 口袋篩選與性質分析 (Pocket Filtering & Properties) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-pocket-prop')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>口袋篩選與性質分析 (Pocket Filtering & Analysis)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-pocket-prop module-row">
+                    <td class="py-4 px-6 font-bold text-white">口袋網格篩選</td>
+                    <td class="py-4 px-6 text-gray-400">透過 Single Point Flag、Protein Depth Flag 移除表淺雜訊與保留有用位點。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-prop module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">口袋性質計算</td>
+                    <td class="py-4 px-6 text-gray-400">計算口袋綜合排序、體積、表面積、VD 值、深度與寬度。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-prop module-row">
+                    <td class="py-4 px-6 font-bold text-white">口袋表面性質</td>
+                    <td class="py-4 px-6 text-gray-400">計算 ASP, MLP, TFE, APBS（包含親疏水表面積比例與靜電分佈等）。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-prop module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">口袋開口偵測</td>
+                    <td class="py-4 px-6 text-gray-400">精準偵測口袋通往溶劑環境之開口三維座標。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-prop module-row">
+                    <td class="py-4 px-6 font-bold text-white">口袋開口特性</td>
+                    <td class="py-4 px-6 text-gray-400">量化評估各開口之截面積、深度與寬度限制。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-prop module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Skeletonize 內切球 path-finding</td>
+                    <td class="py-4 px-6 text-gray-400">骨架化內切球路徑搜尋，用於評估口袋瓶頸半徑與配體進出可能路徑。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-prop module-row">
+                    <td class="py-4 px-6 font-bold text-white">周圍胺基酸殘基</td>
+                    <td class="py-4 px-6 text-gray-400">自動列表口袋邊界 4Å 範圍內之接觸胺基酸殘基與編號。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-pocket-prop module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">成藥性分析</td>
+                    <td class="py-4 px-6 text-gray-400">綜合體積、疏水性與拓樸特徵，評估結合位點之成藥潛力 (Druggability Score)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- 大類別 4：分子對接 Docking                                            -->
+        <!-- ===================================================================== -->
+        <section id="cat-docking" class="module-category-section scroll-mt-40">
+          <!-- 類別大標題 -->
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-[#0A1628] border border-molris-cyan/40 flex items-center justify-center text-molris-cyan text-xl shadow-[0_0_20px_rgba(0,229,255,0.15)]">
+                <i class="fa-solid fa-puzzle-piece"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2.5">
+                  <h2 class="text-2xl md:text-3xl font-bold text-white">分子對接與作用力分析</h2>
+                  <span class="text-sm font-mono text-molris-cyan bg-molris-cyan/10 border border-molris-cyan/30 px-2.5 py-0.5 rounded-md">Docking</span>
+                </div>
+                <p class="text-sm text-gray-400 mt-1">整合深度學習與傳統物理經驗評分對接引擎，並提供全方位構象能量評估、藥效團匹配與二/三維作用力拆解。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 表格外框 -->
+          <div class="rounded-2xl border border-gray-800 bg-[#0A111A] overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto hide-scrollbar">
+              <table class="w-full text-left border-collapse min-w-[760px]">
+                <thead>
+                  <tr class="bg-gray-950 text-gray-300 text-xs uppercase tracking-wider border-b-2 border-gray-800">
+                    <th class="py-4 px-6 font-bold w-[24%]">分析工具 (Module)</th>
+                    <th class="py-4 px-6 font-bold w-[46%]">功能簡述 (Description)</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-gray-300">Regular</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-molris-cyan">Plus</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-molris-cyan bg-molris-cyan/5">Pro</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800/60 text-sm">
+
+                  <!-- 子分類 4-1: 對接演算法 (Docking Algorithms) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-dock-algo')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>對接演算法 (Docking Algorithms)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-dock-algo module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">GNINA</td>
+                    <td class="py-4 px-6 text-gray-400">結合三維捲積神經網路 (CNN) 評分函數之深度學習分子對接工具。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-algo module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">AutoDock 4</td>
+                    <td class="py-4 px-6 text-gray-400">基於拉馬克遺傳演算法 (LGA) 與半經驗自由能場之經典分子對接工具。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-algo module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">AutoDock Vina</td>
+                    <td class="py-4 px-6 text-gray-400">採用高效局部梯度優化與經驗評分函數之快速分子對接引擎。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-algo module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white font-inter">iGEMDOCK</td>
+                    <td class="py-4 px-6 text-gray-400">整合經驗藥效團與演化演算法之分子對接與虛擬篩選工具。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                  <!-- 子分類 4-2: 後續分析：能量、構象與物理化學匹配 (Post-Docking Analysis) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-dock-post')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>後續分析：能量、構象與物理化學匹配 (Post-Docking Analysis)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-dock-post module-row">
+                    <td class="py-4 px-6 font-bold text-white">構象扭轉懲罰 (Strain)</td>
+                    <td class="py-4 px-6 text-gray-400">評估配體結合構象相對於低能自由態之內能扭轉形變懲罰 (Internal Strain Energy)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-post module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">自由能計算 (Free Energy)</td>
+                    <td class="py-4 px-6 text-gray-400">估算受體與配體結合之親和力與結合自由能變化 (ΔG)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-post module-row">
+                    <td class="py-4 px-6 font-bold text-white">配體效率 (LE)</td>
+                    <td class="py-4 px-6 text-gray-400">根據重原子數或分子量標準化評估配體之結合效率 (Ligand Efficiency)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-post module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">口袋空間利用率</td>
+                    <td class="py-4 px-6 text-gray-400">計算配體於目標結合口袋內之體積佔有率與空間填充比例。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-post module-row">
+                    <td class="py-4 px-6 font-bold text-white">形狀互補性</td>
+                    <td class="py-4 px-6 text-gray-400">量化評估配體與受體結合口袋表面之三維幾何形狀契合度 (Shape Complementarity)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-post module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">埋藏表面積</td>
+                    <td class="py-4 px-6 text-gray-400">計算配體結合前後之溶劑可及表面積變化與埋藏表面積 (Buried Surface Area, BSA)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-post module-row">
+                    <td class="py-4 px-6 font-bold text-white">構象分群</td>
+                    <td class="py-4 px-6 text-gray-400">基於空間 RMSD 距離矩陣對多重對接構象進行聚類分群與代表性構象提取。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-post module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">藥效團匹配</td>
+                    <td class="py-4 px-6 text-gray-400">評估配體構象與結合位點關鍵藥效團特徵 (Pharmacophore) 之空間對應程度。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-post module-row">
+                    <td class="py-4 px-6 font-bold text-white">藥效網絡重合率</td>
+                    <td class="py-4 px-6 text-gray-400">分析配體與受體核心藥效作用網絡節點之拓樸重合比例。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-post module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">疏水性匹配</td>
+                    <td class="py-4 px-6 text-gray-400">計算配體與結合口袋界面間之親疏水性質空間互補性。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-post module-row">
+                    <td class="py-4 px-6 font-bold text-white">靜電場匹配</td>
+                    <td class="py-4 px-6 text-gray-400">評估配體電荷分佈與受體口袋表面靜電位 (ESP) 之互補程度。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-post module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">口袋水分子相容性</td>
+                    <td class="py-4 px-6 text-gray-400">分析結合構象與口袋內保守結晶水或橋接水分子之空間置換與氫鍵相容性。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                  <!-- 子分類 4-3: 作用力解析與視覺化 (Interaction Analysis & Visualization) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-dock-inter')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>作用力解析與視覺化 (Interaction Analysis & Visualization)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-dock-inter module-row">
+                    <td class="py-4 px-6 font-bold text-white">直接作用力 (數量/細節)</td>
+                    <td class="py-4 px-6 text-gray-400">統計並解析氫鍵、鹽橋、π-π 堆疊、疏水接觸與鹵鍵等非共價作用力數量與幾何細節。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-inter module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">作用力拆解</td>
+                    <td class="py-4 px-6 text-gray-400">將總結合能拆解為范德華力、靜電力、氫鍵與去溶劑化能等獨立物理化學貢獻項。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-inter module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">Residue 分析</td>
+                    <td class="py-4 px-6 text-gray-400">量化口袋周圍各別胺基酸殘基對配體結合之能量貢獻與接觸頻率。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-inter module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">對接指紋 (Fingerprint)</td>
+                    <td class="py-4 px-6 text-gray-400">將複合體交互作用轉換為結構化分子作用力指紋 (Interaction Fingerprint, IFP) 以利比對分析。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-inter module-row">
+                    <td class="py-4 px-6 font-bold text-white">2D 作用力圖</td>
+                    <td class="py-4 px-6 text-gray-400">自動生成配體與周圍殘基之二維平面交互作用展開圖 (2D Interaction Diagram)。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-dock-inter module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">3D 作用力圖</td>
+                    <td class="py-4 px-6 text-gray-400">建構直觀呈現空間作用力連線、結合口袋表面與關鍵殘基之三維視覺化圖表。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- 大類別 5：分子動力學 Dynamics                                         -->
+        <!-- ===================================================================== -->
+        <section id="cat-dynamics" class="module-category-section scroll-mt-40">
+          <!-- 類別大標題 -->
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-[#0A1628] border border-molris-cyan/40 flex items-center justify-center text-molris-cyan text-xl shadow-[0_0_20px_rgba(0,229,255,0.15)]">
+                <i class="fa-solid fa-wave-square"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2.5">
+                  <h2 class="text-2xl md:text-3xl font-bold text-white">分子動力學與多尺度模擬</h2>
+                  <span class="text-sm font-mono text-molris-cyan bg-molris-cyan/10 border border-molris-cyan/30 px-2.5 py-0.5 rounded-md">Dynamics</span>
+                </div>
+                <p class="text-sm text-gray-400 mt-1">從全原子動態軌跡、增強構象採樣、煉金術自由能微擾，到粗粒化與量子力學跨尺度模擬。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 表格外框 -->
+          <div class="rounded-2xl border border-gray-800 bg-[#0A111A] overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto hide-scrollbar">
+              <table class="w-full text-left border-collapse min-w-[760px]">
+                <thead>
+                  <tr class="bg-gray-950 text-gray-300 text-xs uppercase tracking-wider border-b-2 border-gray-800">
+                    <th class="py-4 px-6 font-bold w-[24%]">分析工具 (Module)</th>
+                    <th class="py-4 px-6 font-bold w-[46%]">功能簡述 (Description)</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-gray-300">Regular</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-molris-cyan">Plus</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-molris-cyan bg-molris-cyan/5">Pro</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800/60 text-sm">
+
+                  <!-- 子分類 5-1: 全原子與增強採樣動力學 (All-Atom & Enhanced Sampling MD) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-md-sampling')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>全原子與增強採樣動力學 (All-Atom & Enhanced Sampling MD)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-md-sampling module-row">
+                    <td class="py-4 px-6 font-bold text-white">常規動力學</td>
+                    <td class="py-4 px-6 text-gray-400">模擬生物大分子或材料系統在特定溫壓環境下隨時間演化的全原子動態軌跡與構象穩定度。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-md-sampling module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">混合溶劑模擬</td>
+                    <td class="py-4 px-6 text-gray-400">引入有機小分子探針與水分子共溶劑，動態探索蛋白質表面別構位點、隱密口袋與結合熱點。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-md-sampling module-row">
+                    <td class="py-4 px-6 font-bold text-white">拉伸動力學 (SMD)</td>
+                    <td class="py-4 px-6 text-gray-400">施加外部機械力或方向性牽引偏置，模擬配體解離路徑、蛋白質構象展開與跨膜通道傳輸機制。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-md-sampling module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">高斯加速動力學 (GaMD)</td>
+                    <td class="py-4 px-6 text-gray-400">透過平滑諧波提升位能降低能障，無需預先設定反應座標即可大幅增強構象空間採樣效率。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                  <!-- 子分類 5-2: 自由能推演與跨尺度耦合模擬 (Free Energy & Multi-Scale Simulation) -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors" onclick="toggleSubGroup(this, 'sub-md-multiscale')">
+                    <td colspan="5" class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>自由能推演與跨尺度耦合模擬 (Free Energy & Multi-Scale Simulation)</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="sub-md-multiscale module-row">
+                    <td class="py-4 px-6 font-bold text-white">相對結合自由能</td>
+                    <td class="py-4 px-6 text-gray-400">基於熱力學循環精準計算同系列衍生物間之結合親和力差異 (ΔΔG)，指導先導化合物結構優化。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-md-multiscale module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">自由能微擾 (FEP)</td>
+                    <td class="py-4 px-6 text-gray-400">運用統計力學與煉金術路徑 (Alchemical Pathway) 高精度推算分子結合或溶劑化自由能變化。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-md-multiscale module-row">
+                    <td class="py-4 px-6 font-bold text-white">粗粒化模擬 (CG-MD)</td>
+                    <td class="py-4 px-6 text-gray-400">將原子群簡化為超原子珠粒 (Beads)，跨越微秒至毫秒尺度模擬大型膜蛋白組裝、脂質雙層與高分子相分離。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+                  <tr class="sub-md-multiscale module-row bg-gray-900/20">
+                    <td class="py-4 px-6 font-bold text-white">量子/分子力學 (QM/MM)</td>
+                    <td class="py-4 px-6 text-gray-400">結合活性中心量子化學計算與周圍環境分子力場，精準模擬共價抑制、酵素催化反應與電子轉移過程。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-500">-</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan/60 bg-molris-cyan/[0.02]">-</td>
+                  </tr>
+
+                  <!-- ================================================================= -->
+                  <!-- 【擴充模組範本】：未來新增單一列時，直接複製下方 <tr> 結構即可      -->
+                  <!-- ================================================================= -->
+                  <!--
+                  <tr class="sub-md-multiscale module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">新模組名稱</td>
+                    <td class="py-4 px-6 text-gray-400">新模組的功能簡述文字。</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-300">10</td>
+                    <td class="py-4 px-4 text-center font-mono text-gray-200 font-semibold">20</td>
+                    <td class="py-4 px-4 text-center font-mono text-molris-cyan font-bold bg-molris-cyan/[0.02]">20</td>
+                  </tr>
+                  -->
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 搜尋無結果時的提示狀態 -->
+        <div id="no-results-box" class="hidden text-center py-16 glass-card rounded-3xl border border-gray-800">
+          <i class="fa-solid fa-magnifying-glass text-3xl text-gray-600 mb-4"></i>
+          <h3 class="text-xl font-bold text-white mb-2">找不到相符的分析模組</h3>
+          <p class="text-gray-400 text-sm mb-6">請嘗試其他關鍵字，或聯繫我們洽詢客製化演算法與專案服務。</p>
+          <button type="button" onclick="clearSearch()" class="px-5 py-2 rounded-xl bg-gray-800 text-molris-cyan text-sm font-bold hover:bg-gray-700 transition-colors">
+            重設搜尋條件
+          </button>
+        </div>
+
+      </div>
+
+      <!-- 底部引導區塊 (串聯方案價格與聯絡我們) -->
+      <div class="mt-24 rounded-3xl bg-gradient-to-r from-[#0A1628] via-gray-900 to-[#0A1628] border border-molris-cyan/30 p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-[0_0_40px_rgba(0,229,255,0.08)]">
+        <div>
+          <span class="text-molris-cyan text-xs font-bold tracking-widest uppercase block mb-2">READY TO START?</span>
+          <h3 class="text-2xl md:text-3xl font-bold text-white mb-2">找到您需要的分析模組了嗎？</h3>
+          <p class="text-gray-400 text-sm md:text-base">
+            立即前往方案價格頁面試算信用點額度，或由 Molris 專家為您規劃跨模組專案工作流程。
+          </p>
+        </div>
+        <div class="flex flex-col sm:flex-row items-center gap-4 shrink-0 w-full md:w-auto">
+          <a href="pricing.html" class="w-full sm:w-auto text-center px-7 py-3.5 rounded-xl bg-molris-cyan text-[#0A1628] font-bold hover:bg-white transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+            查看方案價格
+          </a>
+          <a href="contact.html" class="w-full sm:w-auto text-center px-7 py-3.5 rounded-xl border border-gray-600 text-white font-bold hover:border-molris-cyan hover:text-molris-cyan transition-colors">
+            預約專案諮詢
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ==================== Footer ==================== -->
+  <footer class="bg-[#03060A] pt-16 pb-8 border-t border-gray-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-atom text-molris-cyan text-xl"></i>
+          <span class="text-xl font-bold tracking-widest text-white">Molris</span>
+        </div>
+        <div class="flex gap-6 text-sm text-gray-500">
+          <a href="#" class="hover:text-molris-cyan transition-colors">Privacy Policy</a>
+          <a href="#" class="hover:text-molris-cyan transition-colors">Terms of Service</a>
+        </div>
+      </div>
+      <div class="text-center text-gray-600 text-sm border-t border-gray-900 pt-8">
+        © 2026 Molris 默瑞思. All rights reserved. | 洞悉微觀規律，預見分子未來。
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ================= 1. 手機版側邊選單切換功能 =================
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const backdrop = document.getElementById('mobile-menu-backdrop');
+      if (!menu || !backdrop) return;
+
+      if (menu.classList.contains('translate-x-full')) {
+        menu.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      } else {
+        menu.classList.add('translate-x-full');
+        backdrop.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    }
+
+    window.addEventListener('resize', function () {
+      if (window.innerWidth >= 768) {
+        const menu = document.getElementById('mobile-menu');
+        if (menu && !menu.classList.contains('translate-x-full')) {
+          toggleMobileMenu();
+        }
+      }
+    });
+
+    // ================= 2. 表格子分類展開/收合功能 =================
+    function toggleSubGroup(headerRow, groupClass) {
+      const rows = document.querySelectorAll('.' + groupClass);
+      const icon = headerRow.querySelector('.toggle-icon');
+
+      let isCollapsed = false;
+      rows.forEach(row => {
+        row.classList.toggle('hidden');
+        if (row.classList.contains('hidden')) {
+          isCollapsed = true;
+        }
+      });
+
+      if (icon) {
+        if (isCollapsed) {
+          icon.classList.add('rotate-180');
+        } else {
+          icon.classList.remove('rotate-180');
+        }
+      }
+    }
+
+    // ================= 3. 大類別標籤篩選功能 =================
+    let currentCategory = 'all';
+
+    function filterCategory(categoryId, clickedBtn) {
+      currentCategory = categoryId;
+
+      // 更新按鈕樣式
+      const tabs = document.querySelectorAll('.category-tab');
+      tabs.forEach(tab => tab.classList.remove('active'));
+      if (clickedBtn) clickedBtn.classList.add('active');
+
+      // 執行篩選與搜尋整合判斷
+      applyFilters();
+    }
+
+    // ================= 4. 關鍵字即時搜尋與過濾 =================
+    function searchModules() {
+      const searchInput = document.getElementById('module-search');
+      const clearBtn = document.getElementById('clear-search-btn');
+      if (searchInput && clearBtn) {
+        if (searchInput.value.trim().length > 0) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+      }
+      applyFilters();
+    }
+
+    function clearSearch() {
+      const searchInput = document.getElementById('module-search');
+      const clearBtn = document.getElementById('clear-search-btn');
+      if (searchInput) searchInput.value = '';
+      if (clearBtn) clearBtn.classList.add('hidden');
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const searchInput = document.getElementById('module-search');
+      const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      const sections = document.querySelectorAll('.module-category-section');
+      const noResultsBox = document.getElementById('no-results-box');
+
+      let totalVisibleRows = 0;
+
+      sections.forEach(section => {
+        const isCategoryMatch = (currentCategory === 'all' || section.id === currentCategory);
+
+        if (!isCategoryMatch) {
+          section.classList.add('hidden');
+          return;
+        }
+
+        const rows = section.querySelectorAll('.module-row');
+        let sectionVisibleRows = 0;
+
+        rows.forEach(row => {
+          const text = row.innerText.toLowerCase();
+          if (query === '' || text.includes(query)) {
+            row.classList.remove('hidden');
+            sectionVisibleRows++;
+            totalVisibleRows++;
+          } else {
+            row.classList.add('hidden');
+          }
+        });
+
+        // 若該大類別下有符合的模組則顯示，否則隱藏
+        if (sectionVisibleRows > 0) {
+          section.classList.remove('hidden');
+        } else {
+          section.classList.add('hidden');
+        }
+      });
+
+      if (noResultsBox) {
+        if (totalVisibleRows === 0) {
+          noResultsBox.classList.remove('hidden');
+        } else {
+          noResultsBox.classList.add('hidden');
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
