@@ -35,28 +35,46 @@
   </script>
   <style>
     body {
-      background-color: #030509; 
+      background-color: #030509;
       color: #E2E8F0;
     }
+
     .glass-nav {
       background: rgba(3, 5, 9, 0.85);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(0, 229, 255, 0.1);
     }
+
     .dropdown:hover .dropdown-content {
       display: block;
       animation: fadeIn 0.2s ease-in-out;
     }
+
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-15px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     .animate-slide-down {
       animation: slideDown 0.4s ease-out forwards;
     }
@@ -249,56 +267,83 @@
       </a>
       <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-8 text-[16px] font-medium">
-        
+
         <!-- 關於Molris -->
         <div class="relative group dropdown py-8">
-          <a href="index.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">關於Molris <i class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
-          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="index.html#vision" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心價值</a>
-            <a href="index.html#advantages" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心優勢</a>
-            <a href="index.html#tech" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心技術</a>
-            <a href="index.html#team" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">團隊架構</a>
-            <a href="index.html#story" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">品牌故事</a>
+          <a href="index.html" class="hover:text-molris-cyan transition-colors flex items-center gap-1">關於Molris <i
+              class="fa-solid fa-chevron-down text-xs opacity-50"></i></a>
+          <div
+            class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="index.html#vision"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心價值</a>
+            <a href="index.html#advantages"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心優勢</a>
+            <a href="index.html#tech"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">核心技術</a>
+            <a href="index.html#team"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">團隊架構</a>
+            <a href="index.html#story"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">品牌故事</a>
           </div>
         </div>
 
         <!-- 技術平台 -->
         <div class="relative group dropdown py-8">
-          <div class="flex items-center gap-1 cursor-default">技術平台<i class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
-          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-44 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="msa.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多序列比對</a>
-            <a href="modeling.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多尺度建模</a>
-            <a href="target.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">靶點探索</a>
-            <a href="docking.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子對接</a>
-            <a href="dynamics.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子動力學</a>
-            <a href="optimize.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子結構設計</a>
+          <div class="flex items-center gap-1 cursor-default">技術平台<i
+              class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
+          <div
+            class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-44 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="msa.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多序列比對</a>
+            <a href="modeling.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">多尺度建模</a>
+            <a href="target.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">靶點探索</a>
+            <a href="docking.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子對接</a>
+            <a href="dynamics.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子動力學</a>
+            <a href="optimize.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">分子結構設計</a>
           </div>
         </div>
 
         <!-- 應用領域 -->
         <div class="relative group dropdown py-8">
-          <div class="flex items-center gap-1 cursor-default">應用領域<i class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
-          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="biotech.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">生技與新藥開發</a>
-            <a href="materials.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">化學與材料科學</a>
+          <div class="flex items-center gap-1 cursor-default">應用領域<i
+              class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
+          <div
+            class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="biotech.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">生技與新藥開發</a>
+            <a href="materials.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">化學與材料科學</a>
           </div>
         </div>
 
         <!-- 服務方案 -->
         <div class="relative group dropdown py-8">
-          <div class="flex items-center gap-1 cursor-default">服務方案<i class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
-          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="pricing.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">方案價格</a>
-            <a href="modules.html" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">功能模組</a>
+          <div class="flex items-center gap-1 cursor-default">服務方案<i
+              class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
+          <div
+            class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="pricing.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">方案價格</a>
+            <a href="modules.html"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">功能模組</a>
           </div>
         </div>
 
         <!-- 聯絡我們 -->
         <div class="relative group dropdown py-8">
-          <div class="flex items-center gap-1 cursor-default">聯絡我們<i class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
-          <div class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
-            <a href="contact.html#info" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">聯絡資訊</a>
-            <a href="contact.html#joinus" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">加入我們</a>
+          <div class="flex items-center gap-1 cursor-default">聯絡我們<i
+              class="fa-solid fa-chevron-down text-xs opacity-50"></i></div>
+          <div
+            class="dropdown-content hidden absolute top-[70px] left-1/2 -translate-x-1/2 w-36 bg-[#111827] border border-gray-800 rounded-xl shadow-2xl py-2 overflow-hidden">
+            <a href="contact.html#info"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">聯絡資訊</a>
+            <a href="contact.html#joinus"
+              class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-molris-cyan transition-colors whitespace-nowrap">加入我們</a>
           </div>
         </div>
 
@@ -314,31 +359,39 @@
     </div>
   </header>
 
-  <div id="mobile-menu-backdrop" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden transition-opacity md:hidden"></div>
+  <div id="mobile-menu-backdrop" onclick="toggleMobileMenu()"
+    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden transition-opacity md:hidden"></div>
 
   <!-- 2. 右側滑出面板 (覆蓋全螢幕) -->
-  <div id="mobile-menu" class="fixed top-0 right-0 h-[100dvh] w-[260px] bg-[#0A111A] border-l border-gray-800 transform translate-x-full transition-transform duration-300 ease-in-out z-[70] flex flex-col md:hidden shadow-[[-20px_0_40px_rgba(0,0,0,0.8)]]">
-    
+  <div id="mobile-menu"
+    class="fixed top-0 right-0 h-[100dvh] w-[260px] bg-[#0A111A] border-l border-gray-800 transform translate-x-full transition-transform duration-300 ease-in-out z-[70] flex flex-col md:hidden shadow-[[-20px_0_40px_rgba(0,0,0,0.8)]]">
+
     <!-- 側邊欄頭部：Logo 與關閉按鈕 -->
     <div class="h-20 flex items-center justify-between px-6 border-b border-gray-800/80 shrink-0">
       <a href="index.html" class="text-lg font-bold tracking-wider text-white flex items-center gap-2 group">
-        <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i> Molris
+        <i class="fa-solid fa-atom text-molris-cyan group-hover:rotate-180 transition-transform duration-700"></i>
+        Molris
       </a>
-      <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800 transition-colors">
+      <button onclick="toggleMobileMenu()"
+        class="text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800 transition-colors">
         <i class="fa-solid fa-xmark text-xl"></i>
       </button>
     </div>
-    
+
     <!-- 側邊欄連結列表 -->
     <div class="flex-1 overflow-y-auto py-8 px-6 flex flex-col gap-6 text-[16px]">
-      
+
       <!-- 關於 Molris -->
       <div data-open="false" class="group">
-        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+        <button
+          onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'"
+          class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>關於 Molris</span>
-          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+          <i
+            class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
         </button>
-        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+        <div
+          class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
           <div class="overflow-hidden">
             <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
               <a href="index.html#vision" class="text-sm text-gray-400 hover:text-molris-cyan">核心價值</a>
@@ -353,11 +406,15 @@
 
       <!-- 技術平台 -->
       <div data-open="false" class="group">
-        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+        <button
+          onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'"
+          class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>技術平台</span>
-          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+          <i
+            class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
         </button>
-        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+        <div
+          class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
           <div class="overflow-hidden">
             <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
               <a href="msa.html" class="text-sm text-gray-400 hover:text-molris-cyan">多序列比對</a>
@@ -373,11 +430,15 @@
 
       <!-- 應用領域 -->
       <div data-open="false" class="group">
-        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+        <button
+          onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'"
+          class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>應用領域</span>
-          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+          <i
+            class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
         </button>
-        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+        <div
+          class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
           <div class="overflow-hidden">
             <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
               <a href="biotech.html" class="text-sm text-gray-400 hover:text-molris-cyan">生技與新藥開發</a>
@@ -389,14 +450,19 @@
 
       <!-- 方案介紹 -->
       <div data-open="true" class="group">
-        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+        <button
+          onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'"
+          class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>服務方案</span>
-          <i class="fa-solid fa-chevron-down text-xs opacity-100 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+          <i
+            class="fa-solid fa-chevron-down text-xs opacity-100 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
         </button>
-        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+        <div
+          class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
           <div class="overflow-hidden">
             <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-molris-cyan/30">
-              <a href="pricing.html" class="text-sm text-molris-cyan font-medium flex items-center gap-2"><i class="fa-solid fa-caret-right text-xs"></i> 方案價格</a>
+              <a href="pricing.html" class="text-sm text-molris-cyan font-medium flex items-center gap-2"><i
+                  class="fa-solid fa-caret-right text-xs"></i> 方案價格</a>
               <a href="modules.html" class="text-sm text-gray-400 hover:text-molris-cyan">功能模組</a>
             </div>
           </div>
@@ -405,11 +471,15 @@
 
       <!-- 聯絡我們 -->
       <div data-open="false" class="group">
-        <button onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'" class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
+        <button
+          onclick="this.parentElement.dataset.open = this.parentElement.dataset.open === 'true' ? 'false' : 'true'"
+          class="w-full flex items-center justify-between text-gray-300 hover:text-molris-cyan transition-colors">
           <span>聯絡我們</span>
-          <i class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
+          <i
+            class="fa-solid fa-chevron-down text-xs opacity-50 transition-transform duration-300 group-data-[open=true]:rotate-180"></i>
         </button>
-        <div class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+        <div
+          class="grid grid-rows-[0fr] group-data-[open=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
           <div class="overflow-hidden">
             <div class="flex flex-col gap-4 pl-4 mt-4 border-l border-gray-800/80">
               <a href="contact.html#info" class="text-sm text-gray-400 hover:text-molris-cyan">聯絡資訊</a>
@@ -418,35 +488,43 @@
           </div>
         </div>
       </div>
-      
+
       <!-- 語言切換底部 -->
-      <div class="border-t border-gray-800/80 pt-6 mt-4 flex items-center gap-2 text-gray-300 hover:text-white cursor-pointer transition-colors shrink-0">
+      <div
+        class="border-t border-gray-800/80 pt-6 mt-4 flex items-center gap-2 text-gray-300 hover:text-white cursor-pointer transition-colors shrink-0">
         <i class="fa-solid fa-globe text-gray-400"></i>
         <span class="text-sm font-bold">中文</span>
       </div>
     </div>
   </div>
-  <div id="plan-modal-backdrop" onclick="handleBackdropClick(event)" class="fixed inset-0 bg-black/75 backdrop-blur-md z-[80] hidden items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-300">
-    
-    <div id="plan-modal" class="relative w-full max-w-3xl bg-[#0A111A] border border-gray-700/80 rounded-3xl shadow-[0_0_50px_rgba(0,229,255,0.15)] overflow-hidden transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col">
-      
-      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-1 bg-gradient-to-r from-transparent via-molris-cyan to-transparent"></div>
+  <div id="plan-modal-backdrop" onclick="handleBackdropClick(event)"
+    class="fixed inset-0 bg-black/75 backdrop-blur-md z-[80] hidden items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-300">
 
-      <div class="flex items-center justify-between px-6 sm:px-8 py-5 border-b border-gray-800 bg-[#070C14]/90 shrink-0 relative z-50">
+    <div id="plan-modal"
+      class="relative w-full max-w-3xl bg-[#0A111A] border border-gray-700/80 rounded-3xl shadow-[0_0_50px_rgba(0,229,255,0.15)] overflow-hidden transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col">
+
+      <div
+        class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-1 bg-gradient-to-r from-transparent via-molris-cyan to-transparent">
+      </div>
+
+      <div
+        class="flex items-center justify-between px-6 sm:px-8 py-5 border-b border-gray-800 bg-[#070C14]/90 shrink-0 relative z-50">
         <div>
-          <span class="text-[11px] font-bold tracking-widest uppercase text-molris-cyan block mb-0.5">PLAN RESERVATION & EVALUATION</span>
+          <span class="text-[11px] font-bold tracking-widest uppercase text-molris-cyan block mb-0.5">PLAN RESERVATION &
+            EVALUATION</span>
           <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
             預約 <span id="modal-title-plan" class="text-molris-cyan">Pro</span> 方案評估
           </h3>
         </div>
-        <button type="button" onclick="closePlanModal()" aria-label="關閉視窗" class="w-10 h-10 rounded-full bg-gray-800/80 border border-gray-700 text-gray-400 hover:text-white hover:bg-red-500/20 hover:border-red-500/50 flex items-center justify-center transition-all cursor-pointer">
+        <button type="button" onclick="closePlanModal()" aria-label="關閉視窗"
+          class="w-10 h-10 rounded-full bg-gray-800/80 border border-gray-700 text-gray-400 hover:text-white hover:bg-red-500/20 hover:border-red-500/50 flex items-center justify-center transition-all cursor-pointer">
           <i class="fa-solid fa-xmark text-lg pointer-events-none"></i>
         </button>
       </div>
 
       <div id="modal-form-content" class="overflow-y-auto modal-scroll p-6 sm:p-8 space-y-6">
         <form id="plan-reservation-form" onsubmit="submitPlanForm(event)" class="space-y-6">
-          
+
           <!-- 區塊 1：基本聯絡資訊 -->
           <div>
             <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
@@ -454,20 +532,28 @@
             </h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label for="modal-name" class="block text-sm font-medium text-gray-400 mb-1">姓名 <span class="text-red-600">*</span></label>
-                <input type="text" id="modal-name" required placeholder="請輸入您的姓名" class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
+                <label for="modal-name" class="block text-sm font-medium text-gray-400 mb-1">姓名 <span
+                    class="text-red-600">*</span></label>
+                <input type="text" id="modal-name" required placeholder="請輸入您的姓名"
+                  class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
               </div>
               <div>
-                <label for="modal-org" class="block text-sm font-medium text-gray-400 mb-1">單位名稱 <span class="text-red-600">*</span></label>
-                <input type="text" id="modal-org" required placeholder="學校 / 實驗室 / 公司名稱" class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
+                <label for="modal-org" class="block text-sm font-medium text-gray-400 mb-1">單位名稱 <span
+                    class="text-red-600">*</span></label>
+                <input type="text" id="modal-org" required placeholder="學校 / 實驗室 / 公司名稱"
+                  class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
               </div>
               <div>
-                <label for="modal-phone" class="block text-sm font-medium text-gray-400 mb-1">聯絡電話 <span class="text-red-600">*</span></label>
-                <input type="tel" id="modal-phone" required placeholder="0912-345-678 或分機" class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
+                <label for="modal-phone" class="block text-sm font-medium text-gray-400 mb-1">聯絡電話 <span
+                    class="text-red-600">*</span></label>
+                <input type="tel" id="modal-phone" required placeholder="0912-345-678 或分機"
+                  class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
               </div>
               <div>
-                <label for="modal-email" class="block text-sm font-medium text-gray-400 mb-1">聯絡信箱 <span class="text-red-600">*</span></label>
-                <input type="email" id="modal-email" required placeholder="name@organization.edu.tw" class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
+                <label for="modal-email" class="block text-sm font-medium text-gray-400 mb-1">聯絡信箱 <span
+                    class="text-red-600">*</span></label>
+                <input type="email" id="modal-email" required placeholder="name@organization.edu.tw"
+                  class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors">
               </div>
             </div>
           </div>
@@ -478,8 +564,10 @@
               <h4 class="text-sm font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-calculator text-molris-cyan"></i> 選擇方案
               </h4>
-              <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-molris-cyan/10 border border-molris-cyan/30 px-3 py-1.5 rounded-lg hover:bg-molris-cyan/20 transition-colors">
-                <input type="checkbox" id="modal-academic" onchange="updateModalCalculations()" class="w-4 h-4 accent-[#00E5FF] rounded cursor-pointer">
+              <label
+                class="inline-flex items-center gap-2 cursor-pointer select-none bg-molris-cyan/10 border border-molris-cyan/30 px-3 py-1.5 rounded-lg hover:bg-molris-cyan/20 transition-colors">
+                <input type="checkbox" id="modal-academic" onchange="updateModalCalculations()"
+                  class="w-4 h-4 accent-[#00E5FF] rounded cursor-pointer">
                 <span class="text-xs font-bold text-molris-cyan">首年學術方案</span>
               </label>
             </div>
@@ -489,7 +577,8 @@
               <div>
                 <label for="modal-plan" class="block text-sm font-medium text-gray-400 mb-1">選擇方案</label>
                 <div class="relative">
-                  <select id="modal-plan" onchange="handlePlanOrBillingChange('plan')" class="w-full bg-[#0A1628] border border-molris-cyan/40 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-molris-cyan appearance-none cursor-pointer">
+                  <select id="modal-plan" onchange="handlePlanOrBillingChange('plan')"
+                    class="w-full bg-[#0A1628] border border-molris-cyan/40 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-molris-cyan appearance-none cursor-pointer">
                     <option value="Trial">Trial</option>
                     <option value="Regular">Regular</option>
                     <option value="Plus">Plus</option>
@@ -497,24 +586,28 @@
                     <option value="Special Edition">Special Edition</option>
                     <option value="Enterprise">Enterprise</option>
                   </select>
-                  <i class="fa-solid fa-chevron-down text-xs text-molris-cyan absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                  <i
+                    class="fa-solid fa-chevron-down text-xs text-molris-cyan absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                 </div>
               </div>
 
               <div>
                 <label for="modal-billing" class="block text-sm font-medium text-gray-400 mb-1">計費週期</label>
                 <div class="relative">
-                  <select id="modal-billing" onchange="handlePlanOrBillingChange('billing')" class="w-full bg-[#0A1628] border border-molris-cyan/40 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-molris-cyan appearance-none cursor-pointer">
+                  <select id="modal-billing" onchange="handlePlanOrBillingChange('billing')"
+                    class="w-full bg-[#0A1628] border border-molris-cyan/40 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-molris-cyan appearance-none cursor-pointer">
                     <option value="monthly">月費制</option>
                     <option value="annual">年費制</option>
                   </select>
-                  <i class="fa-solid fa-chevron-down text-xs text-molris-cyan absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                  <i
+                    class="fa-solid fa-chevron-down text-xs text-molris-cyan absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                 </div>
               </div>
 
               <div>
                 <label for="modal-months" class="block text-sm font-medium text-gray-400 mb-1">購買月數</label>
-                <input type="number" id="modal-months" min="1" max="999" value="12" oninput="updateModalCalculations()" class="w-full bg-[#0A1628] border border-molris-cyan/40 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-molris-cyan transition-colors">
+                <input type="number" id="modal-months" min="1" max="999" value="12" oninput="updateModalCalculations()"
+                  class="w-full bg-[#0A1628] border border-molris-cyan/40 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-molris-cyan transition-colors">
               </div>
             </div>
 
@@ -522,26 +615,33 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label for="modal-start-date" class="block text-sm font-medium text-gray-400 mb-1">預計起始日</label>
-                <input type="date" id="modal-start-date" onchange="updateModalCalculations()" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-molris-cyan transition-colors cursor-pointer">
+                <input type="date" id="modal-start-date" onchange="updateModalCalculations()" required
+                  class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-molris-cyan transition-colors cursor-pointer">
               </div>
 
               <div>
                 <label for="modal-end-date" class="block text-sm font-medium text-gray-400 mb-1">預計終止日</label>
-                <input type="text" id="modal-end-date" readonly tabindex="-1" class="w-full bg-gray-950/90 border border-gray-800 rounded-xl px-3.5 py-2 text-sm text-gray-400 font-mono cursor-not-allowed select-none">
+                <input type="text" id="modal-end-date" readonly tabindex="-1"
+                  class="w-full bg-gray-950/90 border border-gray-800 rounded-xl px-3.5 py-2 text-sm text-gray-400 font-mono cursor-not-allowed select-none">
               </div>
 
               <div>
-                <label for="modal-total-credits" class="block text-sm font-medium text-gray-400 mb-1">總獲得信用點 <span id="modal-credits-hint" class="text-molris-cyan text-[11px]"></span></label>
-                <input type="text" id="modal-total-credits" readonly tabindex="-1" class="w-full bg-gray-950/90 border border-gray-800 rounded-xl px-3.5 py-2 text-sm font-bold text-molris-cyan cursor-not-allowed select-none">
+                <label for="modal-total-credits" class="block text-sm font-medium text-gray-400 mb-1">總獲得信用點 <span
+                    id="modal-credits-hint" class="text-molris-cyan text-[11px]"></span></label>
+                <input type="text" id="modal-total-credits" readonly tabindex="-1"
+                  class="w-full bg-gray-950/90 border border-gray-800 rounded-xl px-3.5 py-2 text-sm font-bold text-molris-cyan cursor-not-allowed select-none">
               </div>
             </div>
 
-            <div class="pt-2 border-t border-gray-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div
+              class="pt-2 border-t border-gray-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div class="text-xs text-gray-400">
               </div>
               <div class="flex items-baseline gap-2 self-end sm:self-auto">
                 <span class="text-xs text-gray-400">預計費用：</span>
-                <input type="text" id="modal-estimated-cost" readonly tabindex="-1" class="bg-transparent text-right font-black text-lg text-white focus:outline-none cursor-default w-64" value="$ 0">
+                <input type="text" id="modal-estimated-cost" readonly tabindex="-1"
+                  class="bg-transparent text-right font-black text-lg text-white focus:outline-none cursor-default w-64"
+                  value="$ 0">
               </div>
             </div>
           </div>
@@ -553,9 +653,11 @@
             </h4>
 
             <div>
-              <label for="modal-field" class="block text-sm font-medium text-gray-400 mb-1">研究領域 <span class="text-red-600">*</span></label>
+              <label for="modal-field" class="block text-sm font-medium text-gray-400 mb-1">研究領域 <span
+                  class="text-red-600">*</span></label>
               <div class="relative">
-                <select id="modal-field" required class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-molris-cyan appearance-none cursor-pointer">
+                <select id="modal-field" required
+                  class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-molris-cyan appearance-none cursor-pointer">
                   <option value="" disabled selected>請選擇您的主要研究領域</option>
                   <option value="生技與新藥開發">生技與新藥開發</option>
                   <option value="超分子與自組裝">超分子與自組裝系統</option>
@@ -563,42 +665,51 @@
                   <option value="無機材料與固態化學">無機材料、奈米粒子與界面化學</option>
                   <option value="其他前瞻領域">其他前瞻科學研究領域</option>
                 </select>
-                <i class="fa-solid fa-chevron-down text-xs text-gray-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                <i
+                  class="fa-solid fa-chevron-down text-xs text-gray-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
               </div>
             </div>
 
             <div>
               <label class="block text-xs font-medium text-gray-400 mb-2">預計使用服務</label>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                <label
+                  class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
                   <input type="checkbox" name="services" value="MSA" class="accent-[#00E5FF] rounded">
                   <span class="text-gray-200">多序列比對</span>
                 </label>
-                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                <label
+                  class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
                   <input type="checkbox" name="services" value="modeling" class="accent-[#00E5FF] rounded">
                   <span class="text-gray-200">分子建模</span>
                 </label>
-                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                <label
+                  class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
                   <input type="checkbox" name="services" value="prepare" class="accent-[#00E5FF] rounded">
                   <span class="text-gray-200">結構處理</span>
                 </label>
-                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                <label
+                  class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
                   <input type="checkbox" name="services" value="search" class="accent-[#00E5FF] rounded">
                   <span class="text-gray-200">靶點搜尋</span>
                 </label>
-                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                <label
+                  class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
                   <input type="checkbox" name="services" value="docking" class="accent-[#00E5FF] rounded">
                   <span class="text-gray-200">分子對接</span>
                 </label>
-                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                <label
+                  class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
                   <input type="checkbox" name="services" value="dynamics" class="accent-[#00E5FF] rounded">
                   <span class="text-gray-200">分子動力學</span>
                 </label>
-                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                <label
+                  class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
                   <input type="checkbox" name="services" value="學術圖表" class="accent-[#00E5FF] rounded">
                   <span class="text-gray-200">學術圖表</span>
                 </label>
-                <label class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
+                <label
+                  class="flex items-center gap-2 bg-gray-900/60 border border-gray-800 rounded-xl px-3 py-2.5 cursor-pointer hover:border-molris-cyan/50 transition-colors">
                   <input type="checkbox" name="services" value="動態展示" class="accent-[#00E5FF] rounded">
                   <span class="text-gray-200">動態展示</span>
                 </label>
@@ -607,30 +718,36 @@
 
             <div>
               <label for="modal-direction" class="block text-xs font-medium text-gray-400 mb-1">研究方向與需求簡述</label>
-              <textarea id="modal-direction" rows="3" placeholder="請簡述您的研究目標、感興趣的靶點或材料系統..." class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors resize-none"></textarea>
+              <textarea id="modal-direction" rows="3" placeholder="請簡述您的研究目標、感興趣的靶點或材料系統..."
+                class="w-full bg-gray-900/70 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-molris-cyan transition-colors resize-none"></textarea>
             </div>
           </div>
 
           <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-800">
-            <button type="button" onclick="closePlanModal()" class="px-5 py-2.5 rounded-xl border border-gray-700 text-sm font-bold text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+            <button type="button" onclick="closePlanModal()"
+              class="px-5 py-2.5 rounded-xl border border-gray-700 text-sm font-bold text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
               取消
             </button>
-            <button type="submit" class="px-8 py-2.5 rounded-xl bg-molris-cyan text-[#0A1628] text-sm font-bold hover:bg-white transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+            <button type="submit"
+              class="px-8 py-2.5 rounded-xl bg-molris-cyan text-[#0A1628] text-sm font-bold hover:bg-white transition-all shadow-[0_0_20px_rgba(0,229,255,0.3)]">
               送出預約申請
             </button>
           </div>
         </form>
       </div>
 
-      <div id="modal-success-content" class="hidden flex-col items-center justify-center p-12 text-center min-h-[360px]">
-        <div class="w-20 h-20 rounded-full bg-molris-cyan/20 border-2 border-molris-cyan flex items-center justify-center text-molris-cyan text-4xl mb-6 animate-bounce">
+      <div id="modal-success-content"
+        class="hidden flex-col items-center justify-center p-12 text-center min-h-[360px]">
+        <div
+          class="w-20 h-20 rounded-full bg-molris-cyan/20 border-2 border-molris-cyan flex items-center justify-center text-molris-cyan text-4xl mb-6 animate-bounce">
           <i class="fa-solid fa-check"></i>
         </div>
         <h4 class="text-2xl font-bold text-white mb-2">預約資料已成功送出！</h4>
         <p class="text-gray-400 text-sm max-w-md leading-relaxed mb-8">
           感謝您選擇 Molris。已收到您的方案配置與需求，將於 1～2 個工作日內與您聯繫。
         </p>
-        <button type="button" onclick="closePlanModal()" class="px-6 py-2.5 rounded-xl border border-molris-cyan text-molris-cyan text-sm font-bold hover:bg-molris-cyan hover:text-[#0A1628] transition-colors">
+        <button type="button" onclick="closePlanModal()"
+          class="px-6 py-2.5 rounded-xl border border-molris-cyan text-molris-cyan text-sm font-bold hover:bg-molris-cyan hover:text-[#0A1628] transition-colors">
           完成並關閉視窗
         </button>
       </div>
@@ -1515,23 +1632,281 @@
   </main>
 
   <!-- ==================== Footer ==================== -->
-  <footer class="bg-[#03060A] pt-16 pb-8 border-t border-gray-900">
+  <!-- Footer -->
+  <footer class="bg-[#03060A] pt-16 pb-10 border-t border-gray-900 text-gray-400">
     <div class="max-w-7xl mx-auto px-6">
-      <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
-        <div class="flex items-center gap-3">
-          <i class="fa-solid fa-atom text-molris-cyan text-xl"></i>
-          <span class="text-xl font-bold tracking-widest text-white">Molris</span>
+
+      <!-- Top Section: Brand & Contact + Navigation Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-14">
+
+        <!-- Left Column: Brand Info & Contact Details (4 cols) -->
+        <div class="lg:col-span-4 space-y-6">
+          <a href="index.html" class="flex items-center gap-3 inline-flex">
+            <i class="fa-solid fa-atom text-molris-cyan text-2xl"></i>
+            <span class="text-2xl font-bold tracking-widest text-white">Molris</span>
+          </a>
+          <p class="text-sm text-gray-500 leading-relaxed">
+            洞悉微觀規律，預見分子未來。<br>
+            專注於多尺度分子模擬、AI 輔助藥物設計與先進材料研發的次世代計算平台。
+          </p>
+
+          <!-- 聯絡資訊 Contact Info -->
+          <div class="space-y-3 pt-2 text-sm text-gray-400">
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-envelope text-molris-cyan mt-1 w-4 text-center"></i>
+              <a href="mailto:contact@molris.com"
+                class="hover:text-molris-cyan transition-colors">contact@molris.com</a>
+            </div>
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-phone text-molris-cyan mt-1 w-4 text-center"></i>
+              <a href="tel:+886-2-0000-0000" class="hover:text-molris-cyan transition-colors">+886 (02) 0000-0000</a>
+            </div>
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-location-dot text-molris-cyan mt-1 w-4 text-center"></i>
+              <span>台北市大安區（請替換為實際辦公或研發中心地址）</span>
+            </div>
+          </div>
         </div>
-        <div class="flex gap-6 text-sm text-gray-500">
-          <a href="#" class="hover:text-molris-cyan transition-colors">Privacy Policy</a>
-          <a href="#" class="hover:text-molris-cyan transition-colors">Terms of Service</a>
+
+        <!-- Right Columns: Expanded Footer Navigation (8 cols) -->
+        <div class="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8 text-sm">
+
+          <!-- 關於 Molris -->
+          <div>
+            <h4 class="text-white font-semibold tracking-wider mb-4">關於 Molris</h4>
+            <ul class="space-y-2.5">
+              <li><a href="index.html#vision" class="hover:text-molris-cyan transition-colors">核心價值</a></li>
+              <li><a href="index.html#advantages" class="hover:text-molris-cyan transition-colors">核心優勢</a></li>
+              <li><a href="index.html#tech" class="hover:text-molris-cyan transition-colors">核心技術</a></li>
+              <li><a href="index.html#team" class="hover:text-molris-cyan transition-colors">團隊架構</a></li>
+              <li><a href="index.html#story" class="hover:text-molris-cyan transition-colors">品牌故事</a></li>
+            </ul>
+          </div>
+
+          <!-- 技術平台 -->
+          <div>
+            <h4 class="text-white font-semibold tracking-wider mb-4">技術平台</h4>
+            <ul class="space-y-2.5">
+              <li><a href="msa.html" class="hover:text-molris-cyan transition-colors">多序列比對</a></li>
+              <li><a href="modeling.html" class="hover:text-molris-cyan transition-colors">多尺度建模</a></li>
+              <li><a href="target.html" class="hover:text-molris-cyan transition-colors">靶點探索</a></li>
+              <li><a href="docking.html" class="hover:text-molris-cyan transition-colors">分子對接</a></li>
+              <li><a href="dynamics.html" class="hover:text-molris-cyan transition-colors">分子動力學</a></li>
+              <li><a href="optimize.html" class="hover:text-molris-cyan transition-colors">分子結構設計</a></li>
+            </ul>
+          </div>
+
+          <!-- 應用領域 -->
+          <div>
+            <h4 class="text-white font-semibold tracking-wider mb-4">應用領域</h4>
+            <ul class="space-y-2.5">
+              <li><a href="biotech.html" class="hover:text-molris-cyan transition-colors">生技與新藥開發</a></li>
+              <li><a href="materials.html" class="hover:text-molris-cyan transition-colors">化學與材料科學</a></li>
+            </ul>
+          </div>
+
+          <!-- 服務方案 & 聯絡我們 -->
+          <div class="space-y-6">
+            <div>
+              <h4 class="text-white font-semibold tracking-wider mb-4">服務方案</h4>
+              <ul class="space-y-2.5">
+                <li><a href="pricing.html" class="hover:text-molris-cyan transition-colors">方案價格</a></li>
+                <li><a href="modules.html" class="hover:text-molris-cyan transition-colors">功能模組</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-white font-semibold tracking-wider mb-4">聯絡我們</h4>
+              <ul class="space-y-2.5">
+                <li><a href="contact.html#info" class="hover:text-molris-cyan transition-colors">聯絡資訊</a></li>
+                <li><a href="contact.html#joinus" class="hover:text-molris-cyan transition-colors">加入我們</a></li>
+              </ul>
+            </div>
+          </div>
+
         </div>
       </div>
-      <div class="text-center text-gray-600 text-sm border-t border-gray-900 pt-8">
-        © 2026 Molris 默瑞思. All rights reserved. | 洞悉微觀規律，預見分子未來。
+
+      <!-- Bottom Bar: Copyright, Legal Links & Language -->
+      <div
+        class="border-t border-gray-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+        <div>
+          © 2026 Molris 默瑞思. All rights reserved.
+        </div>
+
+        <div class="flex flex-wrap justify-center items-center gap-6">
+          <button onclick="openMolrisModal('privacy-modal')"
+            class="hover:text-molris-cyan transition-colors cursor-pointer">
+            Privacy Policy
+          </button>
+          <button onclick="openMolrisModal('terms-modal')"
+            class="hover:text-molris-cyan transition-colors cursor-pointer">
+            Terms of Service
+          </button>
+          <button onclick="openMolrisModal('dpa-modal')"
+            class="hover:text-molris-cyan transition-colors cursor-pointer">
+            Data Processing Agreement
+          </button>
+          <div class="flex items-center gap-1.5 pl-4 border-l border-gray-800 text-gray-400">
+            <i class="fa-solid fa-globe"></i>
+            <span class="hover:text-white cursor-pointer transition-colors">中文</span>
+          </div>
+        </div>
       </div>
+
     </div>
   </footer>
+
+  <!-- ================= 1. Privacy Policy Modal ================= -->
+  <div id="privacy-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+    onclick="if(event.target === this) closeMolrisModal('privacy-modal')">
+    <div class="bg-[#080D14] border border-gray-800 rounded-xl max-w-2xl w-full max-h-[80vh] flex flex-col shadow-2xl">
+      <div class="flex justify-between items-center p-6 border-b border-gray-800">
+        <h3 class="text-lg font-bold text-white tracking-wide">Privacy Policy 隱私權政策</h3>
+        <button onclick="closeMolrisModal('privacy-modal')" class="text-gray-400 hover:text-white transition-colors">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto text-gray-300 text-sm space-y-4 leading-relaxed">
+        <p class="text-xs text-gray-500">生效日期：2026年10月17日</p>
+        <p>歡迎訪問 <strong>Molris 默瑞思</strong>（以下簡稱「我們」）。我們極為重視您的隱私權與數據安全，特別是在分子模擬、生物計算與相關研發合作中的資訊保護。</p>
+
+        <h4 class="text-white font-semibold mt-4">1. 資訊收集範圍</h4>
+        <ul class="list-disc pl-5 space-y-1">
+          <li><strong>基本聯絡資訊：</strong>當您申請試用、諮詢合作或訂閱電子報時，我們會收集您的姓名、電子郵件、所屬機構與職稱。</li>
+          <li><strong>技術與使用數據：</strong>包含 IP 位址、瀏覽器類型、訪問時間及系統日誌，用於優化平台效能與資訊安全防護。</li>
+          <li><strong>研發與計算數據：</strong>您在平台上傳或運算之分子結構、實驗數據，均視為您的機密資產，我們僅在提供服務之必要範圍內進行系統處理。</li>
+        </ul>
+
+        <h4 class="text-white font-semibold mt-4">2. 資訊使用目的</h4>
+        <p>我們收集的資訊僅用於：提供並維護平台運算服務、回覆您的技術或商務諮詢、發送重要系統更新通知，以及強化資安防護機制。</p>
+
+        <h4 class="text-white font-semibold mt-4">3. 數據安全與保密承諾</h4>
+        <p>我們採用業界標準的傳輸加密（TLS/SSL）與靜態數據加密技術。除法律強制要求或經您明確書面同意外，我們絕不會向任何第三方出售、出租或共享您的個人資料與分子研發數據。</p>
+
+        <h4 class="text-white font-semibold mt-4">4. 您的權利</h4>
+        <p>您有權隨時向我們要求查詢、閱覽、更正或刪除您的個人資料。如需行使上述權利，請透過官方聯絡信箱與我們聯繫。</p>
+      </div>
+      <div class="p-4 border-t border-gray-800 text-right">
+        <button onclick="closeMolrisModal('privacy-modal')"
+          class="px-5 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors">
+          關閉
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 2. Terms of Service Modal ================= -->
+  <div id="terms-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+    onclick="if(event.target === this) closeMolrisModal('terms-modal')">
+    <div class="bg-[#080D14] border border-gray-800 rounded-xl max-w-2xl w-full max-h-[80vh] flex flex-col shadow-2xl">
+      <div class="flex justify-between items-center p-6 border-b border-gray-800">
+        <h3 class="text-lg font-bold text-white tracking-wide">Terms of Service 服務條款</h3>
+        <button onclick="closeMolrisModal('terms-modal')" class="text-gray-400 hover:text-white transition-colors">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto text-gray-300 text-sm space-y-4 leading-relaxed">
+        <p class="text-xs text-gray-500">最後更新日期：2026年10月17日</p>
+        <p>歡迎使用 <strong>Molris 默瑞思</strong> 網站及相關分子科技服務（以下簡稱「本服務」）。當您瀏覽或使用本服務時，即表示您已閱讀、瞭解並同意接受本服務條款之所有內容。</p>
+
+        <h4 class="text-white font-semibold mt-4">1. 服務內容與使用規範</h4>
+        <p>Molris 提供分子微觀規律分析、模擬運算與相關技術資訊。您承諾僅將本服務用於合法之科學研究、教育或商業評估目的，不得利用本服務從事任何違反當地法規、侵害他人權益或危害生物/化學安全之行為。</p>
+
+        <h4 class="text-white font-semibold mt-4">2. 智慧財產權</h4>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>本網站所包含之所有內容（包括但不限於演算法架構、軟體、商標、文字、視覺設計及「Molris 默瑞思」品牌標識）均歸屬於 Molris 或其授權人所有。</li>
+          <li>用戶自行上傳之原始實驗數據及特定委託項目之產出結果，其智慧財產權歸屬依雙方另行簽署之商業或合作協議為準。</li>
+        </ul>
+
+        <h4 class="text-white font-semibold mt-4">3. 免責聲明</h4>
+        <p>分子模擬與計算預測結果本質上屬於科學推演與輔助研究工具。本網站提供之資訊與數據均以「現狀」提供，不構成最終臨床、醫療、化學合成安全性或商業量產之絕對保證。用戶在進行實體實驗或商業決策前，應自行進行獨立驗證與安全評估。
+        </p>
+
+        <h4 class="text-white font-semibold mt-4">4. 條款修改與準據法</h4>
+        <p>我們保留隨時修改本條款之權利，修改後的條款將公佈於本網站。本條款之解釋與適用，均以中華民國（台灣）法律為準據法。</p>
+      </div>
+      <div class="p-4 border-t border-gray-800 text-right">
+        <button onclick="closeMolrisModal('terms-modal')"
+          class="px-5 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors">
+          關閉
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 3. Data Processing Agreement (DPA) Modal ================= -->
+  <div id="dpa-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+    onclick="if(event.target === this) closeMolrisModal('dpa-modal')">
+    <div class="bg-[#080D14] border border-gray-800 rounded-xl max-w-2xl w-full max-h-[80vh] flex flex-col shadow-2xl">
+      <div class="flex justify-between items-center p-6 border-b border-gray-800">
+        <h3 class="text-lg font-bold text-white tracking-wide">Data Processing Agreement 數據處理協議 (DPA)</h3>
+        <button onclick="closeMolrisModal('dpa-modal')" class="text-gray-400 hover:text-white transition-colors">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto text-gray-300 text-sm space-y-4 leading-relaxed">
+        <p class="text-xs text-gray-500">版本日期：2026年10月17日</p>
+        <p>本數據處理協議（以下簡稱「本協議」或「DPA」）構成您（以下簡稱「資料控制者」或「客戶」）與 <strong>Molris
+            默瑞思</strong>（以下簡稱「資料處理者」）之間服務條款的一部分，規範雙方在分子計算與研發服務過程中涉及之個人資料與專有研究數據的處理規範。</p>
+
+        <h4 class="text-white font-semibold mt-4">1. 角色與處理範圍</h4>
+        <p>客戶為其上傳至 Molris 平台之所有分子結構、序列資料、靶點數據及相關人員個人資料的「資料控制者」；Molris
+          則為「資料處理者」，僅依據客戶透過平台下達之運算指令（如多序列比對、分子對接、動力學模擬等）及本協議之約定進行數據處理。</p>
+
+        <h4 class="text-white font-semibold mt-4">2. 機密性與模型訓練隔離承諾</h4>
+        <ul class="list-disc pl-5 space-y-1">
+          <li><strong>嚴格隔離：</strong>客戶上傳之專有分子數據與運算結果均存放於邏輯隔離之安全容器環境中。</li>
+          <li><strong>不用於外部訓練：</strong>未經客戶明確書面授權，Molris <strong>絕不會</strong>將客戶之專有分子結構、實驗數據或運算結果用於訓練通用型基礎模型或提供予任何第三方使用。
+          </li>
+          <li><strong>人員保密義務：</strong>所有獲授權維護系統之 Molris 工程與技術人員均已簽署嚴格之保密協議（NDA）。</li>
+        </ul>
+
+        <h4 class="text-white font-semibold mt-4">3. 技術與組織安全措施 (TOMs)</h4>
+        <p>Molris 採取符合生技與醫藥研發高標準之安全控制措施：</p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li><strong>加密技術：</strong>數據傳輸全程採用 TLS 1.3 加密，靜態儲存採用 AES-256 加密。</li>
+          <li><strong>存取控制：</strong>實施最小權限原則（Least Privilege）與多因素驗證（MFA）。</li>
+          <li><strong>資安通報：</strong>若發生影響客戶數據安全之資安事件，Molris 將於確認事件後 72 小時內通知客戶，並立即採取補救措施。</li>
+        </ul>
+
+        <h4 class="text-white font-semibold mt-4">4. 次級處理者（Sub-processors）</h4>
+        <p>為提供高效能雲端運算（HPC/GPU 叢集），Molris 可能會使用符合 ISO 27001 / SOC 2 認證之頂級雲端基礎設施供應商作為次級處理者。我們確保所有次級處理者均受同等嚴格之資料保護條款拘束。</p>
+
+        <h4 class="text-white font-semibold mt-4">5. 數據返還與銷毀</h4>
+        <p>於服務合約終止或依客戶隨時提出之書面請求，Molris 將協助客戶匯出所有研究數據，並於指定期限內從生產伺服器及備份系統中永久且不可逆地刪除客戶之所有數據。</p>
+      </div>
+      <div class="p-4 border-t border-gray-800 text-right">
+        <button onclick="closeMolrisModal('dpa-modal')"
+          class="px-5 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors">
+          關閉
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 控制腳本 -->
+  <script>
+    function openMolrisModal(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMolrisModal(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = 'auto';
+    }
+    // 支援按 ESC 鍵關閉彈窗
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        ['privacy-modal', 'terms-modal', 'dpa-modal'].forEach(closeMolrisModal);
+      }
+    });
+  </script>
 
   <!-- Interactive Script for Toggle and Animations -->
   <script>
@@ -1733,7 +2108,7 @@
         successContent.classList.remove('flex');
       }
 
-      
+
       let actualPlanToSelect = planName;
       if (planName === 'Academic') {
         actualPlanToSelect = 'Pro';
@@ -1808,7 +2183,7 @@
       }
     }
 
-    document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape') {
         const backdrop = document.getElementById('plan-modal-backdrop');
         if (backdrop && !backdrop.classList.contains('hidden')) {
@@ -1838,7 +2213,7 @@
       const planName = planSelect.value;
       const planInfo = MOLRIS_PLANS[planName];
       const isAnnualCycle = billingSelect.value === 'annual';
-      
+
       let months = parseInt(monthsInput.value, 10);
       if (isNaN(months) || months < 1) months = 1;
       if (months > 999) {
@@ -1871,7 +2246,7 @@
             // 年費制且 >= 12個月：將每 12 個月視為該週期的第一個月一次發放
             const annualYears = Math.floor(months / 12);
             const remainingMonths = months % 12;
-            
+
             if (remainingMonths === 0) {
               // 剛好滿年 (如 12, 24)，最後一次發放是在最後一年的第一個月
               offsetMonths = (annualYears - 1) * 12;
@@ -1883,7 +2258,7 @@
             // 一般專案 / 月費制 / 年費但未滿12個月：最後發放點數日為 起始日 + (months - 1) 個月
             offsetMonths = months - 1;
           }
-          
+
           // 終止日 = 最後發放點數日 (m + offsetMonths) + 12 個月 - 1 天
           // 使用 Date 內建的溢位處理，完美解決跨年與閏年 2 月 29 日的問題
           const endDate = new Date(y, m + offsetMonths + 12, d - 1);
@@ -1966,7 +2341,7 @@
         formContent.classList.add('hidden');
         successContent.classList.remove('hidden');
         successContent.classList.add('flex');
-        
+
         // 2.5 秒後自動關閉彈窗並重置
         setTimeout(() => {
           closePlanModal();
