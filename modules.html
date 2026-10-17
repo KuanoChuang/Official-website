@@ -886,95 +886,111 @@
         <!-- ===================================================================== -->
 
         <section id="cat-modeling" class="module-category-section scroll-mt-40">
-          <!-- 類別大標題 -->
-          <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 pb-3 border-b border-slate-800">
-            <div>
-              <div class="flex items-center gap-2.5">
-                <span class="w-2 h-6 rounded-full bg-cyan-400 shadow-[0_0_12px_#22d3ee]"></span>
-                <h2 class="text-xl md:text-2xl font-bold text-white tracking-wide">多尺度建模 <span
-                    class="text-cyan-400 font-mono text-lg ml-1">Multi-scale Modeling</span></h2>
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
+            <div class="flex items-center gap-4">
+              <div
+                class="w-12 h-12 rounded-2xl bg-[#0A1628] border border-molris-cyan/40 flex items-center justify-center text-molris-cyan text-xl shadow-[0_0_20px_rgba(0,229,255,0.15)]">
+                <i class="fa-solid fa-dna"></i>
               </div>
-              <p class="text-slate-400 text-xs md:text-sm mt-1.5 pl-4">涵蓋蛋白質同源結構預測、奈米材料/載體構建、二維與三維分子構象轉換及跨尺度檔案格式處理</p>
+              <div>
+                <div class="flex items-center gap-2.5">
+                  <h2 class="text-2xl md:text-3xl font-bold text-white">多尺度建模</h2>
+                  <span
+                    class="text-sm font-mono text-molris-cyan bg-molris-cyan/10 border border-molris-cyan/30 px-2.5 py-0.5 rounded-md">Modeling</span>
+                </div>
+                <p class="text-sm text-gray-400 mt-1">涵蓋蛋白質同源結構預測、奈米材料/載體構建、二維與三維分子構象轉換及跨尺度檔案格式處理。</p>
+              </div>
             </div>
           </div>
 
-          <div class="glass-card rounded-2xl overflow-hidden border border-slate-800/80 shadow-xl">
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse">
+          <!-- 表格外框 -->
+          <div class="rounded-2xl border border-gray-800 bg-[#0A111A] overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto hide-scrollbar">
+              <table class="w-full text-left border-collapse min-w-[760px]">
                 <thead>
-                  <tr
-                    class="border-b border-slate-800 bg-slate-900/90 text-[11px] uppercase tracking-wider text-slate-400">
-                    <th class="py-3.5 px-6 w-[28%]">分析工具 / 模組名稱</th>
-                    <th class="py-3.5 px-6 w-[42%]">功能描述</th>
-                    <th class="py-3.5 px-4 text-center w-[10%]">Regular</th>
-                    <th class="py-3.5 px-4 text-center w-[10%]">Plus</th>
-                    <th class="py-3.5 px-4 text-center w-[10%] text-cyan-400 bg-cyan-950/20">Pro</th>
+                  <tr class="bg-gray-950 text-gray-300 text-sm tracking-wider border-b-2 border-gray-800">
+                    <th class="py-4 px-6 font-bold w-[24%]">分析工具</th>
+                    <th class="py-4 px-6 font-bold w-[46%]">功能簡述</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-gray-300">Regular</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-gray-300">Plus</th>
+                    <th class="py-4 px-4 font-bold text-center w-[10%] text-molris-cyan bg-molris-cyan/5">Pro</th>
                   </tr>
                 </thead>
-
-                <!-- 子分類 1：生物大分子與奈米結構建模 -->
-                <tbody class="divide-y divide-slate-800/60 text-sm">
-                  <tr class="bg-slate-900/60 cursor-pointer hover:bg-slate-800/60 transition-colors"
-                    onclick="toggleSubgroup(this)">
-                    <td colspan="5" class="py-2.5 px-6 font-bold text-cyan-300 text-xs tracking-wider uppercase">
+                <tbody class="divide-y divide-gray-800/60 text-sm">
+                  <!-- 子分類 2-1：生物大分子（Biomolecular Modeling） -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors"
+                    onclick="toggleSubGroup(this, 'sub-biomolecular')">
+                    <td colspan="5"
+                      class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
                       <div class="flex items-center justify-between">
-                        <span>生物大分子與奈米結構建模 (Biomolecular & Nanoparticle Modeling)</span>
-                        <span class="subgroup-icon text-slate-400 transition-transform duration-200">▼</span>
+                        <span>生物大分子（Biomolecular Modeling）</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
                       </div>
                     </td>
                   </tr>
-                  <tr class="module-row hover:bg-slate-800/30 transition-colors">
-                    <td class="py-3.5 px-6 font-semibold text-white">同源建模 (Homology Modeling)</td>
-                    <td class="py-3.5 px-6 text-slate-300 text-xs leading-relaxed">基於已知同源結構模板預測目標蛋白質三維結構，含缺失區段 (Loop)
-                      構象修補與側鏈能量精煉。</td>
-                    <td class="py-3.5 px-4 text-center font-mono text-slate-300">150</td>
-                    <td class="py-3.5 px-4 text-center font-mono text-slate-200">240</td>
-                    <td class="py-3.5 px-4 text-center font-mono font-bold text-cyan-400 bg-cyan-950/10">360</td>
+                  <tr class="sub-biomolecular module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">同源建模<br><span
+                        class="font-inter text-gray-400 text-xs font-normal">Homology Modeling</span></td>
+                    <td class="py-4 px-6 text-gray-400">基於已知同源結構模板預測目標蛋白質三維結構，含缺失區段構象修補與側鏈能量精煉。</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-300">150</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-200 font-semibold">240</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">>360</td>
                   </tr>
-                  <tr class="module-row hover:bg-slate-800/30 transition-colors">
-                    <td class="py-3.5 px-6 font-semibold text-white">奈米粒子建模 (Nanoparticle Modeling)</td>
-                    <td class="py-3.5 px-6 text-slate-300 text-xs leading-relaxed">
-                      構建金屬/無機奈米晶核或高分子/脂質奈米載體三維結構，支援表面配體功能化修飾與力場拓撲生成。</td>
-                    <td class="py-3.5 px-4 text-center font-mono text-slate-300">90</td>
-                    <td class="py-3.5 px-4 text-center font-mono text-slate-200">150</td>
-                    <td class="py-3.5 px-4 text-center font-mono font-bold text-cyan-400 bg-cyan-950/10">240</td>
-                  </tr>
-                </tbody>
-
-                <!-- 子分類 2：分子結構轉換與格式處理 -->
-                <tbody class="divide-y divide-slate-800/60 text-sm">
-                  <tr class="bg-slate-900/60 cursor-pointer hover:bg-slate-800/60 transition-colors"
-                    onclick="toggleSubgroup(this)">
-                    <td colspan="5" class="py-2.5 px-6 font-bold text-cyan-300 text-xs tracking-wider uppercase">
+                  <!-- 子分類 2-2: 奈米結構建模（Nanoparticle Modeling） -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors"
+                    onclick="toggleSubGroup(this, 'sub-nanoparticle')">
+                    <td colspan="5"
+                      class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
                       <div class="flex items-center justify-between">
-                        <span>分子結構轉換與格式處理 (Structure Conversion & Formatting)</span>
-                        <span class="subgroup-icon text-slate-400 transition-transform duration-200">▼</span>
+                        <span>奈米結構建模（Nanoparticle Modeling）</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
                       </div>
                     </td>
                   </tr>
-                  <tr class="module-row hover:bg-slate-800/30 transition-colors">
-                    <td class="py-3.5 px-6 font-semibold text-white">分子結構 (2D to 3D)</td>
-                    <td class="py-3.5 px-6 text-slate-300 text-xs leading-relaxed">將平面化學結構或 SMILES
-                      轉換為三維空間低能構象，支援手性中心判定與多構象系綜生成。</td>
-                    <td class="py-3.5 px-4 text-center font-mono text-slate-300">30</td>
-                    <td class="py-3.5 px-4 text-center font-mono text-slate-200">60</td>
-                    <td class="py-3.5 px-4 text-center font-mono font-bold text-cyan-400 bg-cyan-950/10">90</td>
+
+                  <tr class="sub-nanoparticle module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">奈米粒子建模<br><span
+                        class="font-inter text-gray-400 text-xs font-normal">Nanoparticle Modeling</span></td>
+                    <td class="py-4 px-6 text-gray-400">構建金屬/無機奈米晶核或高分子/脂質奈米載體三維結構，支援表面配體功能化修飾與力場拓撲生成。</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-300">60</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-200 font-semibold">90</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">120</td>
                   </tr>
-                  <tr class="module-row hover:bg-slate-800/30 transition-colors">
-                    <td class="py-3.5 px-6 font-semibold text-white">分子結構 (3D to 2D)</td>
-                    <td class="py-3.5 px-6 text-slate-300 text-xs leading-relaxed">由三維分子座標提取化學連接性並投影為標準 2D
-                      結構式，保留立體楔形鍵標註並自動消除結構重疊。</td>
-                    <td class="py-3.5 px-4 text-center font-mono text-slate-300">9</td>
-                    <td class="py-3.5 px-4 text-center font-mono text-slate-200">15</td>
-                    <td class="py-3.5 px-4 text-center font-mono font-bold text-cyan-400 bg-cyan-950/10">15</td>
+                  <!-- 子分類 2-3: 分子結構轉換與格式處理 -->
+                  <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors"
+                    onclick="toggleSubGroup(this, 'sub-molecule')">
+                    <td colspan="5"
+                      class="py-3.5 px-6 font-bold text-molris-cyan tracking-wide border-y border-molris-cyan/30 shadow-[inset_4px_0_0_0_#00E5FF]">
+                      <div class="flex items-center justify-between">
+                        <span>分子結構轉換與格式處理（Structure Conversion & Formatting）</span>
+                        <i class="fa-solid fa-chevron-up toggle-icon text-xs transition-transform duration-300"></i>
+                      </div>
+                    </td>
                   </tr>
-                  <tr class="module-row hover:bg-slate-800/30 transition-colors">
-                    <td class="py-3.5 px-6 font-semibold text-white">格式轉換 (Format Converter)</td>
-                    <td class="py-3.5 px-6 text-slate-300 text-xs leading-relaxed">支援 CIF、PDB、PQR、MOL2、SDF、XYZ、GRO
-                      等跨尺度分子與晶體結構檔案格式互轉。</td>
-                    <td class="py-3.5 px-4 text-center font-mono text-slate-300">9</td>
-                    <td class="py-3.5 px-4 text-center font-mono text-slate-200">15</td>
-                    <td class="py-3.5 px-4 text-center font-mono font-bold text-cyan-400 bg-cyan-950/10">15</td>
+
+                  <tr class="sub-molecule module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">分子結構 (2D to 3D)<br><span
+                        class="font-inter text-gray-400 text-xs font-normal">Structure</span></td>
+                    <td class="py-4 px-6 text-gray-400">將平面化學結構或 SMILES 轉換為三維空間低能構象，支援手性中心判定與多構象系綜生成。</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-300">30</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-200 font-semibold">60</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">90</td>
+                  </tr>
+                  <tr class="sub-molecule module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">分子結構 (3D to 2D)<br><span
+                        class="font-inter text-gray-400 text-xs font-normal">Structure</span></td>
+                    <td class="py-4 px-6 text-gray-400">由三維分子座標提取化學連接性並投影為標準 2D 結構式，保留立體楔形鍵標註並自動消除結構重疊。</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-300">15</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-200 font-semibold">15</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">30</td>
+                  </tr>
+                  <tr class="sub-molecule module-row">
+                    <td class="py-4 px-6 font-bold text-white font-inter">格式轉換<br><span
+                        class="font-inter text-gray-400 text-xs font-normal">Format Converter</span></td>
+                    <td class="py-4 px-6 text-gray-400">支援 CIF、PDB、PQR、MOL2、SDF、XYZ、GRO等跨尺度分子與晶體結構檔案格式互轉。</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-300">30</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-200 font-semibold">60</td>
+                    <td class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">90</td>
                   </tr>
                 </tbody>
               </table>
