@@ -369,34 +369,52 @@
 
           <!-- 類別切換 Tabs (採用 flex-wrap 自動換行，確保所有分類按鈕皆完整可見、不被裁切) -->
           <div class="flex flex-wrap items-center gap-2">
+            <!-- 全部模組 (無圖示，保持原樣) -->
             <button type="button" onclick="filterCategory('all', this)"
-              class="category-tab active px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap">
+              class="category-tab active group px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap">
               全部模組
             </button>
+            <!-- 其他按鈕 -->
             <button type="button" onclick="filterCategory('cat-alignment', this)"
-              class="category-tab px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
-              <i class="fa-solid fa-align-left text-xs text-molris-cyan"></i> 序列與結構比對
+              class="category-tab group px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
+              <i
+                class="fa-solid fa-align-left text-xs text-molris-cyan group-hover:text-white group-[.active]:text-white transition-colors"></i>
+              序列與結構比對
             </button>
 
             <button type="button" onclick="filterCategory('cat-modeling', this)"
-              class="category-tab px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
-              <i class="fa-solid fa-dna text-xs text-molris-cyan"></i> 多尺度建模
+              class="category-tab group px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
+              <i
+                class="fa-solid fa-dna text-xs text-molris-cyan group-hover:text-white group-[.active]:text-white transition-colors"></i>
+              多尺度建模
             </button>
+
             <button type="button" onclick="filterCategory('cat-prepare', this)"
-              class="category-tab px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
-              <i class="fa-solid fa-cubes text-xs text-molris-cyan"></i> 結構處理
+              class="category-tab group px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
+              <i
+                class="fa-solid fa-cubes text-xs text-molris-cyan group-hover:text-white group-[.active]:text-white transition-colors"></i>
+              結構處理
             </button>
+
             <button type="button" onclick="filterCategory('cat-binding', this)"
-              class="category-tab px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
-              <i class="fa-solid fa-crosshairs text-xs text-molris-cyan"></i> 結合位點
+              class="category-tab group px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
+              <i
+                class="fa-solid fa-crosshairs text-xs text-molris-cyan group-hover:text-white group-[.active]:text-white transition-colors"></i>
+              結合位點
             </button>
+
             <button type="button" onclick="filterCategory('cat-docking', this)"
-              class="category-tab px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
-              <i class="fa-solid fa-puzzle-piece text-xs text-molris-cyan"></i> 分子對接
+              class="category-tab group px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
+              <i
+                class="fa-solid fa-puzzle-piece text-xs text-molris-cyan group-hover:text-white group-[.active]:text-white transition-colors"></i>
+              分子對接
             </button>
+
             <button type="button" onclick="filterCategory('cat-dynamics', this)"
-              class="category-tab px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
-              <i class="fa-solid fa-wave-square text-xs text-molris-cyan"></i> 分子動力學
+              class="category-tab group px-4 py-2 rounded-xl border border-gray-700 bg-gray-900/80 text-xs sm:text-sm font-bold text-gray-300 hover:border-molris-cyan/50 transition-all whitespace-nowrap flex items-center gap-2">
+              <i
+                class="fa-solid fa-wave-square text-xs text-molris-cyan group-hover:text-white group-[.active]:text-white transition-colors"></i>
+              分子動力學
             </button>
           </div>
 
@@ -935,7 +953,9 @@
                     <td class="py-4 px-6 text-gray-400">基於已知同源結構模板預測目標蛋白質三維結構，含缺失區段構象修補與側鏈能量精煉。</td>
                     <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-300">150</td>
                     <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-200 font-semibold">240</td>
-                    <td class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">>360</td>
+                    <td
+                      class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">
+                      >360</td>
                   </tr>
                   <!-- 子分類 2-2: 奈米結構建模（Nanoparticle Modeling） -->
                   <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors"
@@ -955,7 +975,9 @@
                     <td class="py-4 px-6 text-gray-400">構建金屬/無機奈米晶核或高分子/脂質奈米載體三維結構，支援表面配體功能化修飾與力場拓撲生成。</td>
                     <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-300">60</td>
                     <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-200 font-semibold">90</td>
-                    <td class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">120</td>
+                    <td
+                      class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">
+                      120</td>
                   </tr>
                   <!-- 子分類 2-3: 分子結構轉換與格式處理 -->
                   <tr class="bg-[#0A1628] cursor-pointer select-none hover:bg-[#0e213b] transition-colors"
@@ -975,7 +997,9 @@
                     <td class="py-4 px-6 text-gray-400">將平面化學結構或 SMILES 轉換為三維空間低能構象，支援手性中心判定與多構象系綜生成。</td>
                     <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-300">30</td>
                     <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-200 font-semibold">60</td>
-                    <td class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">90</td>
+                    <td
+                      class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">
+                      90</td>
                   </tr>
                   <tr class="sub-molecule module-row">
                     <td class="py-4 px-6 font-bold text-white font-inter">分子結構 (3D to 2D)<br><span
@@ -983,7 +1007,9 @@
                     <td class="py-4 px-6 text-gray-400">由三維分子座標提取化學連接性並投影為標準 2D 結構式，保留立體楔形鍵標註並自動消除結構重疊。</td>
                     <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-300">15</td>
                     <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-200 font-semibold">15</td>
-                    <td class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">30</td>
+                    <td
+                      class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">
+                      30</td>
                   </tr>
                   <tr class="sub-molecule module-row">
                     <td class="py-4 px-6 font-bold text-white font-inter">格式轉換<br><span
@@ -991,7 +1017,9 @@
                     <td class="py-4 px-6 text-gray-400">支援 CIF、PDB、PQR、MOL2、SDF、XYZ、GRO等跨尺度分子與晶體結構檔案格式互轉。</td>
                     <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-300">30</td>
                     <td class="py-4 px-4 text-center text-[16px] font-inter text-gray-200 font-semibold">60</td>
-                    <td class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">90</td>
+                    <td
+                      class="py-4 px-4 text-center text-[16px] font-inter text-molris-cyan font-bold bg-molris-cyan/[0.02]">
+                      90</td>
                   </tr>
                 </tbody>
               </table>
