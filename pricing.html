@@ -884,7 +884,7 @@
 
           <div
             class="annual-badge hidden absolute -top-4 -right-6 bg-gradient-to-r from-orange-500 to-red-600 text-white text-sm font-black px-3.5 py-1.5 rounded-full shadow-[0_0_15px_rgba(249,115,22,0.5)] flex items-center gap-1 z-20 border border-orange-300/40">
-            送 3000 點
+            送 3000 額度
           </div>
 
           <div class="text-center mb-8 h-36 flex flex-col justify-center">
@@ -956,7 +956,7 @@
 
           <div
             class="annual-badge hidden absolute -top-4 -right-6 bg-gradient-to-r from-orange-500 to-red-600 text-white text-sm font-black px-3.5 py-1.5 rounded-full shadow-[0_0_15px_rgba(249,115,22,0.5)] flex items-center gap-1 z-20 border border-orange-300/40">
-            送 12000 點
+            送 12000 額度
           </div>
 
           <div
@@ -1146,7 +1146,7 @@
                 class="text-molris-cyan text-lg">6 個月等值運算額度</strong>！
             </p>
             <p class="text-xs text-gray-500 font-medium mt-2">
-              *贈送點數依所選方案之月額度計算。<br>
+              *贈送額度依所選方案之月額度計算。<br>
               *支援學術機構與研究計畫經費核銷。
             </p>
           </div>
@@ -2258,11 +2258,11 @@
               offsetMonths = (annualYears * 12) + (remainingMonths - 1);
             }
           } else {
-            // 一般專案 / 月費制 / 年費但未滿12個月：最後發放點數日為 起始日 + (months - 1) 個月
+            // 一般專案 / 月費制 / 年費但未滿12個月：最後發放額度日為 起始日 + (months - 1) 個月
             offsetMonths = months - 1;
           }
 
-          // 終止日 = 最後發放點數日 (m + offsetMonths) + 12 個月 - 1 天
+          // 終止日 = 最後發放額度日 (m + offsetMonths) + 12 個月 - 1 天
           // 使用 Date 內建的溢位處理，完美解決跨年與閏年 2 月 29 日的問題
           const endDate = new Date(y, m + offsetMonths + 12, d - 1);
 
@@ -2312,7 +2312,7 @@
         bonusCredits = academicTiers * 6 * planInfo.monthlyCredits;
         bonusNote = `(學術方案 +${bonusCredits.toLocaleString()})`;
       } else if (isAnnualCycle && annualYears > 0 && planInfo.annualBonusCredits > 0) {
-        // 年費方案贈點 (依年數給予)
+        // 年費方案贈額 (依年數給予)
         bonusCredits = annualYears * planInfo.annualBonusCredits;
         bonusNote = `(年費贈額 +${bonusCredits.toLocaleString()})`;
       }
@@ -2320,7 +2320,7 @@
       const finalCredits = baseCredits + bonusCredits;
 
       if (totalCreditsInput) {
-        totalCreditsInput.value = `${finalCredits.toLocaleString()} 點`;
+        totalCreditsInput.value = `${finalCredits.toLocaleString()} 額度`;
       }
       if (creditsHint) {
         creditsHint.textContent = bonusNote;
